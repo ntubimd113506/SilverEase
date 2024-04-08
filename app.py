@@ -9,6 +9,10 @@ app = Flask(__name__)
 line_bot_api = LineBotApi('vzDtwf8h7fEZRRmzj4VimopZL0+T1YKif982hzSdorxlLoebj3pj/4FwFipwinhCz87gKYDRvwvWmsU5FJ+0LOhywd+LFkFSopjeArMGhyoDtH823BhMCOUxc0WVSPIfuDwNWbLCemZtEz88kCJhSQdB04t89/1O/w1cDnyilFU=')
 handler = WebhookHandler('1d16422c3b78ca6b26335a808c5258b2')
 
+@app.route("/")
+def index("/"):
+    return "Here is SilverEase"
+
 @app.route("/callback", methods=['POST'])
 def callback():
     # 獲取 Line Bot 的 Webhook 請求
