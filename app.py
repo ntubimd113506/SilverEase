@@ -1,13 +1,15 @@
+import requests, json
 from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
+from utlis import db
 
 app = Flask(__name__)
 
-# 設定你的 Line Bot 的 Channel Access Token 和 Channel Secret
-line_bot_api = LineBotApi('vzDtwf8h7fEZRRmzj4VimopZL0+T1YKif982hzSdorxlLoebj3pj/4FwFipwinhCz87gKYDRvwvWmsU5FJ+0LOhywd+LFkFSopjeArMGhyoDtH823BhMCOUxc0WVSPIfuDwNWbLCemZtEz88kCJhSQdB04t89/1O/w1cDnyilFU=')
-handler = WebhookHandler('1d16422c3b78ca6b26335a808c5258b2')
+# 設定你的 Line Bot 的 Channel Access Token 和 
+line_bot_api = LineBotApi(db.LINE_TOKEN)
+handler = WebhookHandler(db.LINE_HANDLER)
 
 @app.route("/")
 def index():
@@ -36,6 +38,25 @@ def handle_message(event):
         event.reply_token,
         TextSendMessage(text="你的使用者 ID 是：" + user_id)
     )
+
+'''主動訊息傳送測試
+@app.route("/sent")
+def sent_mess():
+    USER_LINE_ID='USER_LINE_ID'
+    headers = {'Authorization':f'Bearer {db.LINE_TOKEN}','Content-Type':'application/json'}
+    body = {
+        'to':USER_LINE_ID,
+        'messages':[{
+                'type': 'text',
+                'text': 'hello'
+            }]
+        }
+    # 向指定網址發送 request
+    req = requests.request('POST', 'https://api.line.me/v2/bot/message/push',headers=headers,data=json.dumps(body).encode('utf-8'))
+    # 印出得到的結果
+    print(req.text)
+    return "GOOD"
+'''
 
 if __name__ == "__main__":
     app.run()

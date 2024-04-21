@@ -5,6 +5,8 @@ DB_HOST='HOST_IP'
 DB_NAME='HOST_DB_NAME'
 DB_USER='USER_NAME'
 DB_PASSWORD='USER_PASSWORD' 
+LINE_TOKEN='Channel Access Token'
+LINE_HANDLER="Channel Secret"
 
 def get_connection():
     connection=pymysql.connect(
