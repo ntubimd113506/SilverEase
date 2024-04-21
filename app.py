@@ -31,19 +31,34 @@ def callback():
     return 'OK'
 
 @handler.add(MessageEvent, message=TextMessage)
-def add_user_to_database(MemID, MemName, event):
+def handle_message(event):
+    # 獲取使用者的 ID
+    user_id = event.source.user_id
 
-    MemID = event.source.user_id
-    profile = line_bot_api.get_profile(MemID)
-    MemName = profile.display_name
+    # 獲取使用者的資訊，包括名稱
+    profile = line_bot_api.get_profile(user_id)
+    user_name = profile.display_name
 
+    # 將使用者資料加入資料庫
+    add_user_to_database(user_id, user_name)
+
+    # 回應使用者，包括使用者名稱和 ID
+    line_bot_api.reply_message(
+        event.reply_token,
+        TextSendMessage(text="你好，{}！你的使用者 ID 是：{}".format(user_name, user_id))
+    )
+
+def add_user_to_database(user_id, user_name):
     # 連接到 SQLite 資料庫
-    conn = db.get_connection()
+    conn = sqlite3.connect('your_database.db')
+    cursor = conn.cursor()
 
     # 定義 SQL 指令，插入使用者資料
-    cursor = conn.cursor()
-    cursor.execute("INSERT INTO User (MemID, MemName) VALUES (%s, %s)",
-                (MemID, MemName))
+    sql = '''INSERT OR REPLACE INTO Users (MemID, MemName) VALUES (?, ?)'''
+    data = (user_id, user_name)
+
+    # 執行 SQL 指令
+    cursor.execute(sql, data)
 
     # 儲存變更
     conn.commit()
@@ -51,11 +66,32 @@ def add_user_to_database(MemID, MemName, event):
     # 關閉資料庫連線
     conn.close()
 
-    # 回應使用者，包括使用者名稱
-    line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text="你好，{}！你的使用者 ID 是：{}".format(MemID, MemName))
-    )
+# @handler.add(MessageEvent, message=TextMessage)
+# def add_user_to_database(MemID, MemName, event):
+
+#     MemID = event.source.user_id
+#     profile = line_bot_api.get_profile(MemID)
+#     MemName = profile.display_name
+
+#     # 連接到 SQLite 資料庫
+#     conn = db.get_connection()
+
+#     # 定義 SQL 指令，插入使用者資料
+#     cursor = conn.cursor()
+#     cursor.execute("INSERT INTO User (MemID, MemName) VALUES (%s, %s)",
+#                 (MemID, MemName))
+
+#     # 儲存變更
+#     conn.commit()
+
+#     # 關閉資料庫連線
+#     conn.close()
+
+#     # 回應使用者，包括使用者名稱
+#     line_bot_api.reply_message(
+#         event.reply_token,
+#         TextSendMessage(text="你好，{}！你的使用者 ID 是：{}".format(MemID, MemName))
+#     )
 
 
 
