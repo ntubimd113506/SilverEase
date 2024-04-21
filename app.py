@@ -1,4 +1,5 @@
 import requests, json
+import sqlite3
 from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
@@ -30,7 +31,11 @@ def callback():
     return 'OK'
 
 @handler.add(MessageEvent, message=TextMessage)
-def handle_message(event):
+def add_user_to_database(user_id, user_name, event):
+    # 連接到 SQLite 資料庫
+    conn = sqlite3.connect(db)
+    cursor = conn.cursor()
+
     # 獲取使用者的 ID
     user_id = event.source.user_id
 
@@ -38,11 +43,38 @@ def handle_message(event):
     profile = line_bot_api.get_profile(user_id)
     user_name = profile.display_name
 
+    # 定義 SQL 指令，插入使用者資料
+    sql = '''INSERT INTO User (MemID, MemName) VALUES (?, ?)'''
+    data = (user_id, user_name)
+
+    # 執行 SQL 指令
+    cursor.execute(sql, data)
+
+    # 儲存變更
+    conn.commit()
+
+    # 關閉資料庫連線
+    conn.close()
+
     # 回應使用者，包括使用者名稱
     line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text="你好，{}！你的使用者 ID 是：{}".format(user_name, user_id))
     )
+
+# def handle_message(event):
+#     # 獲取使用者的 ID
+#     user_id = event.source.user_id
+
+#     # 獲取使用者的資訊，包括名稱
+#     profile = line_bot_api.get_profile(user_id)
+#     user_name = profile.display_name
+
+#     # 回應使用者，包括使用者名稱
+#     line_bot_api.reply_message(
+#         event.reply_token,
+#         TextSendMessage(text="你好，{}！你的使用者 ID 是：{}".format(user_name, user_id))
+#     )
 
 '''主動訊息傳送測試
 @app.route("/sent")
