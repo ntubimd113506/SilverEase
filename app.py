@@ -31,11 +31,12 @@ def callback():
     return 'OK'
 
 @handler.add(MessageEvent, message=TextMessage)
-def add_user_to_database(user_id, user_name):
+def add_user_to_database(MemID, MemName, event):
 
-    MemID = request.form.get('MemID')
-    MemName = request.form.get('MemName')
-
+    MemID = event.source.user_id
+    profile = line_bot_api.get_profile(MemID)
+    MemName = profile.display_name
+    
     # 連接到 SQLite 資料庫
     conn = db.get_connection()
 
@@ -50,19 +51,25 @@ def add_user_to_database(user_id, user_name):
     # 關閉資料庫連線
     conn.close()
 
-def handle_message(event):
-    # 獲取使用者的 ID
-    user_id = event.source.user_id
-
-    # 獲取使用者的資訊，包括名稱
-    profile = line_bot_api.get_profile(user_id)
-    user_name = profile.display_name
-
-    # 回應使用者，包括使用者名稱
+    #回應使用者，包括使用者名稱
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text="你好，{}！你的使用者 ID 是：{}".format(user_name, user_id))
+        TextSendMessage(text="你好，{}！你的使用者 ID 是：{}".format(MemName, MemID))
     )
+
+# def handle_message(event):
+#     # 獲取使用者的 ID
+#     MemID = event.source.user_id
+
+#     # 獲取使用者的資訊，包括名稱
+#     profile = line_bot_api.get_profile(MemID)
+#     MemName = profile.display_name
+
+#     # 回應使用者，包括使用者名稱
+#     line_bot_api.reply_message(
+#         event.reply_token,
+#         TextSendMessage(text="你好，{}！你的使用者 ID 是：{}".format(MemName, MemID))
+#     )
 
 '''主動訊息傳送測試
 @app.route("/sent")
