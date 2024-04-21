@@ -1,5 +1,6 @@
 wfastcgi.py
 lineToken.py
+db.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
