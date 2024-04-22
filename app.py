@@ -5,6 +5,7 @@ from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 from utlis import db
+from services.date.app import date_bp
 
 app = Flask(__name__)
 
@@ -15,6 +16,8 @@ handler = WebhookHandler(db.LINE_HANDLER)
 @app.route("/")
 def index():
     return "Here is SilverEase"
+
+app.register_blueprint(date_bp, url_prefix='/date')
 
 @app.route("/callback", methods=['POST'])
 def callback():
