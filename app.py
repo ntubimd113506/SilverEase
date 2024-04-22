@@ -1,5 +1,5 @@
 import requests, json
-import pymysql
+import sqlite3
 from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
@@ -30,105 +30,46 @@ def callback():
 
     return 'OK'
 
-# @handler.add(MessageEvent, message=TextMessage)
-# def handle_message(event):
-#     # 獲取使用者的 ID
-#     user_id = event.source.user_id
-
-#     # 獲取使用者的資訊，包括名稱
-#     profile = line_bot_api.get_profile(user_id)
-#     user_name = profile.display_name
-
-#     # 將使用者資料加入資料庫
-#     add_user_to_database(user_id, user_name)
-
-#     # 回應使用者，包括使用者名稱和 ID
-#     line_bot_api.reply_message(
-#         event.reply_token,
-#         TextSendMessage(text="你好，{}！你的使用者 ID 是：{}".format(user_name, user_id))
-#     )
-
-# def add_user_to_database(user_id, user_name):
-#     # 連接到 SQLite 資料庫
-#     conn = sqlite3.connect('your_database.db')
-#     cursor = conn.cursor()
-
-#     # 定義 SQL 指令，插入使用者資料
-#     sql = '''INSERT OR REPLACE INTO User (MemID, MemName) VALUES (?, ?)'''
-#     data = (user_id, user_name)
-
-#     # 執行 SQL 指令
-#     cursor.execute(sql, data)
-
-#     # 儲存變更
-#     conn.commit()
-
-#     # 關閉資料庫連線
-#     conn.close()
-
 @handler.add(MessageEvent, message=TextMessage)
 def add_user_to_database(MemID, MemName, event):
-    
-    conn = pymysql.connect(
-        host=db.DB_HOST,
-        user=db.USER_NAME,
-        password=db.USER_PASSWORD,
-        database=db.HOST_DB_NAME,
-        cursorclass=pymysql.cursors.DictCursor
-    )
 
-    try:
-        with conn.cursor() as cursor:
-            # 定義 SQL 指令，插入使用者資料
-            sql = '''INSERT INTO User (MemID, MemName) VALUES (%s, %s)'''
-            data = (MemID, MemName)
-            # 執行 SQL 指令
-            cursor.execute(sql, data)
-
-        # 儲存變更
-        conn.commit()
-    finally:
-        # 關閉資料庫連線
-        conn.close()
-
-# 假設你從 Line Bot 中獲取到使用者的 ID 和名稱
     MemID = event.source.user_id
     profile = line_bot_api.get_profile(MemID)
     MemName = profile.display_name
+    
+    # 連接到 SQLite 資料庫
+    conn = db.get_connection()
 
-# 呼叫函式將使用者資料加入資料庫
-    add_user_to_database(MemID, MemName)
+    # 定義 SQL 指令，插入使用者資料
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO User (MemID, MemName) VALUES (%s, %s)",
+                (MemID, MemName))
 
-    # 回應使用者，包括使用者名稱
+    # 儲存變更
+    conn.commit()
+
+    # 關閉資料庫連線
+    conn.close()
+
+    #回應使用者，包括使用者名稱
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text="你好，{}！你的使用者 ID 是：{}".format(MemID, MemName))
+        TextSendMessage(text="你好，{}！你的使用者 ID 是：{}".format(MemName, MemID))
     )
 
+# def handle_message(event):
+#     # 獲取使用者的 ID
+#     MemID = event.source.user_id
 
-    # # 連接到 SQLite 資料庫
-    # conn = db.get_connection()
-    # cursor = conn.cursor()
-    # with conn.cursor() as cursor:
+#     # 獲取使用者的資訊，包括名稱
+#     profile = line_bot_api.get_profile(MemID)
+#     MemName = profile.display_name
 
-    # # 定義 SQL 指令，插入使用者資料
-    # cursor.execute("INSERT INTO User (MemID, MemName) VALUES (%s, %s)",
-    #             (MemID, MemName))
-
-    # # 儲存變更
-    # conn.commit()
-
-    # finally:
-    # # 關閉資料庫連線
-    # conn.close()
-
-    # # 回應使用者，包括使用者名稱
-    # line_bot_api.reply_message(
-    #     event.reply_token,
-    #     TextSendMessage(text="你好，{}！你的使用者 ID 是：{}".format(MemID, MemName))
-    # )
-
-
+#     # 回應使用者，包括使用者名稱
+#     line_bot_api.reply_message(
+#         event.reply_token,
+#         TextSendMessage(text="你好，{}！你的使用者 ID 是：{}".format(MemName, MemID))
+#     )
 
 '''主動訊息傳送測試
 @app.route("/sent")
