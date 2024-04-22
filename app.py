@@ -51,6 +51,7 @@ def add_user_to_database(MemID, MemName):
     cursor.execute('INSERT INTO User (MemID, MemName) VALUES (%s, %s)', (MemID, MemName))
     conn.commit()
     conn.close()
+    add_user_to_database(MemID, MemName)
 
 
 '''主動訊息傳送測試
