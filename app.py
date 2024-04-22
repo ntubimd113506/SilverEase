@@ -46,13 +46,13 @@ def handle_message(event):
     )
 
 def add_user_to_database(MemID, MemName, event):
-    conn = pymysql.connect(
-        host=db.DB_HOST,
-        user=db.DB_USER,
-        password=db.DB_PASSWORD,
-        database=db.DB_NAME,
-        cursorclass=pymysql.cursors.DictCursor
-    )
+    # conn = pymysql.connect(
+    #     host=(db.DB_HOST),
+    #     user=(db.DB_USER),
+    #     password=(db.DB_PASSWORD),
+    #     database=(db.DB_NAME),
+    #     cursorclass=pymysql.cursors.DictCursor
+    # )
 
     try:
         MemID = event.source.user_id
@@ -60,12 +60,12 @@ def add_user_to_database(MemID, MemName, event):
         MemName = profile.display_name
   
         # 定義 SQL 指令，插入使用者資料
-        cursor = conn.cursor()
+        cursor = db.connection.cursor()
         cursor.execute('INSERT INTO User (MemID, MemName) VALUES (%s, %s)',(MemID, MemName))
 
-        conn.commit()
+        db.connection.commit()
     finally:
-        conn.close()
+        db.connection.close()
 
     # 呼叫函式將使用者資料加入資料庫
     add_user_to_database(MemID, MemName)
