@@ -45,15 +45,15 @@ def handle_message(event):
         TextSendMessage(text="你好，{}！你的使用者 ID 是：{}".format(MemName, MemID))
     )
 
-conn = pymysql.connect(
-    host=(db.DB_HOST),
-    user=(db.DB_USER),
-    password=(db.DB_PASSWORD),
-    database=(db.DB_NAME),
-    cursorclass=pymysql.cursors.DictCursor
-)
-
 def add_user_to_database(MemID, MemName, event):
+    conn = pymysql.connect(
+        host=(db.DB_HOST),
+        user=(db.DB_USER),
+        password=(db.DB_PASSWORD),
+        database=(db.DB_NAME),
+        cursorclass=pymysql.cursors.DictCursor
+    )
+
     try:
         MemID = event.source.user_id
         profile = line_bot_api.get_profile(MemID)
