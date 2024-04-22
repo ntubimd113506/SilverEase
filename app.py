@@ -54,12 +54,6 @@ def add_user_to_database(MemID, MemName, event):
     finally:
         # 關閉資料庫連線
         conn.close()
-        
-    #回應使用者，包括使用者名稱
-    line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text="你好，{}！你的使用者 ID 是：{}".format(MemName, MemID))
-    )
 
 # 假設你從 Line Bot 中獲取到使用者的 ID 和名稱
     MemID = event.source.user_id
@@ -68,6 +62,12 @@ def add_user_to_database(MemID, MemName, event):
 
     # 呼叫函式將使用者資料加入資料庫
     add_user_to_database(MemID, MemName)
+
+    #回應使用者，包括使用者名稱
+    line_bot_api.reply_message(
+        event.reply_token,
+        TextSendMessage(text="你好，{}！你的使用者 ID 是：{}".format(MemName, MemID))
+    )
     
 
 # def handle_message(event):
