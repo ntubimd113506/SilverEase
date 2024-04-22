@@ -46,13 +46,7 @@ def handle_message(event):
     )
 
 def add_user_to_database(MemID, MemName, event):
-    conn = pymysql.connect(
-        host=(db.DB_HOST),
-        user=(db.DB_USER),
-        password=(db.DB_PASSWORD),
-        database=(db.DB_NAME),
-        cursorclass=pymysql.cursors.DictCursor
-    )
+    conn = db.get_connection()
 
     try:
         MemID = event.source.user_id
@@ -64,6 +58,7 @@ def add_user_to_database(MemID, MemName, event):
         cursor.execute('INSERT INTO User (MemID, MemName) VALUES (%s, %s)',(MemID, MemName))
 
         conn.commit()
+        
     finally:
         conn.close()
 
