@@ -45,30 +45,35 @@ def handle_message(event):
         TextSendMessage(text="你好，{}！你的使用者 ID 是：{}".format(MemName, MemID))
     )
 
-def add_user_to_database(MemID, MemName, event):
-    # conn = pymysql.connect(
-    #     host=(db.DB_HOST),
-    #     user=(db.DB_USER),
-    #     password=(db.DB_PASSWORD),
-    #     database=(db.DB_NAME),
-    #     cursorclass=pymysql.cursors.DictCursor
-    # )
+conn = pymysql.connect(
+    host=(db.DB_HOST),
+    user=(db.DB_USER),
+    password=(db.DB_PASSWORD),
+    database=(db.DB_NAME),
+    cursorclass=pymysql.cursors.DictCursor
+)
 
+def add_user_to_database(MemID, MemName, event):
     try:
         MemID = event.source.user_id
         profile = line_bot_api.get_profile(MemID)
         MemName = profile.display_name
   
         # 定義 SQL 指令，插入使用者資料
-        cursor = db.connection.cursor()
+        cursor = conn.cursor()
         cursor.execute('INSERT INTO User (MemID, MemName) VALUES (%s, %s)',(MemID, MemName))
 
-        db.connection.commit()
+        conn.commit()
     finally:
-        db.connection.close()
+        conn.close()
 
     # 呼叫函式將使用者資料加入資料庫
     add_user_to_database(MemID, MemName)
+
+    line_bot_api.reply_message(
+        event.reply_token,
+        TextSendMessage(text="已加入資料庫")
+    )
 
 
 '''主動訊息傳送測試
