@@ -45,12 +45,16 @@ def handle_message(event):
         TextSendMessage(text="你好，{}！你的使用者 ID 是：{}".format(MemName, MemID))
     )
 
-def add_user_to_database(MemID, MemName):
+def add_user_to_database(MemID, MemName, event):
     conn = db.get_connection()
     cursor = conn.cursor()
     cursor.execute('INSERT INTO User (MemID, MemName) VALUES (%s, %s)', (MemID, MemName))
     conn.commit()
     conn.close()
+
+    MemID = event.source.user_id
+    profile = line_bot_api.get_profile(MemID)
+    MemName = profile.display_name
     add_user_to_database(MemID, MemName)
 
 
