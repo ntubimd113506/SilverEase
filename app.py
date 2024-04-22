@@ -55,24 +55,18 @@ def add_user_to_database(event):
     )
 
     try:
-        with conn.cursor() as cursor:
-            # 定義 SQL 指令，插入使用者資料
-            sql = '''INSERT INTO User (MemID, MemName) VALUES (%s, %s)'''
-            data = (MemID, MemName)
+        MemID = event.source.user_id
+        profile = line_bot_api.get_profile(MemID)
+        MemName = profile.display_name
 
-            # 執行 SQL 指令
-            cursor.execute(sql, data)
+        
+        # 定義 SQL 指令，插入使用者資料
+        cursor = conn.cursor()
+        cursor.execute('INSERT INTO User (MemID, MemName) VALUES (%s, %s)',(MemID, MemName))
 
-        # 儲存變更
         conn.commit()
     finally:
-        # 關閉資料庫連線
         conn.close()
-
-# 假設你從 Line Bot 中獲取到使用者的 ID 和名稱
-    MemID = event.source.user_id
-    profile = line_bot_api.get_profile(MemID)
-    MemName = profile.display_name
 
     # 呼叫函式將使用者資料加入資料庫
     add_user_to_database(MemID, MemName)
