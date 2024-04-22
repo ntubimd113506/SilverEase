@@ -31,40 +31,6 @@ def callback():
     return 'OK'
 
 @handler.add(MessageEvent, message=TextMessage)
-# def add_user_to_database(MemID, MemName, event):
-#     conn = pymysql.connect(
-#         host=db.DB_HOST,
-#         user=db.DB_USER,
-#         password=db.DB_PASSWORD,
-#         database=db.DB_NAME,
-#         cursorclass=pymysql.cursors.DictCursor
-#     )
-
-#     try:
-#         with conn.cursor() as cursor:
-#             # 定義 SQL 指令，插入使用者資料
-#             sql = '''INSERT INTO Users (MemID, MemName) VALUES (%s, %s)'''
-#             data = (MemID, MemName)
-
-#             # 執行 SQL 指令
-#             cursor.execute(sql, data)
-
-#         # 儲存變更
-#         conn.commit()
-#     finally:
-#         # 關閉資料庫連線
-#         conn.close()
-
-# # 假設你從 Line Bot 中獲取到使用者的 ID 和名稱
-#     MemID = event.source.user_id
-#     profile = line_bot_api.get_profile(MemID)
-#     MemName = profile.display_name
-
-#     # 呼叫函式將使用者資料加入資料庫
-#     add_user_to_database(MemID, MemName)
-
-    
-
 def handle_message(event):
     # 獲取使用者的 ID
     MemID = event.source.user_id
@@ -78,6 +44,40 @@ def handle_message(event):
         event.reply_token,
         TextSendMessage(text="你好，{}！你的使用者 ID 是：{}".format(MemName, MemID))
     )
+
+def add_user_to_database(event):
+    conn = pymysql.connect(
+        host=db.DB_HOST,
+        user=db.DB_USER,
+        password=db.DB_PASSWORD,
+        database=db.DB_NAME,
+        cursorclass=pymysql.cursors.DictCursor
+    )
+
+    try:
+        with conn.cursor() as cursor:
+            # 定義 SQL 指令，插入使用者資料
+            sql = '''INSERT INTO User (MemID, MemName) VALUES (%s, %s)'''
+            data = (MemID, MemName)
+
+            # 執行 SQL 指令
+            cursor.execute(sql, data)
+
+        # 儲存變更
+        conn.commit()
+    finally:
+        # 關閉資料庫連線
+        conn.close()
+
+# 假設你從 Line Bot 中獲取到使用者的 ID 和名稱
+    MemID = event.source.user_id
+    profile = line_bot_api.get_profile(MemID)
+    MemName = profile.display_name
+
+    # 呼叫函式將使用者資料加入資料庫
+    add_user_to_database(MemID, MemName)
+
+
 
 '''主動訊息傳送測試
 @app.route("/sent")
