@@ -52,10 +52,6 @@ def handle_message(event):
         TextSendMessage(text="你好，{}！你的使用者 ID 是：{}".format(MemName, MemID))
     )
 
-def handle_message(event):
-    MemID = event.source.user_id
-    profile = line_bot_api.get_profile(MemID)
-    MemName = profile.display_name
     handle_message(MemID, MemName)
 
 
