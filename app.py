@@ -31,20 +31,6 @@ def callback():
     return 'OK'
 
 @handler.add(MessageEvent, message=TextMessage)
-def handle_message(event):
-    # 獲取使用者的 ID
-    MemID = event.source.user_id
-
-    # 獲取使用者的資訊，包括名稱
-    profile = line_bot_api.get_profile(MemID)
-    MemName = profile.display_name
-
-    # 回應使用者，包括使用者名稱
-    line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text="你好，{}！你的使用者 ID 是：{}".format(MemName, MemID))
-    )
-
 def add_user_to_database(event):
     conn = pymysql.connect(
         host=db.DB_HOST,
@@ -53,23 +39,29 @@ def add_user_to_database(event):
         database=db.DB_NAME,
         cursorclass=pymysql.cursors.DictCursor
     )
+    # 獲取使用者的 ID
+    MemID = event.source.user_id
 
-    try:
-        MemID = event.source.user_id
-        profile = line_bot_api.get_profile(MemID)
-        MemName = profile.display_name
-
-        
+    # 獲取使用者的資訊，包括名稱
+    profile = line_bot_api.get_profile(MemID)
+    MemName = profile.display_name
         # 定義 SQL 指令，插入使用者資料
-        cursor = conn.cursor()
-        cursor.execute('INSERT INTO User (MemID, MemName) VALUES (%s, %s)',(MemID, MemName))
+    cursor = conn.cursor()
+    cursor.execute('INSERT INTO User (MemID, MemName) VALUES (%s, %s)',(MemID, MemName))
 
-        conn.commit()
-    finally:
-        conn.close()
+    conn.commit()
+
+    conn.close()
 
     # 呼叫函式將使用者資料加入資料庫
     add_user_to_database(MemID, MemName)
+
+    # 回應使用者，包括使用者名稱
+    line_bot_api.reply_message(
+        event.reply_token,
+        TextSendMessage(text="你好，{}！你的使用者 ID 是：{}".format(MemName, MemID))
+    )
+
 
 
 
