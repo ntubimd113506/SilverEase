@@ -3,16 +3,16 @@ from flask import Blueprint
 from linebot import LineBotApi, WebhookHandler
 from utlis import db
 
-line_bot_api = LineBotApi(db.LINE_TOKEN)
-handler = WebhookHandler(db.LINE_HANDLER)
-
 # 服務藍圖
 identity_bp = Blueprint('identity_bp', __name__)
 
+line_bot_api = LineBotApi(db.LINE_TOKEN)
+handler = WebhookHandler(db.LINE_HANDLER)
+
 #選擇身分
-# @identity_bp.route('/identity')
-# def identity():
-#     return render_template('identity.html') 
+@identity_bp.route('/identity')
+def identity():
+    return render_template('identity.html') 
 
 #老摳摳
 @identity_bp.route('/old', methods=['GET'])

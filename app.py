@@ -5,6 +5,7 @@ from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 from utlis import db
+
 from services.identity.app import identity_bp
 
 app = Flask(__name__)
@@ -40,10 +41,8 @@ def handle_message(event):
         TextSendMessage(text="請先在設定中設定您的基本資料！")
     )
 
-# app.register_blueprint(identity_bp, url_prefix='/identity')
-@identity_bp.route('/identity',methods=['GET'])
-def identity():
-    return render_template('identity.html') 
+app.register_blueprint(identity_bp, url_prefix='/')
 
-if __name__ == "__main__":
+
+if __name__ == '__main__':
     app.run()
