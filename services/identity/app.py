@@ -37,6 +37,7 @@ def old(event):
 
     conn.commit()
     conn.close()
+    return render_template('old.html') 
 
 
 #年輕的小夥子
