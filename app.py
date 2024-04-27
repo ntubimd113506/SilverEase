@@ -47,7 +47,7 @@ def handle_message(event):
         TextSendMessage(text="請先在設定中設定您的基本資料！")
     )
 
-    @old.route('/old', methods=['GET'])
+    @old.route('/identity/old', methods=['GET'])
     def old():
         # 獲取使用者的 ID
         MemID = event.source.user_id
@@ -72,7 +72,7 @@ def handle_message(event):
         return render_template('old.html')
 
 
-    @young.route('/young', methods=['GET'])
+    @young.route('/identity/young', methods=['GET'])
     def young():
         MemID = event.source.user_id
 
