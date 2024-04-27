@@ -5,6 +5,7 @@ from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 from utlis import db
+from services.identity.app import identity_bp
 
 app = Flask(__name__)
 
@@ -33,44 +34,15 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
 
-    # 獲取使用者的 ID
-    MemID = event.source.user_id
-
-    # 獲取使用者的資訊，包括名稱
-    profile = line_bot_api.get_profile(MemID)
-    MemName = profile.display_name
-
-    conn = db.get_connection()
-    cursor = conn.cursor()
-    cursor.execute('INSERT INTO User (MemID, MemName) VALUES (%s, %s)', (MemID, MemName))
-    conn.commit()
-    conn.close()
-
     # 回應使用者，包括使用者名稱
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text="你好，{}！你的使用者 ID 是：{}".format(MemName, MemID))
+        TextSendMessage(text="請先在設定中設定您的基本資料！")
     )
 
+app.register_blueprint(identity_bp, url_prefix='/old')
 
-'''主動訊息傳送測試
-@app.route("/sent")
-def sent_mess():
-    USER_LINE_ID='USER_LINE_ID'
-    headers = {'Authorization':f'Bearer {db.LINE_TOKEN}','Content-Type':'application/json'}
-    body = {
-        'to':USER_LINE_ID,
-        'messages':[{
-                'type': 'text',
-                'text': 'hello'
-            }]
-        }
-    # 向指定網址發送 request
-    req = requests.request('POST', 'https://api.line.me/v2/bot/message/push',headers=headers,data=json.dumps(body).encode('utf-8'))
-    # 印出得到的結果
-    print(req.text)
-    return "GOOD"
-'''
+
 
 if __name__ == "__main__":
     app.run()

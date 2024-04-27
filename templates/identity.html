@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>選擇按鈕</title>
+</head>
+<body>
+    <h2>請選擇一個選項：</h2>
+    <input type="radio" id="old" name="option" value="old" onclick="old()">
+    <label for="old">我是聖誕老摳摳</label><br>
+    <input type="radio" id="young" name="option" value="young" onclick="young()">
+    <label for="old">我是年輕小夥子</label><br>
+</body>
+<script>
+    function old() {
+        // 跳轉到顯示抓取資料庫資料的 HTML 頁面
+        window.location.href = "old.html";
+    }
+
+    function young() {
+        // 跳轉到輸入資料的 HTML 頁面
+        window.open("young.html", "_blank");
+    }
+</script>
+</html>
