@@ -7,12 +7,12 @@ line_bot_api = LineBotApi(db.LINE_TOKEN)
 handler = WebhookHandler(db.LINE_HANDLER)
 
 # 服務藍圖
-identity_bp = Blueprint('old_bp', __name__)
+identity_bp = Blueprint('identity_bp', __name__)
 
 #選擇身分
-@identity_bp.route('/old')
-def identity():
-    return render_template('customer_read_form.html') 
+# @identity_bp.route('/identity')
+# def identity():
+#     return render_template('identity.html') 
 
 #老摳摳
 @identity_bp.route('/old', methods=['GET'])

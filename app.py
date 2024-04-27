@@ -1,6 +1,6 @@
 import requests, json
 import pymysql
-from flask import Flask, request, abort
+from flask import Flask, request, abort, render_template
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
@@ -40,9 +40,10 @@ def handle_message(event):
         TextSendMessage(text="請先在設定中設定您的基本資料！")
     )
 
-app.register_blueprint(identity_bp, url_prefix='/old')
-
-
+# app.register_blueprint(identity_bp, url_prefix='/identity')
+@identity_bp.route('/identity',methods=['GET'])
+def identity():
+    return render_template('identity.html') 
 
 if __name__ == "__main__":
     app.run()
