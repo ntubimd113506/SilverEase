@@ -17,13 +17,20 @@ def identity():
 #老摳摳
 @identity_bp.route('/old', methods=['GET'])
 def old():
-    # 獲取使用者的 ID
-    global event
-    MemID = event.source.user_id
+    if request.headers.get('Content-Type') == 'application/json':
+        # 解析 JSON 格式的請求主體
+        payload = request.json
 
-    # 獲取使用者的資訊，包括名稱
-    profile = line_bot_api.get_profile(MemID)
-    MemName = profile.display_name
+        # 確認是否成功解析JSON數據
+        if payload and 'events' in payload:
+            events = payload['events']
+
+            # 遍歷每個事件
+            for event in events:
+                # 提取用戶 ID
+                MemID= event.get('source', {}).get('userId')
+                profile = line_bot_api.get_profile(MemID)
+                MemName = profile.display_name
 
     conn = db.get_connection()
     cursor = conn.cursor()
@@ -44,12 +51,20 @@ def old():
 #年輕的小夥子
 @identity_bp.route('/young', methods=['GET'])
 def young():
-    # 獲取使用者的 ID
-    MemID = event.source.user_id
+    if request.headers.get('Content-Type') == 'application/json':
+        # 解析 JSON 格式的請求主體
+        payload = request.json
 
-    # 獲取使用者的資訊，包括名稱
-    profile = line_bot_api.get_profile(MemID)
-    MemName = profile.display_name
+        # 確認是否成功解析JSON數據
+        if payload and 'events' in payload:
+            events = payload['events']
+
+            # 遍歷每個事件
+            for event in events:
+                # 提取用戶 ID
+                MemID= event.get('source', {}).get('userId')
+                profile = line_bot_api.get_profile(MemID)
+                MemName = profile.display_name
 
     try:
         #取得其他參數
