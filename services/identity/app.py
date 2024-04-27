@@ -14,13 +14,12 @@ handler = WebhookHandler(db.LINE_HANDLER)
 def identity():
     return render_template('identity.html') 
 
+
 #老摳摳
 @identity_bp.route('/old', methods=['GET'])
 def old():
-    event = request.json
-
     # 獲取使用者的 ID
-    MemID = event['events'][0]['source']['userId']
+    MemID = event.source.user_id
 
     # 獲取使用者的資訊，包括名稱
     profile = line_bot_api.get_profile(MemID)
@@ -45,10 +44,9 @@ def old():
 #年輕的小夥子
 @identity_bp.route('/young', methods=['GET'])
 def young():
-    event = request.json
+    MemID = event.source.user_id
 
-    # 獲取使用者的 ID
-    MemID = event['events'][0]['source']['userId']
+    # 獲取使用者的資訊，包括名稱
     profile = line_bot_api.get_profile(MemID)
     MemName = profile.display_name
 
