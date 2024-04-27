@@ -16,8 +16,9 @@ def identity():
 
 #老摳摳
 @identity_bp.route('/old', methods=['GET'])
-def old(event):
+def old():
     # 獲取使用者的 ID
+    global event
     MemID = event.source.user_id
 
     # 獲取使用者的資訊，包括名稱
@@ -42,7 +43,7 @@ def old(event):
 
 #年輕的小夥子
 @identity_bp.route('/young', methods=['GET'])
-def young(event):
+def young():
     # 獲取使用者的 ID
     MemID = event.source.user_id
 
@@ -68,3 +69,4 @@ def young(event):
 
     conn.commit()
     conn.close()
+    return render_template('young.html') 

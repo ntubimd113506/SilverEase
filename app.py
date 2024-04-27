@@ -35,13 +35,13 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
 
-    # 回應使用者，包括使用者名稱
+    # 回應使用者
     line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text="請先在設定中設定您的基本資料！")
     )
 
-app.register_blueprint(identity_bp, url_prefix='/')
+app.register_blueprint(identity_bp, url_prefix='/identity')
 
 
 if __name__ == '__main__':
