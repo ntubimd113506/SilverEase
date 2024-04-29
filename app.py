@@ -3,7 +3,7 @@ import pymysql
 from flask import Flask, request, abort, render_template
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
-from linebot.models import MessageEvent, TextMessage, TextSendMessage
+from linebot.models import *
 from utlis import db
 
 app = Flask(__name__)
@@ -18,7 +18,7 @@ def index():
 
 @app.route('/liff')
 def page():
-    return render_template('index.html', liffid = LIFF_ID)
+    return render_template('index.html', liffid = '2004699458-a7DORnXp')
 
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -36,25 +36,28 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
+    mtext = event.message.text
+    if mtext == 'aaa':
+        message = TemplateSendMessage(
+                alt_text='按鈕樣板',
+                template=ButtonsTemplate(
+                    thumbnail_image_url='https://i.imgur.com/4QfKuz1.png',  #顯示的圖片
+                    title='購買PIZZA',  #主標題
+                    text='請選擇：',  #副標題
+                    actions=[
+                        URITemplateAction(  #開啟網頁
+                            label='連結網頁',
+                            uri='https://liff.line.me/2004699458-a7DORnXp',
+                        ),
+                    ]
+                )
+            )
+        
+        try:
+            line_bot_api.reply_message(event.reply_token, message)
+        except:
+            line_bot_api.reply_message(event.reply_token,TextSendMessage(text='發生錯誤！'))
 
-    # 獲取使用者的 ID
-    MemID = event.source.user_id
-
-    # 獲取使用者的資訊，包括名稱
-    profile = line_bot_api.get_profile(MemID)
-    MemName = profile.display_name
-
-    conn = db.get_connection()
-    cursor = conn.cursor()
-    cursor.execute('INSERT INTO User (MemID, MemName) VALUES (%s, %s)', (MemID, MemName))
-    conn.commit()
-    conn.close()
-
-    # 回應使用者，包括使用者名稱
-    line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text="你好，{}！你的使用者 ID 是：{}".format(MemName, MemID))
-    )
 
 
 '''主動訊息傳送測試
