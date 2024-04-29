@@ -1,6 +1,6 @@
 import requests, json
 import pymysql
-from flask import Flask, request, abort
+from flask import Flask, request, abort, render_template
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
@@ -15,6 +15,10 @@ handler = WebhookHandler(db.LINE_HANDLER)
 @app.route("/")
 def index():
     return "Here is SilverEase"
+
+@app.route('/liff')
+def page():
+    return render_template('index.html', liffid = LIFF_ID)
 
 @app.route("/callback", methods=['POST'])
 def callback():
