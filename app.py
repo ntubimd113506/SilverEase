@@ -3,10 +3,9 @@ import pymysql
 from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
-from linebot.models import MessageEvent, TextMessage, TextSendMessage
+from linebot.models import MessageEvent, TextMessage, TextSendMessage, ConfirmTemplate, MessageAction
 from utlis import db
 
-from services.identity.app import identity_bp
 
 app = Flask(__name__)
 
@@ -32,18 +31,34 @@ def callback():
 
     return 'OK'
 
-@handler.add(MessageEvent, message=TextMessage)
-def handle_message(event):
-
-    # 回應使用者，包括使用者名稱
-    line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text="請先在設定中設定您的基本資料！")
+alt_text='ConfirmTemplate',
+template=ConfirmTemplate(
+        ext='設定',
+        actions=[
+            MessageAction(
+                label='好喔',
+                text='好喔'
+            ),
+            MessageAction(
+                label='好喔',
+                text='不好喔'
+            )
+        ]
     )
 
-app.register_blueprint(identity_bp, url_prefix='/identity')
+@handler.add(MessageEvent, message=TextMessage)
+def handle_message(event):
+    MemID = event.source.user_id
 
+    # 獲取使用者的資訊，包括名稱
+    profile = line_bot_api.get_profile(MemID)
+    MemName = profile.display_nam
 
+    # 回應使用者
+    # line_bot_api.reply_message(
+    #     event.reply_token,
+    #     TextSendMessage(text="請先在設定中設定您的基本資料！")
+    # )
 
 if __name__ == "__main__":
     app.run()
