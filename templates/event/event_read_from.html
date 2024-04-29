@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>測試</title>
+
 </head>
    
 <body>
@@ -12,37 +13,25 @@
         <div class="header">           
         </div>        
         
-        <!--~~~~~~~~~~~~~~~~~-->     
+        <!--~~~~~~~~~~~~~~~~~-->        
         <ul id="navigation">        
             <li><a href="/">返回主頁</a></li> 
         </ul>
         
         <!--~~~~~~~~~~~~~~~~~--> 
         <div class="content">
-            <h2>新增產品</h2>
+            <h2>查詢</h2>
 
-            <form action="/date/create" method="post" enctype="multipart/form-data">
+            <form action="/event/read" method="get">
                 <div class="form">
-                    <span class="name">名稱</span>
+                    <span class="name">編號</span>
                     <span class="value">
-                        <input type="text" name="Title" required>
-                    </span>
-                    <br/>
-
-                    <span class="name">日期</span>
-                    <span class="value">
-                        <input type="datetime" name="DateTime">
-                    </span>
-                    <br/>
-
-                    <span class="name">類型</span>
-                    <span class="value">
-                        <input type="text" name="Type">
+                        <input type="text" name="MemoID" required>
                     </span>
                     <br/>
 
                     <span class="name"></span>
-                    <span class="value"><input type="submit" value="新增" style="width:80px"></span>
+                    <span class="value"><input type="submit" value="查詢" style="width:80px"></span>
                 </div>
             </form>
                
@@ -50,8 +39,10 @@
         
         <!--~~~~~~~~~~~~~~~~~--> 
         <div class="footer">
+
         </div>  
-    </div>  
+    </div>
+   
 </body>
    
 </html>
