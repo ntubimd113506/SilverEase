@@ -3,7 +3,7 @@ import pymysql
 from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
-from linebot.models import MessageEvent, TextMessage, TemplateSendMessage, ConfirmTemplate, MessageAction
+from linebot.models import MessageEvent, TextMessage, TemplateSendMessage, ConfirmTemplate, MessageAction, TextSendMessage
 from utlis import db
 
 
@@ -13,21 +13,21 @@ app = Flask(__name__)
 line_bot_api = LineBotApi(db.LINE_TOKEN)
 handler = WebhookHandler(db.LINE_HANDLER, TemplateSendMessage(
 
-alt_text='ConfirmTemplate',
-template=ConfirmTemplate(
-        ext='設定',
-        actions=[
-            MessageAction(
-                label='好喔',
-                text='好喔'
-            ),
-            MessageAction(
-                label='好喔',
-                text='不好喔'
-            )
-        ]
-    )
-))
+    alt_text='ConfirmTemplate',
+    template=ConfirmTemplate(
+            text='設定身分',
+            actions=[
+                MessageAction(
+                    label='好喔',
+                    text='好喔'
+                ),
+                MessageAction(
+                    label='好喔',
+                    text='不好喔'
+                )
+            ]
+        )
+    ))
 
 @app.route("/")
 def index():
@@ -56,11 +56,11 @@ def handle_message(event):
     profile = line_bot_api.get_profile(MemID)
     MemName = profile.display_nam
 
-    # 回應使用者
-    # line_bot_api.reply_message(
-    #     event.reply_token,
-    #     TextSendMessage(text="請先在設定中設定您的基本資料！")
-    # )
+    #回應使用者
+    line_bot_api.reply_message(
+        event.reply_token,
+        TextSendMessage(text="你好，{}！你的使用者 ID 是：{}".format(MemID, MemName))
+    )
 
 if __name__ == "__main__":
     app.run()
