@@ -1,5 +1,65 @@
-<mxfile host="app.diagrams.net" modified="2024-04-30T01:10:42.733Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 Edg/124.0.0.0" etag="UQEi9LBHdpKZfColrYc7" version="24.3.1" type="github">
+<mxfile host="app.diagrams.net" modified="2024-04-30T01:44:53.309Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 Edg/124.0.0.0" etag="oKyuky4J9ameUV46x3ye" version="24.3.1" type="github" pages="2">
   <diagram name="第 1 页" id="uWhcbxX0WI0a9IPNEBtu">
+    <mxGraphModel dx="770" dy="441" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="uvgSblhkvpiHy0rgyIWD-2" value="&lt;div style=&quot;padding-bottom: 0px;&quot;&gt;&lt;span style=&quot;font-size: 14px; font-family: &amp;quot;Noto Sans TC&amp;quot;; background-color: initial;&quot;&gt;照顧者&lt;/span&gt;&lt;/div&gt;" style="html=1;dashed=0;whiteSpace=wrap;strokeWidth=3;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;align=center;" vertex="1" parent="1">
+          <mxGeometry x="390" y="190" width="100" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="uvgSblhkvpiHy0rgyIWD-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.75;entryY=1;entryDx=0;entryDy=0;exitX=0.708;exitY=0.083;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="uvgSblhkvpiHy0rgyIWD-6" target="uvgSblhkvpiHy0rgyIWD-2">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="459" y="410" as="sourcePoint" />
+            <mxPoint x="466" y="290" as="targetPoint" />
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uvgSblhkvpiHy0rgyIWD-15" value="群組代號&#xa;提醒事項&#xa;定位狀態" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="uvgSblhkvpiHy0rgyIWD-7">
+          <mxGeometry x="-0.0186" y="2" relative="1" as="geometry">
+            <mxPoint x="7" y="18" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uvgSblhkvpiHy0rgyIWD-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.288;entryY=0.037;entryDx=0;entryDy=0;exitX=0.25;exitY=1;exitDx=0;exitDy=0;curved=0;flowAnimation=0;entryPerimeter=0;" edge="1" parent="1" source="uvgSblhkvpiHy0rgyIWD-2" target="uvgSblhkvpiHy0rgyIWD-6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="uvgSblhkvpiHy0rgyIWD-13" value="會員資料&#xa;提醒事項" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];spacing=2;labelPosition=center;verticalLabelPosition=middle;spacingLeft=0;spacingBottom=0;spacingRight=0;" vertex="1" connectable="0" parent="uvgSblhkvpiHy0rgyIWD-9">
+          <mxGeometry x="-0.3582" y="2" relative="1" as="geometry">
+            <mxPoint x="-7" y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uvgSblhkvpiHy0rgyIWD-6" value="0&lt;div style=&quot;line-height: 180%;&quot;&gt;SilverEase&lt;/div&gt;" style="shape=ellipse;html=1;dashed=0;whiteSpace=wrap;perimeter=ellipsePerimeter;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;fontFamily=Noto Sans TC;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DNoto%2BSans%2BTC;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="380" y="440" width="120" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="uvgSblhkvpiHy0rgyIWD-16" value="&lt;div style=&quot;padding-bottom: 0px;&quot;&gt;&lt;font face=&quot;Noto Sans TC&quot;&gt;&lt;span style=&quot;font-size: 14px;&quot;&gt;長者&lt;/span&gt;&lt;/font&gt;&lt;/div&gt;" style="html=1;dashed=0;whiteSpace=wrap;strokeWidth=3;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;align=center;" vertex="1" parent="1">
+          <mxGeometry x="390" y="710" width="100" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="uvgSblhkvpiHy0rgyIWD-17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.25;entryY=0;entryDx=0;entryDy=0;exitX=0.294;exitY=0.954;exitDx=0;exitDy=0;curved=0;flowAnimation=0;exitPerimeter=0;" edge="1" parent="1" source="uvgSblhkvpiHy0rgyIWD-6" target="uvgSblhkvpiHy0rgyIWD-16">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="414.76" y="560.04" as="sourcePoint" />
+            <mxPoint x="414.76" y="714.04" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uvgSblhkvpiHy0rgyIWD-18" value="提醒事項&#xa;語音回覆" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];spacing=2;labelPosition=center;verticalLabelPosition=middle;spacingLeft=0;spacingBottom=0;spacingRight=0;" vertex="1" connectable="0" parent="uvgSblhkvpiHy0rgyIWD-17">
+          <mxGeometry x="-0.3582" y="2" relative="1" as="geometry">
+            <mxPoint x="-7" y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uvgSblhkvpiHy0rgyIWD-19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.706;entryY=0.962;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.75;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="1" source="uvgSblhkvpiHy0rgyIWD-16" target="uvgSblhkvpiHy0rgyIWD-6">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="464" y="730" as="sourcePoint" />
+            <mxPoint x="464.76" y="560.04" as="targetPoint" />
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uvgSblhkvpiHy0rgyIWD-20" value="會員資料&#xa;IOT資料&#xa;定位狀態&#xa;提醒事項&#xa;語音請求" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="uvgSblhkvpiHy0rgyIWD-19">
+          <mxGeometry x="-0.0186" y="2" relative="1" as="geometry">
+            <mxPoint x="7" y="26" as="offset" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="0TkesjUFlSomgJLypFSy" name="第 2 页">
     <mxGraphModel dx="1386" dy="793" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
