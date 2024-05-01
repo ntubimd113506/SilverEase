@@ -75,40 +75,14 @@
             if (radioButton1.checked) {
                 newWindow.style.display = "block";
                 newWindow2.style.display = "none";
-
-                conn = db.get_connection()
-                cursor = conn.cursor()
-
-                cursor.execute('INSERT INTO User (MemID, MemName) VALUES (%s, %s)', (MemID, MemName))
-                cursor.execute('SELECT GroupID FROM Group where GroupID = MemID')
-                data = cursor.fetchone()
-                print(data)  
-                conn.commit()
-                conn.close()              
             } 
             
             if (radioButton2.checked) {
                 newWindow.style.display = "none";
                 newWindow2.style.display = "block";
-
-                conn = db.get_connection()
-                cursor = conn.cursor()
-                /*取得其他參數*/
-                subno = request.form.get('SubUserID')
-                    
-                print(subno)
-
-                /*資料加入資料庫*/
-                cursor.execute('INSERT INTO User (MemID, MemName) VALUES (%s, %s)', (MemID, MemName))
-                /*新增長輩編號*/
-                cursor.execute('INSERT INTO GroupLink (SubUserID) VALUES (%s)', (subno))
-                
-                conn.commit()
-                conn.close()  
-            }
+             }
         }
     </script>
-
 </body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
 <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>

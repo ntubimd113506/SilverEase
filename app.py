@@ -48,12 +48,51 @@ def page():
 def handle_message(event):
     mtext = event.message.text
     if mtext == 'identity':
+        if event.postback.data == 'old':
+            try:
+                conn = db.get_connection()
+                cursor = conn.cursor()
+                # 獲取使用者的資訊，包括名稱
+                MemID = event.source.user_id
+                profile = line_bot_api.get_profile(MemID)
+                MemName = profile.display_name
+                cursor.execute('INSERT INTO User (MemID, MemName) VALUES (%s, %s)', (MemID, MemName))
+
+                #取出MainUserID
+                cursor.execute('SELECT GroupID FROM Group where GroupID = MemID')
+
+                #取出資料
+                data = cursor.fetchone()
+                print(data)
+
+                conn.commit()
+                conn.close()
+
+                line_bot_api.reply_message(event.reply_token, TextSendMessage(text="資料已成功加入資料庫！"))
+            except Exception as e:
+                # 處理資料庫操作異常
+                print("An error occurred:", e)
+                line_bot_api.reply_message(event.reply_token, TextSendMessage(text="資料加入資料庫時發生錯誤！"))
+
+        elif event.postback.data == 'young':
+                conn = db.get_connection()
+                cursor = conn.cursor()
+                # 獲取使用者的資訊，包括名稱
+                MemID = event.source.user_id
+                profile = line_bot_api.get_profile(MemID)
+                MemName = profile.display_name
+                try:
+                    #取得其他參數
+                    subno = request.form.get('SubUserID')
+                    
+                finally:
+                    print(subno)
+                cursor.execute('INSERT INTO User (MemID, MemName) VALUES (%s, %s)', (MemID, MemName))
+                #新增長輩編號
+                cursor.execute('INSERT INTO GroupLink (SubUserID) VALUES (%s)', (subno))
+
         message = TemplateSendMessage(
                 alt_text='按鈕樣板',
-                # template=ButtonsTemplate(
-                #     thumbnail_image_url='https://i.imgur.com/4QfKuz1.png',  #顯示的圖片
-                #     title='購買PIZZA',  #主標題
-                #     text='請選擇：',  #副標題
                     actions=[
                         URITemplateAction(  #開啟網頁
                             label='連結網頁',
@@ -68,6 +107,7 @@ def handle_message(event):
             line_bot_api.reply_message(event.reply_token, message)
         except:
             line_bot_api.reply_message(event.reply_token,TextSendMessage(text='發生錯誤！'))
+
 
 if __name__ == "__main__":
     app.run()
