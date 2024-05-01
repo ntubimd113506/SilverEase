@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>選擇按鈕</title>
+    <style> /*視窗*/
+        .container {
+            text-align: center;
+        }
+        #new_window {
+            display: none;
+            border: 1px solid black;
+            width: 200px;
+            height: 50px;
+            margin-top: 30px;
+        }
+        #new_window2 {
+            display: none;
+            border: 1px solid black;
+            width: 200px;
+            height: 70px;
+            margin-top: 30px;
+        }
+    </style>
+
+    <style> /* 在<style>标签中添加 CSS 样式 */
+        .rounded-image {
+            border-radius: 50%;
+        }
+
+        .center-image {
+            margin: 0 auto;
+            display: block;
+        }
+        .shadowed-image {
+            display: block;
+            margin: 0 auto;
+            box-shadow: 5px 5px 10px #888888; /* 阴影效果 */
+        }
+    </style>
+</head>
+<body>
+    <div class="row" style="margin: 10px">
+        <div class="center-image">
+            <img id="myImage" src="" alt="圖片" class="rounded-image shadowed-image" width="300px" height="300px">
+            <h1 id="name" style="text-align: center;"> </h1>
+        </div>
+        
+    <h2>請選擇一個選項：</h2>
+    <input type="radio" id="old" name="options" onclick="openWindow()">
+    <label for="old">我是聖誕老摳摳</label><br>
+
+    <input type="radio" id="young" name="options" onclick="openWindow()">
+    <label for="young">我是年輕小夥子</label><br>
+
+    <div id="new_window">
+        <label for="input">您的長輩編號是：</label>
+        <input type="text" value="{{data[0]}}" readonly>
+    </div>
+
+    <div id="new_window2">
+    <label for="input">請輸入您的長輩編號：</label>
+    <br><input type="text" id="input" name="input">
+    <br><button type="submit">確認</button>
+    </div>
+
+    <script>
+        function openWindow() {
+            var radioButton1 = document.getElementById("old");
+            var radioButton2 = document.getElementById("young");
+            var newWindow = document.getElementById("new_window");
+            var newWindow2 = document.getElementById("new_window2");
+
+            if (radioButton1.checked) {
+                newWindow.style.display = "block";
+                newWindow2.style.display = "none";
+
+                conn = db.get_connection()
+                cursor = conn.cursor()
+
+                cursor.execute('INSERT INTO User (MemID, MemName) VALUES (%s, %s)', (MemID, MemName))
+                cursor.execute('SELECT GroupID FROM Group where GroupID = MemID')
+                data = cursor.fetchone()
+                print(data)  
+                conn.commit()
+                conn.close()              
+            } 
+            
+            if (radioButton2.checked) {
+                newWindow.style.display = "none";
+                newWindow2.style.display = "block";
+
+                conn = db.get_connection()
+                cursor = conn.cursor()
+                /*取得其他參數*/
+                subno = request.form.get('SubUserID')
+                    
+                print(subno)
+
+                /*資料加入資料庫*/
+                cursor.execute('INSERT INTO User (MemID, MemName) VALUES (%s, %s)', (MemID, MemName))
+                /*新增長輩編號*/
+                cursor.execute('INSERT INTO GroupLink (SubUserID) VALUES (%s)', (subno))
+                
+                conn.commit()
+                conn.close()  
+            }
+        }
+    </script>
+
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+<script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+    <script>
+        var MemID;
+        var MemName;
+        function initializeLiff(myLiffId) {
+            liff.init({
+                liffId: myLiffId
+            }).then(() => {
+                if (!liff.isLoggedIn()) {
+                    alert("用戶未登入");
+                    liff.login();
+                } else {
+                    // alert("用戶已登入");
+                    liff.getProfile()
+                        .then(profile => {
+                            MemName = profile.displayName;
+                            MemID = profile.userId;
+                            const imgElement = document.getElementById("myImage");
+                            document.getElementById("Memname").innerHTML = Memname;
+                            imgElement.src = picUrl;
+                        })
+                        .catch((err) => {
+                            console.log('error', err);
+                        });
+                }
+            }).catch((err) => {
+                console.log('初始化失敗', err);
+            });
+        }
+
+        /*按鈕資料確認*/
+        document.getElementById('old').addEventListener('change', function() {
+            if (this.checked) {
+                alert('確定您的身分為"長輩"嗎?');
+            }
+        });
+            
+        document.getElementById('young').addEventListener('change', function() {
+            if (this.checked) {
+                alert('確定您的身分為"子女"嗎?');
+            }
+        }); 
+
+        $(document).ready(function () {
+            initializeLiff('{{ liffid }}');  //接收傳遞的 liffid 參數
+            $('#sure').click(function (e) {  //按下確定鈕
+                pushMsg($('#MemID').val(), $('#MemName').val());
+            });
+        });
+    </script>
+</html>
