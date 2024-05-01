@@ -48,6 +48,20 @@ def page():
 def handle_message(event):
     mtext = event.message.text
     if mtext == 'identity':
+        message = TemplateSendMessage(
+        alt_text='按鈕樣板',
+        actions=[
+                PostbackTemplateAction(  # 按鈕回傳動作
+                    label='我是長輩',
+                    data='old'
+                ),
+                PostbackTemplateAction(  # 按鈕回傳動作
+                    label='我是年輕人',
+                    data='young',
+                    uri='https://liff.line.me/2004699458-OR9pkZjP'
+                )
+            ]
+        )
         if event.postback.data == 'old':
             try:
                 conn = db.get_connection()
@@ -68,11 +82,11 @@ def handle_message(event):
                 conn.commit()
                 conn.close()
 
-                line_bot_api.reply_message(event.reply_token, TextSendMessage(text="資料已成功加入資料庫！"))
+                line_bot_api.reply_message(event.MemID, TextSendMessage(text="資料已成功加入資料庫！"))
             except Exception as e:
                 # 處理資料庫操作異常
                 print("An error occurred:", e)
-                line_bot_api.reply_message(event.reply_token, TextSendMessage(text="資料加入資料庫時發生錯誤！"))
+                line_bot_api.reply_message(event.MemID, TextSendMessage(text="資料加入資料庫時發生錯誤！"))
 
         elif event.postback.data == 'young':
                 conn = db.get_connection()
@@ -90,18 +104,6 @@ def handle_message(event):
                 cursor.execute('INSERT INTO User (MemID, MemName) VALUES (%s, %s)', (MemID, MemName))
                 #新增長輩編號
                 cursor.execute('INSERT INTO GroupLink (SubUserID) VALUES (%s)', (subno))
-
-        message = TemplateSendMessage(
-                alt_text='按鈕樣板',
-                    actions=[
-                        URITemplateAction(  #開啟網頁
-                            label='連結網頁',
-                            title='身分確認',
-                            uri='https://liff.line.me/2004699458-OR9pkZjP',
-                        ),
-                    ]
-                )
-            # )
         
         try:
             line_bot_api.reply_message(event.reply_token, message)
