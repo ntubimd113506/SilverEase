@@ -60,7 +60,7 @@
 
     <div id="new_window">
         <label for="input">您的長輩編號是：</label>
-        <input type="text" value="{{data[0]}}" readonly>
+        <input id="7787" type="text" readonly>
     </div>
 
     <div id="new_window2">
@@ -119,7 +119,7 @@
                             MemName = profile.displayName;
                             MemID = profile.userId;
                             const imgElement = document.getElementById("myImage");
-                            document.getElementById("Memname").innerHTML = Memname;
+                            document.getElementById("7787").setAttribute(value,MemID);
                             imgElement.src = picUrl;
                         })
                         .catch((err) => {
@@ -132,9 +132,6 @@
         }
         $(document).ready(function () {
             initializeLiff('{{ liffid }}');  //接收傳遞的 liffid 參數
-            $('#sure').click(function (e) {  //按下確定鈕
-                pushMsg($('#MemID').val(), $('#MemName').val());
-            });
         });
     </script>
 </html>
