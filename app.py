@@ -39,10 +39,10 @@ def handle_message(event):
         TextSendMessage(text="請先在設定中設定您的基本資料！")
     )
 
-
-@app.route('/identity')
+#-----登入-----
+@app.route('/identity/')
 def page():
-    return render_template('identity.html', liffid = '2004699458-OR9pkZjP')
+    return render_template('identity.html', liffid='2004699458-OR9pkZjP')
 
 @app.route('/identity/oy')
 def identity():
