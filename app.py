@@ -46,40 +46,39 @@ def page():
 
 @app.route('/identity/oy')
 def identity():
-    if request.method == 'GET':
-        identity = request.args.get('options')
-        if identity == 'old':
-            conn = db.get_connection()
-            cursor = conn.cursor()
+    if request.form.get('options') == 'old':
+        conn = db.get_connection()
+        cursor = conn.cursor()
 
-            #取出MainUserID
-            cursor.execute('SELECT GroupID FROM Group where GroupID = MemID')
+        #取出MainUserID
+        MemID = request.values.get('MemID').strip().upper()
+        cursor.execute('SELECT GroupID FROM Group where MainUserID =%s', (MemID,))
 
-            #取出資料
-            data = cursor.fetchone()
-            print(data)
+        #取出資料
+        data = cursor.fetchone()
+        print(data)
 
-            conn.commit()
-            conn.close()
-            return  render_template('old.html')
-        
-        elif identity == 'young':
-            #資料加入資料庫
-            conn = db.get_connection()
-            cursor = conn.cursor()
+        conn.commit()
+        conn.close()
+        return  render_template('old.html')
+    
+    elif request.form.get('options') == 'young':
+        #資料加入資料庫
+        conn = db.get_connection()
+        cursor = conn.cursor()
 
-            #新增長輩編號
-            cursor.execute('INSERT INTO GroupLink (SubUserID) VALUES (%s)', (subno))
-            try:
-                #取得其他參數
-                subno = request.form.get('SubUserID')
-                
-            finally:
-                print(subno)
+        #新增長輩編號
+        cursor.execute('INSERT INTO GroupLink (SubUserID) VALUES (%s)', (subno))
+        try:
+            #取得其他參數
+            subno = request.form.get('SubUserID')  
+        finally:
+            print(subno)
 
-            conn.commit()
-            conn.close()
-            return  render_template('young.html')
+        conn.commit()
+        conn.close()
+        return  render_template('young.html')
+
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
