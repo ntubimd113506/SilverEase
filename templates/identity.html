@@ -77,7 +77,7 @@
                             MemName = profile.displayName;
                             MemID = profile.userId;
                             picUrl = profile.pictureUrl;
-                            // sendDataToApp(profile);
+                            sendDataToApp(profile);
                             const imgElement = document.getElementById("myImage");
                             document.getElementById("name").innerHTML = MemName;                            
                             imgElement.src = picUrl;
@@ -92,8 +92,8 @@
 
             function sendDataToApp(profile) {
                 const data = {
-                    MemID : profile.userId,
-                    MemID : profile.userId
+                    MemID : profile.displayName,
+                    MemName : profile.userId
                 };
 
             fetch('/linelogin',{
