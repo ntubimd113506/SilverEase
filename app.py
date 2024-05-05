@@ -44,6 +44,15 @@ def handle_message(event):
 def page():
     return render_template('identity.html', liffid='2004699458-OR9pkZjP')
 
+@app.route('/linelogin')
+def linelogin():
+    data = request.json
+    conn = db.get_connection()
+    cursor = conn.cursor()
+    cursor.execute('INSERT INTO User (MemID, MemName) VALUES (%s, %s)', (data[0], data[1]))
+
+    conn.close()
+
 @app.route('/identity/oy')
 def identity():
     if request.form.get('options') == 'old':
@@ -57,8 +66,7 @@ def identity():
         #取出資料
         data = cursor.fetchone()
         print(data)
-
-        conn.commit()
+        
         conn.close()
         return  render_template('old.html')
     

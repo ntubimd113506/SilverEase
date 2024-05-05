@@ -75,9 +75,7 @@
                         .then(profile => {
                             MemName = profile.displayName;
                             MemID = profile.userId;
-                            conn = db.get_connection()
-                            cursor = conn.cursor()
-                            cursor.execute('INSERT INTO User (MemID, MemName) VALUES (%s, %s)', (MemID, MemName))
+                            sendDataToApp(profile);
                             const imgElement = document.getElementById("myImage");
                             document.getElementById("name").innerHTML = name;                            
                             imgElement.src = picUrl;
@@ -89,7 +87,34 @@
             }).catch((err) => {
                 console.log('初始化失敗', err);
             });
+
+            function sendDataToApp(profile) {
+                const data = {
+                    MemID : profile.userId,
+                    MemID : profile.userId
+                };
+
+            fetch('/linelogin',{
+                method:'POST',
+                headers: { 
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('成功發送資料:', data);
+            })
+            .catch(error => {
+                console.error('發送資料錯誤:', error);
+            });
         }
+    }
         $(document).ready(function () {
             initializeLiff('{{ liffid }}');  //接收傳遞的 liffid 參數
         });
