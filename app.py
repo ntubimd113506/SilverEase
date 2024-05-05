@@ -55,37 +55,39 @@ def linelogin():
 
 @app.route('/identity/oy')
 def identity():
-    if request.form.get('options') == 'old':
-        conn = db.get_connection()
-        cursor = conn.cursor()
+    if request.form.get('option') == 'old':
+        # conn = db.get_connection()
+        # cursor = conn.cursor()
 
-        #取出MainUserID
-        MemID = request.values.get('MemID').strip().upper()
-        cursor.execute('SELECT GroupID FROM Group where MainUserID =%s', (MemID,))
+        # #取出MainUserID
+        # MemID = request.values.get('MemID').strip().upper()
+        # cursor.execute('SELECT GroupID FROM Group where MainUserID =%s', (MemID,))
 
-        #取出資料
-        data = cursor.fetchone()
-        print(data)
+        # #取出資料
+        # data = cursor.fetchone()
+        # print(data)
         
-        conn.close()
-        return  render_template('old.html')
+        # conn.close()
+        # return  render_template('old.html')
+        return "您按下了ID為old的按鈕"
     
-    elif request.form.get('options') == 'young':
+    elif request.form.get('option') == 'young':
         #資料加入資料庫
-        conn = db.get_connection()
-        cursor = conn.cursor()
+        # conn = db.get_connection()
+        # cursor = conn.cursor()
 
-        #新增長輩編號
-        cursor.execute('INSERT INTO GroupLink (SubUserID) VALUES (%s)', (subno))
-        try:
-            #取得其他參數
-            subno = request.form.get('SubUserID')  
-        finally:
-            print(subno)
+        # #新增長輩編號
+        # cursor.execute('INSERT INTO GroupLink (SubUserID) VALUES (%s)', (subno))
+        # try:
+        #     #取得其他參數
+        #     subno = request.form.get('SubUserID')  
+        # finally:
+        #     print(subno)
 
-        conn.commit()
-        conn.close()
-        return  render_template('young.html')
+        # conn.commit()
+        # conn.close()
+        # return  render_template('young.html')
+        return "您按下了ID為young的按鈕"
 
 
 @handler.add(MessageEvent, message=TextMessage)
@@ -95,9 +97,9 @@ def handle_message(event):
         message = TemplateSendMessage(
         alt_text='按鈕樣板',
         template=ButtonsTemplate(
-            thumbnail_image_url='',
-            title='',
-            text='',
+            thumbnail_image_url='https://s.yimg.com/ny/api/res/1.2/68SLqFN3Qp1QopXUMrtSxQ--/YXBwaWQ9aGlnaGxhbmRlcjt3PTY0MDtoPTM4NA--/https://media.zenfs.com/zh-tw/commonhealth.com.tw/44dabbf75ca37b9876279e291ccf3a43',
+            title='我的身分',
+            text='請選擇：',
         actions=[
             URITemplateAction(
                 label='連結網頁',
