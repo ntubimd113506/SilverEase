@@ -89,8 +89,8 @@
             }).catch((err) => {
                 console.log('初始化失敗', err);
             });
-
-            function sendDataToApp(profile) {
+    }
+    function sendDataToApp(profile) {
                 const data = {
                     MemID : profile.displayName,
                     MemName : profile.userId
@@ -116,7 +116,7 @@
                 console.error('發送資料錯誤:', error);
             });
     }
-    }
+    
         $(document).ready(function () {
             initializeLiff('{{ liffid }}');  //接收傳遞的 liffid 參數
         });

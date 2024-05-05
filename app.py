@@ -49,25 +49,26 @@ def linelogin():
     data = request.json
     conn = db.get_connection()
     cursor = conn.cursor()
-    cursor.execute('INSERT INTO User (MemID, MemName) VALUES (%s, %s)', (data[0], data[1]))
+    cursor.execute('INSERT INTO User (MemID, MemName) VALUES (%s, %s)', (data['MemID'], data['MemName']))
 
+    conn.commit()#提交
     conn.close()
 
 @app.route('/identity/oy' ,methods=['POST'])
 def identity():
     if request.form.get('option') == 'old':
-        # conn = db.get_connection()
-        # cursor = conn.cursor()
+        conn = db.get_connection()
+        cursor = conn.cursor()
 
-        # #取出MainUserID
-        # MemID = request.values.get('MemID').strip().upper()
-        # cursor.execute('SELECT GroupID FROM Group where MainUserID =%s', (MemID,))
+        #取出MainUserID
+        MemID = request.values.get('MemID')
+        cursor.execute('SELECT GroupID FROM `Group` WHERE MainUserID = %s', (MemID,))
 
-        # #取出資料
-        # data = cursor.fetchone()
-        # print(data)
+        #取出資料
+        data = cursor.fetchone()
+        print(data)
         
-        # conn.close()
+        conn.close()
         return  render_template('old.html')
     
     elif request.form.get('option') == 'young':
