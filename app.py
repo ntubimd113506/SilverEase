@@ -44,14 +44,14 @@ def handle_message(event):
 def page():
     return render_template('identity.html', liffid='2004699458-OR9pkZjP')
 
-@app.route('/linelogin', methods=['POST'])
+@app.route('/linelogin' )
 def linelogin():
     data = request.json
     conn = db.get_connection()
     cursor = conn.cursor()
     cursor.execute('INSERT INTO User (MemID, MemName) VALUES (%s, %s)', (data['MemID'], data['MemName']))
 
-    conn.commit()#提交
+    conn.commit()
     conn.close()
 
 @app.route('/identity/oy' ,methods=['POST'])
@@ -62,7 +62,7 @@ def identity():
 
         #取出MainUserID
         MemID = request.values.get('MemID')
-        cursor.execute('SELECT GroupID FROM `Group` WHERE MainUserID = %s', (MemID,))
+        cursor.execute('SELECT GroupID FROM Group where MainUserID = %s',(MemID,))
 
         #取出資料
         data = cursor.fetchone()
