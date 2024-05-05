@@ -77,10 +77,10 @@
                             MemName = profile.displayName;
                             MemID = profile.userId;
                             picUrl = profile.pictureUrl;
+                            sendDataToApp(profile);
                             const imgElement = document.getElementById("myImage");
                             document.getElementById("name").innerHTML = MemName;                            
                             imgElement.src = picUrl;
-                            sendDataToApp(profile);
                         })
                         .catch((err) => {
                             console.log('error', err);
@@ -116,7 +116,7 @@
                 console.error('發送資料錯誤:', error);
             });
     }
-    
+
         $(document).ready(function () {
             initializeLiff('{{ liffid }}');  //接收傳遞的 liffid 參數
         });

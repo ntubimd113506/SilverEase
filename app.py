@@ -53,6 +53,7 @@ def linelogin():
 
     conn.commit()#提交
     conn.close()
+    return '成功加入資料庫'
 
 @app.route('/identity/oy' ,methods=['POST'])
 def identity():
