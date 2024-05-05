@@ -56,35 +56,35 @@ def linelogin():
 @app.route('/identity/oy' ,methods=['POST'])
 def identity():
     if request.form.get('option') == 'old':
-        conn = db.get_connection()
-        cursor = conn.cursor()
+        # conn = db.get_connection()
+        # cursor = conn.cursor()
 
-        #取出MainUserID
-        MemID = request.values.get('MemID').strip().upper()
-        cursor.execute('SELECT GroupID FROM Group where MainUserID =%s', (MemID,))
+        # #取出MainUserID
+        # MemID = request.values.get('MemID').strip().upper()
+        # cursor.execute('SELECT GroupID FROM Group where MainUserID =%s', (MemID,))
 
-        #取出資料
-        data = cursor.fetchone()
-        print(data)
+        # #取出資料
+        # data = cursor.fetchone()
+        # print(data)
         
-        conn.close()
+        # conn.close()
         return  render_template('old.html')
     
     elif request.form.get('option') == 'young':
         # 資料加入資料庫
-        conn = db.get_connection()
-        cursor = conn.cursor()
+        # conn = db.get_connection()
+        # cursor = conn.cursor()
 
-        #新增長輩編號
-        cursor.execute('INSERT INTO GroupLink (SubUserID) VALUES (%s)', (subno))
-        try:
-            #取得其他參數
-            subno = request.form.get('SubUserID')  
-        finally:
-            print(subno)
+        # #新增長輩編號
+        # cursor.execute('INSERT INTO GroupLink (SubUserID) VALUES (%s)', (subno))
+        # try:
+        #     #取得其他參數
+        #     subno = request.form.get('SubUserID')  
+        # finally:
+        #     print(subno)
 
-        conn.commit()
-        conn.close()
+        # conn.commit()
+        # conn.close()
         return  render_template('young.html')
 
 
