@@ -53,7 +53,7 @@ def linelogin():
 
     conn.close()
 
-@app.route('/identity/oy')
+@app.route('/identity/oy' ,methpds=['POST'])
 def identity():
     if request.form.get('option') == 'old':
         # conn = db.get_connection()
