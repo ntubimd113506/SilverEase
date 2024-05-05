@@ -44,7 +44,7 @@ def handle_message(event):
 def page():
     return render_template('identity.html', liffid='2004699458-OR9pkZjP')
 
-@app.route('/linelogin' )
+@app.route('/linelogin', methods=['POST'])
 def linelogin():
     data = request.json
     conn = db.get_connection()
