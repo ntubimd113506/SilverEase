@@ -62,6 +62,7 @@
     <script>
         var MemID;
         var MemName;
+        var picUrl;
         function initializeLiff(myLiffId) {
             liff.init({
                 liffId: myLiffId
@@ -75,9 +76,10 @@
                         .then(profile => {
                             MemName = profile.displayName;
                             MemID = profile.userId;
+                            picUrl = profile.pictureUrl;
                             // sendDataToApp(profile);
                             const imgElement = document.getElementById("myImage");
-                            document.getElementById("name").innerHTML = name;                            
+                            document.getElementById("name").innerHTML = MemName;                            
                             imgElement.src = picUrl;
                         })
                         .catch((err) => {
@@ -113,7 +115,6 @@
     //         .catch(error => {
     //             console.error('發送資料錯誤:', error);
     //         });
-    //     }
     }
         $(document).ready(function () {
             initializeLiff('{{ liffid }}');  //接收傳遞的 liffid 參數

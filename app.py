@@ -94,14 +94,19 @@ def handle_message(event):
     if mtext == 'identity':
         message = TemplateSendMessage(
         alt_text='按鈕樣板',
+        template=ButtonsTemplate(
+            thumbnail_image_url='',
+            title='',
+            text='',
         actions=[
             URITemplateAction(
                 label='連結網頁',
                 title='身分確認',
                 url='https://liff.line.me/2004699458-OR9pkZjP'
-            )
+            ),
         ]
         )
+     )
         
         try:
             line_bot_api.reply_message(event.reply_token, message)
