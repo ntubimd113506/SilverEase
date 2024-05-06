@@ -60,7 +60,9 @@ def identity():
         cursor = conn.cursor()
 
         #取出MainUserID
-        MemID = request.values.get('MemID')
+        # MemID = request.values.get('MemID')
+        data = request.json
+        MemID=data["MemID"]
 
         cursor.execute('SELECT GroupID FROM `Group`  where MainUserID = %s',(MemID))
 
