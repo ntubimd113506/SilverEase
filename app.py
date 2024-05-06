@@ -44,40 +44,43 @@ def handle_message(event):
 def page():
     return render_template('identity.html', liffid='2004699458-OR9pkZjP')
 
-@app.route('/linelogin', methods=['POST'])
-def linelogin():
-    data = request.json
-    conn = db.get_connection()
-    cursor = conn.cursor()
-    cursor.execute('INSERT INTO Member (MemID, MemName) VALUES (%s, %s)', (data['MemID'], data['MemName']))
+# @app.route('/linelogin', methods=['POST'])
+# def linelogin():
+#     data = request.json
+#     conn = db.get_connection()
+#     cursor = conn.cursor()
+#     cursor.execute('INSERT INTO Member (MemID, MemName) VALUES (%s, %s)', (data['MemID'], data['MemName']))
 
-    conn.close()
+#     conn.close()
 
 @app.route('/identity/oy' ,methods=['POST'])
 def identity():
     if request.form.get('option') == 'old':
+               
         conn = db.get_connection()
         cursor = conn.cursor()
 
         #取出MainUserID
-        # MemID = request.values.get('MemID')
-        data = request.json
-        MemID=data["MemID"]
-        
+        MemID = request.values.get('MemID')
+        MemName = request.values.get('MemName')
+
         while 1:
-            cursor.execute('SELECT GroupID FROM `Group`  where MainUserID = %s',(MemID))
+            cursor.execute('SELECT MemID FROM `Member` where MemID = %s',(MemID))
             data = cursor.fetchone()
 
-            if data:
+        
+            if data!=None:
                 break
             else:
-                cursor.execute('INSERT INTO Member (MemID, MemName) VALUES (%s, %s)', (data['MemID'], data['MemName']))
+                cursor.execute('INSERT INTO Member (MemID, MemName) VALUES (%s, %s)', (MemID, MemName))
+                conn.commit()
 
             #取出資料
             # print(data)
             
-            conn.close()
-            return  render_template('old.html',data=data)
+        conn.close()
+        
+        return  render_template('old.html',data=data)
     
     elif request.form.get('option') == 'young':
         # 資料加入資料庫
