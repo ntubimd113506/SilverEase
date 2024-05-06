@@ -44,15 +44,6 @@ def handle_message(event):
 def page():
     return render_template('identity.html', liffid='2004699458-OR9pkZjP')
 
-# @app.route('/linelogin', methods=['POST'])
-# def linelogin():
-#     data = request.json
-#     conn = db.get_connection()
-#     cursor = conn.cursor()
-#     cursor.execute('INSERT INTO Member (MemID, MemName) VALUES (%s, %s)', (data['MemID'], data['MemName']))
-
-#     conn.close()
-
 @app.route('/identity/oy' ,methods=['POST'])
 def identity():
     if request.form.get('option') == 'old':
@@ -77,7 +68,7 @@ def identity():
         
         return  render_template('old.html',data=data)
     
-    elif request.form.get('option') == 'young':
+    if request.form.get('option') == 'young':
         # 資料加入資料庫
         conn = db.get_connection()
         cursor = conn.cursor()
@@ -85,13 +76,23 @@ def identity():
         MemID = request.values.get('MemID')
         MemName = request.values.get('MemName')
 
-        subno = request.form.get('SubUserID')  
-        # cursor.execute('INSERT INTO FamilyLink (SubUserID) VALUES (%s)', (subno))
         cursor.execute('INSERT INTO Member (MemID, MemName) VALUES (%s, %s)', (MemID, MemName))
         conn.commit()
 
         conn.close()
         return  render_template('young.html')
+
+@app.route("/CodeID", methods=['POST'])
+def CodeID():
+    conn = db.get_connection()
+    cursor = conn.cursor()
+
+    CodeID = request.form.get('CodeID')  
+    cursor.execute('INSERT INTO FamilyCode (CodeID) VALUES (%s)', (CodeID))
+
+    conn.commit()
+    conn.close()
+    return  '新增完成'
 
 
 @handler.add(MessageEvent, message=TextMessage)

@@ -93,19 +93,6 @@
             console.log('初始化失敗', err);
         });
     }
-    // function sendDataToApp() {
-    //     liff.getProfile()
-    //         .then(profile => {
-    //             MemName = profile.displayName;
-    //             MemID = profile.userId;
-    //             document.getElementById("MemName").value=MemName;
-    //             document.getElementById("MemID").value=MemID;
-    //         })
-    //         .catch((err) => {
-    //             console.log('error', err);
-    //         });
-        
-    // }
 
     $(document).ready(function () {
         initializeLiff('{{ liffid }}');  //接收傳遞的 liffid 參數
