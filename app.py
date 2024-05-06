@@ -74,12 +74,20 @@ def identity():
 
         MemID = request.values.get('MemID')
         MemName = request.values.get('MemName')
-    
-        cursor.execute('INSERT INTO Member (MemID, MemName) VALUES (%s, %s)', (MemID, MemName))
-        conn.commit()
 
+        while 1:
+            cursor.execute('INSERT INTO Member (MemID, MemName) VALUES (%s, %s)', (MemID, MemName))
+            conn.commit()
+            data = cursor.fetchone()
+        
+            if data==None:
+                break
+            else:
+                pass
+    
         conn.close()
         return  render_template('young.html')
+    
 
 @app.route("/CodeID", methods=['POST'])
 def CodeID():
