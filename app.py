@@ -63,15 +63,21 @@ def identity():
         # MemID = request.values.get('MemID')
         data = request.json
         MemID=data["MemID"]
-
-        cursor.execute('SELECT GroupID FROM `Group`  where MainUserID = %s',(MemID))
-
-        #取出資料
-        data = cursor.fetchone()
-        # print(data)
         
-        conn.close()
-        return  render_template('old.html',data=data)
+        while 1:
+            cursor.execute('SELECT GroupID FROM `Group`  where MainUserID = %s',(MemID))
+            data = cursor.fetchone()
+
+            if data:
+                break
+            else:
+                cursor.execute('INSERT INTO Member (MemID, MemName) VALUES (%s, %s)', (data['MemID'], data['MemName']))
+
+            #取出資料
+            # print(data)
+            
+            conn.close()
+            return  render_template('old.html',data=data)
     
     elif request.form.get('option') == 'young':
         # 資料加入資料庫

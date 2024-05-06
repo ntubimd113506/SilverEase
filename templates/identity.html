@@ -99,7 +99,7 @@
                     MemID: MemID,
                     MemName: MemName
                 };
-                fetch('/linelogin', {
+                fetch('/identity/oy', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -118,19 +118,6 @@
                     .catch(error => {
                         console.error('發送資料錯誤:', error);
                     });
-                    fetch('/identity/oy', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.json();
-                    })
             })
             .catch((err) => {
                 console.log('error', err);
