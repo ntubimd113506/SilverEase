@@ -55,7 +55,7 @@ def identity():
         MemName = request.values.get('MemName')
 
         while 1:
-            cursor.execute('SELECT MemID FROM `Member` where MemID = %s',(MemID))
+            cursor.execute('SELECT FamilyID FROM Family where MainUserID = %s',(MemID))
             data = cursor.fetchone()
         
             if data!=None:
