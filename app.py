@@ -51,7 +51,6 @@ def linelogin():
     cursor = conn.cursor()
     cursor.execute('INSERT INTO Member (MemID, MemName) VALUES (%s, %s)', (data['MemID'], data['MemName']))
 
-    conn.commit()
     conn.close()
 
 @app.route('/identity/oy' ,methods=['POST'])
