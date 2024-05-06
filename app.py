@@ -65,7 +65,6 @@ def identity():
                 conn.commit()
 
         conn.close()
-        
         return  render_template('old.html',data=data)
     
     if request.form.get('option') == 'young':
@@ -75,12 +74,9 @@ def identity():
 
         MemID = request.values.get('MemID')
         MemName = request.values.get('MemName')
-        
-        if identity(MemID):
-            pass
-        else:
-            cursor.execute('INSERT INTO Member (MemID, MemName) VALUES (%s, %s)', (MemID, MemName))
-            conn.commit()
+    
+        cursor.execute('INSERT INTO Member (MemID, MemName) VALUES (%s, %s)', (MemID, MemName))
+        conn.commit()
 
         conn.close()
         return  render_template('young.html')
