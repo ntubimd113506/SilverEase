@@ -80,7 +80,6 @@
                         document.getElementById("name").innerHTML = MemName;
                         imgElement.src = picUrl;
                         document.getElementById("MemID").value = MemID;
-                        // sendDataToApp(profile);
                     })
                     .catch((err) => {
                         console.log('error', err);
@@ -119,17 +118,10 @@
                     .catch(error => {
                         console.error('發送資料錯誤:', error);
                     });
-                // const imgElement = document.getElementById("myImage");
-                // document.getElementById("name").innerHTML = MemName;
-                // imgElement.src = picUrl;
-                // document.getElementById("MemID").value = MemID;
             })
             .catch((err) => {
                 console.log('error', err);
             });
-
-
-
     }
 
     $(document).ready(function () {
