@@ -80,7 +80,6 @@
                         document.getElementById("name").innerHTML = MemName;
                         imgElement.src = picUrl;
                         document.getElementById("MemID").value = MemID;
-                        // sendDataToApp(profile);
                     })
                     .catch((err) => {
                         console.log('error', err);
@@ -100,7 +99,7 @@
                     MemID: MemID,
                     MemName: MemName
                 };
-                fetch('/linelogin', {
+                fetch('/identity/oy', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -119,10 +118,6 @@
                     .catch(error => {
                         console.error('發送資料錯誤:', error);
                     });
-                // const imgElement = document.getElementById("myImage");
-                // document.getElementById("name").innerHTML = MemName;
-                // imgElement.src = picUrl;
-                // document.getElementById("MemID").value = MemID;
             })
             .catch((err) => {
                 console.log('error', err);

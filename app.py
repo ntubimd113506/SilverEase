@@ -44,16 +44,6 @@ def handle_message(event):
 def page():
     return render_template('identity.html', liffid='2004699458-OR9pkZjP')
 
-@app.route('/linelogin', methods=['POST'])
-def linelogin():
-    data = request.json
-    conn = db.get_connection()
-    cursor = conn.cursor()
-    cursor.execute('INSERT INTO Member (MemID, MemName) VALUES (%s, %s)', (data['MemID'], data['MemName']))
-
-    conn.commit()
-    conn.close()
-
 @app.route('/identity/oy' ,methods=['POST'])
 def identity():
     if request.form.get('option') == 'old':
@@ -63,11 +53,17 @@ def identity():
         #取出MainUserID
         MemID = request.values.get('MemID')
 
-        cursor.execute('SELECT GroupID FROM `Group`  where MainUserID = %s',(MemID))
+        #將資料加入資料庫
+        result = cursor.fetchone()  
+        if result:
+            cursor.execute('SELECT GroupID FROM `Group`  where MainUserID = %s',(MemID))
+
+        else:
+            cursor.execute('INSERT INTO Member (MemID, MemName) VALUES (%s, %s)', (data['MemID'], data['MemName']))
+            cursor.execute('SELECT GroupID FROM `Group`  where MainUserID = %s',(MemID))
 
         #取出資料
         data = cursor.fetchone()
-        # print(data)
         
         conn.close()
         return  render_template('old.html',data=data)
