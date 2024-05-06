@@ -56,18 +56,16 @@ def page():
 @app.route('/identity/oy' ,methods=['POST'])
 def identity():
     if request.form.get('option') == 'old':
-               
+        #建立資料庫連線   
         conn = db.get_connection()
         cursor = conn.cursor()
 
-        #取出MainUserID
         MemID = request.values.get('MemID')
         MemName = request.values.get('MemName')
 
         while 1:
             cursor.execute('SELECT MemID FROM `Member` where MemID = %s',(MemID))
             data = cursor.fetchone()
-
         
             if data!=None:
                 break
@@ -75,28 +73,24 @@ def identity():
                 cursor.execute('INSERT INTO Member (MemID, MemName) VALUES (%s, %s)', (MemID, MemName))
                 conn.commit()
 
-            #取出資料
-            # print(data)
-            
         conn.close()
         
         return  render_template('old.html',data=data)
     
     elif request.form.get('option') == 'young':
         # 資料加入資料庫
-        # conn = db.get_connection()
-        # cursor = conn.cursor()
+        conn = db.get_connection()
+        cursor = conn.cursor()
 
-        # #新增長輩編號
-        # cursor.execute('INSERT INTO GroupLink (SubUserID) VALUES (%s)', (subno))
-        # try:
-        #     #取得其他參數
-        #     subno = request.form.get('SubUserID')  
-        # finally:
-        #     print(subno)
+        MemID = request.values.get('MemID')
+        MemName = request.values.get('MemName')
 
-        # conn.commit()
-        # conn.close()
+        subno = request.form.get('SubUserID')  
+        # cursor.execute('INSERT INTO FamilyLink (SubUserID) VALUES (%s)', (subno))
+        cursor.execute('INSERT INTO Member (MemID, MemName) VALUES (%s, %s)', (MemID, MemName))
+        conn.commit()
+
+        conn.close()
         return  render_template('young.html')
 
 
