@@ -44,6 +44,17 @@ def handle_message(event):
 def page():
     return render_template('identity.html', liffid='2004699458-OR9pkZjP')
 
+def check_member_exists(MemID):
+    conn = db.get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute('SELECT * FROM Member WHERE MemID = %s', (MemID,))
+    member = cursor.fetchone()  # 使用 fetchone() 取得查詢結果的第一行資料，如果沒有符合的資料會返回 None
+
+    conn.close()
+
+    return member is not None 
+
 @app.route('/identity/oy' ,methods=['POST'])
 def identity():
     if request.form.get('option') == 'old':
@@ -75,18 +86,17 @@ def identity():
         MemID = request.values.get('MemID')
         MemName = request.values.get('MemName')
 
-        while 1:
+        if check_member_exists(MemID):
+            # 資料已存在，執行相應的處理
+            return render_template('young.html', MemID=MemID)
+        else:
+            # 資料不存在，將使用者資料新增至資料庫
+            conn = db.get_connection()
+            cursor = conn.cursor()
             cursor.execute('INSERT INTO Member (MemID, MemName) VALUES (%s, %s)', (MemID, MemName))
             conn.commit()
-            data = cursor.fetchone()
-        
-            if data==None:
-                break
-            else:
-                pass
-    
-        conn.close()
-        return  render_template('young.html')
+            conn.close()
+            return render_template('young.html', MemID=MemID)
     
 
 @app.route("/CodeID", methods=['POST'])
