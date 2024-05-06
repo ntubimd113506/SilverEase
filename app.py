@@ -62,7 +62,7 @@ def identity():
 
         #取出MainUserID
         # MemID = request.values.get('MemID')
-        cursor.execute('SELECT GroupCode FROM CodeID')
+        cursor.execute('SELECT Group FROM GroupID')
         # where MainUserID = %s',(MemID,)
 
         #取出資料
