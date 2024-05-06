@@ -54,7 +54,7 @@ def identity():
         MemID = request.values.get('MemID')
 
         #將資料加入資料庫
-        if data == MemID:
+        if data:
             cursor.execute('SELECT GroupID FROM `Group` where MainUserID = %s',(MemID))
 
         else:
