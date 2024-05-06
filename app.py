@@ -54,9 +54,8 @@ def identity():
         MemID = request.values.get('MemID')
 
         #將資料加入資料庫
-        result = cursor.fetchone()  
-        if result:
-            cursor.execute('SELECT GroupID FROM `Group`  where MainUserID = %s',(MemID))
+        if data == MemID:
+            cursor.execute('SELECT GroupID FROM `Group` where MainUserID = %s',(MemID))
 
         else:
             cursor.execute('INSERT INTO Member (MemID, MemName) VALUES (%s, %s)', (data['MemID'], data['MemName']))
