@@ -61,16 +61,17 @@ def identity():
         cursor = conn.cursor()
 
         #取出MainUserID
-        # MemID = request.values.get('MemID')
-        cursor.execute('SELECT Group FROM GroupID')
-        # where MainUserID = %s',(MemID,)
+        MemID = request.values.get('MemID')
+        cursor.execute('SELECT GroupCode FROM CodeID where MainUserID = %s',(MemID,))
+
+        conn.commit()
 
         #取出資料
         data = cursor.fetchone()
         print(data)
         
         conn.close()
-        return  render_template('old.html')
+        return  render_template('old.html',data=data)
     
     elif request.form.get('option') == 'young':
         # 資料加入資料庫

@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>選擇按鈕</title>
-    <style> /*視窗*/
+    <style>
+        /*視窗*/
         .container {
             text-align: center;
         }
     </style>
 
-    <style> /* 在<style>标签中添加 CSS 样式 */
+    <style>
+        /* 在<style>标签中添加 CSS 样式 */
         .rounded-image {
             border-radius: 50%;
         }
@@ -19,90 +22,88 @@
             margin: 0 auto;
             display: block;
         }
+
         .shadowed-image {
             display: block;
             margin: 0 auto;
-            box-shadow: 5px 5px 10px #888888; /* 阴影效果 */
+            box-shadow: 5px 5px 10px #888888;
+            /* 阴影效果 */
         }
     </style>
 </head>
+
 <body>
     <div class="row" style="margin: 10px">
         <div class="center-image">
             <img id="myImage" src="" alt="圖片" class="rounded-image shadowed-image" width="300px" height="300px">
             <h1 id="name" style="text-align: center;"> </h1>
-        </div></div>
+        </div>
+    </div>
 
-    <h2>請選擇一個身分：</h2>  
+    <h2>請選擇一個身分：</h2>
 
-    <form action="/identity/oy" method="post">
-        <div class="form">
+    <div class="form">
+        <form action="/identity/oy" method="post">
+
             <input type="radio" id="old" name="option" value="old">
-            <span class="name">長輩
-            <span class="value">
-            </span><br>
-            <br>
-            </div>
+            <span class="name">長輩</span>
 
             <input type="radio" id="young" name="option" value="young">
-            <span class="name">子女
-            <span class="value">
-            </span><br>
-            <br>
+            <span class="name">子女</span>
 
-            <span class="name"></span>
-            <span class="value"><input type="submit" value="查詢" style="width:80px"></span></div>
-            </div>
+            <input id="MemID" type="hidden" name="MemID">
+            <span class="value"><input type="submit" value="查詢" style="width:80px"></span>
         </form>
-</div>     
+    </div>
 
 </body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
 <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
-    <script>
-        var MemID;
-        var MemName;
-        var picUrl;
-        function initializeLiff(myLiffId) {
-            liff.init({
-                liffId: myLiffId
-            }).then(() => {
-                if (!liff.isLoggedIn()) {
-                    alert("用戶未登入");
-                    liff.login();
-                } else {
-                    // alert("用戶已登入");
-                    liff.getProfile()
-                        .then(profile => {
-                            MemName = profile.displayName;
-                            MemID = profile.userId;
-                            picUrl = profile.pictureUrl;
-                            const imgElement = document.getElementById("myImage");
-                            document.getElementById("name").innerHTML = MemName;                            
-                            imgElement.src = picUrl;
-                            sendDataToApp(profile);
-                        })
-                        .catch((err) => {
-                            console.log('error', err);
-                        });
-                }
-            }).catch((err) => {
-                console.log('初始化失敗', err);
-            });
+<script>
+    var MemID;
+    var MemName;
+    var picUrl;
+    function initializeLiff(myLiffId) {
+        liff.init({
+            liffId: myLiffId
+        }).then(() => {
+            if (!liff.isLoggedIn()) {
+                alert("用戶未登入");
+                liff.login();
+            } else {
+                // alert("用戶已登入");
+                liff.getProfile()
+                    .then(profile => {
+                        MemName = profile.displayName;
+                        MemID = profile.userId;
+                        picUrl = profile.pictureUrl;
+                        const imgElement = document.getElementById("myImage");
+                        document.getElementById("name").innerHTML = MemName;
+                        imgElement.src = picUrl;
+                        document.getElementById("MemID").value = MemID;
+                        sendDataToApp(profile);
+                    })
+                    .catch((err) => {
+                        console.log('error', err);
+                    });
+            }
+        }).catch((err) => {
+            console.log('初始化失敗', err);
+        });
     }
-        function sendDataToApp(profile) {
-                const data = {
-                    MemID : profile.displayName,
-                    MemName : profile.userId
-                };
+    function sendDataToApp(profile) {
+        const data = {
+            MemID: profile.displayName,
+            MemName: profile.userId
+        };
 
-            fetch('/linelogin',{
-                method:'POST',
-                headers: { 
-                    'Content-Type' : 'application/json'
-                },
-                body: JSON.stringify(data)
-            })
+        fetch('/linelogin', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -117,8 +118,9 @@
             });
     }
 
-        $(document).ready(function () {
-            initializeLiff('{{ liffid }}');  //接收傳遞的 liffid 參數
-        });
-    </script>
+    $(document).ready(function () {
+        initializeLiff('{{ liffid }}');  //接收傳遞的 liffid 參數
+    });
+</script>
+
 </html>
