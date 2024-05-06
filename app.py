@@ -61,8 +61,9 @@ def identity():
         cursor = conn.cursor()
 
         #取出MainUserID
-        MemID = request.values.get('MemID')
-        cursor.execute('SELECT GroupID FROM Group where MainUserID = %s',(MemID,))
+        # MemID = request.values.get('MemID')
+        cursor.execute('SELECT GroupCode FROM CodeID')
+        # where MainUserID = %s',(MemID,)
 
         #取出資料
         data = cursor.fetchone()
