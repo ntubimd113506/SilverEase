@@ -51,8 +51,7 @@
             <input type="radio" id="young" name="option" value="young">
             <span class="name">子女</span>
 
-            <input id="MemID" type="hidden" name="MemID">
-            <span class="value"><input type="submit" value="查詢" style="width:80px"></span>
+            <span class="value"><input type="submit" value="查詢" style="width:80px" onclick="sendDataToApp()"></span>
         </form>
     </div>
 
@@ -81,7 +80,7 @@
                         document.getElementById("name").innerHTML = MemName;
                         imgElement.src = picUrl;
                         document.getElementById("MemID").value = MemID;
-                        sendDataToApp(profile);
+                        // sendDataToApp(profile);
                     })
                     .catch((err) => {
                         console.log('error', err);
@@ -91,31 +90,46 @@
             console.log('初始化失敗', err);
         });
     }
-    function sendDataToApp(profile) {
-        const data = {
-            MemID: profile.displayName,
-            MemName: profile.userId
-        };
-
-        fetch('/linelogin', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
+    function sendDataToApp() {
+        liff.getProfile()
+            .then(profile => {
+                MemName = profile.displayName;
+                MemID = profile.userId;
+                picUrl = profile.pictureUrl;
+                const data = {
+                    MemID: MemID,
+                    MemName: MemName
+                };
+                fetch('/linelogin', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('成功發送資料:', data);
+                    })
+                    .catch(error => {
+                        console.error('發送資料錯誤:', error);
+                    });
+                // const imgElement = document.getElementById("myImage");
+                // document.getElementById("name").innerHTML = MemName;
+                // imgElement.src = picUrl;
+                // document.getElementById("MemID").value = MemID;
             })
-            .then(data => {
-                console.log('成功發送資料:', data);
-            })
-            .catch(error => {
-                console.error('發送資料錯誤:', error);
+            .catch((err) => {
+                console.log('error', err);
             });
+
+
+
     }
 
     $(document).ready(function () {

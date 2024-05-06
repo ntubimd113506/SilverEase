@@ -49,7 +49,7 @@ def linelogin():
     data = request.json
     conn = db.get_connection()
     cursor = conn.cursor()
-    cursor.execute('INSERT INTO User (MemID, MemName) VALUES (%s, %s)', (data['MemID'], data['MemName']))
+    cursor.execute('INSERT INTO Member (MemID, MemName) VALUES (%s, %s)', (data['MemID'], data['MemName']))
 
     conn.commit()
     conn.close()
@@ -62,13 +62,12 @@ def identity():
 
         #取出MainUserID
         MemID = request.values.get('MemID')
-        cursor.execute('SELECT GroupCode FROM CodeID where MainUserID = %s',(MemID,))
 
-        conn.commit()
+        cursor.execute('SELECT GroupID FROM `Group`  where MainUserID = %s',(MemID))
 
         #取出資料
         data = cursor.fetchone()
-        print(data)
+        # print(data)
         
         conn.close()
         return  render_template('old.html',data=data)
