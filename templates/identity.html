@@ -84,13 +84,38 @@
                         imgElement.src = picUrl;
                         document.getElementById("MemID").value = MemID;
                         document.getElementById("MemName").value=MemName;
+                        chechMember(profile);
                     })
                     .catch((err) => {
                         console.log('error', err);
                     });
             }
+
         }).catch((err) => {
             console.log('初始化失敗', err);
+        });
+    }
+    
+    function chechMember(profile) {
+        fetch('/checkid', {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json'
+           },
+            body: JSON.stringify(data)
+            })
+
+        .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+        })
+        .then(data => {
+        console.log('成功發送資料:', data);
+        })
+        .catch(error => {
+        console.error('發送資料錯誤:', error);
         });
     }
 

@@ -44,7 +44,7 @@ def handle_message(event):
 def page():
     return render_template('identity.html', liffid='2004699458-OR9pkZjP')
 
-def check_member_exists(MemID):
+def check_member_exists(MemID):  #確認使用者資料是否存在資料庫中
     conn = db.get_connection()
     cursor = conn.cursor()
 
@@ -94,6 +94,7 @@ def identity():
             conn = db.get_connection()
             cursor = conn.cursor()
             cursor.execute('INSERT INTO Member (MemID, MemName) VALUES (%s, %s)', (MemID, MemName))
+            cursor.execute('INSERT INTO Familylink (SubUserID) VALUES (%s,)', (MemID,))
             conn.commit()
             conn.close()
             return render_template('young.html', MemID=MemID)
@@ -110,6 +111,34 @@ def CodeID():
     conn.commit()
     conn.close()
     return  '新增完成'
+
+@app.route("/checkid", methods=['POST']) #確認使用者資料
+def checkid():
+    try:
+        conn = db.get_connection()
+        cursor = conn.cursor()
+
+        # 獲取使用者的MemID
+        MemID = request.args.get('MemID')
+
+        # 檢查是否是長輩
+        cursor.execute('SELECT * FROM Member WHERE MemID = %s', (MemID,))
+        member_data = cursor.fetchone()
+
+        if member_data:
+            return render_template('old.html')
+
+        # 檢查是否是子女
+        cursor.execute('SELECT * FROM FamilyLink WHERE SubUserID = %s', (MemID,))
+        family_link_data = cursor.fetchone()
+        if family_link_data:
+            return render_template('young.html')
+
+        conn.close()
+
+    except Exception as e:
+        print("An error occurred:", e)
+
 
 
 @handler.add(MessageEvent, message=TextMessage)
