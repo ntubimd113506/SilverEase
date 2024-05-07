@@ -2,27 +2,30 @@ import datetime
 import os
 import pathlib
 import filetype
-from flask import Flask, flash, request, redirect, url_for, render_template
+from flask import Flask, flash, request, redirect, url_for, render_template, Blueprint
 from werkzeug.utils import secure_filename
+cam_bp = Blueprint('cam_bp',__name__)
 
 # 取得目前檔案所在的資料夾
 SRC_PATH = pathlib.Path(__file__).parent.absolute()
 UPLOAD_FOLDER = os.path.join(SRC_PATH, 'static', 'uploads')
 
-app = Flask(__name__)
+# app = Flask(__name__)s
 # app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['MAX_CONTENT_LENGTH'] = 3 * 1024 * 1024
+# app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+# app.config['MAX_CONTENT_LENGTH'] = 3 * 1024 * 1024
+cam_bp.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+cam_bp.config['MAX_CONTENT_LENGTH'] = 3 * 1024 * 1024
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 
-@app.route('/')
+@cam_bp.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('cam/index.html')
 
 
-@app.route('/', methods=['POST'])
+@cam_bp.route('/', methods=['POST'])
 def upload_file():
     res = handle_file(request)
 
@@ -39,7 +42,7 @@ def upload_file():
     return redirect(url_for('index'))  # 令瀏覽器跳回首頁
 
 
-@app.route('/esp32cam', methods=['POST'])
+@cam_bp.route('/esp32cam', methods=['POST'])
 def esp32cam():
     res = handle_file(request)
     return res['msg']
@@ -71,10 +74,6 @@ def handle_file(request):
             return {"msg": 'type_error'}  # 傳回代表「檔案類型錯誤」的訊息
 
 
-@app.route('/img/<filename>')
+@cam_bp.route('/img/<filename>')
 def display_image(filename):
     return redirect(url_for('static', filename='uploads/' + filename))
-
-
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=80)

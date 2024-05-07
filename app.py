@@ -6,6 +6,7 @@ from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 from utlis import db
 from services.event.app import event_bp
+from services.cam.app import cam_bp
 
 app = Flask(__name__)
 
@@ -17,7 +18,8 @@ handler = WebhookHandler(db.LINE_HANDLER)
 def index():
     return "Here is SilverEase"
 
-app.register_blueprint(event_bp, url_prefix='/date')
+app.register_blueprint(event_bp, url_prefix='/event')
+app.register_blueprint(cam_bp, url_prefix='/cam')
 
 @app.route("/callback", methods=['POST'])
 def callback():
