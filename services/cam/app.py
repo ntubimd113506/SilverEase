@@ -22,7 +22,7 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 @cam_bp.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('cam/index.html')
 
 
 @cam_bp.route('/', methods=['POST'])
