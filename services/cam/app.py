@@ -3,26 +3,26 @@ import os
 import pathlib
 import filetype
 from flask import Flask, flash, request, redirect, url_for, render_template, Blueprint
-from werkzeug.utils import secure_filename
+# from werkzeug.utils import secure_filename
 cam_bp = Blueprint('cam_bp',__name__)
 
 # 取得目前檔案所在的資料夾
-SRC_PATH = pathlib.Path(__file__).parent.absolute()
+SRC_PATH = pathlib.Path(__file__).parent.parent.parent.absolute()
 UPLOAD_FOLDER = os.path.join(SRC_PATH, 'static', 'uploads')
 
-# app = Flask(__name__)s
+app = Flask(__name__)
 # app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
-# app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # app.config['MAX_CONTENT_LENGTH'] = 3 * 1024 * 1024
-cam_bp.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-cam_bp.config['MAX_CONTENT_LENGTH'] = 3 * 1024 * 1024
+# cam_bp.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+# cam_bp.config['MAX_CONTENT_LENGTH'] = 3 * 1024 * 1024
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 
 @cam_bp.route('/')
 def index():
-    return render_template('cam/index.html')
+    return render_template('index.html')
 
 
 @cam_bp.route('/', methods=['POST'])
@@ -67,7 +67,8 @@ def handle_file(request):
             filename = str(datetime.datetime.now()).replace(
                 ':', '_') + '.' + file_type
             file.save(os.path.join(
-                app.config['UPLOAD_FOLDER'], filename))
+                app.config['UPLOAD_FOLDER'], filename
+                ))
             # 傳回代表上傳成功的訊息以及檔名。
             return {"msg": 'ok', "filename": filename}
         else:

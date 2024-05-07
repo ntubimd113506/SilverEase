@@ -1,8 +1,8 @@
-from flask import Flask, request, render_template, redirect, url_for
+from flask import request, render_template, redirect, url_for
 import sqlite3
 from flask import Blueprint
 from datetime import date
-from utlis import db, common
+from utlis import db
 
 event_bp = Blueprint('event_bp',__name__)
 
