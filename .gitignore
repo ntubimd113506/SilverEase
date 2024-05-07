@@ -3,6 +3,8 @@ lineToken.py
 db.py
 __init__.py
 
+static/uploads/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

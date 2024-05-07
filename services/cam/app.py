@@ -10,9 +10,9 @@ cam_bp = Blueprint('cam_bp',__name__)
 SRC_PATH = pathlib.Path(__file__).parent.parent.parent.absolute()
 UPLOAD_FOLDER = os.path.join(SRC_PATH, 'static', 'uploads')
 
-app = Flask(__name__)
+# app = Flask(__name__)
 # app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+# app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # app.config['MAX_CONTENT_LENGTH'] = 3 * 1024 * 1024
 # cam_bp.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # cam_bp.config['MAX_CONTENT_LENGTH'] = 3 * 1024 * 1024
@@ -67,7 +67,7 @@ def handle_file(request):
             filename = str(datetime.datetime.now()).replace(
                 ':', '_') + '.' + file_type
             file.save(os.path.join(
-                app.config['UPLOAD_FOLDER'], filename
+                UPLOAD_FOLDER, filename
                 ))
             # 傳回代表上傳成功的訊息以及檔名。
             return {"msg": 'ok', "filename": filename}
