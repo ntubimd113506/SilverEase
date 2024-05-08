@@ -1,6 +1,6 @@
 import requests, json
 import pymysql
-from flask import Flask, request, abort, render_template
+from flask import Flask, request, abort, render_template, redirect
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import *
@@ -119,21 +119,27 @@ def checkid():
         cursor = conn.cursor()
 
         # 獲取使用者的MemID
-        MemID = request.values.get('MemID')
+        data = json.loads(request.get_data(as_text=True))
+        MemID = data['MemID']
 
-        # 檢查是否是長輩
-        cursor.execute('SELECT MainUserID FROM Family WHERE MainUserID = %s', (MemID,))
+        # ==================  ==================
+        
+        '''https://ithelp.ithome.com.tw/m/articles/10300064'''
+
+        #==================  ==================
+        cursor.execute('SELECT MainUserID FROM Family WHERE MainUserID = %s', (MemID))
         member_data = cursor.fetchone()
-
-        if member_data:
-            return render_template('old.html')
-
-        # 檢查是否是子女
-        cursor.execute('SELECT SubUserID FROM FamilyLink WHERE SubUserID = %s', (MemID,))
+        cursor.execute('SELECT SubUserID FROM FamilyLink WHERE SubUserID = %s', (MemID))
         family_link_data = cursor.fetchone()
         
-        if family_link_data:
-            return render_template('young.html')
+        # 檢查是否是長輩
+        if member_data!=None:
+            return redirect('old.html')
+        # 檢查是否是子女
+        elif family_link_data!=None:
+            return redirect('young.html')
+        else:
+            return json.dumps({'error': '找不到資料'})
 
         conn.close()
 

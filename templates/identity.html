@@ -55,7 +55,7 @@
             <input type="hidden" id="MemName" name="MemName">
             <input type="hidden" id="checkMember" name="checkMember">
 
-            <span class="value"><input type="submit" value="新增" style="width:80px" ></span>
+            <span class="value"><input type="submit" value="新增" style="width:80px"></span>
 
         </form>
     </div>
@@ -85,7 +85,7 @@
                         document.getElementById("name").innerHTML = MemName;
                         imgElement.src = picUrl;
                         document.getElementById("MemID").value = MemID;
-                        document.getElementById("MemName").value=MemName;
+                        document.getElementById("MemName").value = MemName;
                         checkMember(profile);
                     })
                     .catch((err) => {
@@ -97,29 +97,32 @@
             console.log('初始化失敗', err);
         });
     }
-    
+
     function checkMember(profile) {
+        /**
+         * 
+         * https://ithelp.ithome.com.tw/articles/10252941
+         * 
+         */
         fetch('/checkid', {
             method: 'POST',
             headers: {
-            'Content-Type': 'application/json'
-            }
-            .then(profile => {
-                MemID = profile.userId
-                document.getElementById("MemID").value = MemID
-                })
+                'Content-Type': 'application/json'
             },
-        )
-
-        .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return response.json();
+            body: {
+                MemID: profile.userId
+            }
+        },
+        ).then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            res=response.json();
+            alert(res['error']);
         })
-        .catch(error => {
-        console.error('發送資料錯誤:', error);
-        });
+            .catch(error => {
+                alert('發送資料錯誤:', error);
+            });
     }
 
     $(document).ready(function () {
