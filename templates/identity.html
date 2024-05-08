@@ -53,9 +53,9 @@
 
             <input type="hidden" id="MemID" name="MemID">
             <input type="hidden" id="MemName" name="MemName">
+            <input type="hidden" id="checkMember" name="checkMember">
 
             <span class="value"><input type="submit" value="新增" style="width:80px" ></span>
-            <input type="hidden" id="checkMember" name="checkMember">
 
         </form>
     </div>
@@ -103,22 +103,19 @@
             method: 'POST',
             headers: {
             'Content-Type': 'application/json'
+            }
             .then(profile => {
                 MemID = profile.userId
                 document.getElementById("MemID").value = MemID
-                checkMember(profile)
                 })
             },
-        })
+        )
 
         .then(response => {
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
         return response.json();
-        })
-        .then(data => {
-        console.log('成功發送資料:', data);
         })
         .catch(error => {
         console.error('發送資料錯誤:', error);
