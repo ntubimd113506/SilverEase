@@ -103,9 +103,13 @@
             method: 'POST',
             headers: {
             'Content-Type': 'application/json'
-           },
-            body: JSON.stringify(data)
-            })
+            .then(profile => {
+                MemID = profile.userId
+                document.getElementById("MemID").value = MemID
+                checkMember(profile)
+                })
+            },
+        })
 
         .then(response => {
         if (!response.ok) {
