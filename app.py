@@ -1,6 +1,6 @@
 import requests, json
 import pymysql
-from flask import Flask, request, abort, render_template, redirect
+from flask import Flask, request, abort, render_template, redirect,url_for
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import *
@@ -132,19 +132,20 @@ def checkid():
         cursor.execute('SELECT SubUserID FROM FamilyLink WHERE SubUserID = %s', (MemID))
         family_link_data = cursor.fetchone()
         
+        conn.close()
         # 檢查是否是長輩
         if member_data!=None:
-            return redirect('old.html')
+            return json.dumps({
+                "result":1,
+                "option":"old"})
         # 檢查是否是子女
         elif family_link_data!=None:
             return redirect('young.html')
         else:
-            return json.dumps({'error': '找不到資料'})
-
-        conn.close()
-
+            return json.dumps({"result": 0},ensure_ascii=False)
+      
     except Exception as e:
-        return '找不到資料'
+        return json.dumps({"error": "TryError"},ensure_ascii=False)
 
 
 @handler.add(MessageEvent, message=TextMessage)

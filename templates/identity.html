@@ -43,7 +43,7 @@
     <h2>請選擇一個身分：</h2>
 
     <div class="form">
-        <form action="/identity/oy" method="post">
+        <form id="form" action="/identity/oy" method="post">
 
             <input type="radio" id="old" name="option" value="old">
             <span class="name">長輩</span>
@@ -102,6 +102,9 @@
         /**
          * 
          * https://ithelp.ithome.com.tw/articles/10252941
+         * v學會JSON 
+         * 變數要用對
+         * F12可以看console.log訊息還有很多資訊
          * 
          */
         fetch('/checkid', {
@@ -109,20 +112,28 @@
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: {
+            body: JSON.stringify({
                 MemID: profile.userId
-            }
+            })
         },
         ).then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-            res=response.json();
-            alert(res['error']);
-        })
-            .catch(error => {
-                alert('發送資料錯誤:', error);
-            });
+            
+            console.log(response);
+            return response.json();//回應轉為JSON處理
+        }).then(jsondata => {
+            console.log(jsondata);
+            if (jsondata["result"]){//轉為JSON後處理的事情
+                document.getElementById(jsondata["option"]).checked=true
+                form=document.getElementById("form").submit();
+            }
+            
+
+        }).catch(error => {
+            console.log('發送資料錯誤:', error);
+        });
     }
 
     $(document).ready(function () {
