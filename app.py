@@ -119,18 +119,19 @@ def checkid():
         cursor = conn.cursor()
 
         # 獲取使用者的MemID
-        MemID = request.args.get('MemID')
+        MemID = request.values.get('MemID')
 
         # 檢查是否是長輩
-        cursor.execute('SELECT * FROM Member WHERE MemID = %s', (MemID,))
+        cursor.execute('SELECT MainUserID FROM Family WHERE MainUserID = %s', (MemID,))
         member_data = cursor.fetchone()
 
         if member_data:
             return render_template('old.html')
 
         # 檢查是否是子女
-        cursor.execute('SELECT * FROM FamilyLink WHERE SubUserID = %s', (MemID,))
+        cursor.execute('SELECT SubUserID FROM FamilyLink WHERE SubUserID = %s', (MemID,))
         family_link_data = cursor.fetchone()
+        
         if family_link_data:
             return render_template('young.html')
 
