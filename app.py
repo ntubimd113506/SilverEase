@@ -137,8 +137,7 @@ def checkid():
         conn.close()
 
     except Exception as e:
-        print("An error occurred:", e)
-
+        return '找不到資料'
 
 
 @handler.add(MessageEvent, message=TextMessage)
