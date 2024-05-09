@@ -139,7 +139,7 @@ def checkid():
                 "result":1,
                 "option":"old"})
         # 檢查是否是子女
-        elif family_link_data!=None:
+        if family_link_data!=None:
             return redirect('young.html')
         else:
             return json.dumps({"result": 0},ensure_ascii=False)

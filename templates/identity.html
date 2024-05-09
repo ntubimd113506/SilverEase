@@ -122,10 +122,10 @@
             }
             
             console.log(response);
-            return response.json();//回應轉為JSON處理
+            return response.json(); //回應轉為JSON處理
         }).then(jsondata => {
             console.log(jsondata);
-            if (jsondata["result"]){//轉為JSON後處理的事情
+            if (jsondata["result"]){  //轉為JSON後處理的事情
                 document.getElementById(jsondata["option"]).checked=true
                 form=document.getElementById("form").submit();
             }
