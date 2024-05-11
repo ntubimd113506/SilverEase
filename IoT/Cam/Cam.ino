@@ -2,14 +2,14 @@
 #include "esp_camera.h"
 #define SERVER      "silverease.ntub.edu.tw"  // 請改成你的網站伺服器位址或域名
 #define UPLOAD_URL  "/cam/esp32cam"
-#define PORT        443 
+#define PORT 80
 
-const char* ssid = "test";
-const char* password = "0123456789";
+const char* ssid = "";
+const char* password = "";
 
 WiFiClient client;
 
-const int timerInterval = 10000;    // 上傳影像的間隔毫秒數
+const int timerInterval = 1000000;    // 上傳影像的間隔毫秒數
 unsigned long previousMillis = 0;
 
 bool initCamera() {
