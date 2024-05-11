@@ -74,6 +74,10 @@ def identity():
             else:
                 cursor.execute('INSERT INTO Member (MemID, MemName) VALUES (%s, %s)', (MemID, MemName))
                 conn.commit()
+                cursor.close()
+
+                cursor.execute('INSERT INTO Family (MainUserID) VALUES (%s, %s)', (MemID))
+                conn.commit()
 
         conn.close()
         return  render_template('old.html',data=data)
@@ -93,13 +97,13 @@ def identity():
             # 資料不存在，將使用者資料新增至資料庫
             conn = db.get_connection()
             cursor = conn.cursor()
-            cursor.execute('INSERT INTO Member (MemID, MemName) VALUES (%s, %s)', (MemID, MemName),
-            ('INSERT INTO Familylink (SubUserID) VALUES (%s,)', (MemID,)))
+            cursor.execute('INSERT INTO Member (MemID, MemName) VALUES (%s, %s)', (MemID, MemName))
+            conn.commit()
+            cursor.execute('INSERT INTO FamilyLink (SubUserID) VALUES (%s)', (MemID))
             conn.commit()
             conn.close()
             return render_template('young.html', MemID=MemID)
     
-
 @app.route("/CodeID", methods=['POST'])
 def CodeID():
     conn = db.get_connection()
