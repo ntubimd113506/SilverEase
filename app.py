@@ -93,8 +93,8 @@ def identity():
             # 資料不存在，將使用者資料新增至資料庫
             conn = db.get_connection()
             cursor = conn.cursor()
-            cursor.execute('INSERT INTO Member (MemID, MemName) VALUES (%s, %s)', (MemID, MemName))
-            cursor.execute('INSERT INTO Familylink (SubUserID) VALUES (%s,)', (MemID,))
+            cursor.execute('INSERT INTO Member (MemID, MemName) VALUES (%s, %s)', (MemID, MemName),
+            ('INSERT INTO Familylink (SubUserID) VALUES (%s,)', (MemID,)))
             conn.commit()
             conn.close()
             return render_template('young.html', MemID=MemID)
