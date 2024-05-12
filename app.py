@@ -61,6 +61,7 @@ def identity():
         #建立資料庫連線   
         conn = db.get_connection()
         cursor = conn.cursor()
+        cursor1 = conn.cursor()
 
         MemID = request.values.get('MemID')
         MemName = request.values.get('MemName')
@@ -76,7 +77,7 @@ def identity():
                 conn.commit()
                 cursor.close()
 
-                cursor.execute('INSERT INTO Family (MainUserID) VALUES (%s, %s)', (MemID))
+                cursor1.execute('INSERT INTO Family (MainUserID) VALUES (%s, %s)', (MemID))
                 conn.commit()
 
         conn.close()
@@ -99,7 +100,8 @@ def identity():
             cursor = conn.cursor()
             cursor.execute('INSERT INTO Member (MemID, MemName) VALUES (%s, %s)', (MemID, MemName))
             conn.commit()
-            cursor.execute('INSERT INTO FamilyLink (SubUserID) VALUES (%s)', (MemID))
+            cursor1 = conn.cursor()
+            cursor1.execute('INSERT INTO FamilyLink (SubUserID) VALUES (%s)', (MemID))
             conn.commit()
             conn.close()
             return render_template('young.html', MemID=MemID)
