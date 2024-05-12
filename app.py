@@ -67,20 +67,27 @@ def identity():
         MemName = request.values.get('MemName')
 
         while 1:
-            cursor.execute('SELECT CodeID FROM FamilyCode where Family.MainUserID = %s',(MemID))
+            cursor.execute('SELECT Family FROM FamilyID where MainUserID = %s',(MemID))
             data = cursor.fetchone()
         
             if data!=None:
+                # 如果找到了 FamilyID，則從 FamilyCode 表中獲取 CodeID
+                cursor.execute('SELECT CodeID FROM FamilyCode WHERE FamilyID = %s', (data[0],))
+                code_data = cursor.fetchone()
+                codeid=data[0]
+                if code_data is not None:
+                    codeid = code_data[0]
+                else:
+                    codeid = None
                 break
             else:
                 cursor.execute('INSERT INTO Member (MemID, MemName) VALUES (%s, %s)', (MemID, MemName))
                 conn.commit()
-
                 cursor1.execute('INSERT INTO Family (MainUserID) VALUES (%s)', (MemID))
                 conn.commit()
 
         conn.close()
-        return  render_template('old.html',data=data)
+        return  render_template('old.html',data=data, codeid=codeid)
     
     if request.form.get('option') == 'young':
         # 資料加入資料庫
