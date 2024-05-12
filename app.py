@@ -67,7 +67,7 @@ def identity():
         MemName = request.values.get('MemName')
 
         while 1:
-            cursor.execute('SELECT FamilyID FROM Family where MainUserID = %s',(MemID))
+            cursor.execute('SELECT CodeID FROM FamilyCode where Family.MainUserID = %s',(MemID))
             data = cursor.fetchone()
         
             if data!=None:
@@ -75,9 +75,8 @@ def identity():
             else:
                 cursor.execute('INSERT INTO Member (MemID, MemName) VALUES (%s, %s)', (MemID, MemName))
                 conn.commit()
-                cursor.close()
 
-                cursor1.execute('INSERT INTO Family (MainUserID) VALUES (%s, %s)', (MemID))
+                cursor1.execute('INSERT INTO Family (MainUserID) VALUES (%s)', (MemID))
                 conn.commit()
 
         conn.close()
