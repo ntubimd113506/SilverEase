@@ -4,7 +4,8 @@ from flask import Flask, request, abort, render_template, redirect,url_for
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import *
-from utlis import db
+from utlis import db 
+from utlis.dbFunc import get_codeID
 
 app = Flask(__name__)
 
@@ -71,12 +72,7 @@ def identity():
             data = cursor.fetchone()
         
             if data!=None:
-                cursor.execute('SELECT CodeID FROM FamilyCode WHERE FamilyID = %s', (data[0],))
-                code_data = cursor.fetchone()
-                if code_data is not None:
-                    code_id = code_data[0]
-                else:
-                    code_id = None
+                code_id = get_codeID(data[0])
                 break
             else:
                 cursor.execute('INSERT INTO Member (MemID, MemName) VALUES (%s, %s)', (MemID, MemName))
