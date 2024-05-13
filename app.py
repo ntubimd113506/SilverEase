@@ -108,7 +108,7 @@ def CodeID():
     conn = db.get_connection()
     cursor = conn.cursor()
 
-    MemID = request.values.get('MemID') #
+    MemID = request.values.get('MemID') 
 
     while 1:
         CodeID = get_codeID(data[0])

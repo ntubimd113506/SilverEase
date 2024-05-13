@@ -8,7 +8,11 @@
 <script>
     liff.getProfile()
         .then(profile => {
-            MemID = profile.userId;})</script>
+            MemID = profile.userId;})
+            .catch((err) => {
+                        console.log('error', err);
+                    });
+</script>
 <body>
     <h2>請在下方輸入資料：</h2>
     <form action="/CodeID" method="post" enctype="multipart/form-data">
