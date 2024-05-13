@@ -1,15 +1,15 @@
 #include <WiFi.h>
 #include "esp_camera.h"
 #define SERVER      "silverease.ntub.edu.tw"  // 請改成你的網站伺服器位址或域名
-#define UPLOAD_URL  "/esp32cam"
-#define PORT        80
+#define UPLOAD_URL  "/cam/esp32cam"
+#define PORT 80
 
 const char* ssid = "";
 const char* password = "";
 
 WiFiClient client;
 
-const int timerInterval = 100000000;    // 上傳影像的間隔毫秒數
+const int timerInterval = 100000;    // 上傳影像的間隔毫秒數
 unsigned long previousMillis = 0;
 
 bool initCamera() {
@@ -36,7 +36,7 @@ bool initCamera() {
     .ledc_channel   = LEDC_CHANNEL_0, // 指定產生XCLM時脈的通道
     .pixel_format   = PIXFORMAT_JPEG, // 設定影像格式：JPEG
     .frame_size     = FRAMESIZE_SVGA, // 設定影像大小：SVGA
-    .jpeg_quality   = 10,  // 設定JPEG影像畫質，有效值介於0-63，數字越低畫質越高。
+    .jpeg_quality   = 5,  // 設定JPEG影像畫質，有效值介於0-63，數字越低畫質越高。
     .fb_count       = 1    // 影像緩衝記憶區數量
   };
 
