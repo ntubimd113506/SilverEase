@@ -111,18 +111,16 @@ def CodeID():
     MemID = request.values.get('MemID') 
     CodeID = request.values.get("CodeID")
 
-    # res=cursor.execute('SELECT FamilyID FROM FamilyCode WHERE CodeID = %s', (CodeID,))
-    # if res:
-    #     data = cursor.fetchone()
-
-    #     cursor.execute('INSERT INTO FamilyLink (FamilyID, SubUserID) VALUES (%s, %s)', (data[0], MemID))
-    #     conn.commit()
-    #     conn.close()
-    #     return  '新增完成'
-    # else:
-    #     conn.close()
-    #     return '指定的 CodeID 不存在'
-    return f"{MemID}Code{CodeID}"
+    res=cursor.execute('SELECT FamilyID FROM FamilyCode WHERE CodeID = %s', (CodeID,))
+    if res:
+        data = cursor.fetchone()
+        cursor.execute('INSERT INTO FamilyLink (FamilyID, SubUserID) VALUES (%s, %s)', (data[0], MemID))
+        conn.commit()
+        conn.close()
+        return  '新增完成'
+    else:
+        conn.close()
+        return '指定的 CodeID 不存在'
 
 
 @app.route("/checkid", methods=['POST']) #確認使用者資料
@@ -153,7 +151,9 @@ def checkid():
                 "option":"old"})
         # 檢查是否是子女
         if family_link_data!=None:
-            return redirect('young.html')
+            return json.dumps({
+                "result":1,
+                "option":"young"})
         else:
             return json.dumps({"result": 0},ensure_ascii=False)
       
