@@ -12,14 +12,15 @@
         })
     liff.getProfile()
         .then(profile => {
-            MemID = profile.userId;})
+            MemID = profile.userId;
+            document.getElementById("MemID").value = MemID;
+        })
             .catch((err) => {
                         console.log('error', err);
                     })
             .catch((err) => {
             console.log('初始化失敗', err);
-        });
-                
+        });      
                 }
 </script>
 <body>
