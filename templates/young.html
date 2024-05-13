@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>輸入長輩編號</title>
 </head>
+<script>
+    liff.getProfile()
+        .then(profile => {
+            MemID = profile.userId;})</script>
 <body>
     <h2>請在下方輸入資料：</h2>
     <form action="/CodeID" method="post" enctype="multipart/form-data">
@@ -12,6 +16,7 @@
             <span class="name">長輩編號：</span>
             <span class="value">
                 <input type="text" name="CodeID" required>
+                <input type="hidden" id="MemID" name="MemID">
             </span>
             <br/>
             <span class="name"></span>

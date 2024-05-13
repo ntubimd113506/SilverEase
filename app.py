@@ -81,7 +81,7 @@ def identity():
                 conn.commit()
 
         conn.close()
-        return  render_template('old.html',data=data,code_id=code_id)
+        return  render_template('old.html', data=data, code_id=code_id)
     
     if request.form.get('option') == 'young':
         # 資料加入資料庫
@@ -108,10 +108,10 @@ def CodeID():
     conn = db.get_connection()
     cursor = conn.cursor()
 
-    MemID = request.values.get('MemID')
+    MemID = request.values.get('MemID') #
 
     while 1:
-        CodeID = request.form.get('CodeID')  
+        CodeID = get_codeID(data[0])
         cursor.execute('SELECT CodeID FROM FamilyCode WHERE CodeID = %s', (CodeID,))
         data = cursor.fetchone()
         if data != None:
