@@ -1,5 +1,6 @@
 from random import random
-from db import get_connection
+from utlis.db import get_connection
+
 def get_codeID(familyID):
   conn=get_connection()
   cur=conn.cursor()
@@ -17,11 +18,3 @@ def get_codeID(familyID):
     
   conn.close
   return codeID
-
-#測試已有data
-res1=get_codeID('20')
-#測試相同codeID會不會重新random
-res2=get_codeID('17')
-
-print(res1)
-print(res2)
