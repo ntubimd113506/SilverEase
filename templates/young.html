@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,23 +10,32 @@
     function initializeLiff(myLiffId) {
         liff.init({
             liffId: myLiffId
-        })
-    liff.getProfile()
-        .then(profile => {
-            MemID = profile.userId;
-            document.getElementById("MemID").value = MemID;
-        })
-            .catch((err) => {
-                        console.log('error', err);
+        }).then(() => {
+            if (!liff.isLoggedIn()) {
+                alert("用戶未登入");
+                liff.login();
+            } else {
+                // alert("用戶已登入");
+                liff.getProfile()
+                    .then(profile => {
+                        MemID = profile.userId;
+                        document.getElementById("MemID").value = MemID;
+                        checkMember(profile);
                     })
-            .catch((err) => {
+                    .catch((err) => {
+                        console.log('error', err);
+                    });
+            }
+
+        }).catch((err) => {
             console.log('初始化失敗', err);
-        });      
-                }
+        });
+    }
 </script>
+
 <body>
     <h2>請在下方輸入資料：</h2>
-    <form action="/CodeID" method="post" enctype="multipart/form-data">
+    <form action="/CodeID" method="post" enctype="multipart/form-data" >
         <div class="form">
             <span class="name">長輩編號：</span>
             <span class="value">
@@ -33,11 +43,8 @@
                 <input type="hidden" id="MemID" name="MemID">
             </span>
             <br/>
-            <span class="name"></span>
-                    <span class="value"><input type="submit" value="送出" style="width:80px"></span>
-                </div>
-            </form>
-
-
+            <span class="value"><input type="submit" value="送出" style="width:80px"></span>
+        </div>
+    </form>
 </body>
 </html>

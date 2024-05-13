@@ -87,6 +87,7 @@ def identity():
         # 資料加入資料庫
         conn = db.get_connection()
         cursor = conn.cursor()
+        cursor1 = conn.cursor()
 
         MemID = request.values.get('MemID')
         MemName = request.values.get('MemName')
@@ -96,12 +97,11 @@ def identity():
             return render_template('young.html', MemID=MemID)
         else:
             # 資料不存在，將使用者資料新增至資料庫
-            conn = db.get_connection()
-            cursor = conn.cursor()
             cursor.execute('INSERT INTO Member (MemID, MemName) VALUES (%s, %s)', (MemID, MemName))
             conn.commit()
-            conn.close()
-            return render_template('young.html', MemID=MemID)
+
+        conn.close()
+        return render_template('young.html', MemID=MemID)
     
 @app.route("/CodeID", methods=['POST'])
 def CodeID():
@@ -109,19 +109,21 @@ def CodeID():
     cursor = conn.cursor()
 
     MemID = request.values.get('MemID') 
+    CodeID = request.values.get("CodeID")
 
-    while 1:
-        CodeID = get_codeID(data[0])
-        cursor.execute('SELECT CodeID FROM FamilyCode WHERE CodeID = %s', (CodeID,))
-        data = cursor.fetchone()
-        if data != None:
-            cursor.execute('INSERT INTO FamilyLink (FamilyID, SubUserID) VALUES (%s)', (data[1], MemID))
-            conn.commit()
-            conn.close()
-            return  '新增完成'
-        else:
-            conn.close()
-            return '指定的 CodeID 不存在'
+    # res=cursor.execute('SELECT FamilyID FROM FamilyCode WHERE CodeID = %s', (CodeID,))
+    # if res:
+    #     data = cursor.fetchone()
+
+    #     cursor.execute('INSERT INTO FamilyLink (FamilyID, SubUserID) VALUES (%s, %s)', (data[0], MemID))
+    #     conn.commit()
+    #     conn.close()
+    #     return  '新增完成'
+    # else:
+    #     conn.close()
+    #     return '指定的 CodeID 不存在'
+    return f"{MemID}Code{CodeID}"
+
 
 @app.route("/checkid", methods=['POST']) #確認使用者資料
 def checkid():
