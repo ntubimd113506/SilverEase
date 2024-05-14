@@ -12,8 +12,17 @@
             <span class="name">編號</span>
             <span class="value">
                 <input type="text" id= 'number' value="{{code_id}}" readonly>
+                <button class="btn" style="height:21px; width:35px" type="button" onclick="copy()">
+                    <img src="copy2.png" alt="copy" style="height:13px; width:15px;" ></button>
             </span>
             <br/>
+            <script>
+                function copy() {
+                  const URL = document.getElementById('number');
+                  URL.select()
+                  navigator.clipboard.writeText(URL.value)
+                }
+              </script>
 
 </body>
 </html>
