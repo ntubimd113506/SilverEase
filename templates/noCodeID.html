@@ -18,15 +18,16 @@
     </style>
 </head>
 <body>
-    <div class="message">沒有此ID！</div>
+    <div class="message">沒有此ID！,等待自動跳轉1秒...</div>
+
 </body>
 <script>
+    // 等待 1 秒後跳轉到 young.html
     window.onload = function() {
-        // 清除當前頁面之前的歷史記錄
-        history.replaceState(null, null, location.href);
-        window.addEventListener('popstate', function(event) {
-            history.pushState(null, null, location.href);
-        });
-    };
+            setTimeout(function() {
+                window.location.href = "/young";
+            }, 1000); // 1000 毫秒 = 1 秒
+        }
+</script>
 </script>
 </html>

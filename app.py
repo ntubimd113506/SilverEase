@@ -103,6 +103,10 @@ def identity():
         conn.close()
         return render_template('young.html', MemID=MemID)
     
+@app.route('/young')
+def young():
+    return render_template('young.html')
+    
 @app.route("/CodeID", methods=['POST'])
 def CodeID():
     conn = db.get_connection()
