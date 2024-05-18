@@ -1,6 +1,6 @@
 import requests, json
 import pymysql
-from flask import Flask, request, abort, render_template, redirect,url_for
+from flask import Flask, request, abort, render_template, make_response
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import *
@@ -123,10 +123,18 @@ def CodeID():
         cursor.execute('INSERT INTO FamilyLink (FamilyID, SubUserID) VALUES (%s, %s)', (data[0], MemID))
         conn.commit()
         conn.close()
-        return  '綁定成功！'# ,{{old1}},'的子女！'
+        response = make_response(render_template('YesCodeID.html'))
+        response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '-1'
+        return response
     else:
         conn.close()
-        return '指定的 ID 不存在'
+        response = make_response(render_template('noCodeID.html'))
+        response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '-1'
+        return response
 
 
 @app.route("/checkid", methods=['POST']) #確認使用者資料
@@ -191,6 +199,7 @@ def handle_message(event):
             line_bot_api.reply_message(event.reply_token, message)
         except:
             line_bot_api.reply_message(event.reply_token,TextSendMessage(text='發生錯誤！'))
+
 
 
 if __name__ == "__main__":
