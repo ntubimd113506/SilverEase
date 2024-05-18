@@ -91,8 +91,6 @@ def identity():
 
         MemID = request.values.get('MemID')
         MemName = request.values.get('MemName')
-        session['MemID'] = MemID  # 保存 MemID 到會話
-
 
         if check_member_exists(MemID):
             # 資料已存在，執行相應的處理
@@ -129,15 +127,6 @@ def CodeID():
     else:
         conn.close()
         return render_template('noCodeID.html')
-    
-@app.errorhandler(404)
-def page_not_found(e):
-    return render_template('404.html'), 404
-
-@app.errorhandler(500)
-def internal_server_error(e):
-    return render_template('500.html'), 500
-
 
 @app.route("/checkid", methods=['POST']) #確認使用者資料
 def checkid():
