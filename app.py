@@ -112,7 +112,7 @@ def CodeID():
     conn = db.get_connection()
 
     cursor = conn.cursor()
-    cursor1 = conn.cursor()
+    # cursor1 = conn.cursor()
     # cursor2 = conn.cursor()
 
     MemID = request.values.get('MemID')
@@ -129,7 +129,7 @@ def CodeID():
     FamilyID = res[0]
     
     # 檢查在 FamilyLink 表中是否已經存在此 CodeID 和 MemID 的連結
-    cursor.execute('SELECT * FROM FamilyLink WHERE CodeID = %s AND MemID = %s', (CodeID, MemID))
+    cursor.execute('SELECT * FROM FamilyLink WHERE FamilyID = %s AND SubUserID = %s', (FamilyID, MemID))
     che = cursor.fetchone()
 
     if che:
