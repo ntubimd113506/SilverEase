@@ -108,16 +108,20 @@ def CodeID():
     conn = db.get_connection()
     cursor = conn.cursor()
 
-    MemID = request.values.get('MemID') 
+    MemID = request.values.get('MemID')
     CodeID = request.values.get("CodeID")
 
     res=cursor.execute('SELECT FamilyID FROM FamilyCode WHERE CodeID = %s', (CodeID,))
+    oldp1 = cursor.execute('SELECT MainUserID FROM Family WHERE FamilyID = %s', (res,))
+    olp2 = cursor.execute('SELECT MemName FROM Member WHERE MemID = %s', (oldp1,))
+
     if res:
         data = cursor.fetchone()
-        cursor.execute('INSERT INTO FamilyLink (FamilyID, SubUserID) VALUES (%s, %s)', (data[0], MemID))
+        now = now()
+        cursor.execute('INSERT INTO FamilyLink (FamilyID, SubUserID, CreateTime) VALUES (%s, %s)', (data[0], MemID, now))
         conn.commit()
         conn.close()
-        return  '新增完成'
+        return  '綁定成功！',{{olp2}},'的子女！'
     else:
         conn.close()
         return '指定的 CodeID 不存在'
