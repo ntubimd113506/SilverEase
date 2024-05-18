@@ -105,32 +105,41 @@ def identity():
     
 @app.route('/young')
 def young():
-    return json.dumps({"result":1, "option":"young"})
+    return render_template('young.html')
     
 @app.route("/CodeID", methods=['POST'])
 def CodeID():
     conn = db.get_connection()
 
     cursor = conn.cursor()
-    # cursor1 = conn.cursor()
+    cursor1 = conn.cursor()
     # cursor2 = conn.cursor()
 
     MemID = request.values.get('MemID')
     CodeID = request.values.get("CodeID")
 
-    res = cursor.execute('SELECT FamilyID FROM FamilyCode WHERE CodeID = %s', (CodeID,))
-    # old1 = cursor1.execute('SELECT MainUserID FROM Family WHERE FamilyID = %s', (data[0],))
-    # old2 = cursor2.execute('SELECT MemName FROM Member WHERE MemID = %s', (old1[0],))
+    # 檢查 CodeID 是否存在於 FamilyCode 表中
+    cursor.execute('SELECT FamilyID FROM FamilyCode WHERE CodeID = %s', (CodeID,))
+    res = cursor.fetchone()
+    
+    if res is None:
+        conn.close()
+        return render_template('noCodeID.html')
 
-    if res:
-        data = cursor.fetchone()
-        cursor.execute('INSERT INTO FamilyLink (FamilyID, SubUserID) VALUES (%s, %s)', (data[0], MemID))
+    FamilyID = res[0]
+    
+    # 檢查在 FamilyLink 表中是否已經存在此 CodeID 和 MemID 的連結
+    cursor.execute('SELECT * FROM FamilyLink WHERE CodeID = %s AND MemID = %s', (CodeID, MemID))
+    che = cursor.fetchone()
+
+    if che:
+        conn.close()
+        return render_template('repet.html')
+    else:
+        cursor.execute('INSERT INTO FamilyLink (FamilyID, SubUserID) VALUES (%s, %s)', (FamilyID, MemID))
         conn.commit()
         conn.close()
         return render_template('YesCodeID.html')
-    else:
-        conn.close()
-        return render_template('noCodeID.html')
 
 @app.route("/checkid", methods=['POST']) #確認使用者資料
 def checkid():
@@ -168,7 +177,6 @@ def checkid():
       
     except Exception as e:
         return json.dumps({"error": "TryError"},ensure_ascii=False)
-
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
