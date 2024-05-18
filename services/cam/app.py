@@ -36,7 +36,8 @@ def upload_file():
 @cam_bp.route('/esp32cam', methods=['POST'])
 def esp32cam():
     res = handle_file(request)
-    sent_mess(res["filename"])
+    if res["msg"] == "ok":
+        sent_mess(res["filename"])  # 確保 filename 已經正確設置
     return res['msg']
 
 def handle_file(request):
@@ -73,9 +74,11 @@ def sent_mess(filename):
     cursor = conn.cursor()  
 
     #取得傳入參數, 執行sql命令並取回資料
-    DevID = request.values.get('DevID')
+    # DevID = request.values.get('DevID')
 
-    cursor.execute('SELECT SubUserID FROM FamilyLink where FamilyID = (SELECT FamilyID FROM Family WHERE DevID=%s)', (DevID,))
+    # cursor.execute('SELECT SubUserID FROM FamilyLink where FamilyID = (SELECT FamilyID FROM Family WHERE DevID=%s)', (DevID,))
+    cursor.execute('SELECT SubUserID FROM FamilyLink where FamilyID = (SELECT FamilyID FROM Family WHERE DevID="1")')
+
     data = cursor.fetchall()
 
     conn.commit()
@@ -83,45 +86,51 @@ def sent_mess(filename):
 
     # 從資料庫檢索到的使用者資訊是一個列表，需要提取出每個使用者的 ID
     UserIDs = [row[0] for row in data]
+    print(UserIDs)
 
-    headers = {'Authorization':f'Bearer {db.LINE_TOKEN}','Content-Type':'application/json'}
-    body = {
-        'to': UserIDs,
-        "messages": [
-            {
-                "type": "template",
-                "template": {
-                    "type": "confirm",
-                    "text": "緊急通知",
-                    "actions": [
-                        {
-                            "type": "message",
-                            "label": "收到",
-                            "text": "收到"
-                        }
-                    ]
+    for userID in UserIDs:
+        print(userID)
+        url=str("https://silverease.ntub.edu.tw/cam/img/" + filename).replace(" ","%20")
+        # url.replace
+        headers = {'Authorization':f'Bearer {db.LINE_TOKEN}','Content-Type':'application/json'}
+        body = {
+            'to': userID,
+            "messages": [
+                {
+                    "type": "template",
+                    "altText": "緊急通知!!!",
+                    "template": {
+                        "type": "confirm",
+                        "text": "緊急通知",
+                        "actions": [
+                            {
+                                "type": "message",
+                                "label": "收到",
+                                "text": "收到"
+                            },
+                            {
+                                "type": "message",
+                                "label": "收到1",
+                                "text": "收到1"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "type": "image",
+                    "originalContentUrl": url,
+                    "previewImageUrl": url
                 }
-            },
-            {
-                "type": "image",
-                "originalContentUrl": "https://silverease.ntub.edu.tw/static/uploads/" + filename,
-                "previewImageUrl": "https://silverease.ntub.edu.tw/static/uploads/" + filename
-            }
-        ]
-    }
-        
-    # 向指定網址發送 request
-    req = requests.request('POST', 'https://api.line.me/v2/bot/message/push',headers=headers,data=json.dumps(body).encode('utf-8'))
-    # 印出得到的結果
-    print(req.text)
+            ]
+        }
+            
+        # 向指定網址發送 request
+        req = requests.request('POST', 'https://api.line.me/v2/bot/message/push',headers=headers,data=json.dumps(body).encode('utf-8'))
+        # 印出得到的結果
+        print(req.text)
     return "GOOD"
    
-
-
     """
-    'type': 'text',
-    'text': '緊急通知',
-    'image': filepath
     飯粒在這    
     https://developers.line.biz/en/docs/messaging-api/message-types/#template-messages
     """

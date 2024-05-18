@@ -1,5 +1,5 @@
 from flask import request, render_template, redirect, url_for
-from flask_apscheduler import APScheduler
+#from flask_apscheduler import APScheduler
 from datetime import datetime, timedelta
 import sqlite3
 from flask import Blueprint
@@ -179,9 +179,9 @@ def event_read():
         return render_template('not_found.html')
     
 #初始化APScheduler
-scheduler = APScheduler()
-scheduler.init_app(event_bp)
-scheduler.start()
+# scheduler = APScheduler()
+# scheduler.init_app(event_bp)
+# scheduler.start()
 
 #通知
 def send_notification():
@@ -207,5 +207,5 @@ def schedule_notification():
     # 設定任務執行時間，這裡設定在當前時間的 10 秒後執行
     job_time = datetime.now() + timedelta(seconds=10)
     # 註冊任務
-    scheduler.add_job(send_notification, 'date', run_date=job_time)
+    # scheduler.add_job(send_notification, 'date', run_date=job_time)
     return '通知任務已成功安排！'
