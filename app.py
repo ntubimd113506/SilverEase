@@ -105,7 +105,7 @@ def identity():
     
 @app.route('/young')
 def young():
-    return render_template('young.html')
+    return json.dumps({"result":1, "option":"young"})
     
 @app.route("/CodeID", methods=['POST'])
 def CodeID():
