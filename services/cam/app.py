@@ -36,7 +36,7 @@ def upload_file():
 @cam_bp.route('/esp32cam', methods=['POST'])
 def esp32cam():
     res = handle_file(request)
-    sent_mess(res["filepath"])
+    sent_mess(res["filename"])
     return res['msg']
 
 def handle_file(request):
@@ -61,14 +61,11 @@ def handle_file(request):
                 UPLOAD_FOLDER, filename
                 ))
             # 傳回代表上傳成功的訊息以及檔名。
-            filepath=os.path.join(
-                UPLOAD_FOLDER, filename
-                )
-            return {"msg": 'ok', "filename": filename, "path": filepath}
+            return {"msg": 'ok', "filename": filename}
         else:
             return {"msg": 'type_error'}  # 傳回代表「檔案類型錯誤」的訊息
 
-def sent_mess(filepath):
+def sent_mess(filename):
     #取得資料庫連線
     conn = db.get_connection()
 
@@ -89,19 +86,45 @@ def sent_mess(filepath):
 
     headers = {'Authorization':f'Bearer {db.LINE_TOKEN}','Content-Type':'application/json'}
     body = {
-        'to':UserIDs,
-        'messages':[{
-                'type': 'text',
-                'text': '緊急通知',
-                'type': 'image',
-                'image': filepath
-            }]
-        }
+        'to': UserIDs,
+        "messages": [
+            {
+                "type": "template",
+                "template": {
+                    "type": "confirm",
+                    "text": "緊急通知",
+                    "actions": [
+                        {
+                            "type": "message",
+                            "label": "收到",
+                            "text": "收到"
+                        }
+                    ]
+                }
+            },
+            {
+                "type": "image",
+                "originalContentUrl": "https://silverease.ntub.edu.tw/static/uploads/" + filename,
+                "previewImageUrl": "https://silverease.ntub.edu.tw/static/uploads/" + filename
+            }
+        ]
+    }
+        
     # 向指定網址發送 request
     req = requests.request('POST', 'https://api.line.me/v2/bot/message/push',headers=headers,data=json.dumps(body).encode('utf-8'))
     # 印出得到的結果
     print(req.text)
     return "GOOD"
+   
+
+
+    """
+    'type': 'text',
+    'text': '緊急通知',
+    'image': filepath
+    飯粒在這    
+    https://developers.line.biz/en/docs/messaging-api/message-types/#template-messages
+    """
 
 @cam_bp.route('/img/<filename>')
 def display_image(filename):
