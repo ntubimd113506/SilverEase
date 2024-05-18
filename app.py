@@ -1,6 +1,6 @@
 import requests, json
 import pymysql
-from flask import Flask, request, abort, render_template, make_response
+from flask import Flask, request, abort, render_template, redirect,url_for, session
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import *
@@ -91,6 +91,8 @@ def identity():
 
         MemID = request.values.get('MemID')
         MemName = request.values.get('MemName')
+        session['MemID'] = MemID  # 保存 MemID 到會話
+
 
         if check_member_exists(MemID):
             # 資料已存在，執行相應的處理
@@ -123,18 +125,18 @@ def CodeID():
         cursor.execute('INSERT INTO FamilyLink (FamilyID, SubUserID) VALUES (%s, %s)', (data[0], MemID))
         conn.commit()
         conn.close()
-        response = make_response(render_template('YesCodeID.html'))
-        response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0'
-        response.headers['Pragma'] = 'no-cache'
-        response.headers['Expires'] = '-1'
-        return response
+        return render_template('YesCodeID.html')
     else:
         conn.close()
-        response = make_response(render_template('noCodeID.html'))
-        response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0'
-        response.headers['Pragma'] = 'no-cache'
-        response.headers['Expires'] = '-1'
-        return response
+        return render_template('noCodeID.html')
+    
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    return render_template('500.html'), 500
 
 
 @app.route("/checkid", methods=['POST']) #確認使用者資料
@@ -199,6 +201,7 @@ def handle_message(event):
             line_bot_api.reply_message(event.reply_token, message)
         except:
             line_bot_api.reply_message(event.reply_token,TextSendMessage(text='發生錯誤！'))
+
 
 
 
