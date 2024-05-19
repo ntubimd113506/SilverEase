@@ -91,36 +91,36 @@ def sent_mess(filename):
     for userID in UserIDs:
         print(userID)
         url=str("https://silverease.ntub.edu.tw/cam/img/" + filename).replace(" ","%20")
-        # url.replace
         headers = {'Authorization':f'Bearer {db.LINE_TOKEN}','Content-Type':'application/json'}
         body = {
             'to': userID,
-            "messages": [
-                {
-                    "type": "template",
-                    "altText": "緊急通知!!!",
-                    "template": {
-                        "type": "confirm",
-                        "text": "緊急通知",
+            "messages": 
+                [
+                    {
+                        "type": "template",
+                        "altText": "緊急通知!!!",
+                        "template": {
+                        "type": "buttons",
+                        "thumbnailImageUrl": url,
+                        "imageAspectRatio": "rectangle",
+                        "imageSize": "cover",
+                        "imageBackgroundColor": "#FFFFFF",
+                        "title": "緊急通知",
+                        "text": "是否收到",
+                        "defaultAction": {
+                            "type": "uri",
+                            "label": "View detail",
+                            "uri": url
+                        },
                         "actions": [
                             {
                                 "type": "message",
                                 "label": "收到",
                                 "text": "收到"
-                            },
-                            {
-                                "type": "message",
-                                "label": "收到1",
-                                "text": "收到1"
                             }
                         ]
                     }
-                },
-                {
-                    "type": "image",
-                    "originalContentUrl": url,
-                    "previewImageUrl": url
-                }
+                }           
             ]
         }
             
