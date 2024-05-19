@@ -66,6 +66,10 @@ void postImage() {
     Serial.println("開始上傳影像…");     
 
     String boundBegin = "--ESP32CAM\r\n";
+    boundBegin += "Content-Disposition: form-data; name=\"DevID\"\r\n";
+    boundBegin += "\r\n";
+    boundBegin += "1\"\r\n";
+    boundBegin +="--ESP32CAM\r\n";
     boundBegin += "Content-Disposition: form-data; name=\"filename\"; filename=\"pict.jpg\"\r\n";
     boundBegin += "Content-Type: image/jpeg\r\n";
     boundBegin += "\r\n";
