@@ -105,7 +105,40 @@ def identity():
     
 @app.route('/young')
 def young():
-    return render_template('young.html')
+    try:
+        conn = db.get_connection()
+        cursor = conn.cursor()
+
+        # 獲取使用者的MemID
+        data = json.loads(request.get_data(as_text=True))
+        MemID = data['MemID']
+
+        # ==================  ==================
+        
+        '''https://ithelp.ithome.com.tw/m/articles/10300064'''
+
+        #==================  ==================
+        cursor.execute('SELECT MainUserID FROM Family WHERE MainUserID = %s', (MemID))
+        member_data = cursor.fetchone()
+        cursor.execute('SELECT SubUserID FROM FamilyLink WHERE SubUserID = %s', (MemID))
+        family_link_data = cursor.fetchone()
+        
+        conn.close()
+        # 檢查是否是長輩
+        if member_data!=None:
+            return json.dumps({
+                "result":1,
+                "option":"old"})
+        # 檢查是否是子女
+        if family_link_data!=None:
+            return json.dumps({
+                "result":1,
+                "option":"young"})
+        else:
+            return json.dumps({"result": 0},ensure_ascii=False)
+      
+    except Exception as e:
+        return json.dumps({"error": "TryError"},ensure_ascii=False)
     
 @app.route("/CodeID", methods=['POST'])
 def CodeID():
