@@ -18,14 +18,14 @@
     </style>
 </head>
 <body>
-    <div class="message">綁定成功！,<input value='{{old}}'>的子女<br>,等待自動跳轉1秒...</div>
+    <div class="message">綁定成功！,{{old |e}}的照護者<br>,等待自動跳轉...</div>
 </body>
 <script>
     // 等待 1 秒後跳轉到 young.html
     window.onload = function() {
             setTimeout(function() {
                 window.location.href = "/young";
-            }, 1000); // 1000 毫秒 = 1 秒
+            }, 1500); // 1000 毫秒 = 1 秒
         }
 </script>
 </html>

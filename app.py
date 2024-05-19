@@ -113,6 +113,7 @@ def CodeID():
 
     cursor = conn.cursor()
     cursor1 = conn.cursor()
+    cursor2 = conn.cursor()
 
     MemID = request.values.get('MemID')
     CodeID = request.values.get("CodeID")
@@ -137,10 +138,14 @@ def CodeID():
     else:
         cursor.execute('INSERT INTO FamilyLink (FamilyID, SubUserID) VALUES (%s, %s)', (FamilyID, MemID))
         cursor1.execute('SELECT MainUserID FROM Family WHERE FamilyID = %s', (FamilyID,))
-        old = cursor1.fetchone()
+        old1 = cursor1.fetchone()
+        oldID = old1[0]
+        cursor2.execute('SELECT MemName FROM Member WHERE MemID = %s', (oldID,))
+        old2 = cursor2.fetchone()
+        old = old2[0]
         conn.commit()
         conn.close()
-        return render_template('YesCodeID.html' ,old=old)
+        return render_template('YesCodeID.html' , old=old)
 
 @app.route("/checkid", methods=['POST']) #確認使用者資料
 def checkid():
