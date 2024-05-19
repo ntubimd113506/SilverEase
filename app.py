@@ -105,48 +105,14 @@ def identity():
     
 @app.route('/young')
 def young():
-    try:
-        conn = db.get_connection()
-        cursor = conn.cursor()
-
-        # 獲取使用者的MemID
-        data = json.loads(request.get_data(as_text=True))
-        MemID = data['MemID']
-
-        # ==================  ==================
-        
-        '''https://ithelp.ithome.com.tw/m/articles/10300064'''
-
-        #==================  ==================
-        cursor.execute('SELECT MainUserID FROM Family WHERE MainUserID = %s', (MemID))
-        member_data = cursor.fetchone()
-        cursor.execute('SELECT SubUserID FROM FamilyLink WHERE SubUserID = %s', (MemID))
-        family_link_data = cursor.fetchone()
-        
-        conn.close()
-        # 檢查是否是長輩
-        if member_data!=None:
-            return json.dumps({
-                "result":1,
-                "option":"old"})
-        # 檢查是否是子女
-        if family_link_data!=None:
-            return json.dumps({
-                "result":1,
-                "option":"young"})
-        else:
-            return json.dumps({"result": 0},ensure_ascii=False)
-      
-    except Exception as e:
-        return json.dumps({"error": "TryError"},ensure_ascii=False)
+    return render_template('young.html')
     
 @app.route("/CodeID", methods=['POST'])
 def CodeID():
     conn = db.get_connection()
 
     cursor = conn.cursor()
-    # cursor1 = conn.cursor()
-    # cursor2 = conn.cursor()
+    cursor1 = conn.cursor()
 
     MemID = request.values.get('MemID')
     CodeID = request.values.get("CodeID")
@@ -170,9 +136,11 @@ def CodeID():
         return render_template('repet.html')
     else:
         cursor.execute('INSERT INTO FamilyLink (FamilyID, SubUserID) VALUES (%s, %s)', (FamilyID, MemID))
+        cursor1.execute('SELECT MainUserID FROM Family WHERE FamilyID = %s', (FamilyID,))
+        old = cursor1.fetchone()
         conn.commit()
         conn.close()
-        return render_template('YesCodeID.html')
+        return render_template('YesCodeID.html' ,old=old)
 
 @app.route("/checkid", methods=['POST']) #確認使用者資料
 def checkid():
