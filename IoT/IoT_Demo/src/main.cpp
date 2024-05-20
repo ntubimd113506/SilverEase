@@ -14,6 +14,8 @@
 AsyncWebServer webServer(80);
 WiFiClient client;
 
+bool btn_flag=false;
+
 bool initCamera() {
   // 設定攝像頭的接腳和影像格式與尺寸
   static camera_config_t camera_config = {
@@ -140,25 +142,29 @@ void setup()
   initCamera();
   Serial.begin(115200);
   pinMode(BTN, INPUT);
-  // pinMode(FLASH, OUTPUT);
   pinMode(BUZZ, OUTPUT);
-
-  // digitalWrite(FLASH, HIGH);
-  // tone(BUZZ, 800, 5000);
   Serial.println(WiFiConfig.connectWiFi());
 }
 
 void loop()
 {
-  while (WiFi.status() == WL_CONNECTED){
-    Serial.println(digitalRead(BTN));
-    if (digitalRead(BTN)==LOW){
+  if (WiFi.status() == WL_CONNECTED){
+    delay(1000);
+    Serial.println(digitalRead(BTN)==LOW && btn_flag==false);
+    if (digitalRead(BTN)==LOW && btn_flag==false){
+      btn_flag = true;
       tone(BUZZ, 800, 5000);
+      noTone(BUZZ);
       Serial.println("按下按鈕");
       postImage();
+      tone(BUZZ, 1280, 3000);
+      noTone(BUZZ);
+      delay(2000);
     }
+  }
+
+  else{
+    WiFiConfig.connectWiFi();
     delay(500);
   }
-  WiFiConfig.connectWiFi();
-  delay(500);
 }
