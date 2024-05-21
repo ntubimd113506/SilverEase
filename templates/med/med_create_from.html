@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>測試</title>
+</head>
+   
+<body>
+    <!--**************************-->
+    <div class="container">    
+        <!--~~~~~~~~~~~~~~~~~-->
+        <div class="header">           
+        </div>        
+        
+        <!--~~~~~~~~~~~~~~~~~-->     
+        <ul id="navigation">        
+            <li><a href="/">返回主頁</a></li> 
+        </ul>
+        
+        <!--~~~~~~~~~~~~~~~~~--> 
+        <div class="content">
+            <h2>新增</h2>
+
+            <form action="/date/create" method="post" enctype="multipart/form-data">
+                <div class="form">
+                    <span class="name">外觀</span>
+                    <span class="value">
+                        <input type="text" name="MedFeature" required>
+                    </span>
+                    <br/>
+
+                    <span class="name">循環</span>
+                    <span class="value">
+                        <input type="datetime" name="Cycle">
+                    </span>
+                    <br/>
+
+                    <span class="name"></span>
+                    <span class="value"><input type="submit" value="新增" style="width:80px"></span>
+                </div>
+            </form>
+               
+        </div>       
+        
+        <!--~~~~~~~~~~~~~~~~~--> 
+        <div class="footer">
+        </div>  
+    </div>  
+</body>
+   
+</html>
