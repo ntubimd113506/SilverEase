@@ -4,7 +4,12 @@
 <meta charset="utf-8">
 <title>測試</title>
 </head>
-   
+<script src="static/js/liff.js"></script>
+<script>
+    liff.getProfile().then(profile => {
+        document.getElementById("userID").value = profile.userId;
+    }).catch(err => console.error(err));
+</script>
 <body>
     <!--**************************-->
     <div class="container">    
@@ -54,6 +59,7 @@
                     <span class="name"></span>
                     <span class="value"><input type="submit" value="新增" style="width:80px"></span>
                 </div>
+                <input type="hidden" id="userID" name="userID">
             </form>
                
         </div>       
