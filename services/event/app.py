@@ -27,7 +27,7 @@ def event_create():
 
         #將資料加入
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO Memo (Title, DateTime, Type) VALUES (%s, %s, %s)",
+        cursor.execute("INSERT INTO Memo (Title, DateTime, Type) VALUES (%s, %s, `3`)",
                         (Title, DateTime, Type))
         cursor.execute("INSERT INTO Event (Location) VALUES (%s)", (Location))
         conn.commit()
@@ -40,12 +40,13 @@ def event_create():
         return render_template('create_fail.html')
 
 #刪除
-@event_bp.route('/delete/form')
-def event_delete_form():
-    return render_template('/event/event_delete_form.html') 
+# @event_bp.route('/delete/form')
+# def event_delete_form():
+#     return render_template('/event/event_delete_form.html') 
 
 #刪除確認
-@event_bp.route('/delete/confirm', methods=['GET'])
+# @event_bp.route('/delete/confirm', methods=['GET'])
+@event_bp.route('/delete/confirm')
 def event_delete_confirm():
     #取得資料庫連線    
     connection = db.get_connection()  
@@ -92,15 +93,16 @@ def event_delete():
         return render_template('delete_fail.html')
     
 #更改
-@event_bp.route('/update/form')
-def event_update_form():
-    return render_template('/event/event_update_form.html') 
+# @event_bp.route('/update/form')
+# def event_update_form():
+#     return render_template('/event/event_update_form.html') 
 
 #更改確認
-@event_bp.route('/update/confirm', methods=['GET'])
+# @event_bp.route('/update/confirm', methods=['GET'])
+@event_bp.route('/update/confirm')
 def event_update_confirm():
-    #取得資料庫連線    
-    connection = db.get_connection()  
+    #取得資料庫連線
+    connection = db.get_connection()
     
     #取得執行sql命令的cursor
     cursor = connection.cursor()   
@@ -108,6 +110,7 @@ def event_update_confirm():
     #取得傳入參數, 執行sql命令並取回資料  
     MemoID = request.values.get('MemoID').strip().upper()
       
+    cursor.execute('SELECT * FROM Memo WHERE MemoID=%s', (MemoID,))
     cursor.execute('SELECT * FROM Event WHERE MemoID=%s', (MemoID,))
     data = cursor.fetchone()
 
@@ -149,13 +152,13 @@ def event_update():
         return render_template('update_fail.html')
 
 #查詢
-@event_bp.route('/read/form')
-def event_read_form():
-    return render_template('/event/event_read_form.html') 
-
+# @event_bp.route('/read/form')
+# def event_read_form():
+#     return render_template('/event/event_read_form.html') 
 
 #查詢
-@event_bp.route('/read', methods=['GET'])
+# @event_bp.route('/read', methods=['GET'])
+@event_bp.route('/read')
 def event_read():    
     #取得資料庫連線    
     conn = db.get_connection()
@@ -167,7 +170,7 @@ def event_read():
     MemoID = request.values.get('MemoID').strip().upper()
       
     cursor.execute('SELECT * FROM Memo WHERE MemoID=%s', (MemoID,)and 'SELECT * FROM Event WHERE MemoID=%s', (MemoID,))
-    data = cursor.fetchone()
+    data = cursor.fetchall()
 
     #關閉連線 
     conn.close()  
@@ -177,35 +180,3 @@ def event_read():
         return render_template('/event/event_read.html', data=data) 
     else:
         return render_template('not_found.html')
-    
-#初始化APScheduler
-# scheduler = APScheduler()
-# scheduler.init_app(event_bp)
-# scheduler.start()
-
-#通知
-def send_notification():
-    #取得資料庫連線
-    conn = db.get_connection()
-    
-    #取得執行sql命令的cursor
-    cursor = conn.cursor()   
-    
-    #取得傳入參數, 執行sql命令並取回資料  
-    DateTime = request.values.get('DateTime')
-      
-    cursor.execute('SELECT * FROM Memo WHERE MemoID=%s', (DateTime,))
-    data = cursor.fetchall()
-    conn.close()
-    
-    # 發送通知
-    for item in data:
-        print(f"Sending notification: {item} at {datetime.now()}")
-
-@event_bp.route('/schedule_notification')
-def schedule_notification():
-    # 設定任務執行時間，這裡設定在當前時間的 10 秒後執行
-    job_time = datetime.now() + timedelta(seconds=10)
-    # 註冊任務
-    # scheduler.add_job(send_notification, 'date', run_date=job_time)
-    return '通知任務已成功安排！'
