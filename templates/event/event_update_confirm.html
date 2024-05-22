@@ -20,7 +20,7 @@
         
         <!--~~~~~~~~~~~~~~~~~-->        
         <ul id="navigation">        
-            <li><a href="/">返回主頁</a></li> 
+            <li><a href="/event/">返回主頁</a></li> 
         </ul>
         
         <!--~~~~~~~~~~~~~~~~~--> 
@@ -31,19 +31,19 @@
                 <div class="form">
                     <span class="name">名稱</span>
                     <span class="value">
-                        <input type="text" name="Title" value="Title" required>
+                        <input type="text" name="Title" value="{{data[2]}}" required>
                     </span>
                     <br/>
 
                     <span class="name">日期</span>
                     <span class="value">
-                        <input type="text" name="DateTime" value="DateTime" required>
+                        <input type="text" name="DateTime" value="{{data[3]}}" required>
                     </span>
                     <br/>
 
                     <span class="name">地點</span>
                     <span class="value">
-                        <input type="text" name="Location" value="Location">
+                        <input type="text" name="Location" value="{{data[7]}}">
                     </span>
                     <br/>
 
@@ -53,29 +53,7 @@
             </form>
                
         </div>       
-        
-        <!--~~~~~~~~~~~~~~~~~--> 
-        <div class="footer">
-            NTUB imd, 2023.
-        </div>  
-    </div>
-    <!--**************************-->    
-    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-   
-    <script>
-        function checkPW(){
-            var pw1 = document.getElementById("pw1").value;
-            var pw2 = document.getElementById("pw2").value;
-			
-            if (pw1!=pw2) {
-                swal('輸入錯誤', '[密碼]與[確認密碼]輸入的內容不同!', 'error');
-                return false;
-            }else{
-                return true;	
-            }
-        }
-    </script>    
-   <!--**************************-->       
+    </div>  
 </body>
    
 </html>

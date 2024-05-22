@@ -14,7 +14,7 @@
         
         <!--~~~~~~~~~~~~~~~~~-->        
         <ul id="navigation">        
-            <li><a href="/">返回主頁</a></li> 
+            <li><a href="/event/">返回主頁</a></li> 
         </ul>
         
         <!--~~~~~~~~~~~~~~~~~--> 
@@ -26,8 +26,8 @@
                     <thead>
                         <tr>
                             <th>標題</th>
-                            <th>客戶名稱</th>
-                            <th>地址</th>
+                            <th>時間</th>
+                            <th>地點</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -35,21 +35,15 @@
                     <tbody>
                         {% for d in data %}
                             <tr>
-                                <td>{{d[1]}}</td>
-                                <td>{{d[1]}}</td>
-                                <td>{{d[4]}}</td>
-                                <td><a href="/event/read?cusno={{d[0]}}">詳細</a></td>
+                                <td>{{d[2]}}</td>
+                                <td>{{d[3]}}</td>
+                                <td>{{d[7]}}</td>
+                                <td><a href="/event/update?MemoID={{d[0]}}">編輯</a></td>
                             </tr>
                         {% endfor %}                        
                     </tbody>
-                    
                 </table>
-
-                <div class="pagination">
-                    {{ pagination.links }}
-                </div>
             </p>       
-               
         </div>       
     </div>
 </body>

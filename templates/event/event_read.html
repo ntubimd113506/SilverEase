@@ -14,7 +14,7 @@
         
         <!--~~~~~~~~~~~~~~~~~-->        
         <ul id="navigation">        
-            <li><a href="/">返回主頁</a></li> 
+            <li><a href="/event/">返回主頁</a></li> 
         </ul>
         
         <!--~~~~~~~~~~~~~~~~~--> 
@@ -25,19 +25,19 @@
                 <div class="form">
                     <span class="name">名稱</span>
                     <span class="value">
-                        <input type="text" value="Title" readonly>
+                        <input type="text" value="{{data[2]}}" readonly>
                     </span>
                     <br/>
 
                     <span class="name">時間</span>
                     <span class="value">
-                        <input type="eventtime" value="DateTime" readonly>
+                        <input type="eventtime" value="{{d[3]}}" readonly>
                     </span>
                     <br/>
 
                     <span class="name">地點</span>
                     <span class="value">
-                        <input type="text" value="Location" readonly>
+                        <input type="text" value="{{d[4]}}" readonly>
                     </span>
                     <br/>
                 </div>
