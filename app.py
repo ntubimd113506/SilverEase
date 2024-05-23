@@ -56,31 +56,32 @@ def check_member_exists(MemID):  #確認使用者資料是否存在資料庫中
 
     return member is not None 
 
-@app.route('/identity/oy' ,methods=['POST'])
+@app.route('/identity/oy')
 def identity():
+    return render_template("old.html")
     if request.form.get('option') == 'old':
         #建立資料庫連線   
-        conn = db.get_connection()
-        cursor = conn.cursor()
-        cursor1 = conn.cursor()
+        # conn = db.get_connection()
+        # cursor = conn.cursor()
+        # cursor1 = conn.cursor()
 
-        MemID = request.values.get('MemID')
-        MemName = request.values.get('MemName')
+        # MemID = request.values.get('MemID')
+        # MemName = request.values.get('MemName')
 
-        while 1:
-            cursor.execute('SELECT FamilyID FROM Family where MainUserID = %s',(MemID))
-            data = cursor.fetchone()
+        # while 1:
+        #     cursor.execute('SELECT FamilyID FROM Family where MainUserID = %s',(MemID))
+        data = 8787
         
-            if data!=None:
-                code_id = get_codeID(data[0])
-                break
-            else:
-                cursor.execute('INSERT INTO Member (MemID, MemName) VALUES (%s, %s)', (MemID, MemName))
-                conn.commit()
-                cursor1.execute('INSERT INTO Family (MainUserID) VALUES (%s)', (MemID))
-                conn.commit()
+        #     if data!=None:
+        code_id = 132
+        #         break
+        #     else:
+        #         cursor.execute('INSERT INTO Member (MemID, MemName) VALUES (%s, %s)', (MemID, MemName))
+        #         conn.commit()
+        #         cursor1.execute('INSERT INTO Family (MainUserID) VALUES (%s)', (MemID))
+        #         conn.commit()
 
-        conn.close()
+        # conn.close()
         return  render_template('old.html', data=data, code_id=code_id)
     
     if request.form.get('option') == 'young':

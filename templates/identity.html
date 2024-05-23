@@ -1,9 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+<!-- <html lang="en"> -->
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>身分設定</title>
+
+    <!-- 連結css檔 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Satisfy&display=swap" rel="stylesheet">
+
+    <link href="/static/css/main.css" rel="stylesheet" />
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>選擇按鈕</title>
     <style>
         /*視窗*/
@@ -29,39 +38,44 @@
             box-shadow: 5px 5px 10px #888888;
             /* 阴影效果 */
         }
-    </style>
+    </style> -->
 </head>
 
 <body>
-    <div class="row" style="margin: 10px">
-        <div class="center-image">
-            <img id="myImage" src="" alt="圖片" class="rounded-image shadowed-image" width="300px" height="300px">
-            <h1 id="name" style="text-align: center;"> </h1>
+    <div class="container">
+        <div class="header">
+            <h1>SilverEase</h1>
+        </div>
+
+        <div class="content">
+            <div class="row">
+                <div class="center-image">
+                    <h1 text="Hi!" id="name" style="height: 60px; text-align: center; margin: 0%;"></h1>
+                </div>
+            </div>
+            <img src="/static/imgs/main.png" class="p">
+            <div class="form">
+                <form id="form" action="/identity/oy" method="post">
+                    <!-- <input class="card" type="button" id="old" name="option" value="長輩">
+                    <input class="card" type="button" id="young" name="option" value="照護者"> -->
+
+                    <input type="radio" id="old" name="option" value="old">
+                    <span class="name">長輩</span>
+        
+                    <input type="radio" id="young" name="option" value="young">
+                    <span class="name">照護者</span>
+                    
+                    <!-- <input type="hidden" id="MemID" name="MemID">
+                    <input type="hidden" id="MemName" name="MemName">
+                    <input type="hidden" id="checkMember" name="checkMember"> -->
+
+                    <div class="value"><input class="button" type="submit" value="確認" id="myButton"></div>
+                </form>
+            </div>
         </div>
     </div>
-
-    <h2>請選擇一個身分：</h2>
-
-    <div class="form">
-        <form id="form" action="/identity/oy" method="post">
-
-            <input type="radio" id="old" name="option" value="old">
-            <span class="name">長輩</span>
-
-            <input type="radio" id="young" name="option" value="young">
-            <span class="name">照護者</span>
-
-            <input type="hidden" id="MemID" name="MemID">
-            <input type="hidden" id="MemName" name="MemName">
-            <input type="hidden" id="checkMember" name="checkMember">
-
-            <span class="value"><input type="submit" value="新增" style="width:80px"></span>
-
-        </form>
-    </div>
-
 </body>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
 <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
 <script>
     var MemID;
@@ -120,16 +134,16 @@
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-            
+
             console.log(response);
             return response.json(); //回應轉為JSON處理
         }).then(jsondata => {
             console.log(jsondata);
-            if (jsondata["result"]){  //轉為JSON後處理的事情
-                document.getElementById(jsondata["option"]).checked=true
-                form=document.getElementById("form").submit();
+            if (jsondata["result"]) {  //轉為JSON後處理的事情
+                document.getElementById(jsondata["option"]).checked = true
+                form = document.getElementById("form").submit();
             }
-            
+
 
         }).catch(error => {
             console.log('發送資料錯誤:', error);
@@ -139,6 +153,6 @@
     $(document).ready(function () {
         initializeLiff('{{ liffid }}');  //接收傳遞的 liffid 參數
     });
-</script>
+</script> -->
 
 </html>

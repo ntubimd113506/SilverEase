@@ -5,6 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>輸入長輩編號</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Satisfy&display=swap" rel="stylesheet">
+        
+    <link href="/static/css/code.css" rel="stylesheet" />
 </head>
 <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
 <script>
@@ -35,17 +41,28 @@
 </script>
 
 <body onload="initializeLiff('2004699458-OR9pkZjP')">
-    <h2>請在下方輸入資料：</h2>
-    <form action="/CodeID" method="post" enctype="multipart/form-data" >
-        <div class="form">
-            <span class="name">長輩編號：</span>
-            <span class="value">
-                <input type="text" name="CodeID" required>
-                <input type="hidden" id="MemID" name="MemID">
-            </span>
-            <br/>
-            <span class="value"><input type="submit" value="送出" style="width:80px"></span>
+    <div class="container">
+        <div class="header">
+            <h1>SilverEase</h1>
         </div>
-    </form>
+
+        <div class="content">
+            <h1>群組代碼</h1>
+            <img src="/static/imgs/code.png" class="b">
+            <form action="/CodeID" method="post" enctype="multipart/form-data" >
+                <div class="form">
+                    <h4>請輸入群組代碼</h4>
+
+                    <div class="cardrow">
+                    <span class="value">
+                        <input class="input" type="text" name="CodeID" placeholder="輸入代碼" required></br>
+                        <input type="hidden" id="MemID" name="MemID">
+                    </span>
+                    </div>
+                    <span class="value"><input type="submit" value="確認"></span>
+                </div>
+            </form>
+        </div>
+    </div>
 </body>
 </html>

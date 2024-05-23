@@ -4,7 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>綁定成功</title>
-    <style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Satisfy&display=swap" rel="stylesheet">
+        
+    <link href="/static/css/return.css" rel="stylesheet" />
+    <!-- <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
@@ -15,10 +20,21 @@
             font-size: 24px;
             font-weight: bold;
         }
-    </style>
+    </style> -->
 </head>
-<body>
-    <div class="message">綁定成功！,{{old |e}}的照護者<br>,等待自動跳轉...</div>
+<body>    <div class="container">
+    <div class="header">
+        <h1>SilverEase</h1>
+    </div>
+
+    <div class="content">
+        <div class="clear"></div>
+        <img src="/static/imgs/check.png" class="b">
+        
+        <div class="message"><h4>綁定成功！,{{old |e}}的照護者</h4></div>
+        <p>等待自動跳轉...</p>
+    </div>
+</div>    
 </body>
 <script>
     // 等待 1 秒後跳轉到 young.html

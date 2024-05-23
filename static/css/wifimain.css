@@ -1,0 +1,104 @@
+
+@charset "utf-8";
+
+/* ------------------- */
+/* html, body          */
+/* ------------------- */
+html, body{
+    font-family: 'Noto Sans TC', sans-serif;
+    background-color: #f4f9f7;
+    padding: 0%;
+    margin: 0%;
+}
+
+
+/* ------------------- */
+/* container           */
+/* ------------------- */
+div.container{
+    width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: justify;
+    line-height: 26px;
+    background-color: #ffffff;
+}
+
+/* ------------------- */
+/* header              */
+/* ------------------- */
+div.header{
+    display: flex;
+    /* 水平置中 */
+    justify-content: center;  
+    padding: 10px;
+    height: 40px;
+    background-color: #9FB889;
+}
+
+div.header h1{
+    font-size: 30px;
+    width: 200px;
+    padding: 5px;
+    text-align:center;
+    letter-spacing: 3px;
+    margin: 0%;
+}
+
+/* ------------------- */
+/* content             */
+/* ------------------- */
+div.content{
+    background-color: #F5F5F5;
+    height: 600px;
+    padding: 20px 30px;
+}
+
+div.cardrow{
+    width: 380px;
+    height: 90px;
+    margin: auto;
+}
+div.content h1{
+    font-size: 30px;
+    height: 70px;
+    letter-spacing:5px;
+}
+
+div.content h4{
+    font-size: 18px;
+    padding: 0px 0px 10px;
+    margin: 0%;
+}
+
+div.cardrow input{
+    width: 340px;
+    height: 40px;
+    border-radius: 6px;
+    border: 2px solid #A8A8A8;
+    font-size: 18px;
+}
+
+
+button.b1{
+    background-color: #9FB889;
+    width: 340px;
+    height: 40px;
+    border-style:none;
+    border-radius: 50px;
+}
+
+button.b2{
+    border: 3px solid #9FB889;
+    width: 340px;
+    height: 40px;
+    border-radius: 50px;
+}
+
+
+button h3{
+    color: #000000;
+    font-size: 22px;
+    letter-spacing:5px;
+    margin: 0%;
+}
