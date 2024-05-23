@@ -15,7 +15,6 @@ html, body{
 /* container           */
 /* ------------------- */
 div.container{
-    width: 400px;
     margin-left: auto;
     margin-right: auto;
     text-align: justify;
@@ -51,13 +50,30 @@ div.content{
     background-color: #F5F5F5;
     padding: 30px 30px;
 }
-
 div.cardrow{
+    display: flex;
+    /* 水平置中 */
+    justify-content: center; 
+    margin: auto;
+}
+div.cardrow1{
+    display: flex;
+    /* 水平置中 */
+    justify-content: center; 
     width: 400px;
     height: 70px;
     margin: auto;
     padding: 60px 0px 6px 0px;
 }
+div.cardrow2{
+    display: flex;
+    /* 水平置中 */
+    justify-content: center; 
+    width: 400px;
+    height: 70px;
+    margin: auto;
+}
+
 
 div.content h1{
     font-size: 45px;

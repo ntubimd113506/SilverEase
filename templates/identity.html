@@ -53,23 +53,27 @@
                     <h1 text="Hi!" id="name" style="height: 60px; text-align: center; margin: 0%;"></h1>
                 </div>
             </div>
-            <img src="/static/imgs/main.png" class="p">
+                <div class="cardrow">
+                    <img src="/static/imgs/main.png" class="p">
+                </div>
+            
             <div class="form">
                 <form id="form" action="/identity/oy" method="post">
-                    <!-- <input class="card" type="button" id="old" name="option" value="長輩">
-                    <input class="card" type="button" id="young" name="option" value="照護者"> -->
-
-                    <input type="radio" id="old" name="option" value="old">
+                    <div class="cardrow1">
+                        <input class="card" type="button" id="old" name="option" value="長輩">
+                        <input class="card" type="button" id="young" name="option" value="照護者">
+                    </div>
+                    <!-- <input type="radio" id="old" name="option" value="old">
                     <span class="name">長輩</span>
         
                     <input type="radio" id="young" name="option" value="young">
-                    <span class="name">照護者</span>
+                    <span class="name">照護者</span> -->
                     
                     <input type="hidden" id="MemID" name="MemID">
                     <input type="hidden" id="MemName" name="MemName">
                     <input type="hidden" id="checkMember" name="checkMember">
 
-                    <div class="value"><input class="button" type="submit" value="確認" id="myButton"></div>
+                    <div class="cardrow2"><input class="button" type="submit" value="確認" id="myButton"></div>
                 </form>
             </div>
         </div>

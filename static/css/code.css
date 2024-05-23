@@ -15,7 +15,6 @@ html, body{
 /* container           */
 /* ------------------- */
 div.container{
-    width: 400px;
     margin-left: auto;
     margin-right: auto;
     text-align: justify;
@@ -54,6 +53,9 @@ div.content{
 }
 
 div.cardrow{
+    display: flex;
+    /* 水平置中 */
+    justify-content: center;  
     width: 380px;
     height: 90px;
     margin: auto;
