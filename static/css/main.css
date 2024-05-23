@@ -14,6 +14,7 @@ html, body{
 /* container           */
 /* ------------------- */
 div.container{
+    width: 640px;
     height: 900px;
     margin-left: auto;
     margin-right: auto;
@@ -43,4 +44,28 @@ div.header h1{
     text-align:center;
     letter-spacing: 3px;
     margin: 0%;
+}
+
+
+/* ------------------- */
+/* 回主頁             */
+/* ------------------- */
+ul{
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+ul li{
+    line-height: 40px;
+    text-align: top; 
+    width: 200px; 
+    
+}
+
+div.navbar a{
+    text-decoration: none; /* 連結底線拿掉*/
+    color: #000000; 
+    font-size: 20PX;
+    font-weight:600;
 }
