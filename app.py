@@ -1,6 +1,6 @@
 import requests, json
 import pymysql
-from flask import Flask, request, abort
+from flask import Flask, request, abort, render_template
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
@@ -16,7 +16,7 @@ handler = WebhookHandler(db.LINE_HANDLER)
 
 @app.route("/")
 def index():
-    return "Here is SilverEase"
+    return render_template("index.html",intro="Here is SilverEase", liffid=db.LIFF_ID)
 
 app.register_blueprint(event_bp, url_prefix='/event')
 app.register_blueprint(cam_bp, url_prefix='/cam')

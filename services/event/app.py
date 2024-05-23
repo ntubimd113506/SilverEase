@@ -11,7 +11,7 @@ event_bp = Blueprint('event_bp',__name__)
 #主頁
 @event_bp.route('/')
 def event():
-    return render_template('index.html')
+    return render_template('schedule_index.html')
 
 #新增表單
 @event_bp.route('/create/form')
