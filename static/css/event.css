@@ -62,7 +62,7 @@ div.header h1{
     font-weight: 750;
     letter-spacing: 8px;
     padding-top: 40px;
-    padding-left: 550px;
+    padding-left: 540px;
 }
 
 
@@ -83,7 +83,7 @@ div.content h2{
 
 /* 間距 */
 .value {
-    margin-bottom: 15px; 
+    margin-bottom: -10px; 
 }
 
 .name {
