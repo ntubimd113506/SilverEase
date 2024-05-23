@@ -1,0 +1,26 @@
+/* ------------------- */
+/* content             */
+/* ------------------- */
+
+/* 標題(吃藥提醒) */
+.toptitle{
+    font-size:30px;
+    font-weight: 750;
+    letter-spacing: 8px;
+    padding-top: 0px;
+    padding-left: 540px;
+}
+
+
+.content h2 {
+    position: relative;
+    top: -40px;
+    text-align: center;
+    color: #000000; 
+}
+
+/* 調整圖片的位置 */
+div.content img {
+    margin-top: 40px; /* 調整這個值來向下移動圖片 */
+    padding-left: 545px;
+}
