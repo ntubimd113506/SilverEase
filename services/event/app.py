@@ -11,7 +11,7 @@ event_bp = Blueprint('event_bp',__name__)
 #主頁
 @event_bp.route('/')
 def event():
-    return render_template('index.html')
+    return render_template('schedule_index.html')
 
 #新增表單
 @event_bp.route('/create/form')
@@ -23,6 +23,7 @@ def event_create_form():
 def event_create():
     try:
         #取得其他參數
+        MemID =  request.form.get('MemID')
         Title = request.form.get('Title')
         DateTime = request.form.get('DateTime')
         Location = request.form.get('Location')
@@ -32,10 +33,18 @@ def event_create():
         conn = db.get_connection()
 
         #將資料加入
-        cursor = conn.cursor()
+        cursor = conn.cursor()        
+        cursor.execute("""
+                      SELECT COALESCE(f.FamilyID, l.FamilyID) AS A_FamilyID
+                        FROM `113-ntub113506`.Member m 
+                        LEFT JOIN `113-ntub113506`.Family as f ON m.MemID = f.MainUserID 
+                        LEFT JOIN `113-ntub113506`.FamilyLink as l ON m.MemID = l.SubUserID
+                        where MemID = %s
+                       """, (MemID))
+        FamilyID=cursor.fetchone()[0]
         err=""
-        cursor.execute("INSERT INTO Memo (Title, DateTime, Type) VALUES (%s, %s, '3')",
-                        (Title, DateTime))
+        cursor.execute("INSERT INTO Memo (FamilyID, Title, DateTime, Type, EditorID) VALUES (%s, %s, %s, '3', %s)",
+                        (FamilyID, Title, DateTime, MemID))
         err="INSERT MEMO"
         cursor.execute("Select MemoID from Memo order by MemoID Desc")
         memoID=cursor.fetchone()[0]
@@ -54,7 +63,7 @@ def event_create():
         return render_template('create_fail.html')
     
 #查詢
-@event_bp.route('/list', methods=['Post'])
+@event_bp.route('/list')
 def event_list():    
     #取得資料庫連線
     conn = db.get_connection()
@@ -62,7 +71,17 @@ def event_list():
     #取得執行sql命令的cursor
     cursor = conn.cursor()   
     
-    #取得傳入參數, 執行sql命令並取回資料  
+    #取得傳入參數, 執行sql命令並取回資料
+    # MemID =  request.form.get('MemID')
+    # cursor.execute("""
+    #                   SELECT COALESCE(f.FamilyID, l.FamilyID) AS A_FamilyID
+    #                     FROM `113-ntub113506`.Member m 
+    #                     LEFT JOIN `113-ntub113506`.Family as f ON m.MemID = f.MainUserID 
+    #                     LEFT JOIN `113-ntub113506`.FamilyLink as l ON m.MemID = l.SubUserID
+    #                     where MemID = %s
+    #                    """, (MemID))
+    # FamilyID = cursor.fetchone()[0] 
+    
     FamilyID = request.values.get('FamilyID')
       
     cursor.execute("""
