@@ -15,7 +15,7 @@ handler = WebhookHandler(db.LINE_HANDLER)
 
 @app.route("/")
 def index():
-    return "Here is SilverEase"
+    return render_template("index.html",intro="Here is SilverEase", liffid=db.LIFF_ID)
 
 @app.route("/callback", methods=['POST'])
 def callback():
