@@ -35,6 +35,11 @@ div.content h2{
      border-color: #A8A8A8;
 }
 
+input[type="datetime-local"] {
+    background-color: white; 
+    color: #333; 
+}
+
 /* 間距 */
 .value {
     margin-bottom: -10px; 
@@ -74,3 +79,11 @@ div.content h2{
 }
 
 
+@media (max-width:650px) {  
+    /* 標題(吃藥提醒) */
+.toptitle{
+    padding-top: 25px;
+    padding-left: 110px;
+}
+    
+}
