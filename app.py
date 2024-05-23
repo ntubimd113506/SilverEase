@@ -12,13 +12,17 @@ app = Flask(__name__)
 line_bot_api = LineBotApi(db.LINE_TOKEN)
 handler = WebhookHandler(db.LINE_HANDLER)
 
-@app.route("/")
-def index():
-    return "Here is SilverEase"
+# @app.route("/")
+# def index():
+#     return "Here is SilverEase"
 
-@app.route('/liff')
+@app.route('/')
 def page():
     return render_template('index.html', liffid = '2004699458-a7DORnXp')
+
+@app.route('/<what>')
+def liff(what):
+    return render_template("liff.html",what=what,liffid='2004699458-a7DORnXp')
 
 @app.route("/callback", methods=['POST'])
 def callback():
