@@ -53,24 +53,21 @@
                     <h1 text="Hi!" id="name" style="height: 60px; text-align: center; margin: 0%;"></h1>
                 </div>
             </div>
-                <div class="cardrow">
-                    <img src="/static/imgs/main.png" class="p">
-                </div>
-            
+            <div class="cardrow">
+                <img src="/static/imgs/main.png" class="p">
+            </div>
+
             <div class="form">
                 <form id="form" action="/identity/oy" method="post">
                     <div class="cardrow1">
-                        <input class="card" type="button" id="old" name="option" value="長輩">
-                        <input class="card" type="button" id="young" name="option" value="照護者">
+                        <!-- 這裡也要看看 -->
+                        <button type="button" class="card" id="old" onclick="selectButton('old')">長輩</button>
+                        <button type="button" class="card" id="young" onclick="selectButton('young')">照護者</button>
                     </div>
-                    <!-- <input type="radio" id="old" name="option" value="old">
-                    <span class="name">長輩</span>
-        
-                    <input type="radio" id="young" name="option" value="young">
-                    <span class="name">照護者</span> -->
-                    
+
                     <input type="hidden" id="MemID" name="MemID">
                     <input type="hidden" id="MemName" name="MemName">
+                    <input type="hidden" id="option" name="option">
                     <input type="hidden" id="checkMember" name="checkMember">
 
                     <div class="cardrow2"><input class="button" type="submit" value="確認" id="myButton"></div>
@@ -85,6 +82,7 @@
     var MemID;
     var MemName;
     var picUrl;
+
     function initializeLiff(myLiffId) {
         liff.init({
             liffId: myLiffId
@@ -157,6 +155,19 @@
     $(document).ready(function () {
         initializeLiff('{{ liffid }}');  //接收傳遞的 liffid 參數
     });
+
+    
+    /**
+     * 這是一個選擇按鈕的函數
+     * @param {string} btnId 
+     */
+
+    function selectButton(btnId) {
+        document.getElementById('old').classList.remove('onclick');
+        document.getElementById('young').classList.remove('onclick');
+        document.getElementById(btnId).classList.add('onclick');
+        document.getElementById('option').value = btnId;
+    }
 </script>
 
 </html>
