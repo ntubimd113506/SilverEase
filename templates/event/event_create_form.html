@@ -3,65 +3,93 @@
 <head>
 <meta charset="utf-8">
 <title>新增紀念日</title>
+  
+    <!-- 連結css檔 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Satisfy&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/static/css/main.css" rel="stylesheet" />  
+    <link href="/static/css/event.css" rel="stylesheet" />   <!-- 自己的在最下面，加版本號防止緩存 -->
+      
+  </head>
+  
+  <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+  <script>
+      var MemID;
+      function initializeLiff(myLiffId) {
+          liff.init({
+              liffId: myLiffId
+          }).then(() => {
+              if (!liff.isLoggedIn()) {
+                  alert("用戶未登入");
+                  liff.login();
+              } else {
+                  // alert("用戶已登入");
+                  liff.getProfile()
+                      .then(profile => {
+                          var MemID = profile.userId;
+                          document.getElementById("MemID").value = MemID;
+                      })
+                      .catch((err) => {
+                          console.log('error', err);
+                      });
+              }
+  
+          }).catch((err) => {
+              console.log('初始化失敗', err);
+          });
+      }
+  </script>
+  
+  <body onload="initializeLiff('2004699458-OR9pkZjP')">
+      <!--**************************-->
+      <div class="container">  
+          
+          <!--~~~~~~~~~~~~~~~~~-->
+          <div class="header"> 
+              <h1>SliverEase</h1>
+          </div>        
+          
+          <!--~~~~~~~~~~~~~~~~~-->     
+          <ul id="navigation">        
+              <li><a href="/event/">返回主頁</a></li> 
+          </ul>
+          
+          <div class="toptitle">紀念日提醒</div> 
+          <!--~~~~~~~~~~~~~~~~~--> 
+          <div class="content">
+  
+              <form action="/event/create" method="post" enctype="multipart/form-data">
+                  <div class="form">
+                      <div class="name">名稱</div>
+                      <div class="value">
+                          <input type="text" name="Title" class="input-field" required>
+                      </div>
+                      <br/>
+  
+                      <div class="name">日期</div>
+                      <div class="value">
+                          <input type="datetime-local" name="DateTime" class="input-field" required>
+                      </div>
+                      <br/>
+  
+                      <div class="name">地點</div>
+                      <div class="value">
+                          <input type="text" name="Location" class="input-field">
+                      </div>
+                      <br/>
 
-  <!-- 連結css檔 -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Satisfy&display=swap" rel="stylesheet">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="/static/css/main.css" rel="stylesheet" />  
-  <link href="/static/css/event.css" rel="stylesheet" />   <!-- 自己的在最下面，加版本號防止緩存 -->
-    
-</head>
-
-<body>
-    <!--**************************-->
-    <div class="container">  
-        
-        <!--~~~~~~~~~~~~~~~~~-->
-        <div class="header"> 
-            <h1>SliverEase</h1>
-        </div>        
-        
-        <!--~~~~~~~~~~~~~~~~~-->     
-        <ul id="navigation">        
-            <li><a href="/event/">返回主頁</a></li> 
-        </ul>
-        
-        <div class="toptitle">紀念日提醒</div> 
-        <!--~~~~~~~~~~~~~~~~~--> 
-        <div class="content">
-
-            <form action="/event/create" method="post" enctype="multipart/form-data">
-                <div class="form">
-                    <div class="name">名稱</div>
-                    <div class="value">
-                        <input type="text" name="Title" class="input-field" required>
-                    </div>
-                    <br/>
-
-                    <div class="name">日期</div>
-                    <div class="value">
-                        <input type="datetime-local" name="DateTime" class="input-field" required>
-                    </div>
-                    <br/>
-
-                    <div class="name">地點</div>
-                    <div class="value">
-                        <input type="text" name="Location" class="input-field">
-                    </div>
-                    <br/>
-
-                 
-                    <div>
-                        <button class="btn" type="submit">新 增</button>
-                    </div>
-
-                </div>
-                <input type="hidden" id="userID" name="userID">
-            </form>
-        </div>       
-    </div>  
-</body>
-   
-</html>
+                      <div>
+                          <button class="btn" type="submit">新 增</button>
+                      </div>
+  
+                  </div>
+                  <input type="hidden" id="MemID" name="MemID">
+              </form>
+          </div>       
+      </div>  
+  </body>
+     
+  </html>
+  
