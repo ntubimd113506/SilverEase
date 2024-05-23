@@ -46,7 +46,7 @@ def event_create():
         conn.close()
 
         # 渲染成功畫面
-        return render_template('create_success.html')
+        return render_template('/event/event_create_success.html')
     except pymysql.Error as e:
         # 渲染失敗畫面
         return f'Error {e}'
@@ -138,10 +138,10 @@ def event_update():
         conn.close()
 
         # 渲染成功畫面
-        return render_template('update_success.html')
+        return render_template('event/event_update_success.html')
     except:
         # 渲染失敗畫面
-        return render_template('update_fail.html')
+        return render_template('event/event_update_fail.html')
 
 #刪除確認
 @event_bp.route('/delete/confirm', methods=['POST'])
@@ -187,8 +187,8 @@ def event_delete():
         conn.close()
 
         # 渲染成功畫面
-        return render_template('delete_success.html')
+        return render_template('event/event_delete_success.html')
     except:
         # 渲染失敗畫面
-        return render_template('delete_fail.html')
+        return render_template('event/event_delete_fail.html')
         
