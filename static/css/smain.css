@@ -59,10 +59,9 @@ div.clear{
 
 
 div.cardrow{
-    display: flex;
     /* 水平置中 */
     justify-content: center; 
-    width: 330px;
+    width: 110px;
     margin: auto;
 }
 
@@ -87,17 +86,14 @@ img.b{
 
 div.card{
     background-color: #ffffff;
-    float: left;
     width: 330px;
     height: 100px;
     box-sizing: border-box;
     border-radius: 25px;
     display: flex;
     align-items: center;
-    /*border-width:2px; 
-    border-style:solid;
-    overflow: hidden;*/
 }
+
 
 b.t1{
     color: #2B3125;
@@ -120,5 +116,6 @@ b.t2{
 div.card:nth-child(1),
 div.card:nth-child(2)
 {
+    margin-left: -110px;
     margin-bottom: 30px;
 }
