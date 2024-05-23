@@ -1,0 +1,122 @@
+
+
+/* ------------------- */
+/* html, body          */
+/* ------------------- */
+html, body{
+    font-family: 'Noto Sans TC', sans-serif;
+    background: #333;
+    margin-top: 0px;
+}
+
+
+/* ------------------- */
+/* container           */
+/* ------------------- */
+div.container{
+    height: 900px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: justify;
+    line-height: 26px;
+    background-color: #F2F0EE;
+}
+
+
+/* ------------------- */
+/* header              */
+/* ------------------- */
+div.header{
+    display: flex;
+    /* 水平置中 */
+    justify-content: center;  
+    padding: 10px;
+    height: 40px;
+    background-color: #9FB889;
+}
+
+/* SliverEase */
+div.header h1{
+    font-size: 30px;
+    width: 200px;
+    padding: 5px;
+    text-align:center;
+    letter-spacing: 3px;
+    margin: 0%;
+}
+
+/* ------------------- */
+/* content             */
+/* ------------------- */
+.content{ 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 40vh;
+
+} 
+
+/* 標題(吃藥提醒) */
+.toptitle{
+    font-size:30px;
+    font-weight: 750;
+    letter-spacing: 8px;
+    padding-top: 40px;
+    padding-left: 550px;
+}
+
+
+div.content h2{
+    vertical-align: top;
+}
+
+
+
+.input-field {
+     width: 340px;
+     height: 40px;
+     border-radius: 5px;
+     font-size: 18px;
+     border-style:solid;
+     border-color: #A8A8A8;
+}
+
+/* 間距 */
+.value {
+    margin-bottom: 15px; 
+}
+
+.name {
+    font-size: 18px;
+    margin-bottom: 5px; 
+}
+
+/* 時間日期小圖 */
+  .ui-input.ui-date-input input[type="date"]::-webkit-calendar-picker-indicator {
+    background-size: 18px 18px;
+    background-position: right center;
+}
+  
+
+/* 送出按鈕設定 */
+.btn{
+    position: absolute;
+    top: 750px;
+    left: 555px;
+}
+
+
+.btn{
+    background-color: #9FB889;
+    width: 340px;
+    height: 40px;
+    border-style:none;
+    border-radius: 50px;
+    color: #000000;
+    font-size: 20px;
+    font-weight: bolder;
+    letter-spacing:5px;
+    margin: 0%;
+}
+
+
