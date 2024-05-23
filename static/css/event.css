@@ -6,7 +6,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 38vh;
+    height: 47vh;
 
 } 
 
@@ -59,8 +59,8 @@ input[type="datetime-local"] {
 
 /* 送出按鈕設定 */
 .btn{
-    position: absolute;
-    top: 750px;
+    position: relative;
+    top: 400px;
     align-items: center;
 }
 
@@ -83,7 +83,13 @@ input[type="datetime-local"] {
     /* 標題(吃藥提醒) */
 .toptitle{
     padding-top: 25px;
-    padding-left: 110px;
+    padding-left: 130px;
+}
+
+.btn{
+    position: relative;
+    top: 300px;
+    align-items: center;
 }
     
 }
