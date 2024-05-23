@@ -1,0 +1,124 @@
+@charset "utf-8";
+
+/* ------------------- */
+/* html, body          */
+/* ------------------- */
+html, body{
+    font-family: 'Noto Sans TC', sans-serif;
+    background-color: #f4f9f7;
+    padding: 0%;
+    margin: 0%;
+}
+
+
+/* ------------------- */
+/* container           */
+/* ------------------- */
+div.container{
+    height: 900px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: justify;
+    line-height: 26px;
+    background-color: #ffffff;
+}
+
+
+/* ------------------- */
+/* header              */
+/* ------------------- */
+div.header{
+    display: flex;
+    /* 水平置中 */
+    justify-content: center;  
+    padding: 10px;
+    height: 40px;
+    background-color: #9FB889;
+}
+
+div.header h1{
+    font-size: 30px;
+    width: 200px;
+    padding: 5px;
+    text-align:center;
+    letter-spacing: 3px;
+    margin: 0%;
+}
+/* ------------------- */
+/* content             */
+/* ------------------- */
+div.content{
+    background-color: #F5F5F5;
+    height: 600px;
+    padding: 60px 30px;
+}
+
+div.clear{
+    height: 80px;
+}
+
+
+div.cardrow{
+    display: flex;
+    /* 水平置中 */
+    justify-content: center; 
+    width: 330px;
+    margin: auto;
+}
+
+div.content h1{
+    font-size: 45px;
+    height: 100px;
+    text-align:center;
+    letter-spacing: 5px;
+}
+
+img.a{
+    padding: 10px 20px;
+    width: 90px;
+    height: 90px;
+} 
+
+img.b{
+    padding: 5px;
+    width: 90px;
+    height: 90px;
+} 
+
+div.card{
+    background-color: #ffffff;
+    float: left;
+    width: 330px;
+    height: 100px;
+    box-sizing: border-box;
+    border-radius: 25px;
+    display: flex;
+    align-items: center;
+    /*border-width:2px; 
+    border-style:solid;
+    overflow: hidden;*/
+}
+
+b.t1{
+    color: #2B3125;
+    font-size: 25px;
+    letter-spacing: 15px;
+    text-align: left;
+    margin: 0%;
+    padding: 30px 0px 30px 30px;
+}
+
+b.t2{
+    color: #2B3125;
+    font-size: 25px;
+    letter-spacing: 10px;
+    text-align: left;
+    margin: 0%;
+    padding: 30px 0px 30px 30px;
+}
+
+div.card:nth-child(1),
+div.card:nth-child(2)
+{
+    margin-bottom: 30px;
+}
