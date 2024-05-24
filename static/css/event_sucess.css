@@ -8,19 +8,35 @@
     font-weight: 750;
     letter-spacing: 8px;
     padding-top: 25px;
-    padding-left: 300px;
+    padding-left: 145px;
 }
 
 
 .content h2 {
     position: relative;
-    top: -40px;
+    top: 350px;
     text-align: center;
     color: #000000; 
 }
 
 /* 調整圖片的位置 */
 div.content img {
-    margin-top: 50px; /* 調整這個值來向下移動圖片 */
-    padding-left: 545px;
+    position: absolute;
+    left: 50%;
+    top: 100px;
+}
+
+@media (max-width:650px) {  
+    /* 標題(吃藥提醒) */
+.toptitle{
+    padding-top: 25px;
+    padding-left: 130px;
+}
+
+.btn{
+    position: relative;
+    top: 300px;
+    align-items: center;
+}
+    
 }

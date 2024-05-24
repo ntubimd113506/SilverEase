@@ -60,7 +60,7 @@ input[type="datetime-local"] {
 /* 送出按鈕設定 */
 .btn{
     position: relative;
-    top: 400px;
+    top: 300px;
     align-items: center;
 }
 
