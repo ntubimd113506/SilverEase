@@ -46,8 +46,16 @@ div.header h1{
 }
 
 /* 返回主頁 */
+#menu-bar{
+    z-index: 1;
+    float: left;
+    padding-top: 11px;
+    padding-left: 5px;
+    font-size: 17px;
+}
+
 div.navbar{
-    height: 40px;
+    height: 35px;
 }
 ul{
     margin: 0;
@@ -58,7 +66,7 @@ ul{
 ul li{
     line-height: 40px;
     float: left;  /* 字變水平*/
-    width: 100px; /* 字之間的距離區塊*/
+    width:75px; /* 字之間的距離區塊*/
     text-align: center;
 }
 
@@ -72,23 +80,12 @@ div.navbar a{
 /* ------------------- */
 
 div.content{
-    background-color: #F5F5F5;
-    padding: 20px 30px;
+    background-color: #F2F0EE;
+    padding: 0px 25px;
 }
 
-/* .content{ 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 47vh;
-
-}  */
-
-/* 標題(吃藥提醒) */
-.toptitle{
-    padding: 20px 30px;
+div.content h1{
     font-size: 30px;
-    font-weight: 750;
     letter-spacing:8px;
 }
 
@@ -130,6 +127,7 @@ input[type="datetime-local"] {
 .btn{
     position: relative;
     top: 300px;
+
     align-items: center;
 }
 
@@ -147,20 +145,3 @@ input[type="datetime-local"] {
     margin: 0%;
 }
 
-
-/* @media (max-width:650px) {  
-
-.toptitle{
-    padding-top: 25px;
-    padding-left: 130px;
-}
-
-.btn{
-    position: relative;
-    top: 300px;
-
-
-    align-items: center;
-}
-    
-} */
