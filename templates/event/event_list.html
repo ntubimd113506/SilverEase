@@ -16,7 +16,6 @@
                 alert("用戶未登入");
                 liff.login();
             } else {
-                // alert("用戶已登入");
                 liff.getProfile()
                     .then(profile => {
                         var MemID = profile.userId;
@@ -35,15 +34,12 @@
 
 
 <body onload="initializeLiff('2004699458-OR9pkZjP')">
-    <!--**************************-->
     <div class="container">    
-        <!--~~~~~~~~~~~~~~~~~-->
-        <div class="header">           
-        </div>        
-        
-        <!--~~~~~~~~~~~~~~~~~--> 
+        <div class="header">
+            <h1>SliverEase</h1>
+        </div>
         <div class="content">
-            <h2>客戶清單</h2>
+            <h2>紀念日清單</h2>
 
             <p>
                 <table>
@@ -55,7 +51,6 @@
                             <th></th>
                         </tr>
                     </thead>
-
                     <tbody>
                         {% for d in data %}
                             <tr>
@@ -67,7 +62,8 @@
                         {% endfor %}                        
                     </tbody>
                 </table>
-            </p>       
+            </p>   
+                
         </div>  
         <input type="hidden" id="MemID" name="MemID">     
     </div>
