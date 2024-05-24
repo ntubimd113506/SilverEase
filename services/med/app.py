@@ -39,7 +39,7 @@ def med_create():
                         where MemID = %s
                        """, (MemID))
         FamilyID=cursor.fetchone()[0]
-        cursor.execute("INSERT INTO Memo (FamilyID, Title, DateTime, Type, EditorID) VALUES (%s, %s, %s, '3', %s)",
+        cursor.execute("INSERT INTO Memo (FamilyID, Title, DateTime, Type, EditorID) VALUES (%s, %s, %s, '1', %s)",
                         (FamilyID, Title, DateTime, MemID))
         cursor.execute("Select MemoID from Memo order by MemoID Desc")
         memoID=cursor.fetchone()[0]
