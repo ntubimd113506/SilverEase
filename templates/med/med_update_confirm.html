@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>更新藥程</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>SliverEase</h1>
+        </div>
+        <ul id="navigation">
+            <li><a href="/med/list">返回主頁</a></li>
+        </ul>
+        <div class="content">
+            <h2>更新藥程</h2>
+            
+            <form action="/med/update" method="post" enctype="multipart/form-data">
+                <div class="form">
+                    <span class="name">名稱</span>
+                    <span class="value">
+                        <input type="text" name="Title" value="{{data[2]}}" required>
+                    </span>
+                    <br />
+
+                    <span class="name">日期</span>
+                    <span class="value">
+                        <input type="text" name="DateTime" value="{{data[3]}}" required>
+                    </span>
+                    <br />
+
+                    <span class="name">藥盒與藥袋外觀描述</span>
+                    <span class="value">
+                        <input type="text" name="Location" value="{{data[7]}}">
+                    </span>
+                    <br />
+
+                    <span class="name">循環（多久提醒一次）</span>
+                    <span class="value">
+                        <input type="text" name="Location" value="{{data[8]}}">
+                    </span>
+                    <br />
+
+                    <a href="/med/delete/confirm?MemoID={{data[0]}}">刪除</a>
+                    <br />
+                    <input type="hidden" name="MemoID" value="{{data[0]}}">
+                    <span class="name"></span>
+                    <span class="value"><input type="submit" value="更改" style="width:80px"></span>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>
