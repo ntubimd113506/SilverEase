@@ -4,8 +4,37 @@
 <meta charset="utf-8">
 <title>紀念日查詢</title>
 </head>
-   
-<body>
+ 
+<script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+<script>
+    var MemID;
+    function initializeLiff(myLiffId) {
+        liff.init({
+            liffId: myLiffId
+        }).then(() => {
+            if (!liff.isLoggedIn()) {
+                alert("用戶未登入");
+                liff.login();
+            } else {
+                // alert("用戶已登入");
+                liff.getProfile()
+                    .then(profile => {
+                        var MemID = profile.userId;
+                        document.getElementById("MemID").value = MemID;
+                    })
+                    .catch((err) => {
+                        console.log('error', err);
+                    });
+            }
+
+        }).catch((err) => {
+            console.log('初始化失敗', err);
+        });
+    }
+</script>
+
+
+<body onload="initializeLiff('2004699458-OR9pkZjP')">
     <!--**************************-->
     <div class="container">    
         <!--~~~~~~~~~~~~~~~~~-->
@@ -44,7 +73,8 @@
                     </tbody>
                 </table>
             </p>       
-        </div>       
+        </div>  
+        <input type="hidden" id="MemID" name="MemID">     
     </div>
 </body>
    

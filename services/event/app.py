@@ -65,6 +65,7 @@ def event_create():
 #查詢
 @event_bp.route('/list')
 def event_list():    
+    data=""
     #取得資料庫連線
     conn = db.get_connection()
     
@@ -72,26 +73,32 @@ def event_list():
     cursor = conn.cursor()   
     
     #取得傳入參數, 執行sql命令並取回資料
-    # MemID =  request.form.get('MemID')
-    # cursor.execute("""
-    #                   SELECT COALESCE(f.FamilyID, l.FamilyID) AS A_FamilyID
-    #                     FROM `113-ntub113506`.Member m 
-    #                     LEFT JOIN `113-ntub113506`.Family as f ON m.MemID = f.MainUserID 
-    #                     LEFT JOIN `113-ntub113506`.FamilyLink as l ON m.MemID = l.SubUserID
-    #                     where MemID = %s
-    #                    """, (MemID))
-    # FamilyID = cursor.fetchone()[0] 
+    # liff=request.values.get("liff.state")
+
+    MemID =  request.values.get('MemID')
+    if (MemID):
+        cursor.execute("""
+                        SELECT COALESCE(f.FamilyID, l.FamilyID) AS A_FamilyID
+                            FROM `113-ntub113506`.Member m 
+                            LEFT JOIN `113-ntub113506`.Family as f ON m.MemID = f.MainUserID 
+                            LEFT JOIN `113-ntub113506`.FamilyLink as l ON m.MemID = l.SubUserID
+                            where MemID = %s
+                        """, (MemID))
+        FamilyID = cursor.fetchone()[0] 
+    else:
+        return render_template('login.html',liffid=db.LIFF_ID)
     
-    FamilyID = request.values.get('FamilyID')
-      
-    cursor.execute("""
-                   SELECT * FROM 
-                   (select * from`113-ntub113506`.Memo Where FamilyID=%s) m 
-                   join 
-                   (select * from `113-ntub113506`.`Event`) e 
-                   on e.MemoID=m.MemoID
-                   """, (FamilyID))
-    data = cursor.fetchall()
+    # FamilyID = 27
+
+    if(FamilyID):
+        cursor.execute("""
+                    SELECT * FROM 
+                    (select * from`113-ntub113506`.Memo Where FamilyID=%s) m 
+                    join 
+                    (select * from `113-ntub113506`.`Event`) e 
+                    on e.MemoID=m.MemoID
+                    """, (FamilyID))
+        data = cursor.fetchall()
 
     #關閉連線 
     conn.close()  
@@ -99,7 +106,7 @@ def event_list():
     #渲染網頁
     if data:
         # return f'{data}'
-        return render_template('/event/event_list.html', data=data) 
+        return render_template('/event/event_list.html', data=data, liff=db.LIFF_ID) 
     else:
         return render_template('not_found.html')
     
