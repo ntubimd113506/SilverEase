@@ -121,6 +121,7 @@ def event_update_confirm():
 @event_bp.route('/update', methods=['POST'])
 def event_update():
     try:
+        EditorID =  request.values.get('EditorID')
         MemoID = request.values.get('MemoID')
         Title = request.form.get('Title')
         DateTime = request.form.get('DateTime')
@@ -130,8 +131,8 @@ def event_update():
 
         cursor = conn.cursor()
 
-        cursor.execute("UPDATE Memo SET Title=%s, DateTime=%s WHERE MemoID = %s", (Title, DateTime, MemoID))
-        cursor.execute("UPDATE Event SET Location=%s WHERE MemoID = %s", (Location, MemoID))
+        cursor.execute("UPDATE Memo SET Title = %s, DateTime = %s, EditorID = %s WHERE MemoID = %s", (Title, DateTime, EditorID, MemoID))
+        cursor.execute("UPDATE Event SET Location = %s WHERE MemoID = %s", (Location, MemoID))
         
         conn.commit()
         conn.close()

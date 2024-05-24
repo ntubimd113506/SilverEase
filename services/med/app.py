@@ -121,6 +121,7 @@ def med_update_confirm():
 @med_bp.route('/update', methods=['POST'])
 def med_update():
     try:
+        EditorID =  request.values.get('EditorID')
         MemoID = request.values.get('MemoID')
         Title = request.form.get('Title')
         DateTime = request.form.get('DateTime')
@@ -131,7 +132,7 @@ def med_update():
 
         cursor = conn.cursor()
 
-        cursor.execute("UPDATE Memo SET Title = %s, DateTime = %s WHERE MemoID = %s", (Title, DateTime, MemoID))
+        cursor.execute("UPDATE Memo SET Title = %s, DateTime = %s, EditorID = %s WHERE MemoID = %s", (Title, DateTime, EditorID, MemoID))
         cursor.execute("UPDATE Med SET MedFeature = %s, Cycle = %s WHERE MemoID = %s", (MedFeature, Cycle, MemoID))
         
         conn.commit()
