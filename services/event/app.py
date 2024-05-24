@@ -86,7 +86,7 @@ def event_list():
                         """, (MemID))
         FamilyID = cursor.fetchone()[0] 
     else:
-        return render_template('login.html',liffid=db.LIFF_ID)
+        return render_template('/event/event_login.html',liffid=db.LIFF_ID)
     
     # FamilyID = 27
 
