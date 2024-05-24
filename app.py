@@ -18,12 +18,12 @@ handler = WebhookHandler(db.LINE_HANDLER)
 #     return "Here is SilverEase"
 
 @app.route('/')
-def page():
-    return render_template('index.html', liffid = '2004699458-a7DORnXp')
+def index():
+    return render_template('index.html', liffid = db.LIFF_ID)
 
 @app.route('/<what>')
 def liff(what):
-    return render_template("liff.html",what=what,liffid='2004699458-a7DORnXp')
+    return render_template("liff.html",what=what,liffid=db.LIFF_ID)
 
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -51,7 +51,7 @@ def handle_message(event):
 #-----登入-----
 @app.route('/identity/')
 def page():
-    return render_template('identity.html', liffid='2004699458-OR9pkZjP')
+    return render_template('identity.html', liffid=db.LIFF_ID)
 
 def check_member_exists(MemID):  #確認使用者資料是否存在資料庫中
     conn = db.get_connection()

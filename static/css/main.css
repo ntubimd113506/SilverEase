@@ -134,7 +134,7 @@ div button:first-child {
     margin-right: 60px;
 }
 
-button {
+#myButton {
     background-color: #9FB889;
     width: 340px;
     height: 40px;
