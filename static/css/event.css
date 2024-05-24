@@ -1,46 +1,115 @@
+@charset "utf-8";
+
+/* ------------------- */
+/* html, body          */
+/* ------------------- */
+html, body{
+    font-family: 'Noto Sans TC', sans-serif;
+    background-color: #f4f9f7;
+    padding: 0%;
+    margin: 0%;
+}
+
+
+/* ------------------- */
+/* container           */
+/* ------------------- */
+div.container{
+    height: 900px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: justify;
+    line-height: 26px;
+    background-color: #F2F0EE;
+}
+
+
+/* ------------------- */
+/* header              */
+/* ------------------- */
+div.header{
+    display: flex;
+    /* 水平置中 */
+    justify-content: center;  
+    padding: 10px;
+    height: 40px;
+    background-color: #9FB889;
+}
+
+div.header h1{
+    font-size: 30px;
+    width: 200px;
+    padding: 5px;
+    text-align:center;
+    letter-spacing: 3px;
+    margin: 0%;
+}
+
+/* 返回主頁 */
+div.navbar{
+    height: 40px;
+}
+ul{
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    font-weight: 600;
+}
+ul li{
+    line-height: 40px;
+    float: left;  /* 字變水平*/
+    width: 100px; /* 字之間的距離區塊*/
+    text-align: center;
+}
+
+div.navbar a{
+    text-decoration: none; /* 連結底線拿掉*/
+    color: #000000; 
+}
+
 /* ------------------- */
 /* content             */
 /* ------------------- */
 
-.content{ 
+div.content{
+    background-color: #F5F5F5;
+    padding: 20px 30px;
+}
+
+/* .content{ 
     display: flex;
     justify-content: center;
     align-items: center;
     height: 47vh;
 
-} 
+}  */
 
 /* 標題(吃藥提醒) */
 .toptitle{
-    font-size:30px;
+    padding: 20px 30px;
+    font-size: 30px;
     font-weight: 750;
-    letter-spacing: 8px;
-    padding-top: 25px;
-    padding-left: 145px;
+    letter-spacing:8px;
 }
 
 
-div.content h2{
-    vertical-align: top;
+input.input-field {
+    width: 340px;
+    height: 40px;
+    border-radius: 6px;
+    font-size: 18px;
+    border-style:solid;
+    border-color: #A8A8A8;
+    color: #333;
 }
 
-
-
-.input-field {
-     width: 340px;
-     height: 40px;
-     border-radius: 5px;
-     font-size: 18px;
-     border-style:solid;
-     border-color: #A8A8A8;
-}
 
 input[type="datetime-local"] {
     background-color: white; 
     color: #333; 
 }
 
-/* 間距 */
+/* 輸入框間距 */
 .value {
     margin-bottom: -10px; 
 }
@@ -79,8 +148,8 @@ input[type="datetime-local"] {
 }
 
 
-@media (max-width:650px) {  
-    /* 標題(吃藥提醒) */
+/* @media (max-width:650px) {  
+
 .toptitle{
     padding-top: 25px;
     padding-left: 130px;
@@ -89,7 +158,9 @@ input[type="datetime-local"] {
 .btn{
     position: relative;
     top: 300px;
+
+
     align-items: center;
 }
     
-}
+} */
