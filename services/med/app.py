@@ -49,7 +49,7 @@ def med_create():
 
         return render_template('/med/med_create_success.html')
     except:
-        return render_template('create_fail.html')
+        return render_template('/med/med_create_fail.html')
     
 #查詢
 @med_bp.route('/list')

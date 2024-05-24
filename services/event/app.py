@@ -49,7 +49,7 @@ def event_create():
 
         return render_template('/event/event_create_success.html')
     except:
-        return render_template('create_fail.html')
+        return render_template('/event/event_create_fail.html')
     
 #查詢
 @event_bp.route('/list')

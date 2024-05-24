@@ -51,7 +51,7 @@ def hos_create():
 
         return render_template('/hos/hos_create_success.html')
     except:
-        return render_template('create_fail.html')
+        return render_template('/hos/hos_create_fail.html')
     
 #查詢
 @hos_bp.route('/list')
