@@ -14,14 +14,14 @@
         
         <!--~~~~~~~~~~~~~~~~~-->        
         <ul id="navigation">        
-            <li><a href="/event/">返回主頁</a></li> 
+            <li><a href="/event/list">返回主頁</a></li> 
         </ul>
         
         <!--~~~~~~~~~~~~~~~~~--> 
         <div class="content">
             <h2>更改客戶</h2>
 
-            <form action="/enent/update" method="post" enctype="multipart/form-data">
+            <form action="/event/update" method="post" enctype="multipart/form-data">
                 <div class="form">
                     <span class="name">名稱</span>
                     <span class="value">
@@ -41,9 +41,9 @@
                     </span>
                     <br/>
 
-                    <a href="/event/delete?MemoID={{data[0]}}">刪除</a>
+                    <a href="/event/delete/confirm?MemoID={{data[0]}}">刪除</a>
                     <br/>
-
+                    <input type="hidden" name="MemoID" value="{{data[0]}}">
                     <span class="name"></span>
                     <span class="value"><input type="submit" value="更改" style="width:80px"></span>
                 </div>
