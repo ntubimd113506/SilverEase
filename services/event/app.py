@@ -111,7 +111,7 @@ def event_list():
         return render_template('not_found.html')
     
 #更改確認
-@event_bp.route('/update/confirm', methods=['POST'])
+@event_bp.route('/update/confirm')
 def event_update_confirm():
     #取得資料庫連線
     connection = db.get_connection()
@@ -170,7 +170,7 @@ def event_update():
         return render_template('event/event_update_fail.html')
 
 #刪除確認
-@event_bp.route('/delete/confirm', methods=['POST'])
+@event_bp.route('/delete/confirm')
 def event_delete_confirm():
     #取得資料庫連線    
     connection = db.get_connection()  
@@ -184,7 +184,7 @@ def event_delete_confirm():
     cursor.execute('SELECT * FROM Memo WHERE MemoID=%s', (MemoID,))
     data = cursor.fetchone()
 
-    #關閉連線   
+    #關閉連線
     connection.close()  
         
     #渲染網頁
