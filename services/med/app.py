@@ -50,7 +50,7 @@ def med_create():
         cursor.execute("Select MemoID from Memo order by MemoID Desc")
         memoID=cursor.fetchone()[0]
         err+="  SELECT"
-        cursor.execute("INSERT INTO med (MemoID, MedFeature, Cycle) VALUES (%s,%s,%s)", (memoID, MedFeature, Cycle))
+        cursor.execute("INSERT INTO Med (MemoID, MedFeature, Cycle) VALUES (%s,%s,%s)", (memoID, MedFeature, Cycle))
         err+="  med"
         conn.commit()
         conn.close()
@@ -95,7 +95,7 @@ def med_list():
                     SELECT * FROM 
                     (select * from`113-ntub113506`.Memo Where FamilyID=%s) m 
                     join 
-                    (select * from `113-ntub113506`.`med`) e 
+                    (select * from `113-ntub113506`.`Med`) e 
                     on e.MemoID=m.MemoID
                     """, (FamilyID))
         data = cursor.fetchall()
@@ -126,7 +126,7 @@ def med_update_confirm():
                    SELECT * FROM 
                    (select * from`113-ntub113506`.Memo Where MemoID=%s) m 
                    join 
-                   (select * from `113-ntub113506`.`med`) e 
+                   (select * from `113-ntub113506`.`Med`) e 
                    on e.MemoID=m.MemoID
                    """, (MemoID))
     data = cursor.fetchone()
@@ -159,7 +159,7 @@ def med_update():
         cursor = conn.cursor()
 
         cursor.execute("UPDATE Memo SET Title=%s, DateTime=%s WHERE MemoID = %s", (Title, DateTime, MemoID))
-        cursor.execute("UPDATE med SET MedFeature=%s, Cycle=%s WHERE MemoID = %s", (MedFeature, Cycle, MemoID))
+        cursor.execute("UPDATE Med SET MedFeature=%s, Cycle=%s WHERE MemoID = %s", (MedFeature, Cycle, MemoID))
         
         conn.commit()
         conn.close()
@@ -207,7 +207,7 @@ def med_delete():
         #取得傳入參數, 執行sql命令並取回資料  
         MemoID = request.values.get('MemoID')
 
-        cursor.execute('Delete FROM med WHERE MemoID=%s', (MemoID,))    
+        cursor.execute('Delete FROM Med WHERE MemoID=%s', (MemoID,))    
         cursor.execute('Delete FROM Memo WHERE MemoID=%s', (MemoID,))
         
         conn.commit()

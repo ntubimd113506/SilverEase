@@ -52,7 +52,7 @@ def hos_create():
         cursor.execute("Select MemoID from Memo order by MemoID Desc")
         memoID=cursor.fetchone()[0]
         err+="  SELECT"
-        cursor.execute("INSERT INTO hos (MemoID, Location, Doctor, Clinic, Num) VALUES (%s,%s,%s,%s,%s)", (memoID, Location, Doctor, Clinic, Num))
+        cursor.execute("INSERT INTO Hos (MemoID, Location, Doctor, Clinic, Num) VALUES (%s,%s,%s,%s,%s)", (memoID, Location, Doctor, Clinic, Num))
         err+="  hos"
         conn.commit()
         conn.close()
@@ -98,7 +98,7 @@ def hos_list():
                     SELECT * FROM 
                     (select * from`113-ntub113506`.Memo Where FamilyID=%s) m 
                     join 
-                    (select * from `113-ntub113506`.`hos`) e 
+                    (select * from `113-ntub113506`.`Hos`) e 
                     on e.MemoID=m.MemoID
                     """, (FamilyID))
         data = cursor.fetchall()
@@ -129,7 +129,7 @@ def hos_update_confirm():
                    SELECT * FROM 
                    (select * from`113-ntub113506`.Memo Where MemoID=%s) m 
                    join 
-                   (select * from `113-ntub113506`.`hos`) e 
+                   (select * from `113-ntub113506`.`Hos`) e 
                    on e.MemoID=m.MemoID
                    """, (MemoID))
     data = cursor.fetchone()
@@ -164,7 +164,7 @@ def hos_update():
         cursor = conn.cursor()
 
         cursor.execute("UPDATE Memo SET Title=%s, DateTime=%s WHERE MemoID = %s", (Title, DateTime, MemoID))
-        cursor.execute("UPDATE hos SET Location=%s, Doctor=%s, Clinic=%s, Num=%s WHERE MemoID = %s", (Location, Doctor, Clinic, Num, MemoID))
+        cursor.execute("UPDATE Hos SET Location=%s, Doctor=%s, Clinic=%s, Num=%s WHERE MemoID = %s", (Location, Doctor, Clinic, Num, MemoID))
         
         conn.commit()
         conn.close()
@@ -212,7 +212,7 @@ def hos_delete():
         #取得傳入參數, 執行sql命令並取回資料  
         MemoID = request.values.get('MemoID')
 
-        cursor.execute('Delete FROM hos WHERE MemoID=%s', (MemoID,))    
+        cursor.execute('Delete FROM Hos WHERE MemoID=%s', (MemoID,))    
         cursor.execute('Delete FROM Memo WHERE MemoID=%s', (MemoID,))
         
         conn.commit()
