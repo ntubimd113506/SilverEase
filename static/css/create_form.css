@@ -81,7 +81,7 @@ div.navbar a{
 
 div.content{
     background-color: #F2F0EE;
-    padding: 0px 25px;
+    padding: 0px 23px;
 }
 
 div.content h1{
@@ -91,7 +91,7 @@ div.content h1{
 
 
 input.input-field {
-    width: 340px;
+    width: 320px;
     height: 40px;
     border-radius: 6px;
     font-size: 18px;
@@ -142,7 +142,7 @@ input[type="submit" i]{
     position: relative;
     top: 300px;
     align-items: center;
-    margin-left: 0px;
+    margin-left: 10px;
 }
 
 .btn{
@@ -176,7 +176,7 @@ input[type="submit" i]{
     color: #000000;
     text-decoration: none;
     font-size: 20px;
-    padding: 3px 135px;
+    padding: 3px 136px;
     border: 5px solid #9FB889;
     font-weight: 600;
     border-radius: 50px;
