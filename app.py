@@ -5,7 +5,7 @@ from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import *
 from utils import db 
-from flaskapp.utils.dbFunc import get_codeID
+from utils.dbFunc import get_codeID
 
 app = Flask(__name__)
 
