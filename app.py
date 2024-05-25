@@ -4,7 +4,7 @@ from flask import Flask, request, abort, render_template
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import *
-from utlis import db
+from utils import db
 
 app = Flask(__name__)
 
