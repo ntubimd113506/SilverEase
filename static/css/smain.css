@@ -49,7 +49,6 @@ div.header h1{
 /* ------------------- */
 div.content{
     background-color: #F5F5F5;
-    height: 600px;
     padding: 60px 30px;
 }
 
@@ -64,6 +63,9 @@ div.cardrow{
     width: 110px;
     margin: auto;
 }
+a{
+    text-decoration-line: none;
+}
 
 div.content h1{
     font-size: 45px;
@@ -73,15 +75,10 @@ div.content h1{
 }
 
 img.a{
+    float: right;
     padding: 10px 20px;
-    width: 90px;
-    height: 90px;
-} 
-
-img.b{
-    padding: 5px;
-    width: 90px;
-    height: 90px;
+    width: 80px;
+    height: 80px;
 } 
 
 div.card{
@@ -92,8 +89,10 @@ div.card{
     border-radius: 25px;
     display: flex;
     align-items: center;
+    /*border-width:2px; 
+    border-style:solid;
+    overflow: hidden;*/
 }
-
 
 b.t1{
     color: #2B3125;
@@ -104,10 +103,11 @@ b.t1{
     padding: 30px 0px 30px 30px;
 }
 
-b.t2{
+
+b.t{
     color: #2B3125;
     font-size: 25px;
-    letter-spacing: 10px;
+    letter-spacing: 5px;
     text-align: left;
     margin: 0%;
     padding: 30px 0px 30px 30px;
