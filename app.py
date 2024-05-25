@@ -4,8 +4,8 @@ from flask import Flask, request, abort, render_template, redirect,url_for, sess
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import *
-from utlis import db 
-from utlis.dbFunc import get_codeID
+from utils import db 
+from utils.dbFunc import get_codeID
 
 app = Flask(__name__)
 
