@@ -1,194 +1,269 @@
-from flask import request, render_template, redirect, url_for
-#from flask_apscheduler import APScheduler
-from datetime import datetime, timedelta
-import sqlite3
-from flask import Blueprint
-from utlis import db
+from flask import Flask, request, render_template, redirect, url_for, Blueprint
+from flask_apscheduler import APScheduler
+from datetime import datetime
+from linebot import LineBotApi, WebhookHandler
+from linebot.models import TextSendMessage, FlexSendMessage, ImageSendMessage
+from utils import db
 import pymysql
 
-event_bp = Blueprint('event_bp',__name__)
+event_bp = Blueprint('event_bp', __name__)
 
-#主頁
+line_bot_api = LineBotApi(db.LINE_TOKEN_2)
+handler = WebhookHandler(db.LINE_HANDLER_2)
+
+app = Flask(__name__)
+
+scheduler = APScheduler()
+scheduler.init_app(app)
+scheduler.start()
+
+scheduled_jobs = {}
+
+# 主頁
 @event_bp.route('/')
 def event():
-    return render_template('index.html')
+    return render_template('schedule_index.html')
 
-#新增表單
+# 新增表單
 @event_bp.route('/create/form')
 def event_create_form():
     return render_template('/event/event_create_form.html')
 
-#新增
+# 新增
 @event_bp.route('/create', methods=['POST'])
 def event_create():
     try:
-        #取得其他參數
+        MemID = request.form.get('MemID')
         Title = request.form.get('Title')
         DateTime = request.form.get('DateTime')
         Location = request.form.get('Location')
-        
-        print(f'{Title}  {type(DateTime)}  ')
-        #取得資料庫連線
-        conn = db.get_connection()
 
-        #將資料加入
+        conn = db.get_connection()
         cursor = conn.cursor()
-        err=""
-        cursor.execute("INSERT INTO Memo (Title, DateTime, Type) VALUES (%s, %s, '3')",
-                        (Title, DateTime))
-        err="INSERT MEMO"
-        cursor.execute("Select MemoID from Memo order by MemoID Desc")
-        memoID=cursor.fetchone()[0]
-        err+="  SELECT"
-        cursor.execute("INSERT INTO Event (MemoID,Location) VALUES (%s,%s)", (memoID,Location))
-        err+="  EVENT"
+        
+        cursor.execute("""
+                      SELECT COALESCE(f.FamilyID, l.FamilyID) AS A_FamilyID
+                        FROM `113-ntub113506`.Member m 
+                        LEFT JOIN `113-ntub113506`.Family as f ON m.MemID = f.MainUserID 
+                        LEFT JOIN `113-ntub113506`.FamilyLink as l ON m.MemID = l.SubUserID
+                        WHERE MemID = %s
+                       """, (MemID,))
+        FamilyID = cursor.fetchone()[0]
+
+        cursor.execute("INSERT INTO Memo (FamilyID, Title, DateTime, Type, EditorID) VALUES (%s, %s, %s, '3', %s)",
+                       (FamilyID, Title, DateTime, MemID))
+        cursor.execute("SELECT MemoID FROM Memo ORDER BY MemoID DESC")
+        memoID = cursor.fetchone()[0]
+        cursor.execute("INSERT INTO Event (MemoID, Location) VALUES (%s, %s)", (memoID, Location))
+
         conn.commit()
         conn.close()
 
-        # 渲染成功畫面
-        return render_template('/event/event_create_success.html')
-    except pymysql.Error as e:
-        # 渲染失敗畫面
-        return f'Error {e}'
-        return err
-        return render_template('create_fail.html')
-    
-#查詢
-@event_bp.route('/list', methods=['Post'])
-def event_list():    
-    #取得資料庫連線
-    conn = db.get_connection()
-    
-    #取得執行sql命令的cursor
-    cursor = conn.cursor()   
-    
-    #取得傳入參數, 執行sql命令並取回資料  
-    FamilyID = request.values.get('FamilyID')
-      
-    cursor.execute("""
-                   SELECT * FROM 
-                   (select * from`113-ntub113506`.Memo Where FamilyID=%s) m 
-                   join 
-                   (select * from `113-ntub113506`.`Event`) e 
-                   on e.MemoID=m.MemoID
-                   """, (FamilyID))
-    data = cursor.fetchall()
+        job_id = f"send_message_{memoID}"
+        send_time = datetime.strptime(DateTime, '%Y-%m-%dT%H:%M')
+        scheduler.add_job(id = job_id, func = send_line_message, trigger = 'date', run_date = send_time, args = [MemID, Title, Location])
+        scheduled_jobs[memoID] = job_id
 
-    #關閉連線 
+        return render_template('/event/event_create_success.html')
+    except:
+        return render_template('/event/event_create_fail.html')
+    
+def send_line_message(MemID, Title, Location):
+    try:
+        conn = db.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT MainUserID 
+            FROM Family 
+            WHERE FamilyID = (SELECT FamilyID 
+                              FROM FamilyLink 
+                              WHERE SubUserID = %s)
+        """, (MemID,))
+        # cursor.execute("SELECT MemID FROM Member WHERE MemID = %s", (MemID,))
+        user_line_id = cursor.fetchone()[0]
+        conn.close()
+
+        # flex_message = {
+        #     "type": "flex",
+        #     "altText": "Event Reminder",
+        #     "contents": {
+        #         "type": "bubble",
+        #         "hero": {
+        #             "type": "image",
+        #             "url": "/imgs/planner.png",
+        #             "size": "full",
+        #             "aspectRatio": "20:13",
+        #             "aspectMode": "cover"
+        #         },
+        #         "body": {
+        #             "type": "box",
+        #             "layout": "vertical",
+        #             "contents": [
+        #                 {
+        #                     "type": "text",
+        #                     "text": "紀念日提醒",
+        #                     "weight": "bold",
+        #                     "size": "xl"
+        #                 },
+        #                 {
+        #                     "type": "text",
+        #                     "text": f"名稱: {Title}",
+        #                     "margin": "lg",
+        #                     "wrap": True
+        #                 },
+        #                 {
+        #                     "type": "text",
+        #                     "text": f"地點: {Location}",
+        #                     "margin": "lg",
+        #                     "wrap": True
+        #                 }
+        #             ]
+        #         }
+        #     }
+        # }
+
+        # line_bot_api.push_message(user_line_id, FlexSendMessage(alt_text="Event Reminder", contents=flex_message))
+
+        message = f"Event Reminder:\nTitle: {Title}\nLocation: {Location}"
+        line_bot_api.push_message(user_line_id, TextSendMessage(text = message))
+    except Exception as e:
+        print(e)
+
+# 查詢
+@event_bp.route('/list')
+def event_list():    
+    data = ""
+
+    MemID = request.values.get('MemID')
+
+    conn = db.get_connection()
+    cursor = conn.cursor()
+
+    if MemID:
+        cursor.execute("""
+                        SELECT COALESCE(f.FamilyID, l.FamilyID) AS A_FamilyID
+                            FROM `113-ntub113506`.Member m 
+                            LEFT JOIN `113-ntub113506`.Family as f ON m.MemID = f.MainUserID 
+                            LEFT JOIN `113-ntub113506`.FamilyLink as l ON m.MemID = l.SubUserID
+                            WHERE MemID = %s
+                        """, (MemID,))
+        FamilyID = cursor.fetchone()[0]
+    else:
+        return render_template('/event/event_login.html', liffid = db.LIFF_ID)
+
+    if FamilyID:
+        cursor.execute("""
+                    SELECT * FROM 
+                    (SELECT * FROM `113-ntub113506`.Memo WHERE FamilyID = %s) m 
+                    JOIN 
+                    (SELECT * FROM `113-ntub113506`.Event) e 
+                    ON e.MemoID = m.MemoID
+                    """, (FamilyID,))
+        data = cursor.fetchall()
+
     conn.close()  
-        
-    #渲染網頁
+
     if data:
-        # return f'{data}'
-        return render_template('/event/event_list.html', data=data) 
+        return render_template('/event/event_list.html', data = data, liff = db.LIFF_ID)
     else:
         return render_template('not_found.html')
-    
-#更改確認
-@event_bp.route('/update/confirm', methods=['POST'])
+
+# 更改確認
+@event_bp.route('/update/confirm')
 def event_update_confirm():
-    #取得資料庫連線
-    connection = db.get_connection()
-    
-    #取得執行sql命令的cursor
-    cursor = connection.cursor()   
-    
-    #取得傳入參數, 執行sql命令並取回資料  
     MemoID = request.values.get('MemoID')
 
+    connection = db.get_connection()
+    cursor = connection.cursor()
+
     cursor.execute("""
                    SELECT * FROM 
-                   (select * from`113-ntub113506`.Memo Where MemoID=%s) m 
-                   join 
-                   (select * from `113-ntub113506`.`Event`) e 
-                   on e.MemoID=m.MemoID
-                   """, (MemoID))
+                   (SELECT * FROM `113-ntub113506`.Memo WHERE MemoID = %s) m 
+                   JOIN 
+                   (SELECT * FROM `113-ntub113506`.Event) e 
+                   ON e.MemoID=m.MemoID
+                   """, (MemoID,))
     data = cursor.fetchone()
 
-    #關閉連線   
     connection.close()  
         
-    #渲染網頁
     if data:
-        return render_template('/event/event_update_confirm.html', data=data) 
+        return render_template('/event/event_update_confirm.html', data = data) 
     else:
         return render_template('not_found.html')
-    
-    
-#更改
+
+# 更改
 @event_bp.route('/update', methods=['POST'])
 def event_update():
     try:
-        #取得參數
+        EditorID = request.values.get('EditorID')
         MemoID = request.values.get('MemoID')
         Title = request.form.get('Title')
         DateTime = request.form.get('DateTime')
         Location = request.form.get('Location')
 
-        #取得資料庫連線
         conn = db.get_connection()
-
-        #將資料從event表刪除
         cursor = conn.cursor()
 
-        cursor.execute("UPDATE Memo SET Title=%s, DateTime=%s WHERE MemoID = %s", (Title, DateTime, MemoID))
-        cursor.execute("UPDATE Event SET Location=%s WHERE MemoID = %s", (Location, MemoID))
+        cursor.execute("UPDATE Memo SET Title = %s, DateTime = %s, EditorID = %s WHERE MemoID = %s", (Title, DateTime, EditorID, MemoID))
+        cursor.execute("UPDATE Event SET Location = %s WHERE MemoID = %s", (Location, MemoID))
         
         conn.commit()
         conn.close()
 
-        # 渲染成功畫面
+        if MemoID in scheduled_jobs:
+            scheduler.remove_job(scheduled_jobs[MemoID])
+            del scheduled_jobs[MemoID]
+
+        job_id = f"send_message_{MemoID}"
+        send_time = datetime.strptime(DateTime, '%Y-%m-%dT%H:%M')
+        scheduler.add_job(id = job_id, func = send_line_message, trigger = 'date', run_date = send_time, args = [EditorID, Title, Location])
+        scheduled_jobs[MemoID] = job_id
+
         return render_template('event/event_update_success.html')
     except:
-        # 渲染失敗畫面
         return render_template('event/event_update_fail.html')
 
-#刪除確認
-@event_bp.route('/delete/confirm', methods=['POST'])
-def event_delete_confirm():
-    #取得資料庫連線    
-    connection = db.get_connection()  
-    
-    #取得執行sql命令的cursor
-    cursor = connection.cursor()   
-    
-    #取得傳入參數, 執行sql命令並取回資料  
+# 刪除確認
+@event_bp.route('/delete/confirm')
+def event_delete_confirm():   
     MemoID = request.values.get('MemoID')
-      
-    cursor.execute('SELECT * FROM Memo WHERE MemoID=%s', (MemoID,))
+    
+    connection = db.get_connection()  
+    cursor = connection.cursor()
+         
+    cursor.execute('SELECT * FROM Memo WHERE MemoID = %s', (MemoID,))
     data = cursor.fetchone()
 
-    #關閉連線   
     connection.close()  
         
-    #渲染網頁
     if data:
-        return render_template('/event/event_delete_confirm.html', data=data) 
+        return render_template('/event/event_delete_confirm.html', data = data) 
     else:
         return render_template('not_found.html')
 
-#員工刪除
+# 刪除
 @event_bp.route('/delete', methods=['POST'])
 def event_delete():
     try:
-        #取得資料庫連線
-        conn = db.get_connection()
-
-        #將資料從customer表刪除
-        cursor = conn.cursor()
-
-        #取得傳入參數, 執行sql命令並取回資料  
         MemoID = request.values.get('MemoID')
 
-        cursor.execute('Delete FROM Event WHERE MemoID=%s', (MemoID,))    
-        cursor.execute('Delete FROM Memo WHERE MemoID=%s', (MemoID,))
+        conn = db.get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute('DELETE FROM Event WHERE MemoID = %s', (MemoID,))
+        cursor.execute('DELETE FROM Memo WHERE MemoID = %s', (MemoID,))
         
         conn.commit()
         conn.close()
 
-        # 渲染成功畫面
+        if MemoID in scheduled_jobs:
+            scheduler.remove_job(scheduled_jobs[MemoID])
+            del scheduled_jobs[MemoID]
+
         return render_template('event/event_delete_success.html')
     except:
-        # 渲染失敗畫面
         return render_template('event/event_delete_fail.html')
-        
+
+if __name__ == '__main__':
+    app.run(debug=True)

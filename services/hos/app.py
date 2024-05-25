@@ -6,7 +6,7 @@ from linebot.models import TextSendMessage
 from utils import db
 import pymysql
 
-med_bp = Blueprint('med_bp',__name__)
+hos_bp = Blueprint('hos_bp',__name__)
 
 line_bot_api = LineBotApi(db.LINE_TOKEN_2)
 handler = WebhookHandler(db.LINE_HANDLER_2)
@@ -20,27 +20,29 @@ scheduler.start()
 scheduled_jobs = {}
 
 #主頁
-@med_bp.route('/')
-def med():
+@hos_bp.route('/')
+def hos():
     return render_template('schedule_index.html')
 
 #新增表單
-@med_bp.route('/create/form')
-def med_create_form():
-    return render_template('/med/med_create_form.html')
+@hos_bp.route('/create/form')
+def hos_create_form():
+    return render_template('/hos/hos_create_form.html')
 
 #新增
-@med_bp.route('/create', methods=['POST'])
-def med_create():
+@hos_bp.route('/create', methods=['POST'])
+def hos_create():
     try:
         MemID =  request.form.get('MemID')
         Title = request.form.get('Title')
         DateTime = request.form.get('DateTime')
-        MedFeature = request.form.get('MedFeature')
-        Cycle = request.form.get('Cycle')
-
+        Location = request.form.get('Location')
+        Doctor = request.form.get('Doctor')
+        Clinic = request.form.get('Clinic')
+        Num = request.form.get('Num')
+        
         conn = db.get_connection()
-        cursor = conn.cursor()   
+        cursor = conn.cursor()  
 
         cursor.execute("""
                       SELECT COALESCE(f.FamilyID, l.FamilyID) AS A_FamilyID
@@ -50,27 +52,25 @@ def med_create():
                         where MemID = %s
                        """, (MemID))
         FamilyID=cursor.fetchone()[0]
-
-        cursor.execute("INSERT INTO Memo (FamilyID, Title, DateTime, Type, EditorID) VALUES (%s, %s, %s, '1', %s)",
+        cursor.execute("INSERT INTO Memo (FamilyID, Title, DateTime, Type, EditorID) VALUES (%s, %s, %s, '2', %s)",
                         (FamilyID, Title, DateTime, MemID))
         cursor.execute("Select MemoID from Memo order by MemoID Desc")
         memoID=cursor.fetchone()[0]
-        cursor.execute("INSERT INTO Med (MemoID, MedFeature, Cycle) VALUES (%s, %s, %s)", (memoID, MedFeature, Cycle))
-        
+        cursor.execute("INSERT INTO Hos (MemoID, Location, Doctor, Clinic, Num) VALUES (%s, %s, %s, %s, %s)", (memoID, Location, Doctor, Clinic, Num))
         conn.commit()
         conn.close()
 
         job_id = f"send_message_{memoID}"
         send_time = datetime.strptime(DateTime, '%Y-%m-%dT%H:%M')
-        scheduler.add_job(id = job_id, func = send_line_message, trigger = 'date', run_date = send_time, args=[MemID, Title, MedFeature, Cycle])
+        scheduler.add_job(id = job_id, func = send_line_message, trigger = 'date', run_date = send_time, args = [MemID, Title, Location, Doctor, Clinic, Num])
         scheduled_jobs[memoID] = job_id
 
-        return render_template('/med/med_create_success.html')
+        return render_template('/hos/hos_create_success.html')
     except:
-        return render_template('/med/med_create_fail.html')
+        return render_template('/hos/hos_create_fail.html')
+    
 
-
-def send_line_message(MemID, Title, MedFeature, Cycle):
+def send_line_message(MemID, Title, Location, Doctor, Clinic, Num):
     try:
         conn = db.get_connection()
         cursor = conn.cursor()
@@ -85,21 +85,21 @@ def send_line_message(MemID, Title, MedFeature, Cycle):
         user_line_id = cursor.fetchone()[0]
         conn.close()
 
-        message = f"Event Reminder:\nTitle: {Title}\nMedFeature: {MedFeature}\nCycle: {Cycle}"
+        message = f"Event Reminder:\nTitle: {Title}\nLocation: {Location}\nDoctor: {Doctor}\nClinic: {Clinic}\nNum: {Num}"
         line_bot_api.push_message(user_line_id, TextSendMessage(text = message))
     except Exception as e:
-        print(e)    
-
+        print(e)
+    
 #查詢
-@med_bp.route('/list')
-def med_list():    
+@hos_bp.route('/list')
+def hos_list():    
     data=""
 
     MemID =  request.values.get('MemID')
 
     conn = db.get_connection()
     cursor = conn.cursor()   
-    
+
     if (MemID):
         cursor.execute("""
                         SELECT COALESCE(f.FamilyID, l.FamilyID) AS A_FamilyID
@@ -110,14 +110,14 @@ def med_list():
                         """, (MemID))
         FamilyID = cursor.fetchone()[0] 
     else:
-        return render_template('/med/med_login.html',liffid = db.LIFF_ID)
-    
+        return render_template('/hos/hos_login.html',liffid = db.LIFF_ID)
+
     if(FamilyID):
         cursor.execute("""
                     SELECT * FROM 
                     (select * from`113-ntub113506`.Memo Where FamilyID = %s) m 
                     join 
-                    (select * from `113-ntub113506`.`Med`) e 
+                    (select * from `113-ntub113506`.`Hos`) e 
                     on e.MemoID=m.MemoID
                     """, (FamilyID))
         data = cursor.fetchall()
@@ -125,51 +125,56 @@ def med_list():
     conn.close()  
         
     if data:
-        return render_template('/med/med_list.html', data = data, liff = db.LIFF_ID) 
+        return render_template('/hos/hos_list.html', data = data, liff = db.LIFF_ID) 
     else:
         return render_template('not_found.html')
     
 #更改確認
-@med_bp.route('/update/confirm')
-def med_update_confirm():
+@hos_bp.route('/update/confirm')
+def hos_update_confirm():
     MemoID = request.values.get('MemoID')
 
     connection = db.get_connection()
     cursor = connection.cursor()   
-
+    
     cursor.execute("""
                    SELECT * FROM 
                    (select * from`113-ntub113506`.Memo Where MemoID = %s) m 
                    join 
-                   (select * from `113-ntub113506`.`Med`) e 
-                   on e.MemoID=m.MemoID
+                   (select * from `113-ntub113506`.`Hos`) e 
+                   on e.MemoID = m.MemoID
                    """, (MemoID))
     data = cursor.fetchone()
 
     connection.close()  
         
     if data:
-        return render_template('/med/med_update_confirm.html', data = data) 
+        return render_template('/hos/hos_update_confirm.html', data = data) 
     else:
         return render_template('not_found.html')
     
     
 #更改
-@med_bp.route('/update', methods=['POST'])
-def med_update():
+@hos_bp.route('/update', methods=['POST'])
+def hos_update():
     try:
         EditorID =  request.values.get('EditorID')
         MemoID = request.values.get('MemoID')
         Title = request.form.get('Title')
         DateTime = request.form.get('DateTime')
-        MedFeature = request.form.get('MedFeature')
-        Cycle = request.form.get('Cycle')
+        Location = request.form.get('Location')
+        Doctor = request.form.get('Doctor')
+        Clinic = request.form.get('Clinic')
+        Num = request.form.get('Num')
 
         conn = db.get_connection()
         cursor = conn.cursor()
 
         cursor.execute("UPDATE Memo SET Title = %s, DateTime = %s, EditorID = %s WHERE MemoID = %s", (Title, DateTime, EditorID, MemoID))
-        cursor.execute("UPDATE Med SET MedFeature = %s, Cycle = %s WHERE MemoID = %s", (MedFeature, Cycle, MemoID))
+        cursor.execute("UPDATE Hos SET Location = %s, Doctor = %s, Clinic = %s, Num = %s WHERE MemoID = %s", (Location, Doctor, Clinic, Num, MemoID))
+        
+        conn.commit()
+        conn.close()
 
         if MemoID in scheduled_jobs:
             scheduler.remove_job(scheduled_jobs[MemoID])
@@ -177,56 +182,54 @@ def med_update():
 
         job_id = f"send_message_{MemoID}"
         send_time = datetime.strptime(DateTime, '%Y-%m-%dT%H:%M')
-        scheduler.add_job(id = job_id, func=send_line_message, trigger = 'date', run_date = send_time, args = [EditorID, Title, MedFeature, Cycle])
+        scheduler.add_job(id = job_id, func=send_line_message, trigger = 'date', run_date = send_time, args = [EditorID, Title, Location, Clinic, Num, MemoID])
         scheduled_jobs[MemoID] = job_id
-        
-        conn.commit()
-        conn.close()
 
-        return render_template('med/med_update_success.html')
+        return render_template('hos/hos_update_success.html')
     except:
-        return render_template('med/med_update_fail.html')
+        return render_template('hos/hos_update_fail.html')
 
 #刪除確認
-@med_bp.route('/delete/confirm')
-def med_delete_confirm():
+@hos_bp.route('/delete/confirm')
+def hos_delete_confirm():
     MemoID = request.values.get('MemoID')
 
     connection = db.get_connection()  
-    cursor = connection.cursor()       
-      
+    cursor = connection.cursor()   
+    
     cursor.execute('SELECT * FROM Memo WHERE MemoID = %s', (MemoID,))
     data = cursor.fetchone()
 
     connection.close()  
         
     if data:
-        return render_template('/med/med_delete_confirm.html', data = data) 
+        return render_template('/hos/hos_delete_confirm.html', data = data) 
     else:
         return render_template('not_found.html')
 
 #員工刪除
-@med_bp.route('/delete', methods=['POST'])
-def med_delete():
+@hos_bp.route('/delete', methods=['POST'])
+def hos_delete():
     try:
         MemoID = request.values.get('MemoID')
-
+        
         conn = db.get_connection()
         cursor = conn.cursor()
 
-        cursor.execute('Delete FROM Med WHERE MemoID = %s', (MemoID,))    
+        cursor.execute('Delete FROM Hos WHERE MemoID = %s', (MemoID,))    
         cursor.execute('Delete FROM Memo WHERE MemoID = %s', (MemoID,))
-        
-        conn.commit()
-        conn.close()
 
         if MemoID in scheduled_jobs:
             scheduler.remove_job(scheduled_jobs[MemoID])
             del scheduled_jobs[MemoID]
+        
+        conn.commit()
+        conn.close()
 
-        return render_template('med/med_delete_success.html')
+        return render_template('hos/hos_delete_success.html')
     except:
-        return render_template('med/med_delete_fail.html')
-
+        return render_template('hos/hos_delete_fail.html')
+    
 if __name__ == '__main__':
     app.run(debug=True)
+        

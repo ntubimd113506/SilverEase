@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>回診資料查詢</title>
+</head>
+
+<script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+<script>
+    var MemID;
+    function initializeLiff(myLiffId) {
+        liff.init({
+            liffId: myLiffId
+        }).then(() => {
+            if (!liff.isLoggedIn()) {
+                alert("用戶未登入");
+                liff.login();
+            } else {
+                // alert("用戶已登入");
+                liff.getProfile()
+                    .then(profile => {
+                        var MemID = profile.userId;
+                        document.getElementById("MemID").value = MemID;
+                    })
+                    .catch((err) => {
+                        console.log('error', err);
+                    });
+            }
+
+        }).catch((err) => {
+            console.log('初始化失敗', err);
+        });
+    }
+</script>
+
+
+<body onload="initializeLiff('2004699458-OR9pkZjP')">
+    <div class="container">
+        <div class="header">
+            <h1>SliverEase</h1>
+        </div>
+        <div class="content">
+            <h2>回診資料清單</h2>
+
+            <p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>標題</th>
+                        <th>時間</th>
+                        <th>地點</th>
+                        <th>醫院地點</th>
+                        <th>看診醫生</th>
+                        <th>門診</th>
+                        <th>號碼</th>
+                    </tr>
+                </thead>
+ 
+                <tbody>
+                    {% for d in data %}
+                    <tr>
+                        <td>{{d[2]}}</td>
+                        <td>{{d[3]}}</td>
+                        <td>{{d[7]}}</td>
+                        <td>{{d[8]}}</td>
+                        <td>{{d[9]}}</td>
+                        <td>{{d[10]}}</td>
+                        <td><a href="/hos/update/confirm?MemoID={{d[0]}}">編輯</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            </p>
+            
+        </div>
+        <input type="hidden" id="MemID" name="MemID">
+    </div>
+</body>
+
+</html>

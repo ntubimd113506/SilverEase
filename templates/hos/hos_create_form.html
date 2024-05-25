@@ -2,14 +2,14 @@
 <html>
 
 <head>
-    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalabe=no">
-    <title>新增紀念日</title>
+    <meta charset="utf-8">
+    <title>新增回診資料</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Satisfy&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link  rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
-    <link href="/static/css/create_form.css" rel="stylesheet" />
+    <link href="/static/css/main.css" rel="stylesheet" />
+    <link href="/static/css/hos.css" rel="stylesheet" />
 </head>
 
 <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
@@ -23,6 +23,7 @@
                 alert("用戶未登入");
                 liff.login();
             } else {
+                // alert("用戶已登入");
                 liff.getProfile()
                     .then(profile => {
                         var MemID = profile.userId;
@@ -40,22 +41,18 @@
 </script>
 
 <body onload="initializeLiff('2004699458-OR9pkZjP')">
-<!-- <body> -->
     <div class="container">
         <div class="header">
             <h1>SliverEase</h1>
         </div>
-
-        <i id="menu-bar" class="fa-solid fa-house" style="color: #9fb889;"></i>
-          <div class="navbar">
-            <ul id="navigation" class="nav">        
-             <li><a href="/event/">返回主頁</a></li> 
+        <div class="navbar">
+            <ul id="navigation" class="nav">
+                <li><a href="/hos/">返回主頁</a></li>
             </ul>
-          </div>
-        
+        </div>
+        <div class="toptitle">回診資料提醒</div>
         <div class="content">
-            <h1>新增紀念日</h1>
-            <form action="/event/create" method="post" enctype="multipart/form-data">
+            <form action="/hos/create" method="post" enctype="multipart/form-data">
                 <div class="form">
                     <div class="name">名稱</div>
                     <div class="value">
@@ -69,15 +66,34 @@
                     </div>
                     <br />
 
-                    <div class="name">地點</div>
+                    <div class="name">醫院地點</div>
                     <div class="value">
                         <input type="text" name="Location" class="input-field">
+                    </div>
+                    <br />
+
+                    <div class="name">看診醫生</div>
+                    <div class="value">
+                        <input type="text" name="Doctor" class="input-field">
+                    </div>
+                    <br />
+
+                    <div class="name">門診</div>
+                    <div class="value">
+                        <input type="text" name="Clinic" class="input-field">
+                    </div>
+                    <br />
+
+                    <div class="name">號碼</div>
+                    <div class="value">
+                        <input type="text" name="Num" class="input-field">
                     </div>
                     <br />
 
                     <div>
                         <button class="btn" type="submit">新 增</button>
                     </div>
+
                 </div>
                 <input type="hidden" id="MemID" name="MemID">
             </form>
