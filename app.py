@@ -4,7 +4,7 @@ from flask import Flask, request, abort, render_template
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
-from utlis import db
+from utils import db
 from services.med.app import med_bp
 from services.hos.app import hos_bp
 from services.event.app import event_bp

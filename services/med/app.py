@@ -1,12 +1,23 @@
-from flask import request, render_template, redirect, url_for
-#from flask_apscheduler import APScheduler
-# from datetime import datetime, timedelta
-# import sqlite3
-from flask import Blueprint
-from utlis import db
+from flask import Flask, request, render_template, redirect, url_for, Blueprint
+from flask_apscheduler import APScheduler
+from datetime import datetime
+from linebot import LineBotApi, WebhookHandler
+from linebot.models import TextSendMessage
+from utils import db
 import pymysql
 
 med_bp = Blueprint('med_bp',__name__)
+
+line_bot_api = LineBotApi(db.LINE_TOKEN_2)
+handler = WebhookHandler(db.LINE_HANDLER_2)
+
+app = Flask(__name__)
+
+scheduler = APScheduler()
+scheduler.init_app(app)
+scheduler.start()
+
+scheduled_jobs = {}
 
 #主頁
 @med_bp.route('/')
@@ -29,8 +40,8 @@ def med_create():
         Cycle = request.form.get('Cycle')
 
         conn = db.get_connection()
+        cursor = conn.cursor()   
 
-        cursor = conn.cursor()        
         cursor.execute("""
                       SELECT COALESCE(f.FamilyID, l.FamilyID) AS A_FamilyID
                         FROM `113-ntub113506`.Member m 
@@ -39,18 +50,46 @@ def med_create():
                         where MemID = %s
                        """, (MemID))
         FamilyID=cursor.fetchone()[0]
+
         cursor.execute("INSERT INTO Memo (FamilyID, Title, DateTime, Type, EditorID) VALUES (%s, %s, %s, '1', %s)",
                         (FamilyID, Title, DateTime, MemID))
         cursor.execute("Select MemoID from Memo order by MemoID Desc")
         memoID=cursor.fetchone()[0]
         cursor.execute("INSERT INTO Med (MemoID, MedFeature, Cycle) VALUES (%s, %s, %s)", (memoID, MedFeature, Cycle))
+        
         conn.commit()
         conn.close()
+
+        job_id = f"send_message_{memoID}"
+        send_time = datetime.strptime(DateTime, '%Y-%m-%dT%H:%M')
+        scheduler.add_job(id = job_id, func = send_line_message, trigger = 'date', run_date = send_time, args=[MemID, Title, MedFeature, Cycle])
+        scheduled_jobs[memoID] = job_id
 
         return render_template('/med/med_create_success.html')
     except:
         return render_template('/med/med_create_fail.html')
-    
+
+
+def send_line_message(MemID, Title, MedFeature, Cycle):
+    try:
+        conn = db.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT MainUserID 
+            FROM Family 
+            WHERE FamilyID = (SELECT FamilyID 
+                              FROM FamilyLink 
+                              WHERE SubUserID = %s)
+        """, (MemID,))
+        # cursor.execute("SELECT MemID FROM Member WHERE MemID = %s", (MemID,))
+        user_line_id = cursor.fetchone()[0]
+        conn.close()
+
+        message = f"Event Reminder:\nTitle: {Title}\nMedFeature: {MedFeature}\nCycle: {Cycle}"
+        line_bot_api.push_message(user_line_id, TextSendMessage(text = message))
+    except Exception as e:
+        print(e)    
+
 #查詢
 @med_bp.route('/list')
 def med_list():    
@@ -59,7 +98,6 @@ def med_list():
     MemID =  request.values.get('MemID')
 
     conn = db.get_connection()
-    
     cursor = conn.cursor()   
     
     if (MemID):
@@ -97,7 +135,6 @@ def med_update_confirm():
     MemoID = request.values.get('MemoID')
 
     connection = db.get_connection()
-    
     cursor = connection.cursor()   
 
     cursor.execute("""
@@ -129,11 +166,19 @@ def med_update():
         Cycle = request.form.get('Cycle')
 
         conn = db.get_connection()
-
         cursor = conn.cursor()
 
         cursor.execute("UPDATE Memo SET Title = %s, DateTime = %s, EditorID = %s WHERE MemoID = %s", (Title, DateTime, EditorID, MemoID))
         cursor.execute("UPDATE Med SET MedFeature = %s, Cycle = %s WHERE MemoID = %s", (MedFeature, Cycle, MemoID))
+
+        if MemoID in scheduled_jobs:
+            scheduler.remove_job(scheduled_jobs[MemoID])
+            del scheduled_jobs[MemoID]
+
+        job_id = f"send_message_{MemoID}"
+        send_time = datetime.strptime(DateTime, '%Y-%m-%dT%H:%M')
+        scheduler.add_job(id = job_id, func=send_line_message, trigger = 'date', run_date = send_time, args = [EditorID, Title, MedFeature, Cycle])
+        scheduled_jobs[MemoID] = job_id
         
         conn.commit()
         conn.close()
@@ -148,7 +193,6 @@ def med_delete_confirm():
     MemoID = request.values.get('MemoID')
 
     connection = db.get_connection()  
-    
     cursor = connection.cursor()       
       
     cursor.execute('SELECT * FROM Memo WHERE MemoID = %s', (MemoID,))
@@ -168,7 +212,6 @@ def med_delete():
         MemoID = request.values.get('MemoID')
 
         conn = db.get_connection()
-
         cursor = conn.cursor()
 
         cursor.execute('Delete FROM Med WHERE MemoID = %s', (MemoID,))    
@@ -177,7 +220,13 @@ def med_delete():
         conn.commit()
         conn.close()
 
+        if MemoID in scheduled_jobs:
+            scheduler.remove_job(scheduled_jobs[MemoID])
+            del scheduled_jobs[MemoID]
+
         return render_template('med/med_delete_success.html')
     except:
         return render_template('med/med_delete_fail.html')
-        
+
+if __name__ == '__main__':
+    app.run(debug=True)

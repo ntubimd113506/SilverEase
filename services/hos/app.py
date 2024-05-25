@@ -1,12 +1,23 @@
-from flask import request, render_template, redirect, url_for
-#from flask_apscheduler import APScheduler
-# from datetime import datetime, timedelta
-# import sqlite3
-from flask import Blueprint
-from utlis import db
+from flask import Flask, request, render_template, redirect, url_for, Blueprint
+from flask_apscheduler import APScheduler
+from datetime import datetime
+from linebot import LineBotApi, WebhookHandler
+from linebot.models import TextSendMessage
+from utils import db
 import pymysql
 
 hos_bp = Blueprint('hos_bp',__name__)
+
+line_bot_api = LineBotApi(db.LINE_TOKEN_2)
+handler = WebhookHandler(db.LINE_HANDLER_2)
+
+app = Flask(__name__)
+
+scheduler = APScheduler()
+scheduler.init_app(app)
+scheduler.start()
+
+scheduled_jobs = {}
 
 #主頁
 @hos_bp.route('/')
@@ -31,8 +42,8 @@ def hos_create():
         Num = request.form.get('Num')
         
         conn = db.get_connection()
+        cursor = conn.cursor()  
 
-        cursor = conn.cursor()        
         cursor.execute("""
                       SELECT COALESCE(f.FamilyID, l.FamilyID) AS A_FamilyID
                         FROM `113-ntub113506`.Member m 
@@ -49,9 +60,35 @@ def hos_create():
         conn.commit()
         conn.close()
 
+        job_id = f"send_message_{memoID}"
+        send_time = datetime.strptime(DateTime, '%Y-%m-%dT%H:%M')
+        scheduler.add_job(id = job_id, func = send_line_message, trigger = 'date', run_date = send_time, args = [MemID, Title, Location, Doctor, Clinic, Num])
+        scheduled_jobs[memoID] = job_id
+
         return render_template('/hos/hos_create_success.html')
     except:
         return render_template('/hos/hos_create_fail.html')
+    
+
+def send_line_message(MemID, Title, Location, Doctor, Clinic, Num):
+    try:
+        conn = db.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT MainUserID 
+            FROM Family 
+            WHERE FamilyID = (SELECT FamilyID 
+                              FROM FamilyLink 
+                              WHERE SubUserID = %s)
+        """, (MemID,))
+        # cursor.execute("SELECT MemID FROM Member WHERE MemID = %s", (MemID,))
+        user_line_id = cursor.fetchone()[0]
+        conn.close()
+
+        message = f"Event Reminder:\nTitle: {Title}\nLocation: {Location}\nDoctor: {Doctor}\nClinic: {Clinic}\nNum: {Num}"
+        line_bot_api.push_message(user_line_id, TextSendMessage(text = message))
+    except Exception as e:
+        print(e)
     
 #查詢
 @hos_bp.route('/list')
@@ -61,7 +98,6 @@ def hos_list():
     MemID =  request.values.get('MemID')
 
     conn = db.get_connection()
-
     cursor = conn.cursor()   
 
     if (MemID):
@@ -99,7 +135,6 @@ def hos_update_confirm():
     MemoID = request.values.get('MemoID')
 
     connection = db.get_connection()
-    
     cursor = connection.cursor()   
     
     cursor.execute("""
@@ -133,7 +168,6 @@ def hos_update():
         Num = request.form.get('Num')
 
         conn = db.get_connection()
-
         cursor = conn.cursor()
 
         cursor.execute("UPDATE Memo SET Title = %s, DateTime = %s, EditorID = %s WHERE MemoID = %s", (Title, DateTime, EditorID, MemoID))
@@ -141,6 +175,15 @@ def hos_update():
         
         conn.commit()
         conn.close()
+
+        if MemoID in scheduled_jobs:
+            scheduler.remove_job(scheduled_jobs[MemoID])
+            del scheduled_jobs[MemoID]
+
+        job_id = f"send_message_{MemoID}"
+        send_time = datetime.strptime(DateTime, '%Y-%m-%dT%H:%M')
+        scheduler.add_job(id = job_id, func=send_line_message, trigger = 'date', run_date = send_time, args = [EditorID, Title, Location, Clinic, Num, MemoID])
+        scheduled_jobs[MemoID] = job_id
 
         return render_template('hos/hos_update_success.html')
     except:
@@ -152,7 +195,6 @@ def hos_delete_confirm():
     MemoID = request.values.get('MemoID')
 
     connection = db.get_connection()  
-    
     cursor = connection.cursor()   
     
     cursor.execute('SELECT * FROM Memo WHERE MemoID = %s', (MemoID,))
@@ -172,11 +214,14 @@ def hos_delete():
         MemoID = request.values.get('MemoID')
         
         conn = db.get_connection()
-
         cursor = conn.cursor()
 
         cursor.execute('Delete FROM Hos WHERE MemoID = %s', (MemoID,))    
         cursor.execute('Delete FROM Memo WHERE MemoID = %s', (MemoID,))
+
+        if MemoID in scheduled_jobs:
+            scheduler.remove_job(scheduled_jobs[MemoID])
+            del scheduled_jobs[MemoID]
         
         conn.commit()
         conn.close()
@@ -184,4 +229,7 @@ def hos_delete():
         return render_template('hos/hos_delete_success.html')
     except:
         return render_template('hos/hos_delete_fail.html')
+    
+if __name__ == '__main__':
+    app.run(debug=True)
         

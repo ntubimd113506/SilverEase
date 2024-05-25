@@ -7,7 +7,7 @@ import pathlib
 import filetype
 from linebot.models import TextSendMessage, ImageSendMessage
 from flask import Flask, flash, request, redirect, url_for, render_template, Blueprint
-from utlis import db
+from utils import db
 cam_bp = Blueprint('cam_bp',__name__)
 
 # 取得目前檔案所在的資料夾
