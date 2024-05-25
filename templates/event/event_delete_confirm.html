@@ -2,8 +2,15 @@
 <html>
 
 <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalabe=no">
     <title>刪除紀念日</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Satisfy&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link  rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+    <link href="/static/css/create_form.css" rel="stylesheet" />
+
 </head>
 
 <body>
@@ -23,15 +30,15 @@
                 <h2>確認刪除紀念日</h2>
                 <form action="/event/delete" method="post" enctype="multipart/form-data">
                     <div class="form">
-                        <span class="name">標題</span>
-                        <span class="value">
-                            <input type="text" name="Title" value="{{data[2]}}" readonly>
-                        </span>
+                        <div class="name">標題</div>
+                        <div class="value">
+                            <input type="text" name="Title" value="{{data[2]}}" class="input-field" readonly>
+                        </div>
                         <br />
 
-                        <span class="name"></span>
+                        <div class="name"></div>
                         <input type="hidden" name="MemoID" value="{{data[0]}}">
-                        <span class="value"><input type="submit" value="刪除" style="width:80px"></span>
+                        <div class="value"><input type="submit" value="刪除"></div>
                     </div>
                 </form>
             </div>

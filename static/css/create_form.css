@@ -128,8 +128,22 @@ input[type="datetime-local"] {
     position: relative;
     top: 300px;
     align-items: center;
+    margin-left: 10px;
 }
 
+input[type="submit" i]{
+    position: relative;
+    top: 200px;
+    align-items: center;
+    margin-left: 10px;
+}
+
+.delete-btn{
+    position: relative;
+    top: 300px;
+    align-items: center;
+    margin-left: 0px;
+}
 
 .btn{
     background-color: #9FB889;
@@ -144,3 +158,28 @@ input[type="datetime-local"] {
     margin: 0%;
 }
 
+input[type="submit" i]{
+    background-color: #9FB889;
+    width: 340px;
+    height: 40px;
+    border-style:none;
+    border-radius: 50px;
+    color: #000000;
+    font-size: 20px;
+    font-weight: bolder;
+    letter-spacing:5px;
+    margin: 0%;
+}
+
+.delete-btn{
+    background-color: #F2F0EE;
+    color: #000000;
+    text-decoration: none;
+    font-size: 20px;
+    padding: 3px 135px;
+    border: 5px solid #9FB889;
+    font-weight: 600;
+    border-radius: 50px;
+    letter-spacing:5px;
+    margin: 0%;
+}
