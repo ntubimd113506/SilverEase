@@ -89,25 +89,13 @@ div.card{
     border-radius: 25px;
     display: flex;
     align-items: center;
-    /*border-width:2px; 
-    border-style:solid;
-    overflow: hidden;*/
+    justify-content: space-between;
 }
-
-b.t1{
-    color: #2B3125;
-    font-size: 25px;
-    letter-spacing: 15px;
-    text-align: left;
-    margin: 0%;
-    padding: 30px 0px 30px 30px;
-}
-
 
 b.t{
     color: #2B3125;
     font-size: 25px;
-    letter-spacing: 5px;
+    letter-spacing: 10px;
     text-align: left;
     margin: 0%;
     padding: 30px 0px 30px 30px;
