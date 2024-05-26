@@ -8,6 +8,7 @@ html, body{
     background-color: #f4f9f7;
     padding: 0%;
     margin: 0%;
+
 }
 
 
@@ -15,12 +16,12 @@ html, body{
 /* container           */
 /* ------------------- */
 div.container{
-    height: 900px;
+    height: 1000px;
     margin-left: auto;
     margin-right: auto;
     text-align: justify;
     line-height: 26px;
-    background-color: #ffffff;
+    background-color: #F2F0EE;
 }
 
 
@@ -48,29 +49,20 @@ div.header h1{
 /* content             */
 /* ------------------- */
 div.content{
-    background-color: #F5F5F5;
-    padding: 60px 30px;
+    background-color: #F2F0EE;
+    padding: 0px 23px;
 }
 
 div.clear{
     height: 80px;
 }
 
-
-div.cardrow{
-    /* 水平置中 */
-    justify-content: center; 
-    width: 110px;
-    margin: auto;
-}
 a{
     text-decoration-line: none;
 }
 
 div.content h1{
     font-size: 45px;
-    height: 100px;
-    text-align:center;
     letter-spacing: 5px;
 }
 
@@ -104,6 +96,5 @@ b.t{
 div.card:nth-child(1),
 div.card:nth-child(2)
 {
-    margin-left: -110px;
     margin-bottom: 30px;
 }
