@@ -2,6 +2,9 @@ wfastcgi.py
 lineToken.py
 db.py
 
+.pio
+.vscode
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

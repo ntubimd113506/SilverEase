@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="memID"></div>
+    <div>"{{what}}"</div>
+</body>
+<script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+<script>
+    liff.init({
+        liffId: "{{liffid}}"
+    }).then(() => {
+        if (!liff.isLoggedIn()) {
+            alert("用戶未登入");
+            liff.login();
+        }
+        liff.getProfile()
+        .then(profile => {
+            // MemName = profile.displayName;
+            MemID = profile.userId;
+            // picUrl = profile.pictureUrl;
+            // const imgElement = document.getElementById("myImage");
+            // document.getElementById("name").innerHTML = MemName;
+            // imgElement.src = picUrl;
+            document.getElementById("memID").innerHTML = MemID;
+            // document.getElementById("MemName").value = MemName;
+            // checkMember(profile);
+        })
+        .catch((err) => {
+            console.log('error', err);
+        });
+    }).catch((err) => {
+        console.log('初始化失敗', err);
+    });
+   
+</script>
+
+</html>

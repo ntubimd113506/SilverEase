@@ -3,7 +3,8 @@
 /* ------------------- */
 /* html, body          */
 /* ------------------- */
-html, body{
+html,
+body {
     font-family: 'Noto Sans TC', sans-serif;
     background-color: #f4f9f7;
     padding: 0%;
@@ -14,7 +15,7 @@ html, body{
 /* ------------------- */
 /* container           */
 /* ------------------- */
-div.container{
+div.container {
     height: 900px;
     margin-left: auto;
     margin-right: auto;
@@ -26,20 +27,20 @@ div.container{
 /* ------------------- */
 /* header              */
 /* ------------------- */
-div.header{
+div.header {
     display: flex;
     /* 水平置中 */
-    justify-content: center;  
+    justify-content: center;
     padding: 10px;
     height: 40px;
     background-color: #9FB889;
 }
 
-div.header h1{
+div.header h1 {
     font-size: 30px;
     width: 200px;
     padding: 5px;
-    text-align:center;
+    text-align: center;
     letter-spacing: 3px;
     margin: 0%;
 }
@@ -47,47 +48,51 @@ div.header h1{
 /* ------------------- */
 /* content             */
 /* ------------------- */
-div.content{
+div.content {
     background-color: #F5F5F5;
     padding: 30px 30px;
 }
-div.cardrow{
+
+div.cardrow {
     display: flex;
     /* 水平置中 */
-    justify-content: center; 
+    justify-content: center;
     margin: auto;
 }
-div.cardrow1{
+
+div.cardrow1 {
     display: flex;
     /* 水平置中 */
-    justify-content: center; 
+    justify-content: center;
     width: 400px;
     height: 70px;
     margin: auto;
     padding: 60px 0px 6px 0px;
 }
-div.cardrow2{
+
+div.cardrow2 {
     display: flex;
     /* 水平置中 */
-    justify-content: center; 
+    justify-content: center;
     width: 400px;
     height: 70px;
     margin: auto;
 }
 
 
-div.content h1{
+div.content h1 {
     font-size: 45px;
     height: 200px;
-    text-align:center;
+    text-align: center;
     letter-spacing: 5px;
 }
-img.p{
+
+img.p {
     width: 340px;
     height: 340px;
-} 
+}
 
-div.card h4{
+div.card h4 {
     color: #000000;
     font-size: 22px;
     letter-spacing: 7px;
@@ -96,7 +101,12 @@ div.card h4{
     margin: 0%;
 }
 
-input[type="button" i] {
+/**
+    * 我修很多東西
+    */
+
+
+div button {
     background-color: #ffffff;
     float: left;
     width: 140px;
@@ -114,30 +124,31 @@ input[type="button" i] {
     text-align: center;
     margin: 0px 0px 30px;
 }
-input[type="button" i]:focus   {
+
+div button.onclick {
     background-color: #9FB889;
     color: #ffffff;
 }
 
-input[type="button" i]:first-child{
+div button:first-child {
     margin-right: 60px;
 }
 
-input.button{
+#myButton {
     background-color: #9FB889;
     width: 340px;
     height: 40px;
-    border-style:none;
+    border-style: none;
     border-radius: 50px;
     color: #000000;
     font-weight: bold;
     font-size: 20px;
-    letter-spacing:5px;
+    letter-spacing: 5px;
 }
 
-button h4{
+button h4 {
     color: #000000;
     font-size: 22px;
-    letter-spacing:5px;
+    letter-spacing: 5px;
     margin: 0%;
 }
