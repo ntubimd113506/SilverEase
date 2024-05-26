@@ -59,7 +59,7 @@
 
             <div class="form">
                 <form id="form" action="/identity/oy" method="post">
-                    <div class="cardrow1">
+                    <div class="cardrow">
                         <!-- 這裡也要看看 -->
                         <button type="button" class="card" id="old" onclick="selectButton('old')">長輩</button>
                         <button type="button" class="card" id="young" onclick="selectButton('young')">照護者</button>
@@ -70,7 +70,7 @@
                     <input type="hidden" id="option" name="option">
                     <input type="hidden" id="checkMember" name="checkMember">
 
-                    <div class="cardrow2"><input class="button" type="submit" value="確認" id="myButton"></div>
+                    <div class="cardrow"><input class="button" type="submit" value="確認" id="myButton"></div>
                 </form>
             </div>
         </div>
@@ -167,5 +167,4 @@
         document.getElementById('option').value = btnId;
     }
 </script>
-
 </html>
