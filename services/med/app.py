@@ -2,7 +2,7 @@ from flask import Flask, request, render_template, redirect, url_for, Blueprint
 from flask_apscheduler import APScheduler
 from datetime import datetime
 from linebot import LineBotApi, WebhookHandler
-from linebot.models import TextSendMessage
+from linebot.models import (MessageEvent, TextMessage, TextSendMessage, TemplateSendMessage, ButtonsTemplate, URIAction, MessageAction)
 from utils import db
 import pymysql
 
@@ -81,12 +81,30 @@ def send_line_message(MemID, Title, MedFeature, Cycle):
                               FROM FamilyLink 
                               WHERE SubUserID = %s)
         """, (MemID,))
-        # cursor.execute("SELECT MemID FROM Member WHERE MemID = %s", (MemID,))
+        #cursor.execute("SELECT MemID FROM Member WHERE MemID = %s", (MemID,))
         user_line_id = cursor.fetchone()[0]
         conn.close()
 
-        message = f"Event Reminder:\nTitle: {Title}\nMedFeature: {MedFeature}\nCycle: {Cycle}"
-        line_bot_api.push_message(user_line_id, TextSendMessage(text = message))
+        body = TemplateSendMessage(
+            alt_text = '回診通知',
+            template = ButtonsTemplate(
+                thumbnail_image_url = "https://silverease.ntub.edu.tw/static/imgs/medicine.png",
+                image_aspect_ratio = 'rectangle',
+                image_size = 'contain',
+                image_background_color = '#FFFFFF',
+                title = '回診通知',
+                text=f"標題: {Title}\n藥盒與藥袋外觀描述: {MedFeature}",
+                actions=[
+                    MessageAction(
+                        label = '收到',
+                        text = '收到'
+                    )
+                ]
+            )
+        )
+
+        line_bot_api.push_message(user_line_id, body)
+
     except Exception as e:
         print(e)    
 

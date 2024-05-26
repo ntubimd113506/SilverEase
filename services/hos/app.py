@@ -2,7 +2,7 @@ from flask import Flask, request, render_template, redirect, url_for, Blueprint
 from flask_apscheduler import APScheduler
 from datetime import datetime
 from linebot import LineBotApi, WebhookHandler
-from linebot.models import TextSendMessage
+from linebot.models import (MessageEvent, TextMessage, TextSendMessage, TemplateSendMessage, ButtonsTemplate, URIAction, MessageAction)
 from utils import db
 import pymysql
 
@@ -74,19 +74,39 @@ def send_line_message(MemID, Title, Location, Doctor, Clinic, Num):
     try:
         conn = db.get_connection()
         cursor = conn.cursor()
-        cursor.execute("""
-            SELECT MainUserID 
-            FROM Family 
-            WHERE FamilyID = (SELECT FamilyID 
-                              FROM FamilyLink 
-                              WHERE SubUserID = %s)
-        """, (MemID,))
-        # cursor.execute("SELECT MemID FROM Member WHERE MemID = %s", (MemID,))
+        # cursor.execute("""
+        #     SELECT MainUserID 
+        #     FROM Family 
+        #     WHERE FamilyID = (SELECT FamilyID 
+        #                       FROM FamilyLink 
+        #                       WHERE SubUserID = %s)
+        # """, (MemID,))
+        cursor.execute("SELECT MemID FROM Member WHERE MemID = %s", (MemID,))
         user_line_id = cursor.fetchone()[0]
         conn.close()
 
-        message = f"Event Reminder:\nTitle: {Title}\nLocation: {Location}\nDoctor: {Doctor}\nClinic: {Clinic}\nNum: {Num}"
-        line_bot_api.push_message(user_line_id, TextSendMessage(text = message))
+        body = TemplateSendMessage(
+            alt_text = '回診通知',
+            template = ButtonsTemplate(
+                thumbnail_image_url = "https://silverease.ntub.edu.tw/static/imgs/treatment.png",
+                image_aspect_ratio = 'rectangle',
+                image_size = 'contain',
+                image_background_color = '#FFFFFF',
+                title = '回診通知',
+                text=f"標題: {Title}\n醫院地點: {Location}\n看診醫生: {Doctor}\n門診: {Clinic}\n號碼: {Num}",
+                actions=[
+                    MessageAction(
+                        label = '收到',
+                        text = '收到'
+                    )
+                ]
+            )
+        )
+
+        line_bot_api.push_message(user_line_id, body)
+
+        # message = f"Event Reminder:\nTitle: {Title}\nLocation: {Location}\nDoctor: {Doctor}\nClinic: {Clinic}\nNum: {Num}"
+        # line_bot_api.push_message(user_line_id, TextSendMessage(text = message))
     except Exception as e:
         print(e)
     
