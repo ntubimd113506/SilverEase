@@ -1,17 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head></head>
+
 <body></body>
 
-<head>
-</head>
-
-<body>
-
-</body>
 <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
 <script>
-
     function initializeLiff(myLiffId) {
         liff.init({
             liffId: myLiffId
@@ -25,7 +20,6 @@
                 liff.permanentLink
                     .createUrlBy("https://silverease.ntub.edu.tw/med/list?MemID=" + userId)
                     .then((permanentLink) => {
-                        // https://liff.line.me/1234567890-AbcdEfgh
                         console.log(permanentLink);
                         liff.openWindow({
                             url: permanentLink,

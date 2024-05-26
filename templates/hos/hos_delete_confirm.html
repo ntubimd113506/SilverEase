@@ -2,23 +2,26 @@
 <html>
 
 <head>
-    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalabe=no">
+    <meta charset="utf-8" name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalabe=no">
     <title>刪除回診資料</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Satisfy&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link  rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
     <link href="/static/css/create_form.css" rel="stylesheet" />
 </head>
 
 <body>
     <div class="container">
+
         <div class="header">
             <h1>SliverEase</h1>
         </div>
-        
+
         <i id="menu-bar" class="fa-solid fa-house" style="color: #9fb889;"></i>
+        
         <div class="navbar">
             <ul id="navigation">
                 <li><a href="/hos/list">返回主頁</a></li>
@@ -27,6 +30,7 @@
 
         <div class="content">
             <h1>確認刪除回診資料</h1>
+            
             <form action="/hos/delete" method="post" enctype="multipart/form-data">
                 <div class="form">
                     <div class="name">標題</div>
@@ -39,7 +43,9 @@
                     <input type="hidden" name="MemoID" value="{{data[0]}}">
                     <div class="value"><input type="submit" value="刪除"></div>
                 </div>
+            
             </form>
+        
         </div>
     </div>
 </body>
