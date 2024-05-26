@@ -2,8 +2,15 @@
 <html>
 
 <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalabe=no">
     <title>編輯用藥</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Satisfy&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link  rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+    <link href="/static/css/create_form.css" rel="stylesheet" />
+
 </head>
 
 <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
@@ -38,44 +45,49 @@
         <div class="header">
             <h1>SliverEase</h1>
         </div>
-        <ul id="navigation">
+
+        <i id="menu-bar" class="fa-solid fa-house" style="color: #9fb889;"></i>
+        <div class="navbar">
+          <ul id="navigation" class="nav">        
             <li><a href="/med/list">返回主頁</a></li>
-        </ul>
+         </ul>
+        </div>
+
         <div class="content">
-            <h2>編輯用藥</h2>
+            <h1>編輯用藥</h1>
             
             <form action="/med/update" method="post" enctype="multipart/form-data">
                 <div class="form">
-                    <span class="name">名稱</span>
-                    <span class="value">
-                        <input type="text" name="Title" value="{{data[2]}}" required>
-                    </span>
+                    <div class="name">名稱</div>
+                    <div class="value">
+                        <input type="text" name="Title" value="{{data[2]}}" class="input-field" required>
+                    </div>
                     <br />
 
-                    <span class="name">日期</span>
-                    <span class="value">
-                        <input type="datetime-local" name="DateTime" value="{{data[3]}}" required>
-                    </span>
+                    <div class="name">日期</div>
+                    <div class="value">
+                        <input type="datetime-local" name="DateTime" value="{{data[3]}}" class="input-field" required>
+                    </div>
                     <br />
 
-                    <span class="name">藥盒與藥袋外觀描述</span>
-                    <span class="value">
-                        <input type="text" name="MedFeature" value="{{data[7]}}">
-                    </span>
+                    <div class="name">藥盒與藥袋外觀描述</div>
+                    <div class="value">
+                        <input type="text" name="MedFeature" value="{{data[7]}}" class="input-field">
+                    </div>
                     <br />
 
-                    <span class="name">循環（多久提醒一次）</span>
-                    <span class="value">
-                        <input type="text" name="Cycle" value="{{data[8]}}">
-                    </span>
+                    <div class="name">循環（多久提醒一次）</div>
+                    <div class="value">
+                        <input type="text" name="Cycle" value="{{data[8]}}" class="input-field">
+                    </div>
                     <br />
 
-                    <a href="/med/delete/confirm?MemoID={{data[0]}}">刪除</a>
+                    <a href="/med/delete/confirm?MemoID={{data[0]}}" class="delete-btn">刪除</a>
                     <br />
                     <input type="hidden" name="MemoID" value="{{data[0]}}">
                     <input type="hidden" id="EditorID" name="EditorID">
-                    <span class="name"></span>
-                    <span class="value"><input type="submit" value="更改" style="width:80px"></span>
+                    <div class="name"></div>
+                    <div class="value"><input type="submit" value="更改"></div>
                 </div>
             </form>
         </div>

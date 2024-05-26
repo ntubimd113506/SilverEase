@@ -5,7 +5,7 @@
 /* ------------------- */
 html, body{
     font-family: 'Noto Sans TC', sans-serif;
-    background-color: #f4f9f7;
+    background-color: #F2F0EE;
     padding: 0%;
     margin: 0%;
 }
@@ -15,7 +15,7 @@ html, body{
 /* container           */
 /* ------------------- */
 div.container{
-    height: 900px;
+    height: 1000px;
     margin-left: auto;
     margin-right: auto;
     text-align: justify;
@@ -133,14 +133,14 @@ input[type="datetime-local"] {
 
 input[type="submit" i]{
     position: relative;
-    top: 200px;
+    top: 100px;
     align-items: center;
     margin-left: 10px;
 }
 
 .delete-btn{
     position: relative;
-    top: 300px;
+    top: 200px;
     align-items: center;
     margin-left: 10px;
 }
@@ -191,7 +191,7 @@ input[type="submit" i]{
 /* 修飾表格             */
 /*---------------------*/
 table{
-    width:320px;
+    width:330px;
     border: 2px solid #9FB889;
     border-collapse: collapse;   
     margin-top: 50px;
