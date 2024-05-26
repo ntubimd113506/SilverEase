@@ -63,9 +63,10 @@ div.cardrow {
 
 div.content h1 {
     font-size: 45px;
-    height: 200px;
+    height: 100px;
     text-align: center;
     letter-spacing: 5px;
+    margin: 0%;
 }
 
 img.p {

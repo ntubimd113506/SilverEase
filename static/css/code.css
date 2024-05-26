@@ -57,8 +57,6 @@ div.cardrow{
     display: flex;
     /* 水平置中 */
     justify-content: center;  
-    width: 380px;
-    height: 90px;
     margin: auto;
 }
 div.content h1{
