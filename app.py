@@ -1,12 +1,11 @@
-import requests, json
-import pymysql
 from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 from utils import db
-from services.event.app import event_bp
+# from services.event.app import event_bp
 from services.cam.app import cam_bp
+from services.mqtt.app import mqtt_bp,mqtt
 
 app = Flask(__name__)
 
@@ -18,7 +17,8 @@ handler = WebhookHandler(db.LINE_HANDLER)
 def index():
     return "Here is SilverEase"
 
-app.register_blueprint(event_bp, url_prefix='/event')
+# app.register_blueprint(event_bp, url_prefix='/event')
+app.register_blueprint(mqtt_bp, url_prefix='/mqtt')
 app.register_blueprint(cam_bp, url_prefix='/cam')
 
 @app.route("/callback", methods=['POST'])
@@ -41,41 +41,14 @@ def handle_message(event):
     # 獲取使用者的 ID
     MemID = event.source.user_id
 
-    # 獲取使用者的資訊，包括名稱
-    profile = line_bot_api.get_profile(MemID)
-    MemName = profile.display_name
-
-    conn = db.get_connection()
-    cursor = conn.cursor()
-    cursor.execute('INSERT INTO User (MemID, MemName) VALUES (%s, %s)', (MemID, MemName))
-    conn.commit()
-    conn.close()
+    if event=="收到":
+        mqtt.publish('mytopic',MemID )
 
     # 回應使用者，包括使用者名稱
-    line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text="你好，{}！你的使用者 ID 是：{}".format(MemName, MemID))
-    )
-
-
-'''主動訊息傳送測試
-@app.route("/sent")
-def sent_mess():
-    USER_LINE_ID='USER_LINE_ID'
-    headers = {'Authorization':f'Bearer {db.LINE_TOKEN}','Content-Type':'application/json'}
-    body = {
-        'to':USER_LINE_ID,
-        'messages':[{
-                'type': 'text',
-                'text': 'hello'
-            }]
-        }
-    # 向指定網址發送 request
-    req = requests.request('POST', 'https://api.line.me/v2/bot/message/push',headers=headers,data=json.dumps(body).encode('utf-8'))
-    # 印出得到的結果
-    print(req.text)
-    return "GOOD"
-'''
+    # line_bot_api.reply_message(
+    #     event.reply_token,
+    #     TextSendMessage(text="你好，{}！你的使用者 ID 是：{}".format(MemName, MemID))
+    # )
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=1)
