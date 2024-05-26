@@ -16,7 +16,6 @@ app = Flask(__name__)
 scheduler = APScheduler()
 scheduler.init_app(app)
 scheduler.start()
-
 scheduled_jobs = {}
 
 #主頁
@@ -68,20 +67,19 @@ def hos_create():
         return render_template('/hos/hos_create_success.html')
     except:
         return render_template('/hos/hos_create_fail.html')
-    
 
 def send_line_message(MemID, Title, Location, Doctor, Clinic, Num):
     try:
         conn = db.get_connection()
         cursor = conn.cursor()
-        # cursor.execute("""
-        #     SELECT MainUserID 
-        #     FROM Family 
-        #     WHERE FamilyID = (SELECT FamilyID 
-        #                       FROM FamilyLink 
-        #                       WHERE SubUserID = %s)
-        # """, (MemID,))
-        cursor.execute("SELECT MemID FROM Member WHERE MemID = %s", (MemID,))
+        cursor.execute("""
+            SELECT MainUserID 
+            FROM Family 
+            WHERE FamilyID = (SELECT FamilyID 
+                              FROM FamilyLink 
+                              WHERE SubUserID = %s)
+        """, (MemID,))
+        # cursor.execute("SELECT MemID FROM Member WHERE MemID = %s", (MemID,))
         user_line_id = cursor.fetchone()[0]
         conn.close()
 
@@ -105,8 +103,6 @@ def send_line_message(MemID, Title, Location, Doctor, Clinic, Num):
 
         line_bot_api.push_message(user_line_id, body)
 
-        # message = f"Event Reminder:\nTitle: {Title}\nLocation: {Location}\nDoctor: {Doctor}\nClinic: {Clinic}\nNum: {Num}"
-        # line_bot_api.push_message(user_line_id, TextSendMessage(text = message))
     except Exception as e:
         print(e)
     
@@ -227,7 +223,7 @@ def hos_delete_confirm():
     else:
         return render_template('not_found.html')
 
-#員工刪除
+#刪除
 @hos_bp.route('/delete', methods=['POST'])
 def hos_delete():
     try:

@@ -16,23 +16,19 @@ app = Flask(__name__)
 scheduler = APScheduler()
 scheduler.init_app(app)
 scheduler.start()
-
 scheduled_jobs = {}
 
-
-# 主頁
+#主頁
 @event_bp.route("/")
 def event():
     return render_template("schedule_index.html")
 
-
-# 新增表單
+#新增表單
 @event_bp.route("/create/form")
 def event_create_form():
     return render_template("/event/event_create_form.html")
 
-
-# 新增
+#新增
 @event_bp.route("/create", methods=["POST"])
 def event_create():
     try:
@@ -84,22 +80,21 @@ def event_create():
     except:
         return render_template("/event/event_create_fail.html")
 
-
 def send_line_message(MemID, Title, Location):
     try:
         conn = db.get_connection()
         cursor = conn.cursor()
-        # cursor.execute(
-        #     """
-        #     SELECT MainUserID 
-        #     FROM Family 
-        #     WHERE FamilyID = (SELECT FamilyID 
-        #                       FROM FamilyLink 
-        #                       WHERE SubUserID = %s)
-        # """,
-        #     (MemID,),
-        # )
-        cursor.execute("SELECT MemID FROM Member WHERE MemID = %s", (MemID,))
+        cursor.execute(
+            """
+            SELECT MainUserID 
+            FROM Family 
+            WHERE FamilyID = (SELECT FamilyID 
+                              FROM FamilyLink 
+                              WHERE SubUserID = %s)
+        """,
+            (MemID,),
+        )
+        #cursor.execute("SELECT MemID FROM Member WHERE MemID = %s", (MemID,))
         user_line_id = cursor.fetchone()[0]
         conn.close()
 
@@ -126,7 +121,7 @@ def send_line_message(MemID, Title, Location):
         print(e)
 
 
-# 查詢
+#查詢
 @event_bp.route("/list")
 def event_list():
     data = ""
@@ -171,8 +166,7 @@ def event_list():
     else:
         return render_template("not_found.html")
 
-
-# 更改確認
+#更改確認
 @event_bp.route("/update/confirm")
 def event_update_confirm():
     MemoID = request.values.get("MemoID")
@@ -200,7 +194,7 @@ def event_update_confirm():
         return render_template("not_found.html")
 
 
-# 更改
+#更改
 @event_bp.route("/update", methods=["POST"])
 def event_update():
     try:
@@ -243,8 +237,7 @@ def event_update():
     except:
         return render_template("event/event_update_fail.html")
 
-
-# 刪除確認
+#刪除確認
 @event_bp.route("/delete/confirm")
 def event_delete_confirm():
     MemoID = request.values.get("MemoID")
@@ -262,8 +255,7 @@ def event_delete_confirm():
     else:
         return render_template("not_found.html")
 
-
-# 刪除
+#刪除
 @event_bp.route("/delete", methods=["POST"])
 def event_delete():
     try:

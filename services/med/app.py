@@ -16,7 +16,6 @@ app = Flask(__name__)
 scheduler = APScheduler()
 scheduler.init_app(app)
 scheduler.start()
-
 scheduled_jobs = {}
 
 #主頁
@@ -68,7 +67,6 @@ def med_create():
         return render_template('/med/med_create_success.html')
     except:
         return render_template('/med/med_create_fail.html')
-
 
 def send_line_message(MemID, Title, MedFeature, Cycle):
     try:
@@ -171,7 +169,6 @@ def med_update_confirm():
     else:
         return render_template('not_found.html')
     
-    
 #更改
 @med_bp.route('/update', methods=['POST'])
 def med_update():
@@ -223,7 +220,7 @@ def med_delete_confirm():
     else:
         return render_template('not_found.html')
 
-#員工刪除
+#刪除
 @med_bp.route('/delete', methods=['POST'])
 def med_delete():
     try:
