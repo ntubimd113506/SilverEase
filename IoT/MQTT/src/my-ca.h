@@ -1,5 +1,3 @@
-
-#include <pgmspace.h>
 const char root_ca[]  PROGMEM= R"=====(
 -----BEGIN CERTIFICATE-----
 MIIDfzCCAmegAwIBAgIUEFxp3W0ar2M3XpfrytLO6AVpd1owDQYJKoZIhvcNAQEL

@@ -42,13 +42,7 @@ def handle_message(event):
     MemID = event.source.user_id
 
     if event.message.text=="收到":
-        mqtt.publish('myTopic',MemID )
-
-    # 回應使用者，包括使用者名稱
-    # line_bot_api.reply_message(
-    #     event.reply_token,
-    #     TextSendMessage(text="你好，{}！你的使用者 ID 是：{}".format(MemName, MemID))
-    # )
+        mqtt.publish('ESP32/got', "OK")
 
 if __name__ == "__main__":
     app.run(debug=1)
