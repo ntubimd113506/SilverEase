@@ -15,7 +15,7 @@ html, body{
 /* container           */
 /* ------------------- */
 div.container{
-    height: 1000px;
+    height: 750px;
     margin-left: auto;
     margin-right: auto;
     text-align: justify;
@@ -142,14 +142,14 @@ input[type="datetime-local"] {
 
 input[type="submit" i]{
     position: relative;
-    top: 100px;
+    top: 70px;
     align-items: center;
     margin-left: 10px;
 }
 
 .delete-btn{
     position: relative;
-    top: 200px;
+    top: 140px;
     align-items: center;
     margin-left: 10px;
 }
