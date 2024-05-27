@@ -2,8 +2,7 @@
 <html>
 
 <head>
-    <meta charset="utf-8" name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalabe=no">
+    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalabe=no">
     <title>編輯紀念日</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -45,7 +44,7 @@
     <div class="container">
 
         <div class="header">
-            <h1>SliverEase</h1>
+            <h1>SilverEase</h1>
         </div>
 
         <i id="menu-bar" class="fa-solid fa-house" style="color: #9fb889;"></i>
@@ -59,6 +58,7 @@
         <div class="content">
             <h1>編輯紀念日</h1>
 
+            <div class="cardrow">
             <form action="/event/update" method="post" enctype="multipart/form-data">
                 <div class="form">
                     <div class="name">名稱</div>
@@ -78,7 +78,7 @@
                         <input type="text" name="Location" value="{{data[7]}}" class="input-field">
                     </div>
                     <br />
-
+                </div>
                     <a href="/event/delete/confirm?MemoID={{data[0]}}" class="delete-btn">刪除</a>
                     <br />
 
