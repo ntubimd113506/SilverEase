@@ -6,7 +6,7 @@
 html,
 body {
     font-family: 'Noto Sans TC', sans-serif;
-    background-color: #f4f9f7;
+    background-color: #F2F0EE;
     padding: 0%;
     margin: 0%;
 }
@@ -16,7 +16,6 @@ body {
 /* container           */
 /* ------------------- */
 div.container {
-    height: 1000px;
     margin-left: auto;
     margin-right: auto;
     text-align: justify;
@@ -49,7 +48,7 @@ div.header h1 {
 /* content             */
 /* ------------------- */
 div.content {
-    background-color: #F5F5F5;
+    background-color: #F2F0EE;
     padding: 0px 23px;
 }
 
@@ -60,10 +59,12 @@ div.cardrow {
     margin: auto;
 }
 
+div.row{
+    margin: 30px;
+}
 
 div.content h1 {
     font-size: 45px;
-    height: 100px;
     text-align: center;
     letter-spacing: 5px;
     margin: 0%;
