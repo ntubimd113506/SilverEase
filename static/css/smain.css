@@ -52,6 +52,15 @@ div.content{
     padding: 0px 23px;
 }
 
+div.cardrow{
+    display: flex;
+    /* 水平置中 */
+    justify-content: center; 
+    width: 400px;
+    height: 70px;
+    margin: auto;
+}
+
 div.clear{
     height: 80px;
 }
