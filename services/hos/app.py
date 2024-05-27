@@ -109,7 +109,7 @@ def send_line_message(MemID, Title, Location, Doctor, Clinic, Num):
 #查詢
 @hos_bp.route('/list')
 def hos_list():    
-    data=""
+    data=[]
 
     MemID =  request.values.get('MemID')
 
@@ -124,19 +124,20 @@ def hos_list():
                             LEFT JOIN `113-ntub113506`.FamilyLink as l ON m.MemID = l.SubUserID
                             where MemID = %s
                         """, (MemID))
-        FamilyID = cursor.fetchone()[0] 
+        FamilyID = cursor.fetchall()
     else:
         return render_template('/hos/hos_login.html',liffid = db.LIFF_ID)
-
+    
     if(FamilyID):
-        cursor.execute("""
-                    SELECT * FROM 
-                    (select * from`113-ntub113506`.Memo Where FamilyID = %s) m 
-                    join 
-                    (select * from `113-ntub113506`.`Hos`) e 
-                    on e.MemoID=m.MemoID
-                    """, (FamilyID))
-        data = cursor.fetchall()
+        for id in FamilyID:
+            cursor.execute("""
+                        SELECT * FROM 
+                        (select * from`113-ntub113506`.Memo Where FamilyID = %s) m 
+                        join 
+                        (select * from `113-ntub113506`.`Hos`) e 
+                        on e.MemoID=m.MemoID
+                        """, (id[0]))
+            data += cursor.fetchall()
 
     conn.close()  
         

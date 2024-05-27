@@ -109,7 +109,7 @@ def send_line_message(MemID, Title, MedFeature, Cycle):
 #查詢
 @med_bp.route('/list')
 def med_list():    
-    data=""
+    data=[]
 
     MemID =  request.values.get('MemID')
 
@@ -124,19 +124,20 @@ def med_list():
                             LEFT JOIN `113-ntub113506`.FamilyLink as l ON m.MemID = l.SubUserID
                             where MemID = %s
                         """, (MemID))
-        FamilyID = cursor.fetchone()[0] 
+        FamilyID = cursor.fetchall()
     else:
         return render_template('/med/med_login.html',liffid = db.LIFF_ID)
     
     if(FamilyID):
-        cursor.execute("""
-                    SELECT * FROM 
-                    (select * from`113-ntub113506`.Memo Where FamilyID = %s) m 
-                    join 
-                    (select * from `113-ntub113506`.`Med`) e 
-                    on e.MemoID=m.MemoID
-                    """, (FamilyID))
-        data = cursor.fetchall()
+        for id in FamilyID:
+            cursor.execute("""
+                        SELECT * FROM 
+                        (select * from`113-ntub113506`.Memo Where FamilyID = %s) m 
+                        join 
+                        (select * from `113-ntub113506`.`Med`) e 
+                        on e.MemoID=m.MemoID
+                        """, (id[0]))
+            data += cursor.fetchall()
 
     conn.close()  
         
