@@ -124,7 +124,7 @@ def send_line_message(MemID, Title, Location):
 #查詢
 @event_bp.route("/list")
 def event_list():
-    data = ""
+    data = []
 
     MemID = request.values.get("MemID")
 
@@ -142,22 +142,20 @@ def event_list():
                         """,
             (MemID,),
         )
-        FamilyID = cursor.fetchone()[0]
+        FamilyID = cursor.fetchall()
     else:
         return render_template("/event/event_login.html", liffid=db.LIFF_ID)
-
-    if FamilyID:
-        cursor.execute(
-            """
-                    SELECT * FROM 
-                    (SELECT * FROM `113-ntub113506`.Memo WHERE FamilyID = %s) m 
-                    JOIN 
-                    (SELECT * FROM `113-ntub113506`.Event) e 
-                    ON e.MemoID = m.MemoID
-                    """,
-            (FamilyID,),
-        )
-        data = cursor.fetchall()
+    
+    if(FamilyID):
+        for id in FamilyID:
+            cursor.execute("""
+                        SELECT * FROM 
+                        (SELECT * FROM `113-ntub113506`.Memo WHERE FamilyID = %s) m 
+                        JOIN 
+                        (SELECT * FROM `113-ntub113506`.Event) e 
+                        ON e.MemoID = m.MemoID
+                        """, (id[0]))
+            data += cursor.fetchall()
 
     conn.close()
 
