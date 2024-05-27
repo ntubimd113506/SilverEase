@@ -26,7 +26,7 @@ def pub_my_msg(msg):
 @mqtt.on_connect()
 def handle_connect(client, userdata, flags, rc):
     print('Connected with result code ' + str(rc))
-    mqtt.subscribe('mytopic')
+    mqtt.subscribe('myTopic')
 
 @mqtt.on_message()
 def handle_mqtt_message(client, userdata, message):

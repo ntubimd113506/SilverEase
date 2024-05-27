@@ -10,8 +10,8 @@ from services.mqtt.app import mqtt_bp,mqtt
 app = Flask(__name__)
 
 # 設定你的 Line Bot 的 Channel Access Token 
-line_bot_api = LineBotApi(db.LINE_TOKEN)
-handler = WebhookHandler(db.LINE_HANDLER)
+line_bot_api = LineBotApi(db.LINE_TOKEN_2)
+handler = WebhookHandler(db.LINE_HANDLER_2)
 
 @app.route("/")
 def index():
@@ -41,8 +41,8 @@ def handle_message(event):
     # 獲取使用者的 ID
     MemID = event.source.user_id
 
-    if event=="收到":
-        mqtt.publish('mytopic',MemID )
+    if event.message.text=="收到":
+        mqtt.publish('myTopic',MemID )
 
     # 回應使用者，包括使用者名稱
     # line_bot_api.reply_message(
