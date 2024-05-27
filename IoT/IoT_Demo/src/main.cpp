@@ -1,8 +1,11 @@
 #include <Arduino.h>
 #include <WiFi.h>
+#include <WiFiClientSecure.h>
+#include <PubSubClient.h>
 #include <ESPAsyncWebServer.h>
 #include "Guineapig.WiFiConfig.h"
 #include "esp_camera.h"
+#include "my-ca.h"
 
 #define FLASH 4
 #define BTN 12
@@ -11,12 +14,41 @@
 #define SERVER "silverease.ntub.edu.tw"
 #define UPLOAD_URL "/cam/esp32cam"
 #define PORT 80
+#define MQTT_PORT 8883
 
 AsyncWebServer webServer(80);
-WiFiClient client;
+WiFiClientSecure client;
 
 bool init_flag = false;
 bool btn_flag = false;
+
+void callback(char *topic, byte *payload, unsigned int length)
+{
+  Serial.print("收到訊息：");
+  String message = "";
+  for (int i = 0; i < length; i++)
+  {
+    message += (char)payload[i];
+    Serial.print((char)payload[i]);
+  }
+  Serial.println();
+  Serial.println(message);
+  if (message == "收到")
+  {
+    int count = 0;
+    while (count < 3)
+    {
+      Serial.println("我叫你叫");
+      digitalWrite(BUZZ, HIGH);
+      delay(1000);
+      digitalWrite(BUZZ, LOW);
+      delay(1000);
+      count++;
+    }
+  }
+};
+
+PubSubClient mqtt(SERVER, MQTT_PORT, callback, client);
 
 bool initCamera()
 {
@@ -42,7 +74,7 @@ bool initCamera()
       .ledc_timer = LEDC_TIMER_0,     // 指定產生XCLK時脈的計時器
       .ledc_channel = LEDC_CHANNEL_0, // 指定產生XCLM時脈的通道
       .pixel_format = PIXFORMAT_JPEG, // 設定影像格式：JPEG
-      .frame_size = FRAMESIZE_UXGA,   // 設定影像大小：UXGA
+      .frame_size = FRAMESIZE_SVGA,   // 設定影像大小：UXGA
       .jpeg_quality = 5,              // 設定JPEG影像畫質，有效值介於0-63，數字越低畫質越高。
       .fb_count = 1                   // 影像緩衝記憶區數量
   };
@@ -60,22 +92,22 @@ bool initCamera()
 
 void postImage()
 {
-  camera_fb_t *fb = NULL;   // 宣告儲存影像結構資料的變數
+  camera_fb_t *fb = NULL; // 宣告儲存影像結構資料的變數
+  Serial.println("line64 進行拍照");
   fb = esp_camera_fb_get(); // 拍照
 
   if (!fb)
   {
-    Serial.println("無法取得影像資料…");
+    Serial.println("line 69 無法取得影像資料…");
     delay(1000);
-    ESP.restart(); // 重新啟動
+    // ESP.restart(); // 重新啟動
   }
 
   Serial.printf("連接伺服器：%s\n", SERVER);
 
   if (client.connect(SERVER, PORT))
   {
-    Serial.println("開始上傳影像…");
-
+    Serial.println("line78 create request");
     String boundBegin = "--ESP32CAM\r\n";
     boundBegin += "Content-Disposition: form-data; name=\"DevID\"\r\n";
     boundBegin += "\r\n";
@@ -100,11 +132,13 @@ void postImage()
     httpMsg += boundBegin;
 
     // 送出HTTP標頭訊息
+    Serial.println("line103 sendHTTP");
     client.print(httpMsg.c_str());
 
     // 上傳檔案
     uint8_t *buf = fb->buf;
 
+    Serial.println("line108 開始上傳影像…");
     for (uint32_t i = 0; i < imgSize; i += 1024)
     {
       if (i + 1024 < imgSize)
@@ -120,6 +154,7 @@ void postImage()
     }
 
     client.print(boundEnd.c_str());
+    Serial.println("line125 finishHTTP");
 
     esp_camera_fb_return(fb);
 
@@ -159,40 +194,48 @@ void setup()
   pinMode(BUZZ, OUTPUT);
   Serial.println("初始化攝像頭…");
   initCamera();
+  ledcSetup(LEDC_CHANNEL_0, 5000, LEDC_TIMER_0);
+  ledcAttachPin(FLASH, LEDC_CHANNEL_0);
   Serial.println("初始化完成");
-  Serial.println("");
-  Serial.println("連接WiFi…");
   WiFiConfig.connectWiFi();
   Serial.println("連接成功");
-  Serial.println("");
-  Serial.println("進入loop");
+  client.setCACert(root_ca);
+  mqtt.connect("ESP32CAM");
+  mqtt.subscribe("myTopic");
 }
 
 void loop()
 {
-  if (WiFi.status() == WL_CONNECTED)
+  if (WiFi.status() == WL_CONNECTED && mqtt.connected())
   {
+    mqtt.loop();
     Serial.println("執行主程式…");
-    delay(1000);
+    delay(100);
     bool flag = digitalRead(BTN) && !btn_flag;
     Serial.println(flag);
     if (flag)
     {
-      Serial.println("按下按鈕");
+      Serial.println("line 181 按下按鈕");
       btn_flag = true;
       tone(BUZZ, 800, 5000);
       noTone(BUZZ);
-      Serial.println("拍照並上傳影像…");
+      Serial.println("line185 執行影像傳輸");
       postImage();
       tone(BUZZ, 1280, 3000);
       noTone(BUZZ);
       delay(2000);
     }
   }
-
   else
   {
     WiFiConfig.connectWiFi();
+    mqtt.connect("ESP32CAM");
+    if (mqtt.connected())
+    {
+      mqtt.subscribe("myTopic");
+      mqtt.publish("myTopic", "Hello World");
+    }
+    
     delay(5000);
   }
 }

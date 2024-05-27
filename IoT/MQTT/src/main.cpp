@@ -4,6 +4,8 @@
 #include <PubSubClient.h>
 #include "my-ca.h"
 
+#define BUZZ 13
+
 const char *ssid = "77";
 const char *password = "776+chocolate";
 const char *server = "silverease.ntub.edu.tw";
@@ -17,17 +19,33 @@ void mqttInit() {
   mqtt.setServer(server, mqtt_port);
   mqtt.setCallback([](char *topic, byte *payload, unsigned int length) {
     Serial.print("收到訊息：");
+    String message="";
     for (int i = 0; i < length; i++) {
+      message+=(char)payload[i];    
       Serial.print((char)payload[i]);
     }
     Serial.println();
+    Serial.println(message);
+    if(message=="收到"){
+      int count=0;
+      while(count<3){
+        Serial.println("我叫你叫");
+        digitalWrite(BUZZ, HIGH);
+        delay(1000);
+        digitalWrite(BUZZ, LOW);
+        delay(1000);
+        count++;
+      }
+    };
+    Serial.println();
   });
   mqtt.connect("ESP32Client");
-  mqtt.subscribe("myTopic");
+  mqtt.subscribe("ESP001");
 }
 
 void setup() {
   Serial.begin(115200);
+  pinMode(BUZZ, OUTPUT);
   WiFi.begin(ssid, password);
   espClient.setCACert(caCert);
   Serial.println("\n\n連接Wi-Fi");
