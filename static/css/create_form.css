@@ -15,7 +15,7 @@ html, body{
 /* container           */
 /* ------------------- */
 div.container{
-    height: 750px;
+    height: 800px;
     margin-left: auto;
     margin-right: auto;
     text-align: justify;
@@ -149,7 +149,7 @@ input[type="submit" i]{
 
 .delete-btn{
     position: relative;
-    top: 140px;
+    top: 160px;
     align-items: center;
     margin-left: 10px;
 }
