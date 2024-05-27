@@ -12,33 +12,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Satisfy&display=swap" rel="stylesheet">
 
     <link href="/static/css/main.css" rel="stylesheet" />
-    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>選擇按鈕</title>
-    <style>
-        /*視窗*/
-        .container {
-            text-align: center;
-        }
-    </style>
-
-    <style>
-        /* 在<style>标签中添加 CSS 样式 */
-        .rounded-image {
-            border-radius: 50%;
-        }
-
-        .center-image {
-            margin: 0 auto;
-            display: block;
-        }
-
-        .shadowed-image {
-            display: block;
-            margin: 0 auto;
-            box-shadow: 5px 5px 10px #888888;
-            /* 阴影效果 */
-        }
-    </style> -->
 </head>
 
 <body>
@@ -58,7 +31,7 @@
             </div>
 
             <div class="form">
-                <form id="form" action="/identity/oy" method="post">
+                <form id="form" action="/set/oy" method="post">
                     <div class="cardrow">
                         <!-- 這裡也要看看 -->
                         <button type="button" class="card" id="old" onclick="selectButton('old')">長輩</button>
@@ -121,7 +94,7 @@
          * F12可以看console.log訊息還有很多資訊
          * 
          */
-        fetch('/checkid', {
+        fetch('/set/checkid', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
