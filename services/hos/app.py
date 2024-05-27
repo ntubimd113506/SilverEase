@@ -199,7 +199,7 @@ def hos_update():
 
         job_id = f"send_message_{MemoID}"
         send_time = datetime.strptime(DateTime, '%Y-%m-%dT%H:%M')
-        scheduler.add_job(id = job_id, func=send_line_message, trigger = 'date', run_date = send_time, args = [EditorID, Title, Location, Clinic, Num, MemoID])
+        scheduler.add_job(id = job_id, func=send_line_message, trigger = 'date', run_date = send_time, args = [EditorID, Title, Location, Doctor, Clinic, Num])
         scheduled_jobs[MemoID] = job_id
 
         return render_template('hos/hos_update_success.html')

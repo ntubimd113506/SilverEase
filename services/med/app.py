@@ -84,13 +84,13 @@ def send_line_message(MemID, Title, MedFeature, Cycle):
         conn.close()
 
         body = TemplateSendMessage(
-            alt_text = '回診通知',
+            alt_text = '用藥通知',
             template = ButtonsTemplate(
                 thumbnail_image_url = "https://silverease.ntub.edu.tw/static/imgs/medicine.png",
                 image_aspect_ratio = 'rectangle',
                 image_size = 'contain',
                 image_background_color = '#FFFFFF',
-                title = '回診通知',
+                title = '用藥通知',
                 text=f"標題: {Title}\n藥盒與藥袋外觀描述: {MedFeature}",
                 actions=[
                     MessageAction(
