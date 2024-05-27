@@ -72,15 +72,41 @@ def send_line_message(MemID, Title, MedFeature, Cycle):
     try:
         conn = db.get_connection()
         cursor = conn.cursor()
-        cursor.execute("""
+        cursor.execute(
+            """
+            SELECT COALESCE(f.FamilyID, l.FamilyID) AS FamilyID
+            FROM `113-ntub113506`.Member m
+            LEFT JOIN `113-ntub113506`.Family f ON m.MemID = f.MainUserID
+            LEFT JOIN `113-ntub113506`.FamilyLink l ON m.MemID = l.SubUserID
+            WHERE m.MemID = %s
+            """,
+            (MemID,),
+        )
+        FamilyID = cursor.fetchone()[0]
+
+        cursor.execute(
+            """
+            SELECT MainUserID
+            FROM `113-ntub113506`.Family
+            WHERE FamilyID = %s
+            """,
+            (FamilyID,),
+        )
+        main_user_id = cursor.fetchone()[0]
+
+        cursor.execute(
+            """
             SELECT MainUserID 
             FROM Family 
             WHERE FamilyID = (SELECT FamilyID 
                               FROM FamilyLink 
                               WHERE SubUserID = %s)
-        """, (MemID,))
-        #cursor.execute("SELECT MemID FROM Member WHERE MemID = %s", (MemID,))
-        user_line_id = cursor.fetchone()[0]
+        """,
+            (MemID,),
+        )
+        cursor.execute("SELECT MemID FROM Member WHERE MemID = %s", (MemID,))
+        sub_user_id = cursor.fetchone()[0]    
+
         conn.close()
 
         body = TemplateSendMessage(
@@ -101,7 +127,9 @@ def send_line_message(MemID, Title, MedFeature, Cycle):
             )
         )
 
-        line_bot_api.push_message(user_line_id, body)
+        if main_user_id != sub_user_id:
+            line_bot_api.push_message(main_user_id, body)
+        else: line_bot_api.push_message(main_user_id, body)
 
     except Exception as e:
         print(e)    
