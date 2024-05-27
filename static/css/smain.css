@@ -16,8 +16,6 @@ html, body{
 /* container           */
 /* ------------------- */
 div.container{
-    margin-left: auto;
-    margin-right: auto;
     text-align: justify;
     line-height: 26px;
     background-color: #F2F0EE;
@@ -49,17 +47,16 @@ div.header h1{
 /* ------------------- */
 div.content{
     background-color: #F2F0EE;
-    padding: 0px 23px;
+    display: flex;
+    justify-content: center;
+    margin: 60px;
 }
 
-div.cardrow{
+/* div.cardrow{
     display: flex;
-    /* 水平置中 */
-    justify-content: center; 
-    width: 400px;
-    height: 70px;
+    justify-content: center;
     margin: auto;
-}
+} */
 
 div.clear{
     height: 80px;
