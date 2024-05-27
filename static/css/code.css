@@ -54,9 +54,6 @@ div.content{
 }
 
 div.cardrow{
-    display: flex;
-    /* 水平置中 */
-    justify-content: center;  
     margin: auto;
 }
 div.content h1{
@@ -72,8 +69,8 @@ div.content h4{
 }
 
 input.input{
-    width: 340px;
-    height: 40px;
+    width: 320px;
+    height: 30px;
     border-radius: 6px;
     font-size: 18px;
     border-style:solid;
@@ -109,7 +106,7 @@ input.output{
 }
 button.btn{
     box-sizing: border-box; 
-    width: 50px;
+    width: 30px;
 }
 
 img.btn{
