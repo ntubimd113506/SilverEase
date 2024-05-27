@@ -5,11 +5,8 @@ from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 from utils import db
-<<<<<<< HEAD
-=======
 from services.med.app import med_bp
 from services.hos.app import hos_bp
->>>>>>> 6b0878de843e279322bf6a4fa6b59b29ce5e847d
 from services.event.app import event_bp
 from services.cam.app import cam_bp
 
