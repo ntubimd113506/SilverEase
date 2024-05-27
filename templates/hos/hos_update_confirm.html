@@ -1,0 +1,114 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>編輯回診資料</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Satisfy&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link href="/static/css/create_form.css" rel="stylesheet" />
+</head>
+
+<script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+<script>
+    var EditorID;
+    function initializeLiff(myLiffId) {
+        liff.init({
+            liffId: myLiffId
+        }).then(() => {
+            if (!liff.isLoggedIn()) {
+                alert("用戶未登入");
+                liff.login();
+            } else {
+                liff.getProfile()
+                    .then(profile => {
+                        var EditorID = profile.userId;
+                        document.getElementById("EditorID").value = EditorID;
+                    })
+                    .catch((err) => {
+                        console.log('error', err);
+                    });
+            }
+
+        }).catch((err) => {
+            console.log('初始化失敗', err);
+        });
+    }
+</script>
+
+<body onload="initializeLiff('2004699458-OR9pkZjP')">
+    <div class="container">
+        
+        <div class="header">
+            <h1>SilverEase</h1>
+        </div>
+
+        <i id="menu-bar" class="fa-solid fa-house" style="color: #9fb889;"></i>
+        <div class="navbar">
+            <ul id="navigation">
+                <li><a href="/hos/list">返回主頁</a></li>
+            </ul>
+        </div>
+
+        <div class="content">
+            <h1>編輯回診資料</h1>
+
+            <div class="cardrow">
+            <form action="/hos/update" method="post" enctype="multipart/form-data">
+                <div class="form">
+                    <div class="name">名稱</div>
+                    <div class="value">
+                        <input type="text" name="Title" value="{{data[2]}}" class="input-field" required>
+                    </div>
+                    <br />
+
+                    <div class="name">日期</div>
+                    <div class="value">
+                        <input type="datetime-local" name="DateTime" value="{{data[3]}}" class="input-field" required>
+                    </div>
+                    <br />
+
+                    <div class="name">醫院地點</div>
+                    <div class="value">
+                        <input type="text" name="Location" value="{{data[7]}}" class="input-field">
+                    </div>
+                    <br />
+
+                    <div class="name">看診醫生</div>
+                    <div class="value">
+                        <input type="text" name="Doctor" value="{{data[8]}}" class="input-field">
+                    </div>
+                    <br />
+
+                    <div class="name">門診</div>
+                    <div class="value">
+                        <input type="text" name="Clinic" value="{{data[9]}}" class="input-field">
+                    </div>
+                    <br />
+
+                    <div class="name">號碼</div>
+                    <div class="value">
+                        <input type="text" name="Num" value="{{data[10]}}" class="input-field">
+                    </div>
+                    <br />
+                </div>
+                    <a href="/hos/delete/confirm?MemoID={{data[0]}}" class="delete-btn">刪除</a>
+                    <br />
+
+                    <input type="hidden" name="MemoID" value="{{data[0]}}">
+                    <input type="hidden" id="EditorID" name="EditorID">
+                    <div class="name"></div>
+                    <div class="value"><input type="submit" value="更改"></div>
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+</body>
+
+</html>
