@@ -14,10 +14,6 @@ cam_bp = Blueprint('cam_bp',__name__)
 SRC_PATH = pathlib.Path(__file__).parent.parent.parent.absolute()
 UPLOAD_FOLDER = os.path.join(SRC_PATH, 'static', 'uploads')
 FAIL_IMAGE_PATH = "https://silverease.ntub.edu.tw/cam/img/fail.jpg"
-
-# cam_bp.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-# cam_bp.config['MAX_CONTENT_LENGTH'] = 3 * 1024 * 1024
-
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 @cam_bp.route('/')
