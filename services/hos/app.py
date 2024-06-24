@@ -1,18 +1,13 @@
-from flask import Flask, request, render_template, redirect, url_for, Blueprint
+from flask import  request, render_template, Blueprint
 from flask_apscheduler import APScheduler
 from datetime import datetime
-from ..linebot.app import line_bot_api
+from ..line.app import line_bot_api
 from linebot.models import *
 from utils import db
 
 hos_bp = Blueprint('hos_bp',__name__)
 
-app = Flask(__name__)
-
 scheduler = APScheduler()
-scheduler.init_app(app)
-scheduler.start()
-scheduled_jobs = {}
 
 #主頁
 @hos_bp.route('/')
@@ -55,10 +50,15 @@ def hos_create():
         conn.commit()
         conn.close()
 
-        job_id = f"send_message_{memoID}"
-        send_time = datetime.strptime(DateTime, '%Y-%m-%dT%H:%M')
-        scheduler.add_job(id = job_id, func = send_line_message, trigger = 'date', run_date = send_time, args = [MemID, Title, Location, Doctor, Clinic, Num])
-        scheduled_jobs[memoID] = job_id
+        job_id = f'{memoID}'
+        send_time = datetime.strptime(DateTime, "%Y-%m-%dT%H:%M")
+        scheduler.add_job(
+            id=job_id,
+            func=send_line_message,
+            trigger="date",
+            run_date=send_time,
+            args=[MemID, Title, Location, Doctor, Clinic, Num],
+        )
 
         return render_template('/hos/hos_create_success.html')
     except:
@@ -213,18 +213,22 @@ def hos_update():
 
         cursor.execute("UPDATE Memo SET Title = %s, DateTime = %s, EditorID = %s WHERE MemoID = %s", (Title, DateTime, EditorID, MemoID))
         cursor.execute("UPDATE Hos SET Location = %s, Doctor = %s, Clinic = %s, Num = %s WHERE MemoID = %s", (Location, Doctor, Clinic, Num, MemoID))
-        
+
         conn.commit()
         conn.close()
 
-        if MemoID in scheduled_jobs:
-            scheduler.remove_job(scheduled_jobs[MemoID])
-            del scheduled_jobs[MemoID]
+        if scheduler.get_job(MemoID)!=None:
+            scheduler.remove_job(MemoID)
 
-        job_id = f"send_message_{MemoID}"
-        send_time = datetime.strptime(DateTime, '%Y-%m-%dT%H:%M')
-        scheduler.add_job(id = job_id, func=send_line_message, trigger = 'date', run_date = send_time, args = [EditorID, Title, Location, Doctor, Clinic, Num])
-        scheduled_jobs[MemoID] = job_id
+        job_id = MemoID
+        send_time = datetime.strptime(DateTime, "%Y-%m-%dT%H:%M")
+        scheduler.add_job(
+            id=job_id,
+            func=send_line_message,
+            trigger="date",
+            run_date=send_time,
+            args=[EditorID, Title, Location, Doctor, Clinic, Num],
+        )
 
         return render_template('hos/hos_update_success.html')
     except:
@@ -260,9 +264,8 @@ def hos_delete():
         cursor.execute('Delete FROM Hos WHERE MemoID = %s', (MemoID,))    
         cursor.execute('Delete FROM Memo WHERE MemoID = %s', (MemoID,))
 
-        if MemoID in scheduled_jobs:
-            scheduler.remove_job(scheduled_jobs[MemoID])
-            del scheduled_jobs[MemoID]
+        if scheduler.get_job(MemoID)!=None:
+            scheduler.remove_job(MemoID)
         
         conn.commit()
         conn.close()
@@ -270,7 +273,3 @@ def hos_delete():
         return render_template('hos/hos_delete_success.html')
     except:
         return render_template('hos/hos_delete_fail.html')
-    
-if __name__ == '__main__':
-    app.run(debug=True)
-        

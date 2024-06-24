@@ -5,7 +5,7 @@ from .event.app import event_bp
 from .cam.app import cam_bp
 from .set.app import set_bp
 from .mqtt.app import mqtt_bp
-from .linebot.app import linebot_bp
+from .line.app import linebot_bp
 
 services_bp = Blueprint('services_bp', __name__)
 

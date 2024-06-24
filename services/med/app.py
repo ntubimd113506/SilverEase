@@ -1,18 +1,13 @@
-from flask import Flask, request, render_template, redirect, url_for, Blueprint
+from flask import request, render_template, Blueprint
 from flask_apscheduler import APScheduler
 from datetime import datetime
-from ..linebot.app import line_bot_api
+from ..line.app import line_bot_api
 from linebot.models import *
 from utils import db
 
 med_bp = Blueprint('med_bp',__name__)
 
-app = Flask(__name__)
-
 scheduler = APScheduler()
-scheduler.init_app(app)
-scheduler.start()
-scheduled_jobs = {}
 
 #主頁
 @med_bp.route('/')
@@ -55,10 +50,15 @@ def med_create():
         conn.commit()
         conn.close()
 
-        job_id = f"send_message_{memoID}"
-        send_time = datetime.strptime(DateTime, '%Y-%m-%dT%H:%M')
-        scheduler.add_job(id = job_id, func = send_line_message, trigger = 'date', run_date = send_time, args=[MemID, Title, MedFeature, Cycle])
-        scheduled_jobs[memoID] = job_id
+        job_id = f'{memoID}'
+        send_time = datetime.strptime(DateTime, "%Y-%m-%dT%H:%M")
+        scheduler.add_job(
+            id=job_id,
+            func=send_line_message,
+            trigger="date",
+            run_date=send_time,
+            args=[MemID, Title, MedFeature, Cycle],
+        )
 
         return render_template('/med/med_create_success.html')
     except:
@@ -211,17 +211,21 @@ def med_update():
         cursor.execute("UPDATE Memo SET Title = %s, DateTime = %s, EditorID = %s WHERE MemoID = %s", (Title, DateTime, EditorID, MemoID))
         cursor.execute("UPDATE Med SET MedFeature = %s, Cycle = %s WHERE MemoID = %s", (MedFeature, Cycle, MemoID))
 
-        if MemoID in scheduled_jobs:
-            scheduler.remove_job(scheduled_jobs[MemoID])
-            del scheduled_jobs[MemoID]
-
-        job_id = f"send_message_{MemoID}"
-        send_time = datetime.strptime(DateTime, '%Y-%m-%dT%H:%M')
-        scheduler.add_job(id = job_id, func=send_line_message, trigger = 'date', run_date = send_time, args = [EditorID, Title, MedFeature, Cycle])
-        scheduled_jobs[MemoID] = job_id
-        
         conn.commit()
         conn.close()
+
+        if scheduler.get_job(MemoID)!=None:
+            scheduler.remove_job(MemoID)
+
+        job_id = MemoID
+        send_time = datetime.strptime(DateTime, "%Y-%m-%dT%H:%M")
+        scheduler.add_job(
+            id=job_id,
+            func=send_line_message,
+            trigger="date",
+            run_date=send_time,
+            args=[EditorID, Title, MedFeature, Cycle],
+        )
 
         return render_template('med/med_update_success.html')
     except:
@@ -260,13 +264,11 @@ def med_delete():
         conn.commit()
         conn.close()
 
-        if MemoID in scheduled_jobs:
-            scheduler.remove_job(scheduled_jobs[MemoID])
-            del scheduled_jobs[MemoID]
+        job = scheduler.get_job(MemoID)
+        if job:
+            scheduler.remove_job(MemoID)
+            # app.logger.info(f"Scheduled job {MemoID} removed")
 
         return render_template('med/med_delete_success.html')
     except:
         return render_template('med/med_delete_fail.html')
-
-if __name__ == '__main__':
-    app.run(debug=True)
