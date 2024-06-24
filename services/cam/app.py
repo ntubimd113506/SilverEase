@@ -38,7 +38,8 @@ def esp32cam():
     res = handle_file(request)
     DevID=request.values.get("DevID")
     if res["msg"] == "ok":
-        sent_mess(res["filename"],DevID)  # 確保 filename 已經正確設置 
+        pass
+        # sent_mess(res["filename"],DevID)  # 確保 filename 已經正確設置 
     return f"{res['msg']} Dev is {DevID}"
     
 

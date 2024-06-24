@@ -11,10 +11,11 @@ app.config['MQTT_BROKER_URL'] = 'silverease.ntub.edu.tw'  # 您的 MQTT 代理�
 app.config['MQTT_BROKER_PORT'] = 8883  # MQTT 代理端口
 app.config['MQTT_USERNAME'] = ''  # 如果需要的話，填寫您的 MQTT 用戶名
 app.config['MQTT_PASSWORD'] = ''  # 如果需要的話，填寫您的 MQTT 密碼
-app.config['MQTT_KEEPALIVE'] = 60  # KeepAlive 週期，以秒為單位
+app.config['MQTT_KEEPALIVE'] = 1  # KeepAlive 週期，以秒為單位
 app.config['MQTT_TLS_ENABLED'] = True  # 啟用 TLS 加密
 app.config['MQTT_TLS_CA_CERTS'] = os.path.join(pathlib.Path(__file__).parent,'ca/my-ca.crt')
 app.config['MQTT_TLS_VERSION']=5
+app.config['MQTT_CLIENT_ID'] = 'flaskMQTT'
 mqtt = Mqtt(app)
 
 mqtt_bp = Blueprint('mqtt_bp', __name__)

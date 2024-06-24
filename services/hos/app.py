@@ -4,7 +4,15 @@ from datetime import datetime
 from linebot import LineBotApi, WebhookHandler
 from linebot.models import (MessageEvent, TextMessage, TextSendMessage, TemplateSendMessage, ButtonsTemplate, URIAction, MessageAction)
 from utils import db
-import pymysql
+# from ..schedule.app import scheduler
+
+# from flask_apscheduler import APScheduler
+# from flask import Flask
+
+app = Flask(__name__)
+scheduler = APScheduler()
+scheduler.init_app(app)
+scheduler.start()
 
 hos_bp = Blueprint('hos_bp',__name__)
 
@@ -12,11 +20,6 @@ line_bot_api = LineBotApi(db.LINE_TOKEN_2)
 handler = WebhookHandler(db.LINE_HANDLER_2)
 
 app = Flask(__name__)
-
-scheduler = APScheduler()
-scheduler.init_app(app)
-scheduler.start()
-scheduled_jobs = {}
 
 #主頁
 @hos_bp.route('/')
@@ -59,10 +62,15 @@ def hos_create():
         conn.commit()
         conn.close()
 
-        job_id = f"send_message_{memoID}"
-        send_time = datetime.strptime(DateTime, '%Y-%m-%dT%H:%M')
-        scheduler.add_job(id = job_id, func = send_line_message, trigger = 'date', run_date = send_time, args = [MemID, Title, Location, Doctor, Clinic, Num])
-        scheduled_jobs[memoID] = job_id
+        job_id = f'{memoID}'
+        send_time = datetime.strptime(DateTime, "%Y-%m-%dT%H:%M")
+        scheduler.add_job(
+            id=job_id,
+            func=send_line_message,
+            trigger="date",
+            run_date=send_time,
+            args=[MemID, Title, Location, Doctor, Clinic, Num],
+        )
 
         return render_template('/hos/hos_create_success.html')
     except:
@@ -217,18 +225,22 @@ def hos_update():
 
         cursor.execute("UPDATE Memo SET Title = %s, DateTime = %s, EditorID = %s WHERE MemoID = %s", (Title, DateTime, EditorID, MemoID))
         cursor.execute("UPDATE Hos SET Location = %s, Doctor = %s, Clinic = %s, Num = %s WHERE MemoID = %s", (Location, Doctor, Clinic, Num, MemoID))
-        
+
         conn.commit()
         conn.close()
 
-        if MemoID in scheduled_jobs:
-            scheduler.remove_job(scheduled_jobs[MemoID])
-            del scheduled_jobs[MemoID]
+        if scheduler.get_job(MemoID)!=None:
+            scheduler.remove_job(MemoID)
 
-        job_id = f"send_message_{MemoID}"
-        send_time = datetime.strptime(DateTime, '%Y-%m-%dT%H:%M')
-        scheduler.add_job(id = job_id, func=send_line_message, trigger = 'date', run_date = send_time, args = [EditorID, Title, Location, Doctor, Clinic, Num])
-        scheduled_jobs[MemoID] = job_id
+        job_id = MemoID
+        send_time = datetime.strptime(DateTime, "%Y-%m-%dT%H:%M")
+        scheduler.add_job(
+            id=job_id,
+            func=send_line_message,
+            trigger="date",
+            run_date=send_time,
+            args=[EditorID, Title, Location, Doctor, Clinic, Num],
+        )
 
         return render_template('hos/hos_update_success.html')
     except:
@@ -264,9 +276,8 @@ def hos_delete():
         cursor.execute('Delete FROM Hos WHERE MemoID = %s', (MemoID,))    
         cursor.execute('Delete FROM Memo WHERE MemoID = %s', (MemoID,))
 
-        if MemoID in scheduled_jobs:
-            scheduler.remove_job(scheduled_jobs[MemoID])
-            del scheduled_jobs[MemoID]
+        if scheduler.get_job(MemoID)!=None:
+            scheduler.remove_job(MemoID)
         
         conn.commit()
         conn.close()
