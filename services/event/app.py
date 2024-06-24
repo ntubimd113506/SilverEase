@@ -1,15 +1,11 @@
 from flask import Flask, request, render_template, redirect, url_for, Blueprint
 from flask_apscheduler import APScheduler
 from datetime import datetime
-from linebot import LineBotApi, WebhookHandler
-from linebot.models import (MessageEvent, TextMessage, TextSendMessage, TemplateSendMessage, ButtonsTemplate, URIAction, MessageAction)
+from ..linebot.app import line_bot_api
+from linebot.models import *
 from utils import db
-import pymysql
 
 event_bp = Blueprint("event_bp", __name__)
-
-line_bot_api = LineBotApi(db.LINE_TOKEN_2)
-handler = WebhookHandler(db.LINE_HANDLER_2)
 
 app = Flask(__name__)
 

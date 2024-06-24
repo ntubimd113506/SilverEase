@@ -1,4 +1,4 @@
-#pip install pymysql
+# $pip install pymysql
 import pymysql
 
 DB_HOST='HOST_IP'  

@@ -1,55 +1,30 @@
+import os
+import pathlib
 from flask import Flask, request, abort, render_template, redirect, url_for, session
-from linebot import LineBotApi, WebhookHandler
-from linebot.exceptions import InvalidSignatureError
-from linebot.models import *
+from flask_mqtt import Mqtt
 from utils import db
-from services.med.app import med_bp
-from services.hos.app import hos_bp
-from services.event.app import event_bp
-from services.cam.app import cam_bp
-from services.set.app import set_bp
-from services.mqtt.app import mqtt_bp,mqtt
+from services import services_bp
 
 app = Flask(__name__)
 
-app.register_blueprint(med_bp, url_prefix="/med")
-app.register_blueprint(hos_bp, url_prefix="/hos")
-app.register_blueprint(event_bp, url_prefix="/event")
-app.register_blueprint(cam_bp, url_prefix="/cam")
-app.register_blueprint(set_bp, url_prefix="/set")
-app.register_blueprint(mqtt_bp, url_prefix='/mqtt')
+app.config['MQTT_BROKER_URL'] = 'silverease.ntub.edu.tw'  # 您的 MQTT 代理地址
+app.config['MQTT_BROKER_PORT'] = 8883  # MQTT 代理端口
+app.config['MQTT_USERNAME'] = ''  # 如果需要的話，填寫您的 MQTT 用戶名
+app.config['MQTT_PASSWORD'] = ''  # 如果需要的話，填寫您的 MQTT 密碼
+app.config['MQTT_KEEPALIVE'] = 60  # KeepAlive 週期，以秒為單位
+app.config['MQTT_TLS_ENABLED'] = True  # 啟用 TLS 加密
+app.config['MQTT_TLS_CA_CERTS'] = os.path.join(
+    pathlib.Path(__file__).parent, 'ca/my-ca.crt')
+app.config['MQTT_TLS_VERSION'] = 5
+mqtt = Mqtt(app)
 
-# 設定你的 Line Bot 的 Channel Access Token
-line_bot_api = LineBotApi(db.LINE_TOKEN_2)
-handler = WebhookHandler(db.LINE_HANDLER_2)
+app.register_blueprint(services_bp, url_prefix="/")
+
 
 @app.route("/")
 def index():
     return render_template("index.html", intro="Here is SilverEase", liffid=db.LIFF_ID)
 
-@app.route("/callback", methods=["POST"])
-def callback():
-    # 獲取 Line Bot 的 Webhook 請求
-    signature = request.headers["X-Line-Signature"]
-    body = request.get_data(as_text=True)
-
-    # 驗證簽名
-    try:
-        handler.handle(body, signature)
-    except InvalidSignatureError:
-        abort(400)
-
-    return "OK"
-
-
-@handler.add(MessageEvent, message=TextMessage)
-def handle_message(event):
-
-    # 獲取使用者的 ID
-    MemID = event.source.user_id
-
-    if event.message.text=="收到":
-        mqtt.publish('ESP32/got', "OK")
 
 if __name__ == "__main__":
     app.run(debug=1)

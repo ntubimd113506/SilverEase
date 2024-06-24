@@ -1,7 +1,6 @@
 from random import random
 from utils.db import get_connection
 
-
 def get_codeID(familyID):
     conn = get_connection()
     cur = conn.cursor()
