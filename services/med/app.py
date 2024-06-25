@@ -8,6 +8,7 @@ from utils import db
 med_bp = Blueprint('med_bp',__name__)
 
 scheduler = APScheduler()
+scheduler.start()
 
 #主頁
 @med_bp.route('/')

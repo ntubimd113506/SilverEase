@@ -31,5 +31,5 @@ def handle_message(event):
     # 獲取使用者的 ID
     MemID = event.source.user_id
 
-    if event.message.text=="收到":
-        mqtt.publish('ESP32/got', "OK")
+    # if event.message.text=="收到":
+    #     mqtt.publish('ESP32/got', "OK")

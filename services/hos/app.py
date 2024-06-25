@@ -8,6 +8,7 @@ from utils import db
 hos_bp = Blueprint('hos_bp',__name__)
 
 scheduler = APScheduler()
+scheduler.start()
 
 #主頁
 @hos_bp.route('/')

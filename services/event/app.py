@@ -8,6 +8,7 @@ from utils import db
 event_bp = Blueprint("event_bp", __name__)
 
 scheduler = APScheduler()
+scheduler.start()
 
 # 主頁
 @event_bp.route("/")
@@ -67,12 +68,8 @@ def event_create():
         )
 
         # scheduled_jobs[memoID] = job_id
-
-        app.logger.info(f"Job {job_id} scheduled at {send_time}")
-
         return render_template("/event/event_create_success.html")
     except Exception as e:
-        app.logger.error(f"An error occurred: {e}")
         return render_template("/event/event_create_fail.html")
 
 def send_line_message(MemID, Title, Location):
@@ -139,10 +136,8 @@ def send_line_message(MemID, Title, Location):
         else:
             line_bot_api.push_message(main_user_id, body)
 
-        app.logger.info(f"Message sent to {main_user_id} with title {Title} at {Location}")
-
     except Exception as e:
-        app.logger.error(f"An error occurred in send_line_message: {e}")
+        pass
 
 # 查詢
 @event_bp.route("/list")
@@ -251,11 +246,8 @@ def event_update():
             args=[EditorID, Title, Location],
         )
 
-        app.logger.info(f"Job {job_id} rescheduled at {send_time}")
-
         return render_template("event/event_update_success.html")
     except Exception as e:
-        app.logger.error(f"An error occurred: {e}")
         return render_template("event/event_update_fail.html")
 
 # 刪除確認
@@ -293,12 +285,8 @@ def event_delete():
 
         if scheduler.get_job(MemoID)!=None:
             scheduler.remove_job(MemoID)
-        app.logger.info(f"Job send_message_{MemoID} deleted")
 
         return render_template("event/event_delete_success.html")
     except Exception as e:
-        app.logger.error(f"An error occurred: {e}")
-        return render_template("event/event_delete_fail.html")
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5001, debug=True)
+        return render_template("event/event_delete_fail.html")
