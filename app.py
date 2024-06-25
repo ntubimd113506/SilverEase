@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, session, request, jsonify
 from flask_apscheduler import APScheduler
 from utils import db
 from services import cam_bp, event_bp, hos_bp, linebot_bp, med_bp, set_bp
@@ -6,6 +6,7 @@ from services import cam_bp, event_bp, hos_bp, linebot_bp, med_bp, set_bp
 
 class Config:
     SCHEDULER_API_ENABLED = True
+    SECRET_KEY = db.SECRET_KEY
 
 
 app = Flask(__name__)
@@ -24,6 +25,12 @@ scheduler.start()
 @app.route("/")
 def index():
     return render_template("index.html", intro="Here is SilverEase", liffid=db.LIFF_ID)
+
+@app.route("/login", method=["POST"])
+def login():
+    session["login"] = True
+    session["userID"] = request.get_json()["userID"]
+    return jsonify({"msg": "ok"})
 
 
 if __name__ == "__main__":

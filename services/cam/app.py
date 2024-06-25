@@ -25,7 +25,6 @@ def index():
 
 @cam_bp.route('/', methods=['POST'])
 def upload_file():
-
     res = handle_file(request)
 
     if res['msg'] == 'ok':

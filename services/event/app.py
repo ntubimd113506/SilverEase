@@ -1,4 +1,4 @@
-from flask import request, render_template, Blueprint
+from flask import request, render_template, Blueprint, session
 from flask_apscheduler import APScheduler
 from datetime import datetime
 from ..line.app import line_bot_api
@@ -144,7 +144,7 @@ def send_line_message(MemID, Title, Location):
 def event_list():
     data = []
 
-    MemID = request.values.get("MemID")
+    MemID = session.get("userID")
 
     conn = db.get_connection()
     cursor = conn.cursor()

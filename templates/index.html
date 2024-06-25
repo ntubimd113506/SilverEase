@@ -13,11 +13,6 @@
     function initializeLiff(myLiffId) {
         liff.init({
             liffId: myLiffId
-        }).then(() => {
-            if (!liff.isLoggedIn()) {
-                alert("用戶未登入");
-                liff.login();
-            }
         }).catch((err) => {
             console.log('初始化失敗', err);
         });
