@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Satisfy&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
-    <link href="/static/css/create_form.css" rel="stylesheet" />
+    <link href="/static/css/list.css" rel="stylesheet" />
 
 </head>
 
@@ -50,34 +50,21 @@
         <div class="content">
             <h1>紀念日清單</h1>
 
-            <p>
-            <table>
-                <thead>
-                    <tr>
-                        <th>標題</th>
-                        <th>時間</th>
-                        <th>地點</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for d in data %}
-                    <tr>
-                        <td>{{d[2]}}</td>
-                        <td>{{d[3]}}</td>
-                        <td>{{d[7]}}</td>
-                        <td><a href="/event/update/confirm?MemoID={{d[0]}}">編輯</a></td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            </p>
-
+            {% for d in data %}
+                <div class="data-item">
+                        <div class="title">標題：{{d[2]}}</div>
+                        <div class="time">時間：{{d[3]}}</div>
+                        <div class="location">地點：{{d[7]}}</div>
+                        <div class="edit-link">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                            <a href="/event/update/confirm?MemoID={{d[0]}}">編輯</a>
+                        </div>
+                </div>
+            {% endfor %}
         </div>
 
         <input type="hidden" id="MemID" name="MemID">
-
     </div>
-</body>
+</body>    
 
 </html>
