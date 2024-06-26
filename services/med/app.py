@@ -4,7 +4,7 @@ from datetime import datetime
 from linebot import LineBotApi, WebhookHandler
 from linebot.models import (MessageEvent, TextMessage, TextSendMessage, TemplateSendMessage, ButtonsTemplate, URIAction, MessageAction)
 from utils import db
-import pymysql
+# from ..schedule.app import scheduler
 
 med_bp = Blueprint('med_bp',__name__)
 
@@ -16,7 +16,8 @@ app = Flask(__name__)
 scheduler = APScheduler()
 scheduler.init_app(app)
 scheduler.start()
-scheduled_jobs = {}
+
+app = Flask(__name__)
 
 #主頁
 @med_bp.route('/')
@@ -59,10 +60,15 @@ def med_create():
         conn.commit()
         conn.close()
 
-        job_id = f"send_message_{memoID}"
-        send_time = datetime.strptime(DateTime, '%Y-%m-%dT%H:%M')
-        scheduler.add_job(id = job_id, func = send_line_message, trigger = 'date', run_date = send_time, args=[MemID, Title, MedFeature, Cycle])
-        scheduled_jobs[memoID] = job_id
+        job_id = f'{memoID}'
+        send_time = datetime.strptime(DateTime, "%Y-%m-%dT%H:%M")
+        scheduler.add_job(
+            id=job_id,
+            func=send_line_message,
+            trigger="date",
+            run_date=send_time,
+            args=[MemID, Title, MedFeature, Cycle],
+        )
 
         return render_template('/med/med_create_success.html')
     except:
@@ -72,25 +78,51 @@ def send_line_message(MemID, Title, MedFeature, Cycle):
     try:
         conn = db.get_connection()
         cursor = conn.cursor()
-        cursor.execute("""
+        cursor.execute(
+            """
+            SELECT COALESCE(f.FamilyID, l.FamilyID) AS FamilyID
+            FROM `113-ntub113506`.Member m
+            LEFT JOIN `113-ntub113506`.Family f ON m.MemID = f.MainUserID
+            LEFT JOIN `113-ntub113506`.FamilyLink l ON m.MemID = l.SubUserID
+            WHERE m.MemID = %s
+            """,
+            (MemID,),
+        )
+        FamilyID = cursor.fetchone()[0]
+
+        cursor.execute(
+            """
+            SELECT MainUserID
+            FROM `113-ntub113506`.Family
+            WHERE FamilyID = %s
+            """,
+            (FamilyID,),
+        )
+        main_user_id = cursor.fetchone()[0]
+
+        cursor.execute(
+            """
             SELECT MainUserID 
             FROM Family 
             WHERE FamilyID = (SELECT FamilyID 
                               FROM FamilyLink 
                               WHERE SubUserID = %s)
-        """, (MemID,))
-        #cursor.execute("SELECT MemID FROM Member WHERE MemID = %s", (MemID,))
-        user_line_id = cursor.fetchone()[0]
+        """,
+            (MemID,),
+        )
+        cursor.execute("SELECT MemID FROM Member WHERE MemID = %s", (MemID,))
+        sub_user_id = cursor.fetchone()[0]    
+
         conn.close()
 
         body = TemplateSendMessage(
-            alt_text = '回診通知',
+            alt_text = '用藥通知',
             template = ButtonsTemplate(
                 thumbnail_image_url = "https://silverease.ntub.edu.tw/static/imgs/medicine.png",
                 image_aspect_ratio = 'rectangle',
                 image_size = 'contain',
                 image_background_color = '#FFFFFF',
-                title = '回診通知',
+                title = '用藥通知',
                 text=f"標題: {Title}\n藥盒與藥袋外觀描述: {MedFeature}",
                 actions=[
                     MessageAction(
@@ -101,7 +133,9 @@ def send_line_message(MemID, Title, MedFeature, Cycle):
             )
         )
 
-        line_bot_api.push_message(user_line_id, body)
+        if main_user_id != sub_user_id:
+            line_bot_api.push_message(main_user_id, body)
+        else: line_bot_api.push_message(main_user_id, body)
 
     except Exception as e:
         print(e)    
@@ -187,17 +221,21 @@ def med_update():
         cursor.execute("UPDATE Memo SET Title = %s, DateTime = %s, EditorID = %s WHERE MemoID = %s", (Title, DateTime, EditorID, MemoID))
         cursor.execute("UPDATE Med SET MedFeature = %s, Cycle = %s WHERE MemoID = %s", (MedFeature, Cycle, MemoID))
 
-        if MemoID in scheduled_jobs:
-            scheduler.remove_job(scheduled_jobs[MemoID])
-            del scheduled_jobs[MemoID]
-
-        job_id = f"send_message_{MemoID}"
-        send_time = datetime.strptime(DateTime, '%Y-%m-%dT%H:%M')
-        scheduler.add_job(id = job_id, func=send_line_message, trigger = 'date', run_date = send_time, args = [EditorID, Title, MedFeature, Cycle])
-        scheduled_jobs[MemoID] = job_id
-        
         conn.commit()
         conn.close()
+
+        if scheduler.get_job(MemoID)!=None:
+            scheduler.remove_job(MemoID)
+
+        job_id = MemoID
+        send_time = datetime.strptime(DateTime, "%Y-%m-%dT%H:%M")
+        scheduler.add_job(
+            id=job_id,
+            func=send_line_message,
+            trigger="date",
+            run_date=send_time,
+            args=[EditorID, Title, MedFeature, Cycle],
+        )
 
         return render_template('med/med_update_success.html')
     except:
@@ -236,9 +274,10 @@ def med_delete():
         conn.commit()
         conn.close()
 
-        if MemoID in scheduled_jobs:
-            scheduler.remove_job(scheduled_jobs[MemoID])
-            del scheduled_jobs[MemoID]
+        job = scheduler.get_job(MemoID)
+        if job:
+            scheduler.remove_job(MemoID)
+            # app.logger.info(f"Scheduled job {MemoID} removed")
 
         return render_template('med/med_delete_success.html')
     except:

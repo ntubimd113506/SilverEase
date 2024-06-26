@@ -5,6 +5,7 @@ from linebot import LineBotApi, WebhookHandler
 from linebot.models import (MessageEvent, TextMessage, TextSendMessage, TemplateSendMessage, ButtonsTemplate, URIAction, MessageAction)
 from utils import db
 import pymysql
+import logging
 
 event_bp = Blueprint("event_bp", __name__)
 
@@ -16,19 +17,22 @@ app = Flask(__name__)
 scheduler = APScheduler()
 scheduler.init_app(app)
 scheduler.start()
-scheduled_jobs = {}
+#scheduled_jobs = {}
 
-#主頁
+# 設置 logger
+app.logger.setLevel(logging.INFO)
+
+# 主頁
 @event_bp.route("/")
 def event():
     return render_template("schedule_index.html")
 
-#新增表單
+# 新增表單
 @event_bp.route("/create/form")
 def event_create_form():
     return render_template("/event/event_create_form.html")
 
-#新增
+# 新增
 @event_bp.route("/create", methods=["POST"])
 def event_create():
     try:
@@ -42,12 +46,12 @@ def event_create():
 
         cursor.execute(
             """
-                      SELECT COALESCE(f.FamilyID, l.FamilyID) AS A_FamilyID
-                        FROM `113-ntub113506`.Member m 
-                        LEFT JOIN `113-ntub113506`.Family as f ON m.MemID = f.MainUserID 
-                        LEFT JOIN `113-ntub113506`.FamilyLink as l ON m.MemID = l.SubUserID
-                        WHERE MemID = %s
-                       """,
+            SELECT COALESCE(f.FamilyID, l.FamilyID) AS A_FamilyID
+            FROM `113-ntub113506`.Member m 
+            LEFT JOIN `113-ntub113506`.Family as f ON m.MemID = f.MainUserID 
+            LEFT JOIN `113-ntub113506`.FamilyLink as l ON m.MemID = l.SubUserID
+            WHERE MemID = %s
+            """,
             (MemID,),
         )
         FamilyID = cursor.fetchone()[0]
@@ -56,7 +60,7 @@ def event_create():
             "INSERT INTO Memo (FamilyID, Title, DateTime, Type, EditorID) VALUES (%s, %s, %s, '3', %s)",
             (FamilyID, Title, DateTime, MemID),
         )
-        cursor.execute("SELECT MemoID FROM Memo ORDER BY MemoID DESC")
+        cursor.execute("SELECT MemoID FROM Memo ORDER BY MemoID DESC LIMIT 1")
         memoID = cursor.fetchone()[0]
         cursor.execute(
             "INSERT INTO Event (MemoID, Location) VALUES (%s, %s)", (memoID, Location)
@@ -64,8 +68,8 @@ def event_create():
 
         conn.commit()
         conn.close()
-
-        job_id = f"send_message_{memoID}"
+    
+        job_id = f'{memoID}'
         send_time = datetime.strptime(DateTime, "%Y-%m-%dT%H:%M")
         scheduler.add_job(
             id=job_id,
@@ -74,10 +78,14 @@ def event_create():
             run_date=send_time,
             args=[MemID, Title, Location],
         )
-        scheduled_jobs[memoID] = job_id
+
+        # scheduled_jobs[memoID] = job_id
+
+        app.logger.info(f"Job {job_id} scheduled at {send_time}")
 
         return render_template("/event/event_create_success.html")
-    except:
+    except Exception as e:
+        app.logger.error(f"An error occurred: {e}")
         return render_template("/event/event_create_fail.html")
 
 def send_line_message(MemID, Title, Location):
@@ -86,42 +94,70 @@ def send_line_message(MemID, Title, Location):
         cursor = conn.cursor()
         cursor.execute(
             """
+            SELECT COALESCE(f.FamilyID, l.FamilyID) AS FamilyID
+            FROM `113-ntub113506`.Member m
+            LEFT JOIN `113-ntub113506`.Family f ON m.MemID = f.MainUserID
+            LEFT JOIN `113-ntub113506`.FamilyLink l ON m.MemID = l.SubUserID
+            WHERE m.MemID = %s
+            """,
+            (MemID,),
+        )
+        FamilyID = cursor.fetchone()[0]
+
+        cursor.execute(
+            """
+            SELECT MainUserID
+            FROM `113-ntub113506`.Family
+            WHERE FamilyID = %s
+            """,
+            (FamilyID,),
+        )
+        main_user_id = cursor.fetchone()[0]
+
+        cursor.execute(
+            """
             SELECT MainUserID 
             FROM Family 
             WHERE FamilyID = (SELECT FamilyID 
                               FROM FamilyLink 
                               WHERE SubUserID = %s)
-        """,
+            """,
             (MemID,),
         )
-        #cursor.execute("SELECT MemID FROM Member WHERE MemID = %s", (MemID,))
-        user_line_id = cursor.fetchone()[0]
+        cursor.execute("SELECT MemID FROM Member WHERE MemID = %s", (MemID,))
+        sub_user_id = cursor.fetchone()[0]    
+
         conn.close()
 
         body = TemplateSendMessage(
-            alt_text = '紀念日通知',
-            template = ButtonsTemplate(
-                thumbnail_image_url = "https://silverease.ntub.edu.tw/static/imgs/planner.png",
-                image_aspect_ratio = 'rectangle',
-                image_size = 'contain',
-                image_background_color = '#FFFFFF',
-                title = '紀念日通知',
+            alt_text='紀念日通知',
+            template=ButtonsTemplate(
+                thumbnail_image_url="https://silverease.ntub.edu.tw/static/imgs/planner.png",
+                image_aspect_ratio='rectangle',
+                image_size='contain',
+                image_background_color='#FFFFFF',
+                title='紀念日通知',
                 text=f"標題: {Title}\n地點: {Location}",
                 actions=[
                     MessageAction(
-                        label = '收到',
-                        text = '收到'
+                        label='收到',
+                        text='收到'
                     )
                 ]
             )
         )
 
-        line_bot_api.push_message(user_line_id, body)
+        if main_user_id != sub_user_id:
+            line_bot_api.push_message(main_user_id, body)
+        else:
+            line_bot_api.push_message(main_user_id, body)
+
+        app.logger.info(f"Message sent to {main_user_id} with title {Title} at {Location}")
+
     except Exception as e:
-        print(e)
+        app.logger.error(f"An error occurred in send_line_message: {e}")
 
-
-#查詢
+# 查詢
 @event_bp.route("/list")
 def event_list():
     data = []
@@ -134,27 +170,27 @@ def event_list():
     if MemID:
         cursor.execute(
             """
-                        SELECT COALESCE(f.FamilyID, l.FamilyID) AS A_FamilyID
-                            FROM `113-ntub113506`.Member m 
-                            LEFT JOIN `113-ntub113506`.Family as f ON m.MemID = f.MainUserID 
-                            LEFT JOIN `113-ntub113506`.FamilyLink as l ON m.MemID = l.SubUserID
-                            WHERE MemID = %s
-                        """,
+            SELECT COALESCE(f.FamilyID, l.FamilyID) AS A_FamilyID
+            FROM `113-ntub113506`.Member m 
+            LEFT JOIN `113-ntub113506`.Family as f ON m.MemID = f.MainUserID 
+            LEFT JOIN `113-ntub113506`.FamilyLink as l ON m.MemID = l.SubUserID
+            WHERE MemID = %s
+            """,
             (MemID,),
         )
         FamilyID = cursor.fetchall()
     else:
         return render_template("/event/event_login.html", liffid=db.LIFF_ID)
     
-    if(FamilyID):
+    if FamilyID:
         for id in FamilyID:
             cursor.execute("""
-                        SELECT * FROM 
-                        (SELECT * FROM `113-ntub113506`.Memo WHERE FamilyID = %s) m 
-                        JOIN 
-                        (SELECT * FROM `113-ntub113506`.Event) e 
-                        ON e.MemoID = m.MemoID
-                        """, (id[0]))
+            SELECT * FROM 
+            (SELECT * FROM `113-ntub113506`.Memo WHERE FamilyID = %s) m 
+            JOIN 
+            (SELECT * FROM `113-ntub113506`.Event) e 
+            ON e.MemoID = m.MemoID
+            """, (id[0],))
             data += cursor.fetchall()
 
     conn.close()
@@ -164,7 +200,7 @@ def event_list():
     else:
         return render_template("not_found.html")
 
-#更改確認
+# 更改確認
 @event_bp.route("/update/confirm")
 def event_update_confirm():
     MemoID = request.values.get("MemoID")
@@ -174,12 +210,12 @@ def event_update_confirm():
 
     cursor.execute(
         """
-                   SELECT * FROM 
-                   (SELECT * FROM `113-ntub113506`.Memo WHERE MemoID = %s) m 
-                   JOIN 
-                   (SELECT * FROM `113-ntub113506`.Event) e 
-                   ON e.MemoID=m.MemoID
-                   """,
+        SELECT * FROM 
+        (SELECT * FROM `113-ntub113506`.Memo WHERE MemoID = %s) m 
+        JOIN 
+        (SELECT * FROM `113-ntub113506`.Event) e 
+        ON e.MemoID=m.MemoID
+        """,
         (MemoID,),
     )
     data = cursor.fetchone()
@@ -191,8 +227,7 @@ def event_update_confirm():
     else:
         return render_template("not_found.html")
 
-
-#更改
+# 更改
 @event_bp.route("/update", methods=["POST"])
 def event_update():
     try:
@@ -216,11 +251,10 @@ def event_update():
         conn.commit()
         conn.close()
 
-        if MemoID in scheduled_jobs:
-            scheduler.remove_job(scheduled_jobs[MemoID])
-            del scheduled_jobs[MemoID]
+        if scheduler.get_job(MemoID)!=None:
+            scheduler.remove_job(MemoID)
 
-        job_id = f"send_message_{MemoID}"
+        job_id = MemoID
         send_time = datetime.strptime(DateTime, "%Y-%m-%dT%H:%M")
         scheduler.add_job(
             id=job_id,
@@ -229,13 +263,15 @@ def event_update():
             run_date=send_time,
             args=[EditorID, Title, Location],
         )
-        scheduled_jobs[MemoID] = job_id
+
+        app.logger.info(f"Job {job_id} rescheduled at {send_time}")
 
         return render_template("event/event_update_success.html")
-    except:
+    except Exception as e:
+        app.logger.error(f"An error occurred: {e}")
         return render_template("event/event_update_fail.html")
 
-#刪除確認
+# 刪除確認
 @event_bp.route("/delete/confirm")
 def event_delete_confirm():
     MemoID = request.values.get("MemoID")
@@ -253,29 +289,29 @@ def event_delete_confirm():
     else:
         return render_template("not_found.html")
 
-#刪除
+# 刪除
 @event_bp.route("/delete", methods=["POST"])
 def event_delete():
     try:
         MemoID = request.values.get("MemoID")
 
-        conn = db.get_connection()
-        cursor = conn.cursor()
+        connection = db.get_connection()
+        cursor = connection.cursor()
 
         cursor.execute("DELETE FROM Event WHERE MemoID = %s", (MemoID,))
         cursor.execute("DELETE FROM Memo WHERE MemoID = %s", (MemoID,))
 
-        conn.commit()
-        conn.close()
+        connection.commit()
+        connection.close()
 
-        if MemoID in scheduled_jobs:
-            scheduler.remove_job(scheduled_jobs[MemoID])
-            del scheduled_jobs[MemoID]
+        if scheduler.get_job(MemoID)!=None:
+            scheduler.remove_job(MemoID)
+        app.logger.info(f"Job send_message_{MemoID} deleted")
 
         return render_template("event/event_delete_success.html")
-    except:
+    except Exception as e:
+        app.logger.error(f"An error occurred: {e}")
         return render_template("event/event_delete_fail.html")
 
-
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5001, debug=True)
