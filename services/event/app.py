@@ -9,7 +9,7 @@ import pymysql
 event_bp = Blueprint("event_bp", __name__)
 
 line_bot_api = LineBotApi(db.LINE_TOKEN)
-handler = WebhookHandler(db.LINE_TOKEN)
+handler = WebhookHandler(db.LINE_HANDLER)
 
 app = Flask(__name__)
 
