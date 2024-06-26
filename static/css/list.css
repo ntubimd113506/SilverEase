@@ -93,7 +93,7 @@ div.header h1{
     width: 30px;
 }
 
-.time, .location, .hospital-location ,.doctor, .outpatient{
+.time, .location, .hospital-location ,.doctor, .outpatient, .description, .cycle{
     color: #666;
     margin-bottom: 0.5em;
     font-size: 16px;

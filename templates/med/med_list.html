@@ -2,7 +2,8 @@
 <html>
 
 <head>
-    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no"> 
     <title>用藥清單</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -47,34 +48,22 @@
         </div>
 
         <div class="content">
-            <h1>用藥清單</h1>
+            <div class="header-container">
+                <h1 class="content-header">用藥清單</h1>
+            </div>
 
-            <p>
-            <table>
-                <thead>
-                    <tr>
-                        <th>標題</th>
-                        <th>時間</th>
-                        <th>藥盒與藥袋外觀描述</th>
-                        <th>循環（多久提醒一次）</th>
-
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for d in data %}
-                    <tr>
-                        <td>{{d[2]}}</td>
-                        <td>{{d[3]}}</td>
-                        <td>{{d[7]}}</td>
-                        <td>{{d[8]}}</td>
-                        <td><a href="/med/update/confirm?MemoID={{d[0]}}">編輯</a></td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            </p>
-
+            {% for d in data %}
+            <div class="data-item">
+                <div class="title">標題：{{d[2]}}</div>
+                <div class="time">時間：{{d[3]}}</div>
+                <div class="description">藥盒與藥袋外觀描述：{{d[7]}}</div>
+                <div class="cycle">循環（多久提醒一次）：{{d[8]}}</div>
+                <div class="edit-link">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    <a href="/med/update/confirm?MemoID={{d[0]}}">編輯</a>
+                </div>
+            </div>
+            {% endfor %}
         </div>
 
         <input type="hidden" id="MemID" name="MemID">
