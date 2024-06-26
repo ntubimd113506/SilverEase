@@ -8,8 +8,8 @@ import pymysql
 
 hos_bp = Blueprint('hos_bp',__name__)
 
-line_bot_api = LineBotApi(db.LINE_TOKEN_2)
-handler = WebhookHandler(db.LINE_HANDLER_2)
+line_bot_api = LineBotApi(db.LINE_TOKEN)
+handler = WebhookHandler(db.LINE_HANDLER)
 
 app = Flask(__name__)
 
