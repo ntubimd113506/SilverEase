@@ -7,8 +7,8 @@ from utils import db
 
 line_bot_api = LineBotApi(db.LINE_TOKEN_2)
 handler = WebhookHandler(db.LINE_HANDLER_2)
+linebot_bp = Blueprint('linebot_bp', __name__)
 
-linebot_bp = Blueprint('linebot_bp',__name__)
 
 @linebot_bp.route("/callback", methods=["POST"])
 def callback():

@@ -17,7 +17,7 @@ app.register_blueprint(hos_bp, url_prefix="/hos")
 app.register_blueprint(event_bp, url_prefix="/event")
 app.register_blueprint(cam_bp, url_prefix="/cam")
 app.register_blueprint(set_bp, url_prefix="/set")
-app.register_blueprint(linebot_bp, url_prefix="/linebot")
+app.register_blueprint(linebot_bp, url_prefix="/")
 scheduler.init_app(app)
 scheduler.start()
 

@@ -1,6 +1,6 @@
-from flask import request, render_template, Blueprint, session
+from flask import Flask,request, render_template, Blueprint, session
 from flask_apscheduler import APScheduler
-from datetime import datetime
+from datetime import datetime, timedelta
 from ..line.app import line_bot_api
 from linebot.models import *
 from utils import db
@@ -71,6 +71,26 @@ def event_create():
         return render_template("/event/event_create_success.html")
     except Exception as e:
         return render_template("/event/event_create_fail.html")
+
+@event_bp.route("/create/job")
+def create_job():
+    send_time = "2024-06-28T23:15:00"
+    scheduler.add_job(
+        id="job123",
+        func=send_line_message,
+        trigger="date",
+        run_date=send_time,
+        args=["U1d38cccc9cc22a5538e2fd9cc71a32a5", "hi", "here"],
+    )
+    return f"{scheduler.get_job('job123')}"
+
+# @scheduler.task(trigger="interval", id="job123", seconds=10)
+# def my_job123():
+#     print("藍圖的任務正在運行")
+
+@event_bp.route("/joblist")
+def job_list():
+    return f"{scheduler.get_jobs()}"
 
 def send_line_message(MemID, Title, Location):
     try:
