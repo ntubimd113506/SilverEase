@@ -17,7 +17,7 @@ app.register_blueprint(hos_bp, url_prefix="/hos")
 app.register_blueprint(event_bp, url_prefix="/event")
 app.register_blueprint(cam_bp, url_prefix="/cam")
 app.register_blueprint(set_bp, url_prefix="/set")
-app.register_blueprint(linebot_bp, url_prefix="/linebot")
+app.register_blueprint(linebot_bp, url_prefix="/line")
 scheduler.init_app(app)
 scheduler.start()
 
@@ -26,7 +26,7 @@ scheduler.start()
 def index():
     return render_template("index.html", intro="Here is SilverEase", liffid=db.LIFF_ID)
 
-@app.route("/login", method=["POST"])
+@app.route("/login", methods=["POST"])
 def login():
     session["login"] = True
     session["userID"] = request.get_json()["userID"]
