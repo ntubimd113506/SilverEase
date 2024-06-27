@@ -6,6 +6,7 @@ from io import BytesIO
 from flask import Flask, abort
 from flask_mqtt import Mqtt
 from utils import db
+from utils.mqtt import mqtt
 
 
 class Config:
