@@ -71,8 +71,10 @@ div.content h1 {
 }
 
 img.p {
-    width: 340px;
-    height: 340px;
+    opacity: 0.5;
+    width: 280px;
+    height: 280px;
+    padding: 0 0 30px 0;
 }
 
 div.card h4 {
@@ -83,11 +85,6 @@ div.card h4 {
     text-align: center;
     margin: 0%;
 }
-
-/**
-    * 我修很多東西
-    */
-
 
 div button {
     background-color: #ffffff;
