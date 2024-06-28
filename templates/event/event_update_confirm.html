@@ -38,6 +38,27 @@
             console.log('初始化失敗', err);
         });
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var cycleValue = "{{data[6]}}";
+        var cycleSelectElement = document.querySelector('select[name="Cycle"]');
+        for (var i = 0; i < cycleSelectElement.options.length; i++) {
+            if (cycleSelectElement.options[i].value === cycleValue) {
+                cycleSelectElement.options[i].selected = true;
+                break;
+            }
+        }
+
+        var alertValue = "{{data[7]}}";
+        var alertSelectElement = document.querySelector('select[name="Alert"]');
+        for (var i = 0; i < alertSelectElement.options.length; i++) {
+            if (alertSelectElement.options[i].value === alertValue) {
+                alertSelectElement.options[i].selected = true;
+                break;
+            }
+        }
+    });
+
 </script>
 
 <body onload="initializeLiff('2004699458-OR9pkZjP')">
@@ -83,6 +104,27 @@
                         <input type="text" name="Location" value="{{data[7]}}" class="input-field">
                     </div>
                     <br />
+
+                    <div class="name">多久重複</div>
+                    <select name="Cycle" value="{{data[6]}}">
+                        <option value="不重複">不重複</option>
+                        <option value="一小時">一小時</option>
+                        <option value="一天">一天</option>
+                        <option value="一週">一週</option>
+                        <option value="一個月">一個月</option>
+                        <option value="一年">一年</option>
+                    </select>
+                    <br />
+                    
+                    <div class="name">幾分鐘前提醒</div>
+                    <select name="Alert" value="{{data[7]}}">
+                        <option value="1">1分鐘</option>
+                        <option value="5">5分鐘</option>
+                        <option value="10">10分鐘</option>
+                        <option value="30">30分鐘</option>
+                        <option value="60">1小時</option>
+                    </select>
+
                 </div>
                     <a href="/event/delete/confirm?MemoID={{data[0]}}" class="delete-btn">刪除</a>
                     <br />

@@ -101,16 +101,27 @@
                     </div>
                     <br />
 
-                    <select name="Repeat">
-                        <option value="none">None</option>
-                        <option value="daily">Daily</option>
-                        <option value="weekly">Weekly</option>
-                        <option value="monthly">Monthly</option>
-                        <option value="yearly">Yearly</option>
+                    <div class="name">多久重複</div>
+                    <select name="Cycle">
+                        <option value="不重複">不重複</option>
+                        <option value="一小時">一小時</option>
+                        <option value="一天">一天</option>
+                        <option value="一週">一週</option>
+                        <option value="一個月">一個月</option>
+                        <option value="一年">一年</option>
                     </select>
                     <br />
                     
-                    <input type="number" name="Alert" placeholder="Alert (minutes before)">
+                    <div class="name">幾分鐘前提醒</div>
+                    <select name="Alert">
+                        <option value="0">當下</option>
+                        <option value="1">1分鐘</option>
+                        <option value="5">5分鐘</option>
+                        <option value="10">10分鐘</option>
+                        <option value="30">30分鐘</option>
+                        <option value="60">1小時</option>
+                    </select>
+
                 </div>
                     <div>
                         <button class="btn" type="submit">新 增</button>

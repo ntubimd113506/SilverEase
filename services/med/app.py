@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template, redirect, url_for, Blueprint
 from flask_apscheduler import APScheduler
-from datetime import datetime
+from datetime import datetime, timedelta
 from linebot import LineBotApi, WebhookHandler
 from linebot.models import (MessageEvent, TextMessage, TextSendMessage, TemplateSendMessage, ButtonsTemplate, URIAction, MessageAction)
 from utils import db
@@ -37,6 +37,8 @@ def med_create():
         Title = request.form.get('Title')
         DateTime = request.form.get('DateTime')
         MedFeature = request.form.get('MedFeature')
+        Cycle = request.form.get('Cycle')
+        Alert = int(request.form.get('Alert', 0))
 
         conn = db.get_connection()
         cursor = conn.cursor()   
@@ -50,8 +52,8 @@ def med_create():
                        """, (MemID))
         FamilyID=cursor.fetchone()[0]
 
-        cursor.execute("INSERT INTO Memo (FamilyID, Title, DateTime, Type, EditorID) VALUES (%s, %s, %s, '1', %s)",
-                        (FamilyID, Title, DateTime, MemID))
+        cursor.execute("INSERT INTO Memo (FamilyID, Title, DateTime, Type, EditorID, Cycle, Alert) VALUES (%s, %s, %s, '1', %s, %s, %s)",
+                        (FamilyID, Title, DateTime, MemID, Cycle, Alert))
         cursor.execute("Select MemoID from Memo order by MemoID Desc")
         memoID=cursor.fetchone()[0]
         cursor.execute("INSERT INTO Med (MemoID, MedFeature) VALUES (%s, %s)", (memoID, MedFeature))
@@ -61,13 +63,44 @@ def med_create():
 
         job_id = f'{memoID}'
         send_time = datetime.strptime(DateTime, "%Y-%m-%dT%H:%M")
-        scheduler.add_job(
-            id=job_id,
-            func=send_line_message,
-            trigger="date",
-            run_date=send_time,
-            args=[MemID, Title, MedFeature],
-        )
+        reminder_time = send_time - timedelta(minutes=Alert)
+
+        if Cycle == '不重複':
+            scheduler.add_job(
+                id=job_id,
+                func=send_line_message,
+                trigger="date",
+                run_date=reminder_time,
+                args=[MemID, Title, MedFeature]
+            )
+        else:
+            trigger = None
+            interval = {}
+
+            if Cycle == '一小時':
+                trigger = 'interval'
+                interval = {'hours': 1}
+            elif Cycle == '一天':
+                trigger = 'interval'
+                interval = {'days': 1}
+            elif Cycle == '一週':
+                trigger = 'interval'
+                interval = {'weeks': 1}
+            elif Cycle == '一個月':
+                trigger = 'cron'
+                interval = {'day': send_time.day, 'hour': send_time.hour, 'minute': send_time.minute}
+            elif Cycle == '一年':
+                trigger = 'cron'
+                interval = {'month': send_time.month, 'day': send_time.day, 'hour': send_time.hour, 'minute': send_time.minute}
+
+            scheduler.add_job(
+                id=job_id,
+                func=send_line_message,
+                trigger=trigger,
+                start_date=reminder_time,
+                args=[MemID, Title, MedFeature],
+                **interval
+            )
 
         return render_template('/med/med_create_success.html')
     except:
@@ -212,28 +245,70 @@ def med_update():
         Title = request.form.get('Title')
         DateTime = request.form.get('DateTime')
         MedFeature = request.form.get('MedFeature')
+        Cycle = request.form.get('Cycle')
+        Alert = int(request.form.get('Alert', 0))
 
         conn = db.get_connection()
         cursor = conn.cursor()
 
-        cursor.execute("UPDATE Memo SET Title = %s, DateTime = %s, EditorID = %s WHERE MemoID = %s", (Title, DateTime, EditorID, MemoID))
-        cursor.execute("UPDATE Med SET MedFeature = %s WHERE MemoID = %s", (MedFeature, MemoID))
+        cursor.execute("""
+            UPDATE Memo 
+            SET Title = %s, DateTime = %s, EditorID = %s, Cycle = %s, Alert = %s 
+            WHERE MemoID = %s
+        """, (Title, DateTime, EditorID, Cycle, Alert, MemoID))
+
+        cursor.execute("""
+            UPDATE Med 
+            SET MedFeature = %s 
+            WHERE MemoID = %s
+        """, (MedFeature, MemoID))
 
         conn.commit()
         conn.close()
 
-        if scheduler.get_job(MemoID)!=None:
+        if scheduler.get_job(MemoID) is not None:
             scheduler.remove_job(MemoID)
 
         job_id = MemoID
         send_time = datetime.strptime(DateTime, "%Y-%m-%dT%H:%M")
-        scheduler.add_job(
-            id=job_id,
-            func=send_line_message,
-            trigger="date",
-            run_date=send_time,
-            args=[EditorID, Title, MedFeature],
-        )
+        reminder_time = send_time - timedelta(minutes=Alert)
+
+        if Cycle == '不重複':
+            scheduler.add_job(
+                id=job_id,
+                func=send_line_message,
+                trigger="date",
+                run_date=reminder_time,
+                args=[EditorID, Title, MedFeature]
+            )
+        else:
+            trigger = None
+            interval = {}
+
+            if Cycle == '一小時':
+                trigger = 'interval'
+                interval = {'hours': 1}
+            elif Cycle == '一天':
+                trigger = 'interval'
+                interval = {'days': 1}
+            elif Cycle == '一週':
+                trigger = 'interval'
+                interval = {'weeks': 1}
+            elif Cycle == '一個月':
+                trigger = 'cron'
+                interval = {'day': send_time.day, 'hour': send_time.hour, 'minute': send_time.minute}
+            elif Cycle == '一年':
+                trigger = 'cron'
+                interval = {'month': send_time.month, 'day': send_time.day, 'hour': send_time.hour, 'minute': send_time.minute}
+
+            scheduler.add_job(
+                id=job_id,
+                func=send_line_message,
+                trigger=trigger,
+                start_date=reminder_time,
+                args=[EditorID, Title, MedFeature],
+                **interval
+            )
 
         return render_template('med/med_update_success.html')
     except:

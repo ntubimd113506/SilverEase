@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template, redirect, url_for, Blueprint
 from flask_apscheduler import APScheduler
-from datetime import datetime
+from datetime import datetime, timedelta
 from linebot import LineBotApi, WebhookHandler
 from linebot.models import (MessageEvent, TextMessage, TextSendMessage, TemplateSendMessage, ButtonsTemplate, URIAction, MessageAction)
 from utils import db
@@ -40,6 +40,8 @@ def event_create():
         Title = request.form.get("Title")
         DateTime = request.form.get("DateTime")
         Location = request.form.get("Location")
+        Cycle = request.form.get('Cycle')
+        Alert = int(request.form.get('Alert', 0))
 
         conn = db.get_connection()
         cursor = conn.cursor()
@@ -56,32 +58,62 @@ def event_create():
         )
         FamilyID = cursor.fetchone()[0]
 
-        cursor.execute(
-            "INSERT INTO Memo (FamilyID, Title, DateTime, Type, EditorID) VALUES (%s, %s, %s, '3', %s)",
-            (FamilyID, Title, DateTime, MemID),
-        )
+        cursor.execute("""
+            INSERT INTO Memo (FamilyID, Title, DateTime, Type, EditorID, Cycle, Alert) 
+            VALUES (%s, %s, %s, '2', %s, %s, %s)
+        """, (FamilyID, Title, DateTime, MemID, Cycle, Alert))
+        
         cursor.execute("SELECT MemoID FROM Memo ORDER BY MemoID DESC LIMIT 1")
         memoID = cursor.fetchone()[0]
-        cursor.execute(
-            "INSERT INTO Event (MemoID, Location) VALUES (%s, %s)", (memoID, Location)
-        )
+
+        cursor.execute("""
+            INSERT INTO Event (MemoID, Location) 
+            VALUES (%s, %s)
+        """, (memoID, Location))
 
         conn.commit()
         conn.close()
     
         job_id = f'{memoID}'
         send_time = datetime.strptime(DateTime, "%Y-%m-%dT%H:%M")
-        scheduler.add_job(
-            id=job_id,
-            func=send_line_message,
-            trigger="date",
-            run_date=send_time,
-            args=[MemID, Title, Location],
-        )
+        reminder_time = send_time - timedelta(minutes=Alert)
 
-        # scheduled_jobs[memoID] = job_id
+        if Cycle == '不重複':
+            scheduler.add_job(
+                id=job_id,
+                func=send_line_message,
+                trigger="date",
+                run_date=reminder_time,
+                args=[MemID, Title, Location]
+            )
+        else:
+            trigger = None
+            interval = {}
 
-        app.logger.info(f"Job {job_id} scheduled at {send_time}")
+            if Cycle == '一小時':
+                trigger = 'interval'
+                interval = {'hours': 1}
+            elif Cycle == '一天':
+                trigger = 'interval'
+                interval = {'days': 1}
+            elif Cycle == '一週':
+                trigger = 'interval'
+                interval = {'weeks': 1}
+            elif Cycle == '一個月':
+                trigger = 'cron'
+                interval = {'day': send_time.day, 'hour': send_time.hour, 'minute': send_time.minute}
+            elif Cycle == '一年':
+                trigger = 'cron'
+                interval = {'month': send_time.month, 'day': send_time.day, 'hour': send_time.hour, 'minute': send_time.minute}
+
+            scheduler.add_job(
+                id=job_id,
+                func=send_line_message,
+                trigger=trigger,
+                start_date=reminder_time,
+                args=[MemID, Title, Location],
+                **interval
+            )
 
         return render_template("/event/event_create_success.html")
     except Exception as e:
@@ -236,33 +268,71 @@ def event_update():
         Title = request.form.get("Title")
         DateTime = request.form.get("DateTime")
         Location = request.form.get("Location")
+        Cycle = request.form.get('Cycle')
+        Alert = int(request.form.get('Alert', 0))
 
         conn = db.get_connection()
         cursor = conn.cursor()
 
-        cursor.execute(
-            "UPDATE Memo SET Title = %s, DateTime = %s, EditorID = %s WHERE MemoID = %s",
-            (Title, DateTime, EditorID, MemoID),
-        )
-        cursor.execute(
-            "UPDATE Event SET Location = %s WHERE MemoID = %s", (Location, MemoID)
-        )
+        cursor.execute("""
+            UPDATE Memo 
+            SET Title = %s, DateTime = %s, EditorID = %s, Cycle = %s, Alert = %s 
+            WHERE MemoID = %s
+        """, (Title, DateTime, EditorID, Cycle, Alert, MemoID))
+
+        cursor.execute("""
+            UPDATE Event 
+            SET Location = %s 
+            WHERE MemoID = %s
+        """, (Location, MemoID))
 
         conn.commit()
         conn.close()
 
-        if scheduler.get_job(MemoID)!=None:
+        if scheduler.get_job(MemoID) is not None:
             scheduler.remove_job(MemoID)
 
         job_id = MemoID
         send_time = datetime.strptime(DateTime, "%Y-%m-%dT%H:%M")
-        scheduler.add_job(
-            id=job_id,
-            func=send_line_message,
-            trigger="date",
-            run_date=send_time,
-            args=[EditorID, Title, Location],
-        )
+        reminder_time = send_time - timedelta(minutes=Alert)
+
+        if Cycle == '不重複':
+            scheduler.add_job(
+                id=job_id,
+                func=send_line_message,
+                trigger="date",
+                run_date=reminder_time,
+                args=[EditorID, Title, Location]
+            )
+        else:
+            trigger = None
+            interval = {}
+
+            if Cycle == '一小時':
+                trigger = 'interval'
+                interval = {'hours': 1}
+            elif Cycle == '一天':
+                trigger = 'interval'
+                interval = {'days': 1}
+            elif Cycle == '一週':
+                trigger = 'interval'
+                interval = {'weeks': 1}
+            elif Cycle == '一個月':
+                trigger = 'cron'
+                interval = {'day': send_time.day, 'hour': send_time.hour, 'minute': send_time.minute}
+            elif Cycle == '一年':
+                trigger = 'cron'
+                interval = {'month': send_time.month, 'day': send_time.day, 'hour': send_time.hour, 'minute': send_time.minute}
+
+            scheduler.add_job(
+                id=job_id,
+                func=send_line_message,
+                trigger=trigger,
+                start_date=reminder_time,
+                args=[EditorID, Title, Location],
+                **interval
+            )
+
 
         app.logger.info(f"Job {job_id} rescheduled at {send_time}")
 
