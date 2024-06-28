@@ -49,7 +49,7 @@ div.content{
     background-color: #F2F0EE;
     display: flex;
     justify-content: center;
-    margin: 60px;
+    margin: 60px 60px 200px 60px;
 }
 
 /* div.cardrow{
@@ -102,5 +102,5 @@ b.t{
 div.card:nth-child(1),
 div.card:nth-child(2)
 {
-    margin-bottom: 30px;
+    margin-bottom: 50px;
 }

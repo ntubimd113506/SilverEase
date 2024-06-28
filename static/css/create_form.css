@@ -14,7 +14,7 @@ html, body{
 /* container           */
 /* ------------------- */
 div.container{
-    height: 1000px;
+    /* height: 1000px; */
     margin-left: auto;
     margin-right: auto;
     text-align: justify;
@@ -83,93 +83,101 @@ div.content{
     padding: 0px 23px;
 }
 
-
-div.cardrow {
-    display: flex;
-    /* 水平置中 */
-    justify-content: center;
-    margin: auto;
+.title-container {
+    width: 90%; 
+    margin: 0 auto;
 }
 
+/* 所有輸入欄位 */
+.form-container {
+    width: 90%;
+    margin: 0 auto;
+}
+
+.title-container .content-header {
+    color: #000000;
+    font-size: 30px;
+    letter-spacing: 5px;
+    width: 100%;
+    text-align: left;
+    margin-top: 30px; 
+    margin-bottom: 25px;
+}
 
 div.content h1{
     font-size: 30px;
     letter-spacing:8px;
 }
 
-
 input.input-field {
-    width: 320px;
+    width: 100%;
     height: 40px;
     border-radius: 6px;
-    font-size: 18px;
+    font-size: 19px;
     border-style:solid;
     border-color: #A8A8A8;
     color: #333;
+    box-sizing: border-box; 
 }
 
-
 input[type="datetime-local"] {
-    background-color: white; 
-    color: #333; 
+    height: 42px;
+    background-color: white;
+    color: #333;
+    padding-left: 4px; 
+    padding-right: 40px;
+}
+
+/* 輸入框月曆 */
+.input-icon {
+    position: relative;
+}
+
+.input-icon .fa-calendar-days {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #809f68;
+    font-size: 19px;
+    pointer-events: none; 
 }
 
 /* 輸入框間距 */
 .value {
-    margin-bottom: -10px; 
+    margin-bottom: -2px; 
 }
 
 .name {
     font-size: 18px;
     margin-bottom: 5px; 
-}
-
-/* 時間日期小圖 */
-  .ui-input.ui-date-input input[type="date"]::-webkit-calendar-picker-indicator {
-    background-size: 18px 18px;
-    background-position: right center;
-}
-  
+    
+}  
 
 /* 送出按鈕設定 */
 .btn{
     position: relative;
-    top: 150px;
+    top: 20px;
     align-items: center;
-    margin-left: 10px;
-}
-
-input[type="submit" i]{
-    position: relative;
-    top: 70px;
-    align-items: center;
-    margin-left: 10px;
-}
-
-.delete-btn{
-    position: relative;
-    top: 160px;
-    align-items: center;
-    margin-left: 10px;
-}
-
-.btn{
-    background-color: #9FB889;
-    width: 340px;
+    background-color: #5f8247;
+    width: 100%; 
     height: 40px;
     border-style:none;
-    border-radius: 50px;
-    color: #000000;
-    font-size: 20px;
+    border-radius: 14px;
+    color: #ffffff;
+    font-size: 19px;
     font-weight: bolder;
-    letter-spacing:5px;
+    letter-spacing: 5px;
     margin: 0%;
 }
 
 /* delete_confirm的刪除 */
 input[type="submit" i]{
+    position: relative;
+    top: 20px;
+    align-items: center;
     background-color: #9FB889;
-    width: 340px;
+    width: 100%;
     height: 40px;
     border-style:none;
     border-radius: 50px;
@@ -182,6 +190,9 @@ input[type="submit" i]{
 
 /* update_confirm的刪除 */
 .delete-btn{
+    position: relative;
+    top: 60px;
+    align-items: center;
     background-color: #F2F0EE;
     color: #000000;
     text-decoration: none;
@@ -193,3 +204,4 @@ input[type="submit" i]{
     letter-spacing:5px;
     margin: 0%;
 }
+
