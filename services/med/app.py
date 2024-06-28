@@ -37,7 +37,6 @@ def med_create():
         Title = request.form.get('Title')
         DateTime = request.form.get('DateTime')
         MedFeature = request.form.get('MedFeature')
-        Cycle = request.form.get('Cycle')
 
         conn = db.get_connection()
         cursor = conn.cursor()   
@@ -55,7 +54,7 @@ def med_create():
                         (FamilyID, Title, DateTime, MemID))
         cursor.execute("Select MemoID from Memo order by MemoID Desc")
         memoID=cursor.fetchone()[0]
-        cursor.execute("INSERT INTO Med (MemoID, MedFeature, Cycle) VALUES (%s, %s, %s)", (memoID, MedFeature, Cycle))
+        cursor.execute("INSERT INTO Med (MemoID, MedFeature) VALUES (%s, %s)", (memoID, MedFeature))
         
         conn.commit()
         conn.close()
@@ -67,14 +66,14 @@ def med_create():
             func=send_line_message,
             trigger="date",
             run_date=send_time,
-            args=[MemID, Title, MedFeature, Cycle],
+            args=[MemID, Title, MedFeature],
         )
 
         return render_template('/med/med_create_success.html')
     except:
         return render_template('/med/med_create_fail.html')
 
-def send_line_message(MemID, Title, MedFeature, Cycle):
+def send_line_message(MemID, Title, MedFeature):
     try:
         conn = db.get_connection()
         cursor = conn.cursor()
@@ -213,13 +212,12 @@ def med_update():
         Title = request.form.get('Title')
         DateTime = request.form.get('DateTime')
         MedFeature = request.form.get('MedFeature')
-        Cycle = request.form.get('Cycle')
 
         conn = db.get_connection()
         cursor = conn.cursor()
 
         cursor.execute("UPDATE Memo SET Title = %s, DateTime = %s, EditorID = %s WHERE MemoID = %s", (Title, DateTime, EditorID, MemoID))
-        cursor.execute("UPDATE Med SET MedFeature = %s, Cycle = %s WHERE MemoID = %s", (MedFeature, Cycle, MemoID))
+        cursor.execute("UPDATE Med SET MedFeature = %s WHERE MemoID = %s", (MedFeature, MemoID))
 
         conn.commit()
         conn.close()
@@ -234,7 +232,7 @@ def med_update():
             func=send_line_message,
             trigger="date",
             run_date=send_time,
-            args=[EditorID, Title, MedFeature, Cycle],
+            args=[EditorID, Title, MedFeature],
         )
 
         return render_template('med/med_update_success.html')
