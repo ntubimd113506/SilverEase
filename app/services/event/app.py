@@ -10,7 +10,7 @@ event_bp = Blueprint("event_bp", __name__)
 # 主頁
 @event_bp.route("/")
 def event():
-    return f"{__name__}"
+    return render_template("schedule_index.html")
 
 
 # 新增表單
@@ -55,6 +55,8 @@ def event_create():
 
         conn.commit()
         conn.close()
+
+        # return "OK"
 
         job_id = f'{memoID}'
         send_time = datetime.strptime(DateTime, "%Y-%m-%dT%H:%M")
@@ -178,7 +180,7 @@ def send_line_message(MemID, Title, Location):
 def event_list():
     data = []
 
-    MemID = session.get("userID")
+    MemID = session.get("MemID")
 
     conn = db.get_connection()
     cursor = conn.cursor()

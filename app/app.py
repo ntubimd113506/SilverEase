@@ -25,7 +25,7 @@ def index():
 @app.route("/login", methods=["POST"])
 def login():
     session["login"] = True
-    session["userID"] = request.get_json()["userID"]
+    session["MemID"] = request.get_json()["MemID"]
     return jsonify({"msg": "ok"})
 
 
