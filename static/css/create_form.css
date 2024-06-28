@@ -5,9 +5,11 @@
 /* ------------------- */
 html, body{
     font-family: 'Noto Sans TC', sans-serif;
-    background-color: #F2F0EE;
-    padding: 0%;
-    margin: 0%;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
 }
 
 /* ------------------- */
@@ -84,13 +86,13 @@ div.content{
 }
 
 .title-container {
-    width: 85%; 
+    width: 88%; 
     margin: 0 auto;
 }
 
 /* 所有輸入欄位 */
 .form-container {
-    width: 85%;
+    width: 88%;
     margin: 0 auto;
 }
 
@@ -134,6 +136,7 @@ input[type="datetime-local"] {
     position: relative;
 }
 
+/* 輸入框月曆 */
 .input-icon .fa-calendar-days {
     position: absolute;
     right: 10px;
@@ -143,6 +146,18 @@ input[type="datetime-local"] {
     font-size: 19px;
     pointer-events: none; 
 }
+
+/* 圖標設置在輸入框內 */
+.calendar-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #809f68;
+    font-size: 19px;
+    pointer-events: none; 
+}
+
 
 /* 輸入框間距 */
 .value {
@@ -170,12 +185,20 @@ input[type="datetime-local"] {
     font-weight: bolder;
     letter-spacing: 5px;
     margin: 0%;
+    /* 動畫 */
+    cursor: pointer;    
+    transition: background-color 0.3s;
+}
+
+.btn:hover,
+.btn:active {
+    background-color: #9fb889;
 }
 
 /* delete_confirm的更改 */
 input[type="submit" i]{
     position: relative;
-    top: -10px;
+    top: -20px;
     align-items: center;
     background-color: #809f68;
     width: 100%;
@@ -186,25 +209,43 @@ input[type="submit" i]{
     font-size: 19px;
     font-weight: bolder;
     letter-spacing:5px;
+    /* 動畫 */
     margin: 0%;
+    cursor: pointer;    
+    transition: background-color 0.3s;
 }
+
+input[type="submit" i]:hover,
+input[type="submit" i]:active {
+    background-color: #9fb889;
+}
+
 
 /* update_confirm的刪除 */
 .delete-btn{
     position: relative;
-    top: 90px;
+    top: 80px;
     align-items: center;
     /* width: 100%; */
     background-color: #F2F0EE;
     color: #000000;
     text-decoration: none;
     font-size: 19px;
-    padding: 3px 145px; /* 更改此行 */
+    padding: 3px 149px; /* 更改此行 */
     border: 5px solid #809f68;
     font-weight: 600;
     border-radius: 50px;
     letter-spacing:5px;
     margin: 0%;
+    margin-bottom: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.delete-btn:hover,
+.delete-btn:active {
+    border: 5px solid #9fb889;
+    color: #3a3a3a;
 }
 
 
