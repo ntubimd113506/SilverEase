@@ -333,7 +333,6 @@ def event_update():
                 **interval
             )
 
-
         app.logger.info(f"Job {job_id} rescheduled at {send_time}")
 
         return render_template("event/event_update_success.html")
