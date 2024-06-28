@@ -3,15 +3,16 @@
 /* ------------------- */
 /* html, body          */
 /* ------------------- */
+html{
+    overflow-y: hidden;
+}
+
 html, body{
     font-family: 'Noto Sans TC', sans-serif;
     background-color: #F2F0EE;
     padding: 0;
     margin: 0;
 
-}
-html{
-    overflow-y: hidden;
 }
 
 /* ------------------- */
@@ -51,14 +52,9 @@ div.content{
     background-color: #F2F0EE;
     display: flex;
     justify-content: center;
-    margin: 60px 60px 200px 60px;
+    padding: 60px 0 0 0;
 }
 
-/* div.cardrow{
-    display: flex;
-    justify-content: center;
-    margin: auto;
-} */
 
 div.clear{
     height: 80px;
