@@ -1,7 +1,6 @@
 import json
 from flask import request, render_template, Blueprint
 from utils import db
-from utils.dbFunc import get_codeID
 
 set_bp = Blueprint('set_bp',__name__)
 
@@ -37,7 +36,7 @@ def identity():
             data = cursor.fetchone()
         
             if data!=None:
-                code_id = get_codeID(data[0])
+                code_id = db.get_codeID(data[0])
                 break
             else:
                 cursor.execute('INSERT INTO Member (MemID, MemName) VALUES (%s, %s)', (MemID, MemName))

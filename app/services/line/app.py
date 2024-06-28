@@ -1,15 +1,23 @@
 from flask import Blueprint, request, abort
-from ..mqtt.app import mqtt
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import *
-from utils import db
+from utils import db    
+from services import scheduler
 
-
-line_bot_api = LineBotApi(db.LINE_TOKEN_2)
-handler = WebhookHandler(db.LINE_HANDLER_2)
+line_bot_api = LineBotApi(db.LINE_TOKEN)
+handler = WebhookHandler(db.LINE_HANDLER)
 linebot_bp = Blueprint('linebot_bp', __name__)
 
+
+@linebot_bp.route("/joblist")
+def joblist():
+    return f"{scheduler.get_jobs()}"
+
+@linebot_bp.route("deletejob")
+def deletejob():
+    scheduler.remove_job("job123")
+    return "OK"
 
 @linebot_bp.route("/callback", methods=["POST"])
 def callback():

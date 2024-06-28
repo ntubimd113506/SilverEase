@@ -1,14 +1,10 @@
 from flask import request, render_template, Blueprint
-from flask_apscheduler import APScheduler
 from datetime import datetime
-from ..line.app import line_bot_api
 from linebot.models import *
 from utils import db
+from services import scheduler, line_bot_api
 
 med_bp = Blueprint('med_bp',__name__)
-
-scheduler = APScheduler()
-scheduler.start()
 
 #主頁
 @med_bp.route('/')

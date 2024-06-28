@@ -1,24 +1,23 @@
-from flask import Flask,request, render_template, Blueprint, session
-from flask_apscheduler import APScheduler
+from flask import request, render_template, Blueprint, session
 from datetime import datetime, timedelta
-from ..line.app import line_bot_api
 from linebot.models import *
 from utils import db
+from services import scheduler, line_bot_api
 
 event_bp = Blueprint("event_bp", __name__)
 
-scheduler = APScheduler()
-scheduler.start()
 
 # 主頁
 @event_bp.route("/")
 def event():
-    return render_template("schedule_index.html")
+    return f"{__name__}"
+
 
 # 新增表單
 @event_bp.route("/create/form")
 def event_create_form():
     return render_template("/event/event_create_form.html")
+
 
 # 新增
 @event_bp.route("/create", methods=["POST"])
@@ -56,7 +55,7 @@ def event_create():
 
         conn.commit()
         conn.close()
-    
+
         job_id = f'{memoID}'
         send_time = datetime.strptime(DateTime, "%Y-%m-%dT%H:%M")
         scheduler.add_job(
@@ -72,25 +71,38 @@ def event_create():
     except Exception as e:
         return render_template("/event/event_create_fail.html")
 
-@event_bp.route("/create/job")
-def create_job():
-    send_time = "2024-06-28T23:15:00"
+
+@event_bp.route("/create/job/<string:jobID>/<int:time>")
+def create_job(jobID,time):
+    send_time = datetime.now() + timedelta(minutes=time)
     scheduler.add_job(
-        id="job123",
+        id=jobID,
         func=send_line_message,
         trigger="date",
         run_date=send_time,
         args=["U1d38cccc9cc22a5538e2fd9cc71a32a5", "hi", "here"],
     )
+    return f"{scheduler.get_jobs()}"
+
+
+@event_bp.route("/modify/job/<int:time>")
+def modify_job(time):
+    send_time = datetime.now() + timedelta(minutes=time)
+    scheduler.modify_job("job123", trigger="date", run_date=send_time)
     return f"{scheduler.get_job('job123')}"
 
-# @scheduler.task(trigger="interval", id="job123", seconds=10)
-# def my_job123():
-#     print("藍圖的任務正在運行")
+
+@event_bp.route("/del/job")
+def del_job():
+    scheduler.remove_job('job123')
+    return "OK"
+    # return f"{scheduler.get_job('job123')}"
+
 
 @event_bp.route("/joblist")
 def job_list():
     return f"{scheduler.get_jobs()}"
+
 
 def send_line_message(MemID, Title, Location):
     try:
@@ -129,7 +141,7 @@ def send_line_message(MemID, Title, Location):
             (MemID,),
         )
         cursor.execute("SELECT MemID FROM Member WHERE MemID = %s", (MemID,))
-        sub_user_id = cursor.fetchone()[0]    
+        sub_user_id = cursor.fetchone()[0]
 
         conn.close()
 
@@ -160,6 +172,8 @@ def send_line_message(MemID, Title, Location):
         pass
 
 # 查詢
+
+
 @event_bp.route("/list")
 def event_list():
     data = []
@@ -183,7 +197,7 @@ def event_list():
         FamilyID = cursor.fetchall()
     else:
         return render_template("/event/event_login.html", liffid=db.LIFF_ID)
-    
+
     if FamilyID:
         for id in FamilyID:
             cursor.execute("""
@@ -201,6 +215,7 @@ def event_list():
         return render_template("/event/event_list.html", data=data, liff=db.LIFF_ID)
     else:
         return render_template("not_found.html")
+
 
 # 更改確認
 @event_bp.route("/update/confirm")
@@ -229,6 +244,7 @@ def event_update_confirm():
     else:
         return render_template("not_found.html")
 
+
 # 更改
 @event_bp.route("/update", methods=["POST"])
 def event_update():
@@ -247,28 +263,28 @@ def event_update():
             (Title, DateTime, EditorID, MemoID),
         )
         cursor.execute(
-            "UPDATE Event SET Location = %s WHERE MemoID = %s", (Location, MemoID)
+            "UPDATE Event SET Location = %s WHERE MemoID = %s", (
+                Location, MemoID)
         )
 
         conn.commit()
         conn.close()
 
-        if scheduler.get_job(MemoID)!=None:
-            scheduler.remove_job(MemoID)
-
         job_id = MemoID
         send_time = datetime.strptime(DateTime, "%Y-%m-%dT%H:%M")
-        scheduler.add_job(
-            id=job_id,
-            func=send_line_message,
-            trigger="date",
-            run_date=send_time,
-            args=[EditorID, Title, Location],
-        )
+
+        if scheduler.get_job(MemoID) != None:
+            scheduler.modify_job(
+                MemoID,
+                trigger="date",
+                run_date=send_time,
+                args=[EditorID, Title, Location],
+            )
 
         return render_template("event/event_update_success.html")
     except Exception as e:
         return render_template("event/event_update_fail.html")
+
 
 # 刪除確認
 @event_bp.route("/delete/confirm")
@@ -288,11 +304,12 @@ def event_delete_confirm():
     else:
         return render_template("not_found.html")
 
+
 # 刪除
 @event_bp.route("/delete", methods=["POST"])
 def event_delete():
     try:
-        MemoID = request.values.get("MemoID")
+        MemoID = request.form.get("MemoID")
 
         connection = db.get_connection()
         cursor = connection.cursor()
@@ -303,8 +320,7 @@ def event_delete():
         connection.commit()
         connection.close()
 
-        if scheduler.get_job(MemoID)!=None:
-            scheduler.remove_job(MemoID)
+        scheduler.remove_job(MemoID)
 
         return render_template("event/event_delete_success.html")
     except Exception as e:
