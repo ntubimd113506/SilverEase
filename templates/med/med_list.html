@@ -50,34 +50,11 @@
         <div class="content">
             <h1>用藥清單</h1>
 
-            <p>
-            <table>
-                <thead>
-                    <tr>
-                        <th>標題</th>
-                        <th>時間</th>
-                        <th>藥盒與藥袋外觀描述</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for d in data %}
-                    <tr>
-                        <td>{{d[2]}}</td>
-                        <td>{{d[3]}}</td>
-                        <td>{{d[7]}}</td>
-                        <td><a href="/med/update/confirm?MemoID={{d[0]}}">編輯</a></td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            </p>
-
             {% for d in data %}
             <div class="data-item">
                 <div class="title">標題：{{d[2]}}</div>
                 <div class="time">時間：{{d[3]}}</div>
                 <div class="description">藥盒與藥袋外觀描述：{{d[7]}}</div>
-                <div class="cycle">循環（多久提醒一次）：{{d[8]}}</div>
                 <div class="edit-link">
                     <i class="fa-solid fa-pen-to-square"></i>
                     <a href="/med/update/confirm?MemoID={{d[0]}}">編輯</a>

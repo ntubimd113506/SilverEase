@@ -46,7 +46,7 @@
             <h1>SilverEase</h1>
         </div>
 
-        <i id="menu-bar" class="fa-solid fa-house" style="color: #9fb889;"></i>
+        <i id="menu-bar" class="fa-solid fa-house" style="color: #809f68;"></i>
         
         <div class="navbar">
             <ul id="navigation" class="nav">
@@ -55,9 +55,11 @@
         </div>
 
         <div class="content">
-            <h1>新增回診資料</h1>
+            <div class="title-container">
+                <h1 class="content-header">新增回診資料</h1>
+            </div>
             
-            <div class="cardrow">
+            <div class="form-container">
             <form action="/hos/create" method="post" enctype="multipart/form-data">
                 <div class="form">
                     <div class="name">名稱</div>
@@ -68,7 +70,10 @@
 
                     <div class="name">日期</div>
                     <div class="value">
-                        <input type="datetime-local" name="DateTime" class="input-field" required>
+                        <div class="input-icon">
+                            <input type="datetime-local" name="DateTime" class="input-field" required>
+                            <i class="fa-solid fa-calendar-days" style="color: #809f68;"></i>                        
+                        </div>
                     </div>
                     <br />
 
