@@ -1,17 +1,19 @@
 <!doctype html>
 <html>
+
 <head>
-    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalabe=no">
-    <title>紀念日查詢</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <title>紀念日清單</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Satisfy&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link  rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
-    <link href="/static/css/create_form.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link href="/static/css/list.css" rel="stylesheet" />
 
 </head>
- 
+
 <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
 <script>
     var MemID;
@@ -39,42 +41,37 @@
     }
 </script>
 
-
 <body onload="initializeLiff('2004699458-OR9pkZjP')">
-    <div class="container">    
+    <div class="container">
+
         <div class="header">
-            <h1>SliverEase</h1>
+            <h1>SilverEase</h1>
         </div>
 
         <div class="content">
-            <h1>紀念日清單</h1>
+            <div class="header-container">
+                <h1 class="content-header">紀念日清單</h1>
+            </div>
 
-            <p>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>標題</th>
-                            <th>時間</th>
-                            <th>地點</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for d in data %}
-                            <tr>
-                                <td>{{d[2]}}</td>
-                                <td>{{d[3]}}</td>
-                                <td>{{d[7]}}</td>
-                                <td><a href="/event/update/confirm?MemoID={{d[0]}}">編輯</a></td>
-                            </tr>
-                        {% endfor %}                        
-                    </tbody>
-                </table>
-            </p>   
-                
-        </div>  
-        <input type="hidden" id="MemID" name="MemID">     
+            {% for d in data %}
+                <div class="data-item">
+                        <div class="title">標題：{{d[2]}}</div>
+                        <div class="time">時間：{{d[3]}}</div>
+                        <div class="repeat">多久重複：{{d[6]}}</div>
+                        <div class="alert">幾分鐘前提醒：{{d[7]}}</div>
+                        <div class="location">地點：{{d[9]}}</div>
+                        <div class="mainuser">長者：{{d[10]}}</div>
+                        <div class="editor">修改者：{{d[11]}}</div>
+                        <div class="edit-link">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                            <a href="/event/update/confirm?MemoID={{d[0]}}">編輯</a>
+                        </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <input type="hidden" id="MemID" name="MemID">
     </div>
-</body>
-   
+</body>    
+
 </html>

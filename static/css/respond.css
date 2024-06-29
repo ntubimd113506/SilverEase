@@ -3,40 +3,35 @@
 /* ------------------- */
 /* html, body          */
 /* ------------------- */
-html, body{
+html, body {
     font-family: 'Noto Sans TC', sans-serif;
     background-color: #f4f9f7;
-    padding: 0%;
-    margin: 0%;
+    padding: 0;
+    margin: 0;
 }
-
 
 /* ------------------- */
 /* container           */
 /* ------------------- */
-div.container{
-    height: 900px;
-    margin-left: auto;
-    margin-right: auto;
-    text-align: justify;
+.container{
+    height: 700px;
+    margin: 0 auto; 
     line-height: 26px;
     background-color: #F2F0EE;
 }
 
-
 /* ------------------- */
 /* header              */
 /* ------------------- */
-div.header{
+.header{
     display: flex;
-    /* 水平置中 */
     justify-content: center;  
     padding: 10px;
     height: 40px;
     background-color: #9FB889;
 }
 
-div.header h1{
+.header h1{
     font-size: 30px;
     width: 200px;
     padding: 5px;
@@ -54,7 +49,7 @@ div.header h1{
     font-size: 17px;
 }
 
-div.navbar{
+.navbar{
     height: 35px;
 }
 ul{
@@ -65,50 +60,38 @@ ul{
 }
 ul li{
     line-height: 40px;
-    float: left;  /* 字變水平*/
-    width:75px; /* 字之間的距離區塊*/
+    float: left; 
+    width:75px;
     text-align: center;
 }
 
-div.navbar a{
-    text-decoration: none; /* 連結底線拿掉*/
+.navbar a{
+    text-decoration: none; 
     color: #000000; 
 }
-
 
 /* ------------------- */
 /* content             */
 /* ------------------- */
-div.clear{
-    height: 50px;
-}
 
-div.content{
+.content {
+    display: flex;        
+    flex-direction: column;  
+    align-items: center;  
+    justify-content: center; 
+    width: 100%;            
     background-color: #F2F0EE;
-    padding: 0px 25px;
 }
 
-/* div.content h1{
-    font-size: 30px;
-    letter-spacing:8px;
-} */
-
+/* 調整圖片 */
+.content img {
+    width: 280px;
+    height: 280px;
+}
 
 .content h2 {
     text-align: center;
     font-size: 27px;
-    letter-spacing:5px;
+    letter-spacing: 5px;
     margin: 0%;
-    padding: 0px 0px 20px;
-}
-
-
-div.clear{
-    height: 80px;
-}
-
-/* 調整圖片的位置 */
-div.content img {
-    width: 340px;
-    height: 340px;
 }

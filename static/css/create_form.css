@@ -5,22 +5,24 @@
 /* ------------------- */
 html, body{
     font-family: 'Noto Sans TC', sans-serif;
-    background-color: #f4f9f7;
-    padding: 0%;
-    margin: 0%;
+    background-color: #f0f0f0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
 }
-
 
 /* ------------------- */
 /* container           */
 /* ------------------- */
 div.container{
-    height: 900px;
+    /* height: 1000px; */
     margin-left: auto;
     margin-right: auto;
     text-align: justify;
     line-height: 26px;
     background-color: #F2F0EE;
+    padding-bottom: 20px; 
 }
 
 
@@ -84,157 +86,187 @@ div.content{
     padding: 0px 23px;
 }
 
+.title-container {
+    width: 88%; 
+    margin: 0 auto;
+}
+
+/* 所有輸入欄位 */
+.form-container {
+    width: 88%;
+    margin: 0 auto;
+}
+
+.title-container .content-header {
+    color: #000000;
+    font-size: 30px;
+    letter-spacing: 5px;
+    width: 100%;
+    text-align: left;
+    margin-top: 30px; 
+    margin-bottom: 25px;
+}
+
 div.content h1{
     font-size: 30px;
     letter-spacing:8px;
 }
 
-
 input.input-field {
-    width: 320px;
+    width: 100%;
     height: 40px;
     border-radius: 6px;
-    font-size: 18px;
-    border-style:solid;
-    border-color: #A8A8A8;
+    font-size: 19px;
     color: #333;
+    padding-left: 4px;
+    padding-right: 40px; /* 增加右側填充以避免圖標重疊 */
+    box-sizing: border-box;
 }
-
 
 input[type="datetime-local"] {
-    background-color: white; 
-    color: #333; 
+    width: 100%;
+    height: 42px;
+    background-color: white;
+    color: #333;
+    padding-left: 4px; 
+    padding-right: 40px;
 }
+
+/* 輸入框月曆 */
+.input-icon {
+    position: relative;
+    width: 100%;
+}
+
+
+/* 輸入框月曆 */
+.fa-calendar-days {
+    position: absolute;
+    right: 10px;
+    top: 50%; 
+    transform: translateY(-50%); 
+    color: #809f68;
+    font-size: 19px;
+    pointer-events: none; 
+}
+
+
+select {
+    width: 100%;
+    height: 40px;
+    border-radius: 6px;
+    font-size: 19px;
+    background-color: white;
+    color: #333;
+    box-sizing: border-box;
+    padding-left: 3px;
+    margin-bottom: 24px; 
+}
+
+select, input.input-field {
+    border-width: 1px; 
+    border-style: solid;
+    background-color: white;
+}
+
 
 /* 輸入框間距 */
 .value {
-    margin-bottom: -10px; 
+    margin-bottom: 24px; 
 }
 
 .name {
     font-size: 18px;
     margin-bottom: 5px; 
-}
-
-/* 時間日期小圖 */
-  .ui-input.ui-date-input input[type="date"]::-webkit-calendar-picker-indicator {
-    background-size: 18px 18px;
-    background-position: right center;
-}
-  
+    
+}  
 
 /* 送出按鈕設定 */
 .btn{
     position: relative;
-    top: 300px;
+    top: 20px;
     align-items: center;
-    margin-left: 10px;
-}
-
-input[type="submit" i]{
-    position: relative;
-    top: 200px;
-    align-items: center;
-    margin-left: 10px;
-}
-
-.delete-btn{
-    position: relative;
-    top: 300px;
-    align-items: center;
-    margin-left: 10px;
-}
-
-.btn{
-    background-color: #9FB889;
-    width: 340px;
+    background-color: #809f68;
+    width: 100%; 
     height: 40px;
     border-style:none;
     border-radius: 50px;
-    color: #000000;
-    font-size: 20px;
+    color: #ffffff;
+    font-size: 19px;
     font-weight: bolder;
-    letter-spacing:5px;
+    letter-spacing: 5px;
     margin: 0%;
+    margin-bottom: 30px;
+    /* 動畫 */
+    cursor: pointer;    
+    transition: background-color 0.3s;
 }
 
-/* delete_confirm的刪除 */
+.btn:hover,
+.btn:active {
+    background-color: #9fb889;
+}
+
+/* delete_confirm的更改 */
 input[type="submit" i]{
-    background-color: #9FB889;
-    width: 340px;
+    position: relative;
+    top: -20px;
+    align-items: center;
+    background-color: #809f68;
+    width: 100%;
     height: 40px;
     border-style:none;
     border-radius: 50px;
-    color: #000000;
-    font-size: 20px;
+    color: #ffffff;
+    font-size: 19px;
     font-weight: bolder;
     letter-spacing:5px;
+    /* 動畫 */
     margin: 0%;
+    cursor: pointer;    
+    transition: background-color 0.3s;
 }
+
+input[type="submit" i]:hover,
+input[type="submit" i]:active {
+    background-color: #9fb889;
+}
+
 
 /* update_confirm的刪除 */
 .delete-btn{
+    position: relative;
+    top: 90px;
+    align-items: center;
     background-color: #F2F0EE;
     color: #000000;
     text-decoration: none;
-    font-size: 20px;
-    padding: 3px 138px;
-    border: 5px solid #9FB889;
+    font-size: 19px;
+    padding: 3px 130px; 
+    border: 5px solid #809f68;
     font-weight: 600;
     border-radius: 50px;
     letter-spacing:5px;
     margin: 0%;
+    margin-bottom: 30px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.delete-btn:hover,
+.delete-btn:active {
+    border: 5px solid #9fb889;
+    color: #3a3a3a;
 }
 
 
-/*---------------------*/
-/* 修飾表格             */
-/*---------------------*/
-table{
-    width:320px;
-    border: 2px solid #9FB889;
-    border-collapse: collapse;   
-    margin-top: 50px;
+@media (max-width: 320px) {
+    .delete-btn{
+        padding: 3px 30px;
+    }
+
+    input[type="submit" i]{
+        top: -20px;
+    }
+
 }
-
-table tr td{
-    border: 2px dotted #9FB889;    
-    text-align: center;
-}
-
-/* 修飾標題列 */
-table thead tr{
-    /* background-color: #9FB889; */
-    border: 2px dotted #9FB889;    
-    height: 32px;
-}
-
-table thead th{
-    border: 2px solid #9FB889; 
-    background: #adc29b; 
-    text-align: center;
-}
-
-/* 修飾資料列 */
-table tbody tr{
-    height: 40px;
-}
-
-table tbody tr:nth-child(even){
-    background: #b4c1a9;
-}
-
-/* 修飾超連結 */
-table tbody tr td a{
-    background-color: #9FB889;
-    color: #000000;
-    text-decoration: none;
-    font-size:small;
-    padding: 2px 3px;
-    font-weight: 500;
-    border-radius: 50px;
-    letter-spacing:5px;
-    
-}
-
-
