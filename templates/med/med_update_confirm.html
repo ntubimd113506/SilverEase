@@ -88,21 +88,18 @@
                     <div class="value">
                         <input type="text" name="Title" value="{{data[2]}}" class="input-field" required>
                     </div>
-                    <br />
 
                     <div class="value">
                         <div class="input-icon">
                             <input type="datetime-local" name="DateTime" value="{{data[3]}}" class="input-field" required>
-                            <i class="fa-solid fa-calendar-days" style="color: #809f68;"></i>                        
+                            <i class="fa-solid fa-calendar-days calendar-icon"></i> 
                         </div>
                     </div>
-                    <br />
 
                     <div class="name">藥盒與藥袋外觀描述</div>
                     <div class="value">
                         <input type="text" name="MedFeature" value="{{data[7]}}" class="input-field">
                     </div>
-                    <br />
 
                     <div class="name">多久重複</div>
                     <select name="Cycle" value="{{data[6]}}">
@@ -113,7 +110,6 @@
                         <option value="一個月">一個月</option>
                         <option value="一年">一年</option>
                     </select>
-                    <br />
                     
                     <div class="name">幾分鐘前提醒</div>
                     <select name="Alert" value="{{data[7]}}">

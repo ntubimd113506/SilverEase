@@ -22,6 +22,7 @@ div.container{
     text-align: justify;
     line-height: 26px;
     background-color: #F2F0EE;
+    padding-bottom: 20px; 
 }
 
 
@@ -119,6 +120,7 @@ input.input-field {
     border-style:solid;
     border-color: #A8A8A8;
     color: #333;
+    padding-left: 4px; 
     box-sizing: border-box; 
 }
 
@@ -147,7 +149,7 @@ input[type="datetime-local"] {
     pointer-events: none; 
 }
 
-/* 圖標設置在輸入框內 */
+/* 月曆在輸入框內 */
 .calendar-icon {
     position: absolute;
     right: 10px;
@@ -159,9 +161,21 @@ input[type="datetime-local"] {
 }
 
 
+select {
+    width: 100%;
+    height: 40px;
+    border-radius: 6px;
+    font-size: 19px;
+    border: solid #A8A8A8;
+    color: #333;
+    box-sizing: border-box;
+    padding-left: 4px;
+    margin-bottom: 24px; 
+}
+
 /* 輸入框間距 */
 .value {
-    margin-bottom: -2px; 
+    margin-bottom: 24px; 
 }
 
 .name {
@@ -185,6 +199,7 @@ input[type="datetime-local"] {
     font-weight: bolder;
     letter-spacing: 5px;
     margin: 0%;
+    margin-bottom: 20px;
     /* 動畫 */
     cursor: pointer;    
     transition: background-color 0.3s;
@@ -224,14 +239,14 @@ input[type="submit" i]:active {
 /* update_confirm的刪除 */
 .delete-btn{
     position: relative;
-    top: 80px;
+    top: 90px;
     align-items: center;
     /* width: 100%; */
     background-color: #F2F0EE;
     color: #000000;
     text-decoration: none;
     font-size: 19px;
-    padding: 3px 149px; /* 更改此行 */
+    padding: 3px 147px; /* 更改此行 */
     border: 5px solid #809f68;
     font-weight: 600;
     border-radius: 50px;
