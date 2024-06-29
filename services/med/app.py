@@ -1,24 +1,15 @@
 from flask import Flask, request, render_template, Blueprint, redirect, url_for
-from flask_apscheduler import APScheduler
+from services import scheduler
 from datetime import datetime, timedelta
 from linebot import LineBotApi, WebhookHandler
 from linebot.models import TemplateSendMessage, ButtonsTemplate, MessageAction
 from utils import db
 
-# from ..schedule.app import scheduler
 
 med_bp = Blueprint("med_bp", __name__)
 
 line_bot_api = LineBotApi(db.LINE_TOKEN)
 handler = WebhookHandler(db.LINE_HANDLER)
-
-app = Flask(__name__)
-
-scheduler = APScheduler()
-scheduler.init_app(app)
-scheduler.start()
-
-app = Flask(__name__)
 
 
 # 主頁
@@ -213,9 +204,9 @@ def med_list():
             FROM `113-ntub113506`.Member m 
             LEFT JOIN `113-ntub113506`.Family as f ON m.MemID = f.MainUserID 
             LEFT JOIN `113-ntub113506`.FamilyLink as l ON m.MemID = l.SubUserID
-            where MemID = %s
+            WHERE MemID = %s
             """,
-            (MemID),
+            (MemID,),
         )
         FamilyID = cursor.fetchall()
     else:
@@ -233,9 +224,9 @@ def med_list():
                 LEFT JOIN `113-ntub113506`.Family f ON f.FamilyID = m.FamilyID
                 LEFT JOIN `113-ntub113506`.Member mu ON mu.MemID = f.MainUserID
                 LEFT JOIN `113-ntub113506`.Member eu ON eu.MemID = m.EditorID
-                WHERE m.FamilyID = %s
+                WHERE m.FamilyID = %s AND `DateTime` > NOW()
                 """,
-                (id[0]),
+                (id[0],),
             )
             data += cursor.fetchall()
 
@@ -245,7 +236,56 @@ def med_list():
         return render_template("/med/med_list.html", data=data, liff=db.LIFF_ID)
     else:
         return render_template("not_found.html")
+    
+# 歷史查詢
+@med_bp.route("/history")
+def med_history():
+    data = []
 
+    MemID = request.values.get("MemID")
+
+    conn = db.get_connection()
+    cursor = conn.cursor()
+
+    if MemID:
+        cursor.execute(
+            """
+            SELECT COALESCE(f.FamilyID, l.FamilyID) AS A_FamilyID
+            FROM `113-ntub113506`.Member m 
+            LEFT JOIN `113-ntub113506`.Family as f ON m.MemID = f.MainUserID 
+            LEFT JOIN `113-ntub113506`.FamilyLink as l ON m.MemID = l.SubUserID
+            WHERE MemID = %s
+            """,
+            (MemID,),
+        )
+        FamilyID = cursor.fetchall()
+    else:
+        return render_template("/med/med_login.html", liffid=db.LIFF_ID)
+
+    if FamilyID:
+        for id in FamilyID:
+            cursor.execute(
+                """
+                SELECT m.*, e.*, 
+                mu.MemName AS MainUserName, 
+                eu.MemName AS EditorUserName
+                FROM `113-ntub113506`.Memo m
+                JOIN `113-ntub113506`.Med e ON e.MemoID = m.MemoID
+                LEFT JOIN `113-ntub113506`.Family f ON f.FamilyID = m.FamilyID
+                LEFT JOIN `113-ntub113506`.Member mu ON mu.MemID = f.MainUserID
+                LEFT JOIN `113-ntub113506`.Member eu ON eu.MemID = m.EditorID
+                WHERE m.FamilyID = %s AND `DateTime` <= NOW()
+                """,
+                (id[0],),
+            )
+            data += cursor.fetchall()
+
+    conn.close()
+
+    if data:
+        return render_template("/med/med_history.html", data=data, liff=db.LIFF_ID)
+    else:
+        return render_template("not_found.html")
 
 # 更改確認
 @med_bp.route("/update/confirm")
@@ -410,7 +450,3 @@ def med_delete():
         return render_template("med/med_delete_success.html")
     except:
         return render_template("med/med_delete_fail.html")
-
-
-if __name__ == "__main__":
-    app.run(debug=True)

@@ -62,6 +62,13 @@
             <div class="form-container">
             <form action="/hos/create" method="post" enctype="multipart/form-data">
                 <div class="form">
+                    <select name="MainUserID" id="MainUserID">
+                        {% for user in main_users %}
+                        <option value="{{ user[0] }}">{{ user[1] }}</option>
+                        {% endfor %}
+                    </select>
+                    <br>
+
                     <div class="name">名稱</div>
                     <div class="value">
                         <input type="text" name="Title" class="input-field" required>
