@@ -1,21 +1,13 @@
-from flask import Flask, request, render_template, Blueprint, redirect, url_for
-from services import scheduler
 from datetime import datetime, timedelta
-from linebot import LineBotApi, WebhookHandler
-from linebot.models import TemplateSendMessage, ButtonsTemplate, MessageAction
-from utils import db
-from flask import request, render_template, Blueprint,session
+from flask import Flask, request, render_template, Blueprint, redirect, url_for,session
 from flask_login import login_required
-from datetime import datetime
-from linebot.models import *
-from utils import db
 from services import scheduler, line_bot_api
+from utils import db
+from linebot.models import *
+
 
 
 med_bp = Blueprint("med_bp", __name__)
-
-line_bot_api = LineBotApi(db.LINE_TOKEN)
-handler = WebhookHandler(db.LINE_HANDLER)
 
 
 # 主頁
@@ -195,6 +187,7 @@ def send_line_message(MemID, Title, MedFeature):
 
 # 查詢
 @med_bp.route("/list")
+@login_required
 def med_list():
     data = []
 
@@ -245,10 +238,11 @@ def med_list():
     
 # 歷史查詢
 @med_bp.route("/history")
+@login_required
 def med_history():
     data = []
 
-    MemID = request.values.get("MemID")
+    MemID = session.get("MemID")
 
     conn = db.get_connection()
     cursor = conn.cursor()
