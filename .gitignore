@@ -2,6 +2,7 @@ wfastcgi.py
 web.config
 lineToken.py
 db.py
+scheduler.db
 # __init__.py
 
 static/uploads/

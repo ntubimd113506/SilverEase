@@ -14,5 +14,5 @@ class Config:
     MQTT_TLS_VERSION = 5
     MQTT_CLIENT_ID = 'flask_mqtt'
     SCHEDULER_API_ENABLED = True
-    SCHEDULER_JOBSTORES  = {'default':SQLAlchemyJobStore(url=f'sqlite:///{os.path.join(os.path.dirname(os.path.abspath(__file__)),"services","scheduler","jobstore","scheduer.db")}')}
+    SCHEDULER_JOBSTORES  = {'default':SQLAlchemyJobStore(url=f'sqlite:///{os.path.join(os.path.dirname(os.path.abspath(__file__)),"services","scheduler","jobstore","scheduler.db")}')}
     SECRET_KEY = db.SECRET_KEY
