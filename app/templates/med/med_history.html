@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
-    <title>用藥清單</title>
+    <title>用藥歷史清單</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Satisfy&display=swap" rel="stylesheet">
@@ -50,10 +50,8 @@
 
         <div class="content">
             <div class="header-container">
-                <h1 class="content-header">用藥清單</h1>
-                <a href="/med/history">紀錄</a>
-                <!-- <a href="{{ url_for('med_bp.med_history') }}">紀錄</a> -->
-
+                <h1 class="content-header">用藥歷史清單</h1>
+                <!-- <a href="/med/history/">紀錄</a> -->
             </div>
 
             {% for d in data %}

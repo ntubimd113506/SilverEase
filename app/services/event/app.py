@@ -1,4 +1,5 @@
 from flask import request, render_template, Blueprint, session
+from flask_login import login_required
 from datetime import datetime, timedelta
 from linebot.models import *
 from utils import db
@@ -9,6 +10,7 @@ event_bp = Blueprint("event_bp", __name__)
 
 # 主頁
 @event_bp.route("/")
+@login_required
 def event():
     return render_template("schedule_index.html")
 
@@ -177,6 +179,7 @@ def send_line_message(MemID, Title, Location):
 
 
 @event_bp.route("/list")
+@login_required
 def event_list():
     data = []
 

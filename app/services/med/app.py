@@ -1,4 +1,5 @@
-from flask import request, render_template, Blueprint
+from flask import request, render_template, Blueprint,session
+from flask_login import login_required
 from datetime import datetime
 from linebot.models import *
 from utils import db
@@ -10,6 +11,55 @@ med_bp = Blueprint('med_bp',__name__)
 @med_bp.route('/')
 def med():
     return render_template('schedule_index.html')
+
+# 歷史查詢
+@med_bp.route("/history")
+@login_required
+def med_history():
+    data = []
+
+    MemID = session.get("MemID")
+
+    conn = db.get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        SELECT COALESCE(f.FamilyID, l.FamilyID) AS A_FamilyID
+        FROM `113-ntub113506`.Member m 
+        LEFT JOIN `113-ntub113506`.Family as f ON m.MemID = f.MainUserID 
+        LEFT JOIN `113-ntub113506`.FamilyLink as l ON m.MemID = l.SubUserID
+        WHERE MemID = %s
+        """,
+        (MemID,),
+    )
+    FamilyID = cursor.fetchall()
+
+    if FamilyID:
+        for id in FamilyID:
+            cursor.execute(
+                """
+                SELECT m.*, e.*, 
+                mu.MemName AS MainUserName, 
+                eu.MemName AS EditorUserName
+                FROM `113-ntub113506`.Memo m
+                JOIN `113-ntub113506`.Med e ON e.MemoID = m.MemoID
+                LEFT JOIN `113-ntub113506`.Family f ON f.FamilyID = m.FamilyID
+                LEFT JOIN `113-ntub113506`.Member mu ON mu.MemID = f.MainUserID
+                LEFT JOIN `113-ntub113506`.Member eu ON eu.MemID = m.EditorID
+                WHERE m.FamilyID = %s AND `DateTime` <= NOW()
+                """,
+                (id[0],),
+            )
+            data += cursor.fetchall()
+
+    conn.close()
+
+
+    if data:
+        return render_template("/med/med_history.html", data=data, liff=db.LIFF_ID)
+    else:
+        return render_template("not_found.html")
 
 #新增表單
 @med_bp.route('/create/form')
@@ -129,10 +179,11 @@ def send_line_message(MemID, Title, MedFeature, Cycle):
 
 #查詢
 @med_bp.route('/list')
+@login_required
 def med_list():    
     data=[]
 
-    MemID =  request.values.get('MemID')
+    MemID = session.get("MemID")
 
     conn = db.get_connection()
     cursor = conn.cursor()   

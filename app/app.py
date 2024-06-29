@@ -21,16 +21,8 @@ login_manager.init_app(app)
 
 
 @app.route("/")
-@login_required
 def index():
     return render_template("index.html", intro="Here is SilverEase", liffid=db.LIFF_ID)
-
-
-@app.route("/login", methods=["POST"])
-def login():
-    session["login"] = True
-    session["MemID"] = request.get_json()["MemID"]
-    return jsonify({"msg": "ok"})
 
 
 if __name__ == "__main__":

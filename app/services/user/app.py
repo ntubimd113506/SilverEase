@@ -1,6 +1,6 @@
 # 匯入模組
 import requests
-from flask import Blueprint, render_template, request, session
+from flask import Blueprint, render_template, request, session, jsonify,url_for
 from flask_login import LoginManager, UserMixin, login_user, logout_user 
 from flask import Blueprint
 
@@ -71,9 +71,9 @@ def user_login():
             login_user(user)
             session['MemID'] = user_id
             session['MemName'] = user_name
-            return f'{session}'
+            return jsonify({"msg": "ok"})
         else:
-            return render_template('/set/identity.html', liffid = db.LIFF_ID)
+            return url_for("https://liff.line.me/2004699458-a7DORnXp/set/identity")
     
 #---------------------------
 # 登出
