@@ -6,10 +6,10 @@
 html, body{
     font-family: 'Noto Sans TC', sans-serif;
     background-color: #f0f0f0;
-    margin: 0;
-    padding: 0;
     width: 100%;
     height: 100%;
+    margin: 0;
+    padding: 0;
 }
 
 /* ------------------- */
@@ -117,11 +117,10 @@ input.input-field {
     height: 40px;
     border-radius: 6px;
     font-size: 19px;
-    border-style:solid;
-    border-color: #A8A8A8;
     color: #333;
-    padding-left: 4px; 
-    box-sizing: border-box; 
+    padding-left: 4px;
+    padding-right: 40px; /* 增加右側填充以避免圖標重疊 */
+    box-sizing: border-box;
 }
 
 input[type="datetime-local"] {
@@ -136,25 +135,16 @@ input[type="datetime-local"] {
 /* 輸入框月曆 */
 .input-icon {
     position: relative;
+    width: 100%;
 }
+
 
 /* 輸入框月曆 */
-.input-icon .fa-calendar-days {
+.fa-calendar-days {
     position: absolute;
     right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #809f68;
-    font-size: 19px;
-    pointer-events: none; 
-}
-
-/* 月曆在輸入框內 */
-.calendar-icon {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
+    top: 50%; 
+    transform: translateY(-50%); 
     color: #809f68;
     font-size: 19px;
     pointer-events: none; 
@@ -166,12 +156,19 @@ select {
     height: 40px;
     border-radius: 6px;
     font-size: 19px;
-    border: solid #A8A8A8;
+    background-color: white;
     color: #333;
     box-sizing: border-box;
-    padding-left: 4px;
+    padding-left: 3px;
     margin-bottom: 24px; 
 }
+
+select, input.input-field {
+    border-width: 1px; 
+    border-style: solid;
+    background-color: white;
+}
+
 
 /* 輸入框間距 */
 .value {
@@ -199,7 +196,7 @@ select {
     font-weight: bolder;
     letter-spacing: 5px;
     margin: 0%;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     /* 動畫 */
     cursor: pointer;    
     transition: background-color 0.3s;
@@ -241,18 +238,17 @@ input[type="submit" i]:active {
     position: relative;
     top: 90px;
     align-items: center;
-    /* width: 100%; */
     background-color: #F2F0EE;
     color: #000000;
     text-decoration: none;
     font-size: 19px;
-    padding: 3px 147px; /* 更改此行 */
+    padding: 3px 130px; 
     border: 5px solid #809f68;
     font-weight: 600;
     border-radius: 50px;
     letter-spacing:5px;
     margin: 0%;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     cursor: pointer;
     transition: background-color 0.3s;
 }
