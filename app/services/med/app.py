@@ -191,7 +191,7 @@ def send_line_message(MemID, Title, MedFeature):
 def med_list():
     data = []
 
-    MemID = request.values.get("MemID")
+    MemID = session.get("MemID")
 
     conn = db.get_connection()
     cursor = conn.cursor()
