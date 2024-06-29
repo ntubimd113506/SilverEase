@@ -1,0 +1,137 @@
+@charset "utf-8";
+
+/* ------------------- */
+/* html, body          */
+/* ------------------- */
+html,
+body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background-color: #F2F0EE;
+    padding: 0%;
+    margin: 0%;
+}
+
+
+/* ------------------- */
+/* container           */
+/* ------------------- */
+div.container {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: justify;
+    line-height: 26px;
+    background-color: #F2F0EE;
+}
+
+/* ------------------- */
+/* header              */
+/* ------------------- */
+div.header {
+    display: flex;
+    /* 水平置中 */
+    justify-content: center;
+    padding: 10px;
+    height: 40px;
+    background-color: #9FB889;
+}
+
+div.header h1 {
+    font-size: 30px;
+    width: 200px;
+    padding: 5px;
+    text-align: center;
+    letter-spacing: 3px;
+    margin: 0%;
+}
+
+/* ------------------- */
+/* content             */
+/* ------------------- */
+div.content {
+    background-color: #F2F0EE;
+    padding: 0px 23px;
+}
+
+div.cardrow {
+    display: flex;
+    /* 水平置中 */
+    justify-content: center;
+    margin: auto;
+}
+
+div.row{
+    margin: 30px;
+}
+
+div.content h1 {
+    font-size: 45px;
+    text-align: center;
+    letter-spacing: 5px;
+    margin: 0%;
+}
+
+img.p {
+    width: 340px;
+    height: 340px;
+}
+
+div.card h4 {
+    color: #000000;
+    font-size: 22px;
+    letter-spacing: 7px;
+    padding: 3px 0px 15px 6px;
+    text-align: center;
+    margin: 0%;
+}
+
+/**
+    * 我修很多東西
+    */
+
+
+div button {
+    background-color: #ffffff;
+    float: left;
+    width: 140px;
+    height: 40px;
+    box-sizing: border-box;
+    border-radius: 50px;
+    border-style: solid;
+    border-width: 3px;
+    border-color: #9FB889;
+    color: #000000;
+    font-size: 22px;
+    font-weight: bolder;
+    letter-spacing: 7px;
+    padding: 3px 0px 15px 6px;
+    text-align: center;
+    margin: 0px 0px 30px;
+}
+
+div button.onclick {
+    background-color: #9FB889;
+    color: #ffffff;
+}
+
+div button:first-child {
+    margin-right: 60px;
+}
+
+#myButton {
+    background-color: #9FB889;
+    width: 340px;
+    height: 40px;
+    border-style: none;
+    border-radius: 50px;
+    color: #000000;
+    font-weight: bold;
+    font-size: 20px;
+    letter-spacing: 5px;
+}
+
+button h4 {
+    color: #000000;
+    font-size: 22px;
+    letter-spacing: 5px;
+    margin: 0%;
+}

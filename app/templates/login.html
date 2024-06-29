@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head></head>
+
+<body></body>
+
+<script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+<script>
+    liff.init({ liffId: '{{liffid}}' }, () => {
+        if (!liff.isLoggedIn()) {
+            alert("用戶未登入");
+            liff.login();
+        }
+        const accessToken = liff.getAccessToken()
+        fetch('/user/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                access_token: accessToken
+            })
+        }).then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            console.log(response);
+            return response.json();
+        }).then(data => {
+            console.log(data);
+            liff.openWindow({
+                url: liff.permanentLink.createUrl()
+            });
+        });
+    });
+</script>
+
+</html>

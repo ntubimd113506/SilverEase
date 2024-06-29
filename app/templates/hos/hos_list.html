@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <title>回診資料清單</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Satisfy&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link href="/static/css/list.css" rel="stylesheet" />
+</head>
+
+<script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+<script>
+    var MemID;
+    function initializeLiff(myLiffId) {
+        liff.init({
+            liffId: myLiffId
+        }).then(() => {
+            if (!liff.isLoggedIn()) {
+                alert("用戶未登入");
+                liff.login();
+            } else {
+                liff.getProfile()
+                    .then(profile => {
+                        var MemID = profile.userId;
+                        document.getElementById("MemID").value = MemID;
+                    })
+                    .catch((err) => {
+                        console.log('error', err);
+                    });
+            }
+
+        }).catch((err) => {
+            console.log('初始化失敗', err);
+        });
+    }
+</script>
+
+<body onload="initializeLiff('2004699458-OR9pkZjP')">
+    <div class="container">
+        
+        <div class="header">
+            <h1>SilverEase</h1>
+        </div>
+
+        <div class="content">
+            <div class="header-container">
+                <h1 class="content-header">回診資料清單</h1>
+                </div>
+
+            {% for d in data %}
+            <div class="data-item">
+                <div class="title">標題：{{d[2]}}</div>
+                <div class="time">時間：{{d[3]}}</div>
+                <div class="repeat">多久重複：{{d[6]}}</div>
+                <div class="alert">幾分鐘前提醒：{{d[7]}}</div>
+                <div class="hospital-location">醫院地點：{{d[9]}}</div>
+                <div class="doctor">看診醫生：{{d[10]}}</div>
+                <div class="outpatient">門診：{{d[11]}}</div>
+                <div class="outpatient">號碼：{{d[12]}}</div>
+                <div class="mainuser">長者：{{d[13]}}</div>
+                <div class="editor">修改者：{{d[14]}}</div>
+                <div class="edit-link">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    <a href="/hos/update/confirm?MemoID={{d[0]}}">編輯</a>
+                </div>
+            </div>
+        {% endfor %}
+
+        </div>
+
+        <input type="hidden" id="MemID" name="MemID">
+
+    </div>
+</body>
+
+</html>
