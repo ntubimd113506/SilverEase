@@ -216,13 +216,19 @@ def event_list():
     
     if FamilyID:
         for id in FamilyID:
-            cursor.execute("""
-            SELECT * FROM 
-            (SELECT * FROM `113-ntub113506`.Memo WHERE FamilyID = %s) m 
-            JOIN 
-            (SELECT * FROM `113-ntub113506`.Event) e 
-            ON e.MemoID = m.MemoID
-            """, (id[0],))
+            cursor.execute(
+            """
+            SELECT m.*, e.*, 
+            mu.MemName AS MainUserName, 
+            eu.MemName AS EditorUserName
+            FROM `113-ntub113506`.Memo m
+            JOIN `113-ntub113506`.Event e ON e.MemoID = m.MemoID
+            LEFT JOIN `113-ntub113506`.Family f ON f.FamilyID = m.FamilyID
+            LEFT JOIN `113-ntub113506`.Member mu ON mu.MemID = f.MainUserID
+            LEFT JOIN `113-ntub113506`.Member eu ON eu.MemID = m.EditorID
+            WHERE m.FamilyID = %s
+            """,
+            (id[0],))
             data += cursor.fetchall()
 
     conn.close()

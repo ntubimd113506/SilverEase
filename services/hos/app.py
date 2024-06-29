@@ -209,13 +209,19 @@ def hos_list():
     
     if(FamilyID):
         for id in FamilyID:
-            cursor.execute("""
-                        SELECT * FROM 
-                        (select * from`113-ntub113506`.Memo Where FamilyID = %s) m 
-                        join 
-                        (select * from `113-ntub113506`.`Hos`) e 
-                        on e.MemoID=m.MemoID
-                        """, (id[0]))
+            cursor.execute(
+                """
+                SELECT m.*, e.*, 
+                mu.MemName AS MainUserName, 
+                eu.MemName AS EditorUserName
+                FROM `113-ntub113506`.Memo m
+                JOIN `113-ntub113506`.Hos e ON e.MemoID = m.MemoID
+                LEFT JOIN `113-ntub113506`.Family f ON f.FamilyID = m.FamilyID
+                LEFT JOIN `113-ntub113506`.Member mu ON mu.MemID = f.MainUserID
+                LEFT JOIN `113-ntub113506`.Member eu ON eu.MemID = m.EditorID
+                WHERE m.FamilyID = %s
+                """,
+                (id[0]))
             data += cursor.fetchall()
 
     conn.close()  
