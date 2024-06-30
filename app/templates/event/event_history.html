@@ -3,7 +3,8 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
     <title>紀念日紀錄</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -54,25 +55,57 @@
                 <a href="/event/">新增排程</a>
             </div>
 
+            <form method="GET" action="/event/history">
+                <label for="year">選擇年份:</label>
+                <select id="year" name="year">
+                    <option value="all">全部</option>
+                    <option value="2024">2024</option>
+                    <option value="2025">2025</option>
+                    <option value="2026">2026</option>
+                    <option value="2027">2027</option>
+                    <option value="2028">2028</option>
+                </select>
+
+                <label for="month">選擇月份:</label>
+                <select id="month" name="month">
+                    <option value="all">全部</option>
+                    <option value="01">1月</option>
+                    <option value="02">2月</option>
+                    <option value="03">3月</option>
+                    <option value="04">4月</option>
+                    <option value="05">5月</option>
+                    <option value="06">6月</option>
+                    <option value="07">7月</option>
+                    <option value="08">8月</option>
+                    <option value="09">9月</option>
+                    <option value="10">10月</option>
+                    <option value="11">11月</option>
+                    <option value="12">12月</option>
+                </select>
+                <br />
+
+                <button type="submit">查詢</button>
+            </form>
+
             {% for d in data %}
-                <div class="data-item">
-                        <div class="title">標題：{{d[2]}}</div>
-                        <div class="time">時間：{{d[3]}}</div>
-                        <div class="repeat">多久重複：{{d[6]}}</div>
-                        <div class="alert">幾分鐘前提醒：{{d[7]}}</div>
-                        <div class="location">地點：{{d[9]}}</div>
-                        <div class="mainuser">長者：{{d[10]}}</div>
-                        <div class="editor">修改者：{{d[11]}}</div>
-                        <div class="edit-link">
-                            <i class="fa-solid fa-pen-to-square"></i>
-                            <a href="/event/update/confirm?MemoID={{d[0]}}">編輯</a>
-                        </div>
+            <div class="data-item">
+                <div class="title">標題：{{d[2]}}</div>
+                <div class="time">時間：{{d[3]}}</div>
+                <div class="repeat">多久重複：{{d[6]}}</div>
+                <div class="alert">幾分鐘前提醒：{{d[7]}}</div>
+                <div class="location">地點：{{d[9]}}</div>
+                <div class="mainuser">長者：{{d[10]}}</div>
+                <div class="editor">修改者：{{d[11]}}</div>
+                <div class="edit-link">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    <a href="/event/update/confirm?MemoID={{d[0]}}">編輯</a>
                 </div>
+            </div>
             {% endfor %}
         </div>
 
         <input type="hidden" id="MemID" name="MemID">
     </div>
-</body>    
+</body>
 
 </html>

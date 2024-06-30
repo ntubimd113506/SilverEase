@@ -11,7 +11,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
     <link href="/static/css/list.css" rel="stylesheet" />
-
 </head>
 
 <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
@@ -27,14 +26,13 @@
             } else {
                 liff.getProfile()
                     .then(profile => {
-                        var MemID = profile.userId;
+                        MemID = profile.userId;
                         document.getElementById("MemID").value = MemID;
                     })
                     .catch((err) => {
                         console.log('error', err);
                     });
             }
-
         }).catch((err) => {
             console.log('初始化失敗', err);
         });
@@ -43,7 +41,6 @@
 
 <body onload="initializeLiff('2004699458-OR9pkZjP')">
     <div class="container">
-
         <div class="header">
             <h1>SilverEase</h1>
         </div>
@@ -53,20 +50,51 @@
                 <h1 class="content-header">紀念日清單</h1>
                 <a href="/event/history">紀錄</a>
             </div>
+            <form method="GET" action="/event/list">
+                <label for="year">選擇年份:</label>
+                <select id="year" name="year">
+                    <option value="">選擇年份</option>
+                    <option value="2024">2024</option>
+                    <option value="2025">2025</option>
+                    <option value="2026">2026</option>
+                    <option value="2027">2027</option>
+                    <option value="2028">2028</option>
+                </select>
+
+                <label for="month">選擇月份:</label>
+                <select id="month" name="month">
+                    <option value="">選擇月份</option>
+                    <option value="01">1月</option>
+                    <option value="02">2月</option>
+                    <option value="03">3月</option>
+                    <option value="04">4月</option>
+                    <option value="05">5月</option>
+                    <option value="06">6月</option>
+                    <option value="07">7月</option>
+                    <option value="08">8月</option>
+                    <option value="09">9月</option>
+                    <option value="10">10月</option>
+                    <option value="11">11月</option>
+                    <option value="12">12月</option>
+                </select>
+                <br />
+
+                <button type="submit">查詢</button>
+            </form>
 
             {% for d in data %}
                 <div class="data-item">
-                        <div class="title">標題：{{d[2]}}</div>
-                        <div class="time">時間：{{d[3]}}</div>
-                        <div class="repeat">多久重複：{{d[6]}}</div>
-                        <div class="alert">幾分鐘前提醒：{{d[7]}}</div>
-                        <div class="location">地點：{{d[9]}}</div>
-                        <div class="mainuser">長者：{{d[10]}}</div>
-                        <div class="editor">修改者：{{d[11]}}</div>
-                        <div class="edit-link">
-                            <i class="fa-solid fa-pen-to-square"></i>
-                            <a href="/event/update/confirm?MemoID={{d[0]}}">編輯</a>
-                        </div>
+                    <div class="title">標題：{{d[2]}}</div>
+                    <div class="time">時間：{{d[3]}}</div>
+                    <div class="repeat">多久重複：{{d[6]}}</div>
+                    <div class="alert">幾分鐘前提醒：{{d[7]}}</div>
+                    <div class="location">地點：{{d[9]}}</div>
+                    <div class="mainuser">長者：{{d[10]}}</div>
+                    <div class="editor">修改者：{{d[11]}}</div>
+                    <div class="edit-link">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                        <a href="/event/update/confirm?MemoID={{d[0]}}">編輯</a>
+                    </div>
                 </div>
             {% endfor %}
         </div>

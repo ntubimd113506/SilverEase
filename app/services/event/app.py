@@ -175,13 +175,14 @@ def send_line_message(MemID, Title, Location):
     except Exception as e:
         pass
 
-# 查詢
 @event_bp.route("/list")
 @login_required
 def event_list():
     data = []
 
     MemID = session.get("MemID")
+    year = request.args.get("year")
+    month = request.args.get("month")
 
     conn = db.get_connection()
     cursor = conn.cursor()
@@ -203,8 +204,7 @@ def event_list():
 
     if FamilyID:
         for id in FamilyID:
-            cursor.execute(
-                """
+            query = """
                 SELECT m.*, e.*, 
                 mu.MemName AS MainUserName, 
                 eu.MemName AS EditorUserName
@@ -214,9 +214,19 @@ def event_list():
                 LEFT JOIN `113-ntub113506`.Member mu ON mu.MemID = f.MainUserID
                 LEFT JOIN `113-ntub113506`.Member eu ON eu.MemID = m.EditorID
                 WHERE m.FamilyID = %s AND `DateTime` > NOW()
-                """,
-                (id[0],),
-            )
+                """
+
+            params = [id[0]]
+        
+            if year and year != "all":
+                query += " AND YEAR(`DateTime`) = %s"
+                params.append(year)
+            
+            if month and month != "all":
+                query += " AND MONTH(`DateTime`) = %s"
+                params.append(month)
+
+            cursor.execute(query, tuple(params))
             data += cursor.fetchall()
 
     conn.close()
@@ -234,6 +244,8 @@ def event_history():
     data = []
 
     MemID = session.get("MemID")
+    year = request.args.get("year")
+    month = request.args.get("month")
 
     conn = db.get_connection()
     cursor = conn.cursor()
@@ -255,8 +267,7 @@ def event_history():
 
     if FamilyID:
         for id in FamilyID:
-            cursor.execute(
-                """
+            query = """
                 SELECT m.*, e.*, 
                 mu.MemName AS MainUserName, 
                 eu.MemName AS EditorUserName
@@ -266,9 +277,19 @@ def event_history():
                 LEFT JOIN `113-ntub113506`.Member mu ON mu.MemID = f.MainUserID
                 LEFT JOIN `113-ntub113506`.Member eu ON eu.MemID = m.EditorID
                 WHERE m.FamilyID = %s AND `DateTime` <= NOW()
-                """,
-                (id[0],),
-            )
+                """
+
+            params = [id[0]]
+        
+            if year and year != "all":
+                query += " AND YEAR(`DateTime`) = %s"
+                params.append(year)
+            
+            if month and month != "all":
+                query += " AND MONTH(`DateTime`) = %s"
+                params.append(month)
+
+            cursor.execute(query, tuple(params))
             data += cursor.fetchall()
 
     conn.close()
