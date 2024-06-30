@@ -25,18 +25,33 @@ def med_create_form():
 
     cursor.execute(
         """
-        SELECT m.MemID, m.MemName
-        FROM `113-ntub113506`.FamilyLink fl
-        JOIN `113-ntub113506`.Family f ON fl.FamilyID = f.FamilyID
+        SELECT f.MainUserID, m.MemName
+        FROM `113-ntub113506`.Family f
         JOIN `113-ntub113506`.Member m ON f.MainUserID = m.MemID
-        WHERE fl.SubUserID = %s
+        WHERE f.MainUserID = %s
         """,
         (MemID,),
     )
-    MainUsers = cursor.fetchall()
+    main_user_info = cursor.fetchone()
+
+    if main_user_info:
+        MainUsers = [(MemID, main_user_info[1])]
+    else:
+        cursor.execute(
+            """
+            SELECT m.MemID, m.MemName
+            FROM `113-ntub113506`.FamilyLink fl
+            JOIN `113-ntub113506`.Family f ON fl.FamilyID = f.FamilyID
+            JOIN `113-ntub113506`.Member m ON f.MainUserID = m.MemID
+            WHERE fl.SubUserID = %s
+            """,
+            (MemID,),
+        )
+        MainUsers = cursor.fetchall()
 
     conn.commit()
     conn.close()
+
     return render_template("/med/med_create_form.html", MainUsers=MainUsers)
 
 
@@ -259,15 +274,15 @@ def med_list():
                 """
 
             params = [id[0]]
-        
+
             if MainUserID and MainUserID != "all":
                 query += " AND f.MainUserID = %s"
                 params.append(MainUserID)
-            
+
             if year and year != "all":
                 query += " AND YEAR(`DateTime`) = %s"
                 params.append(year)
-            
+
             if month and month != "all":
                 query += " AND MONTH(`DateTime`) = %s"
                 params.append(month)
@@ -278,7 +293,9 @@ def med_list():
     conn.close()
 
     if data:
-        return render_template("/med/med_list.html", data=data, MainUsers=MainUsers, liff=db.LIFF_ID)
+        return render_template(
+            "/med/med_list.html", data=data, MainUsers=MainUsers, liff=db.LIFF_ID
+        )
     else:
         return render_template("/med/med_not_found.html", MainUsers=MainUsers)
 
@@ -304,7 +321,7 @@ def med_history():
             FROM `113-ntub113506`.FamilyLink fl
             JOIN `113-ntub113506`.Family f ON fl.FamilyID = f.FamilyID
             JOIN `113-ntub113506`.Member m ON f.MainUserID = m.MemID
-            WHERE fl.SubUserID = %s
+            WHERE m.MemID = %s
             """,
             (MemID,),
         )
@@ -337,17 +354,17 @@ def med_history():
                 LEFT JOIN `113-ntub113506`.Member eu ON eu.MemID = m.EditorID
                 WHERE m.FamilyID = %s AND `DateTime` <= NOW()
                 """
-            
+
             params = [id[0]]
 
             if MainUserID and MainUserID != "all":
                 query += " AND f.MainUserID = %s"
                 params.append(MainUserID)
-        
+
             if year and year != "all":
                 query += " AND YEAR(`DateTime`) = %s"
                 params.append(year)
-            
+
             if month and month != "all":
                 query += " AND MONTH(`DateTime`) = %s"
                 params.append(month)
@@ -358,7 +375,9 @@ def med_history():
     conn.close()
 
     if data:
-        return render_template("/med/med_history.html", data=data, MainUsers=MainUsers, liff=db.LIFF_ID)
+        return render_template(
+            "/med/med_history.html", data=data, MainUsers=MainUsers, liff=db.LIFF_ID
+        )
     else:
         return render_template("/med/med_not_found.html", MainUsers=MainUsers)
 

@@ -25,15 +25,29 @@ def event_create_form():
 
     cursor.execute(
         """
-        SELECT m.MemID, m.MemName
-        FROM `113-ntub113506`.FamilyLink fl
-        JOIN `113-ntub113506`.Family f ON fl.FamilyID = f.FamilyID
+        SELECT f.MainUserID, m.MemName
+        FROM `113-ntub113506`.Family f
         JOIN `113-ntub113506`.Member m ON f.MainUserID = m.MemID
-        WHERE fl.SubUserID = %s
+        WHERE f.MainUserID = %s
         """,
         (MemID,),
     )
-    MainUsers = cursor.fetchall()
+    main_user_info = cursor.fetchone()
+
+    if main_user_info:
+        MainUsers = [(MemID, main_user_info[1])]
+    else:
+        cursor.execute(
+            """
+            SELECT m.MemID, m.MemName
+            FROM `113-ntub113506`.FamilyLink fl
+            JOIN `113-ntub113506`.Family f ON fl.FamilyID = f.FamilyID
+            JOIN `113-ntub113506`.Member m ON f.MainUserID = m.MemID
+            WHERE fl.SubUserID = %s
+            """,
+            (MemID,),
+        )
+        MainUsers = cursor.fetchall()
 
     conn.commit()
     conn.close()
@@ -78,8 +92,6 @@ def event_create():
         conn.commit()
         conn.close()
 
-        # return "OK"
-
         job_id = f"{memoID}"
         send_time = datetime.strptime(DateTime, "%Y-%m-%dT%H:%M")
         scheduler.add_job(
@@ -119,7 +131,6 @@ def modify_job(time):
 def del_job():
     scheduler.remove_job("job123")
     return "OK"
-    # return f"{scheduler.get_job('job123')}"
 
 
 @event_bp.route("/joblist")
@@ -265,10 +276,12 @@ def event_list():
     conn.close()
 
     if data:
-        return render_template("/event/event_list.html", data=data, MainUsers=MainUsers, liff=db.LIFF_ID)
+        return render_template(
+            "/event/event_list.html", data=data, MainUsers=MainUsers, liff=db.LIFF_ID
+        )
     else:
         return render_template("/event/event_not_found.html", MainUsers=MainUsers)
-    
+
 
 # 歷史查詢
 @event_bp.route("/history")
@@ -345,7 +358,9 @@ def event_history():
     conn.close()
 
     if data:
-        return render_template("/event/event_history.html", data=data, MainUsers=MainUsers, liff=db.LIFF_ID)
+        return render_template(
+            "/event/event_history.html", data=data, MainUsers=MainUsers, liff=db.LIFF_ID
+        )
     else:
         return render_template("/event/event_not_found.html", MainUsers=MainUsers)
 

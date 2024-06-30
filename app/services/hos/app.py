@@ -26,18 +26,33 @@ def hos_create_form():
 
     cursor.execute(
         """
-        SELECT m.MemID, m.MemName
-        FROM `113-ntub113506`.FamilyLink fl
-        JOIN `113-ntub113506`.Family f ON fl.FamilyID = f.FamilyID
+        SELECT f.MainUserID, m.MemName
+        FROM `113-ntub113506`.Family f
         JOIN `113-ntub113506`.Member m ON f.MainUserID = m.MemID
-        WHERE fl.SubUserID = %s
+        WHERE f.MainUserID = %s
         """,
         (MemID,),
     )
-    MainUsers = cursor.fetchall()
+    main_user_info = cursor.fetchone()
+
+    if main_user_info:
+        MainUsers = [(MemID, main_user_info[1])]
+    else:
+        cursor.execute(
+            """
+            SELECT m.MemID, m.MemName
+            FROM `113-ntub113506`.FamilyLink fl
+            JOIN `113-ntub113506`.Family f ON fl.FamilyID = f.FamilyID
+            JOIN `113-ntub113506`.Member m ON f.MainUserID = m.MemID
+            WHERE fl.SubUserID = %s
+            """,
+            (MemID,),
+        )
+        MainUsers = cursor.fetchall()
 
     conn.commit()
     conn.close()
+
     return render_template("/hos/hos_create_form.html", MainUsers=MainUsers)
 
 
@@ -230,7 +245,7 @@ def hos_list():
 
             if MainUserID and MainUserID != "all":
                 query += " AND f.MainUserID = %s"
-                params.append(MainUserID)  
+                params.append(MainUserID)
 
             if year and year != "all":
                 query += " AND YEAR(`DateTime`) = %s"
@@ -246,7 +261,9 @@ def hos_list():
     conn.close()
 
     if data:
-        return render_template("/hos/hos_list.html", data=data, MainUsers=MainUsers, liff=db.LIFF_ID)
+        return render_template(
+            "/hos/hos_list.html", data=data, MainUsers=MainUsers, liff=db.LIFF_ID
+        )
     else:
         return render_template("/hos/hos_not_found.html", MainUsers=MainUsers)
 
@@ -326,7 +343,9 @@ def hos_history():
     conn.close()
 
     if data:
-        return render_template("/hos/hos_history.html", data=data, MainUsers=MainUsers, liff=db.LIFF_ID)
+        return render_template(
+            "/hos/hos_history.html", data=data, MainUsers=MainUsers, liff=db.LIFF_ID
+        )
     else:
         return render_template("/hos/hos_not_found.html", MainUsers=MainUsers)
 
