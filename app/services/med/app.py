@@ -1,11 +1,9 @@
 from datetime import datetime, timedelta
-from flask import Flask, request, render_template, Blueprint, redirect, url_for,session
+from flask import Flask, request, render_template, Blueprint, redirect, url_for, session
 from flask_login import login_required
 from services import scheduler, line_bot_api
 from utils import db
 from linebot.models import *
-
-
 
 med_bp = Blueprint("med_bp", __name__)
 
@@ -234,8 +232,9 @@ def med_list():
     if data:
         return render_template("/med/med_list.html", data=data, liff=db.LIFF_ID)
     else:
-        return render_template("not_found.html")
-    
+        return render_template("/med/med_not_found.html")
+
+
 # 歷史查詢
 @med_bp.route("/history")
 @login_required
@@ -285,7 +284,8 @@ def med_history():
     if data:
         return render_template("/med/med_history.html", data=data, liff=db.LIFF_ID)
     else:
-        return render_template("not_found.html")
+        return render_template("/med/med_not_found.html")
+
 
 # 更改確認
 @med_bp.route("/update/confirm")
@@ -312,7 +312,7 @@ def med_update_confirm():
     if data:
         return render_template("/med/med_update_confirm.html", data=data)
     else:
-        return render_template("not_found.html")
+        return render_template("/med/med_not_found.html")
 
 
 # 更改
@@ -425,7 +425,7 @@ def med_delete_confirm():
     if data:
         return render_template("/med/med_delete_confirm.html", data=data)
     else:
-        return render_template("not_found.html")
+        return render_template("/med/med_not_found.html")
 
 
 # 刪除

@@ -176,8 +176,6 @@ def send_line_message(MemID, Title, Location):
         pass
 
 # 查詢
-
-
 @event_bp.route("/list")
 @login_required
 def event_list():
@@ -205,13 +203,20 @@ def event_list():
 
     if FamilyID:
         for id in FamilyID:
-            cursor.execute("""
-            SELECT * FROM 
-            (SELECT * FROM `113-ntub113506`.Memo WHERE FamilyID = %s) m 
-            JOIN 
-            (SELECT * FROM `113-ntub113506`.Event) e 
-            ON e.MemoID = m.MemoID
-            """, (id[0],))
+            cursor.execute(
+                """
+                SELECT m.*, e.*, 
+                mu.MemName AS MainUserName, 
+                eu.MemName AS EditorUserName
+                FROM `113-ntub113506`.Memo m
+                JOIN `113-ntub113506`.Event e ON e.MemoID = m.MemoID
+                LEFT JOIN `113-ntub113506`.Family f ON f.FamilyID = m.FamilyID
+                LEFT JOIN `113-ntub113506`.Member mu ON mu.MemID = f.MainUserID
+                LEFT JOIN `113-ntub113506`.Member eu ON eu.MemID = m.EditorID
+                WHERE m.FamilyID = %s AND `DateTime` > NOW()
+                """,
+                (id[0],),
+            )
             data += cursor.fetchall()
 
     conn.close()
@@ -219,7 +224,59 @@ def event_list():
     if data:
         return render_template("/event/event_list.html", data=data, liff=db.LIFF_ID)
     else:
-        return render_template("not_found.html")
+        return render_template("/event/event_not_found.html")
+
+
+# 歷史查詢
+@event_bp.route("/history")
+@login_required
+def event_history():
+    data = []
+
+    MemID = session.get("MemID")
+
+    conn = db.get_connection()
+    cursor = conn.cursor()
+
+    if MemID:
+        cursor.execute(
+            """
+            SELECT COALESCE(f.FamilyID, l.FamilyID) AS A_FamilyID
+            FROM `113-ntub113506`.Member m 
+            LEFT JOIN `113-ntub113506`.Family as f ON m.MemID = f.MainUserID 
+            LEFT JOIN `113-ntub113506`.FamilyLink as l ON m.MemID = l.SubUserID
+            WHERE MemID = %s
+            """,
+            (MemID,),
+        )
+        FamilyID = cursor.fetchall()
+    else:
+        return render_template("/med/med_login.html", liffid=db.LIFF_ID)
+
+    if FamilyID:
+        for id in FamilyID:
+            cursor.execute(
+                """
+                SELECT m.*, e.*, 
+                mu.MemName AS MainUserName, 
+                eu.MemName AS EditorUserName
+                FROM `113-ntub113506`.Memo m
+                JOIN `113-ntub113506`.Event e ON e.MemoID = m.MemoID
+                LEFT JOIN `113-ntub113506`.Family f ON f.FamilyID = m.FamilyID
+                LEFT JOIN `113-ntub113506`.Member mu ON mu.MemID = f.MainUserID
+                LEFT JOIN `113-ntub113506`.Member eu ON eu.MemID = m.EditorID
+                WHERE m.FamilyID = %s AND `DateTime` <= NOW()
+                """,
+                (id[0],),
+            )
+            data += cursor.fetchall()
+
+    conn.close()
+
+    if data:
+        return render_template("/event/event_history.html", data=data, liff=db.LIFF_ID)
+    else:
+        return render_template("/event/event_not_found.html")
 
 
 # 更改確認
@@ -247,7 +304,7 @@ def event_update_confirm():
     if data:
         return render_template("/event/event_update_confirm.html", data=data)
     else:
-        return render_template("not_found.html")
+        return render_template("/event/event_not_found.html")
 
 
 # 更改
@@ -307,7 +364,7 @@ def event_delete_confirm():
     if data:
         return render_template("/event/event_delete_confirm.html", data=data)
     else:
-        return render_template("not_found.html")
+        return render_template("/event/event_not_found.html")
 
 
 # 刪除

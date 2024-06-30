@@ -1,10 +1,9 @@
-from flask import Flask, request, render_template, Blueprint, redirect, url_for
-from services import scheduler, line_bot_api
 from datetime import datetime, timedelta
+from flask import Flask, request, render_template, Blueprint, redirect, url_for, session
+from flask_login import login_required
+from services import scheduler, line_bot_api
 from utils import db
-from flask import  request, render_template, Blueprint
 from linebot.models import *
-
 
 
 hos_bp = Blueprint("hos_bp", __name__)
@@ -45,6 +44,10 @@ hos_bp = Blueprint("hos_bp", __name__)
 #     conn.close()
 #     return render_template('/hos/hos_create_form.html', main_users=main_users)
 
+# 主頁
+@hos_bp.route("/")
+def hos():
+    return render_template("schedule_index.html")
 
 # 新增表單
 @hos_bp.route("/create/form")
@@ -81,17 +84,17 @@ def hos_create():
         )
         FamilyID = cursor.fetchone()[0]
 
-        cursor.execute(
-            """
-            SELECT m.MemID, m.MemName
-            FROM `113-ntub113506`.FamilyLink fl
-            JOIN `113-ntub113506`.Family f ON fl.FamilyID = f.FamilyID
-            JOIN `113-ntub113506`.Member m ON f.MainUserID = m.MemID
-            WHERE fl.SubUserID = %s
-            """,
-            (MemID,),
-        )
-        MainUserID = cursor.fetchall()
+        # cursor.execute(
+        #     """
+        #     SELECT m.MemID, m.MemName
+        #     FROM `113-ntub113506`.FamilyLink fl
+        #     JOIN `113-ntub113506`.Family f ON fl.FamilyID = f.FamilyID
+        #     JOIN `113-ntub113506`.Member m ON f.MainUserID = m.MemID
+        #     WHERE fl.SubUserID = %s
+        #     """,
+        #     (MemID,),
+        # )
+        # MainUserID = cursor.fetchall()
 
         cursor.execute(
             """
@@ -127,7 +130,7 @@ def hos_create():
             args=[MemID, Title, Location, Doctor, Clinic, Num],
         )
 
-        return render_template("/hos/hos_create_success.html", MainUserID=MainUserID)
+        return render_template("/hos/hos_create_success.html")
     except Exception as e:
         print(e)
         return render_template("/hos/hos_create_fail.html")
@@ -193,52 +196,13 @@ def send_line_message(MemID, Title, Location, Doctor, Clinic, Num):
     except Exception as e:
         print(e)
 
-
-# #查詢
-# @hos_bp.route('/list')
-# def hos_list():
-#     data=[]
-
-#     MemID =  request.values.get('MemID')
-
-#     conn = db.get_connection()
-#     cursor = conn.cursor()
-
-#     if (MemID):
-#         cursor.execute("""
-#                         SELECT COALESCE(f.FamilyID, l.FamilyID) AS A_FamilyID
-#                             FROM `113-ntub113506`.Member m
-#                             LEFT JOIN `113-ntub113506`.Family as f ON m.MemID = f.MainUserID
-#                             LEFT JOIN `113-ntub113506`.FamilyLink as l ON m.MemID = l.SubUserID
-#                             where MemID = %s
-#                         """, (MemID))
-#         FamilyID = cursor.fetchall()
-#     else:
-#         return render_template('/hos/hos_login.html',liffid = db.LIFF_ID)
-
-#     if(FamilyID):
-#         for id in FamilyID:
-#             cursor.execute("""
-#                         SELECT * FROM
-#                         (select * from`113-ntub113506`.Memo Where FamilyID = %s) m
-#                         join
-#                         (select * from `113-ntub113506`.`Hos`) e
-#                         on e.MemoID=m.MemoID
-#                         """, (id[0]))
-#             data += cursor.fetchall()
-
-#     conn.close()
-
-
-#     if data:
-#         return render_template('/hos/hos_list.html', data = data, liff = db.LIFF_ID)
-#     else:
-#         return render_template('not_found.html')
+# 查詢
 @hos_bp.route("/list")
+@login_required
 def hos_list():
     data = []
 
-    MemID = request.values.get("MemID")
+    MemID = session.get("MemID")
 
     conn = db.get_connection()
     cursor = conn.cursor()
@@ -250,7 +214,7 @@ def hos_list():
             FROM `113-ntub113506`.Member m 
             LEFT JOIN `113-ntub113506`.Family as f ON m.MemID = f.MainUserID 
             LEFT JOIN `113-ntub113506`.FamilyLink as l ON m.MemID = l.SubUserID
-            WHERE m.MemID = %s
+            WHERE MemID = %s
             """,
             (MemID,),
         )
@@ -270,7 +234,7 @@ def hos_list():
                 LEFT JOIN `113-ntub113506`.Family f ON f.FamilyID = m.FamilyID
                 LEFT JOIN `113-ntub113506`.Member mu ON mu.MemID = f.MainUserID
                 LEFT JOIN `113-ntub113506`.Member eu ON eu.MemID = m.EditorID
-                WHERE m.FamilyID = %s
+                WHERE m.FamilyID = %s AND `DateTime` > NOW()
                 """,
                 (id[0],),
             )
@@ -281,7 +245,59 @@ def hos_list():
     if data:
         return render_template("/hos/hos_list.html", data=data, liff=db.LIFF_ID)
     else:
-        return render_template("not_found.html")
+        return render_template("/hos/hos_not_found.html")
+
+# 歷史查詢
+@hos_bp.route("/history")
+@login_required
+def hos_history():
+    data = []
+
+    MemID = session.get("MemID")
+
+    conn = db.get_connection()
+    cursor = conn.cursor()
+
+    if MemID:
+        cursor.execute(
+            """
+            SELECT COALESCE(f.FamilyID, l.FamilyID) AS A_FamilyID
+            FROM `113-ntub113506`.Member m 
+            LEFT JOIN `113-ntub113506`.Family as f ON m.MemID = f.MainUserID 
+            LEFT JOIN `113-ntub113506`.FamilyLink as l ON m.MemID = l.SubUserID
+            WHERE MemID = %s
+            """,
+            (MemID,),
+        )
+        FamilyID = cursor.fetchall()
+    else:
+        return render_template("/hos/hos_login.html", liffid=db.LIFF_ID)
+
+    if FamilyID:
+        for id in FamilyID:
+            cursor.execute(
+                """
+                SELECT m.*, e.*, 
+                mu.MemName AS MainUserName, 
+                eu.MemName AS EditorUserName
+                FROM `113-ntub113506`.Memo m
+                JOIN `113-ntub113506`.Hos e ON e.MemoID = m.MemoID
+                LEFT JOIN `113-ntub113506`.Family f ON f.FamilyID = m.FamilyID
+                LEFT JOIN `113-ntub113506`.Member mu ON mu.MemID = f.MainUserID
+                LEFT JOIN `113-ntub113506`.Member eu ON eu.MemID = m.EditorID
+                WHERE m.FamilyID = %s AND `DateTime` <= NOW()
+                """,
+                (id[0],),
+            )
+            data += cursor.fetchall()
+
+    conn.close()
+
+    if data:
+        return render_template("/hos/hos_history.html", data=data, liff=db.LIFF_ID)
+    else:
+        return render_template("/hos/hos_not_found.html")
+
 
 # 更改確認
 @hos_bp.route("/update/confirm")
@@ -308,7 +324,7 @@ def hos_update_confirm():
     if data:
         return render_template("/hos/hos_update_confirm.html", data=data)
     else:
-        return render_template("not_found.html")
+        return render_template("/hos/hos_not_found.html")
 
 
 # 更改
@@ -425,7 +441,7 @@ def hos_delete_confirm():
     if data:
         return render_template("/hos/hos_delete_confirm.html", data=data)
     else:
-        return render_template("not_found.html")
+        return render_template("/hos/hos_not_found.html")
 
 
 # 刪除
