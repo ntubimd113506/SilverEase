@@ -16,6 +16,7 @@ def med():
 
 # 新增表單
 @med_bp.route("/create/form")
+@login_required
 def med_create_form():
     MemID = session.get("MemID")
 

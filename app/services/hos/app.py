@@ -17,6 +17,7 @@ def hos():
 
 # 新增表單
 @hos_bp.route("/create/form")
+@login_required
 def hos_create_form():
     MemID = session.get("MemID")
 

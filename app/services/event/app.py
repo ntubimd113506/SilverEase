@@ -10,13 +10,13 @@ event_bp = Blueprint("event_bp", __name__)
 
 # 主頁
 @event_bp.route("/")
-@login_required
 def event():
     return render_template("schedule_index.html")
 
 
 # 新增表單
 @event_bp.route("/create/form")
+@login_required
 def event_create_form():
     MemID = session.get("MemID")
 
@@ -198,7 +198,7 @@ def event_list():
     MemID = session.get("MemID")
     year = request.args.get("year")
     month = request.args.get("month")
-    MainUsers = request.args.get("MainUsers")
+    MainUserID = request.args.get("MainUserID")
 
     conn = db.get_connection()
     cursor = conn.cursor()
@@ -246,6 +246,10 @@ def event_list():
 
             params = [id[0]]
 
+            if MainUserID and MainUserID != "all":
+                query += " AND f.MainUserID = %s"
+                params.append(MainUserID)
+
             if year and year != "all":
                 query += " AND YEAR(`DateTime`) = %s"
                 params.append(year)
@@ -253,10 +257,6 @@ def event_list():
             if month and month != "all":
                 query += " AND MONTH(`DateTime`) = %s"
                 params.append(month)
-            
-            if MainUsers and MainUsers != "all":
-                query += " AND f.MainUserID = %s"
-                params.append(MainUsers)
 
             cursor.execute(query, tuple(params))
             data += cursor.fetchall()
