@@ -62,9 +62,10 @@
             <div class="form-container">
             <form action="/hos/create" method="post" enctype="multipart/form-data">
                 <div class="form">
-                    <select name="MainUserID" id="MainUserID">
-                        {% for user in main_users %}
-                        <option value="{{ user[0] }}">{{ user[1] }}</option>
+                    <div class="name">選擇長者</div>
+                    <select id="MainUserID" name="MainUserID">
+                        {% for user in MainUsers %}
+                            <option value="{{ user[0] }}">{{ user[1] }}</option>
                         {% endfor %}
                     </select>
                     <br>

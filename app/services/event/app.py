@@ -18,14 +18,36 @@ def event():
 # 新增表單
 @event_bp.route("/create/form")
 def event_create_form():
-    return render_template("/event/event_create_form.html")
+    MemID = session.get("MemID")
+
+    conn = db.get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        SELECT m.MemID, m.MemName
+        FROM `113-ntub113506`.FamilyLink fl
+        JOIN `113-ntub113506`.Family f ON fl.FamilyID = f.FamilyID
+        JOIN `113-ntub113506`.Member m ON f.MainUserID = m.MemID
+        WHERE fl.SubUserID = %s
+        """,
+        (MemID,),
+    )
+    MainUsers = cursor.fetchall()
+
+    conn.commit()
+    conn.close()
+
+    return render_template("/event/event_create_form.html", MainUsers=MainUsers)
 
 
 # 新增
 @event_bp.route("/create", methods=["POST"])
+@login_required
 def event_create():
     try:
-        MemID = request.form.get("MemID")
+        MemID = session.get("MemID")
+        MainUserID = request.form.get("MainUserID")
         Title = request.form.get("Title")
         DateTime = request.form.get("DateTime")
         Location = request.form.get("Location")
@@ -35,13 +57,11 @@ def event_create():
 
         cursor.execute(
             """
-            SELECT COALESCE(f.FamilyID, l.FamilyID) AS A_FamilyID
-            FROM `113-ntub113506`.Member m 
-            LEFT JOIN `113-ntub113506`.Family as f ON m.MemID = f.MainUserID 
-            LEFT JOIN `113-ntub113506`.FamilyLink as l ON m.MemID = l.SubUserID
-            WHERE MemID = %s
+            SELECT FamilyID
+            FROM `113-ntub113506`.Family
+            WHERE MainUserID = %s
             """,
-            (MemID,),
+            (MainUserID,),
         )
         FamilyID = cursor.fetchone()[0]
 
@@ -60,7 +80,7 @@ def event_create():
 
         # return "OK"
 
-        job_id = f'{memoID}'
+        job_id = f"{memoID}"
         send_time = datetime.strptime(DateTime, "%Y-%m-%dT%H:%M")
         scheduler.add_job(
             id=job_id,
@@ -70,14 +90,13 @@ def event_create():
             args=[MemID, Title, Location],
         )
 
-        # scheduled_jobs[memoID] = job_id
         return render_template("/event/event_create_success.html")
     except Exception as e:
         return render_template("/event/event_create_fail.html")
 
 
 @event_bp.route("/create/job/<string:jobID>/<int:time>")
-def create_job(jobID,time):
+def create_job(jobID, time):
     send_time = datetime.now() + timedelta(minutes=time)
     scheduler.add_job(
         id=jobID,
@@ -98,7 +117,7 @@ def modify_job(time):
 
 @event_bp.route("/del/job")
 def del_job():
-    scheduler.remove_job('job123')
+    scheduler.remove_job("job123")
     return "OK"
     # return f"{scheduler.get_job('job123')}"
 
@@ -150,21 +169,16 @@ def send_line_message(MemID, Title, Location):
         conn.close()
 
         body = TemplateSendMessage(
-            alt_text='紀念日通知',
+            alt_text="紀念日通知",
             template=ButtonsTemplate(
                 thumbnail_image_url="https://silverease.ntub.edu.tw/static/imgs/planner.png",
-                image_aspect_ratio='rectangle',
-                image_size='contain',
-                image_background_color='#FFFFFF',
-                title='紀念日通知',
+                image_aspect_ratio="rectangle",
+                image_size="contain",
+                image_background_color="#FFFFFF",
+                title="紀念日通知",
                 text=f"標題: {Title}\n地點: {Location}",
-                actions=[
-                    MessageAction(
-                        label='收到',
-                        text='收到'
-                    )
-                ]
-            )
+                actions=[MessageAction(label="收到", text="收到")],
+            ),
         )
 
         if main_user_id != sub_user_id:
@@ -174,6 +188,7 @@ def send_line_message(MemID, Title, Location):
 
     except Exception as e:
         pass
+
 
 @event_bp.route("/list")
 @login_required
@@ -217,11 +232,11 @@ def event_list():
                 """
 
             params = [id[0]]
-        
+
             if year and year != "all":
                 query += " AND YEAR(`DateTime`) = %s"
                 params.append(year)
-            
+
             if month and month != "all":
                 query += " AND MONTH(`DateTime`) = %s"
                 params.append(month)
@@ -280,11 +295,11 @@ def event_history():
                 """
 
             params = [id[0]]
-        
+
             if year and year != "all":
                 query += " AND YEAR(`DateTime`) = %s"
                 params.append(year)
-            
+
             if month and month != "all":
                 query += " AND MONTH(`DateTime`) = %s"
                 params.append(month)
@@ -346,8 +361,7 @@ def event_update():
             (Title, DateTime, EditorID, MemoID),
         )
         cursor.execute(
-            "UPDATE Event SET Location = %s WHERE MemoID = %s", (
-                Location, MemoID)
+            "UPDATE Event SET Location = %s WHERE MemoID = %s", (Location, MemoID)
         )
 
         conn.commit()

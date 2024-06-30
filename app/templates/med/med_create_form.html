@@ -62,6 +62,13 @@
             <div class="form-container">
             <form action="/med/create" method="post" enctype="multipart/form-data">
                 <div class="form">
+                    <div class="name">選擇長者</div>
+                    <select id="MainUserID" name="MainUserID">
+                        {% for user in MainUsers %}
+                            <option value="{{ user[0] }}">{{ user[1] }}</option>
+                        {% endfor %}
+                    </select>
+                    
                     <div class="name">名稱</div>
                     <div class="value">
                         <input type="text" name="Title" class="input-field" required>

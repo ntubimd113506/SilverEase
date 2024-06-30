@@ -9,57 +9,44 @@ from linebot.models import *
 hos_bp = Blueprint("hos_bp", __name__)
 
 
-# 新增表單
-# @hos_bp.route('/create/form')
-# def hos_create_form():
-#     MemID = request.form.get('MemID')
-#     conn = db.get_connection()
-#     cursor = conn.cursor()
-#     cursor.execute("""
-#             SELECT m.MemName
-#             FROM `113-ntub113506`.FamilyLink fl
-#             JOIN `113-ntub113506`.Family f ON fl.FamilyID = f.FamilyID
-#             JOIN `113-ntub113506`.Member m ON f.MainUserID = m.MemID
-#             WHERE fl.SubUserID =  %s
-#         """, (MemID,))
-#     main_users = cursor.fetchone()[0]
-
-#     conn.close()
-#     return render_template('/hos/hos_create_form.html', main_users=main_users)
-
-# @hos_bp.route('/create/form')
-# def hos_create_form():
-#     MemID = request.args.get('MemID')
-#     conn = db.get_connection()
-#     cursor = conn.cursor()
-#     cursor.execute("""
-#         SELECT m.MemID, m.MemName
-#         FROM `113-ntub113506`.FamilyLink fl
-#         JOIN `113-ntub113506`.Family f ON fl.FamilyID = f.FamilyID
-#         JOIN `113-ntub113506`.Member m ON f.MainUserID = m.MemID
-#         WHERE fl.SubUserID = %s
-#     """, (MemID,))
-#     main_users = cursor.fetchall()
-
-#     conn.close()
-#     return render_template('/hos/hos_create_form.html', main_users=main_users)
-
 # 主頁
 @hos_bp.route("/")
 def hos():
     return render_template("schedule_index.html")
 
+
 # 新增表單
 @hos_bp.route("/create/form")
 def hos_create_form():
-    return render_template("/hos/hos_create_form.html")
+    MemID = session.get("MemID")
+
+    conn = db.get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        SELECT m.MemID, m.MemName
+        FROM `113-ntub113506`.FamilyLink fl
+        JOIN `113-ntub113506`.Family f ON fl.FamilyID = f.FamilyID
+        JOIN `113-ntub113506`.Member m ON f.MainUserID = m.MemID
+        WHERE fl.SubUserID = %s
+        """,
+        (MemID,),
+    )
+    MainUsers = cursor.fetchall()
+
+    conn.commit()
+    conn.close()
+    return render_template("/hos/hos_create_form.html", MainUsers=MainUsers)
 
 
 # 新增
 @hos_bp.route("/create", methods=["POST"])
+@login_required
 def hos_create():
     try:
-        MemID = request.form.get("MemID")
+        MemID = session.get("MemID")
+        MainUserID = request.form.get("MainUserID")
         Title = request.form.get("Title")
         DateTime = request.form.get("DateTime")
         Location = request.form.get("Location")
@@ -74,27 +61,13 @@ def hos_create():
 
         cursor.execute(
             """
-            SELECT COALESCE(f.FamilyID, l.FamilyID) AS A_FamilyID
-            FROM `113-ntub113506`.Member m
-            LEFT JOIN `113-ntub113506`.Family AS f ON m.MemID = f.MainUserID
-            LEFT JOIN `113-ntub113506`.FamilyLink AS l ON m.MemID = l.SubUserID
-            WHERE MemID = %s
+            SELECT FamilyID
+            FROM `113-ntub113506`.Family
+            WHERE MainUserID = %s
             """,
-            (MemID,),
+            (MainUserID,),
         )
         FamilyID = cursor.fetchone()[0]
-
-        # cursor.execute(
-        #     """
-        #     SELECT m.MemID, m.MemName
-        #     FROM `113-ntub113506`.FamilyLink fl
-        #     JOIN `113-ntub113506`.Family f ON fl.FamilyID = f.FamilyID
-        #     JOIN `113-ntub113506`.Member m ON f.MainUserID = m.MemID
-        #     WHERE fl.SubUserID = %s
-        #     """,
-        #     (MemID,),
-        # )
-        # MainUserID = cursor.fetchall()
 
         cursor.execute(
             """
@@ -196,6 +169,7 @@ def send_line_message(MemID, Title, Location, Doctor, Clinic, Num):
     except Exception as e:
         print(e)
 
+
 # 查詢
 @hos_bp.route("/list")
 @login_required
@@ -237,13 +211,13 @@ def hos_list():
                 LEFT JOIN `113-ntub113506`.Member eu ON eu.MemID = m.EditorID
                 WHERE m.FamilyID = %s AND `DateTime` > NOW()
                 """
-        
+
             params = [id[0]]
 
             if year and year != "all":
                 query += " AND YEAR(`DateTime`) = %s"
                 params.append(year)
-            
+
             if month and month != "all":
                 query += " AND MONTH(`DateTime`) = %s"
                 params.append(month)
@@ -257,6 +231,7 @@ def hos_list():
         return render_template("/hos/hos_list.html", data=data, liff=db.LIFF_ID)
     else:
         return render_template("/hos/hos_not_found.html")
+
 
 # 歷史查詢
 @hos_bp.route("/history")
@@ -299,13 +274,13 @@ def hos_history():
                 LEFT JOIN `113-ntub113506`.Member eu ON eu.MemID = m.EditorID
                 WHERE m.FamilyID = %s AND `DateTime` <= NOW()
                 """
-                
+
             params = [id[0]]
-        
+
             if year and year != "all":
                 query += " AND YEAR(`DateTime`) = %s"
                 params.append(year)
-            
+
             if month and month != "all":
                 query += " AND MONTH(`DateTime`) = %s"
                 params.append(month)

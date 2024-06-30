@@ -17,14 +17,35 @@ def med():
 # 新增表單
 @med_bp.route("/create/form")
 def med_create_form():
-    return render_template("/med/med_create_form.html")
+    MemID = session.get("MemID")
+
+    conn = db.get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        SELECT m.MemID, m.MemName
+        FROM `113-ntub113506`.FamilyLink fl
+        JOIN `113-ntub113506`.Family f ON fl.FamilyID = f.FamilyID
+        JOIN `113-ntub113506`.Member m ON f.MainUserID = m.MemID
+        WHERE fl.SubUserID = %s
+        """,
+        (MemID,),
+    )
+    MainUsers = cursor.fetchall()
+
+    conn.commit()
+    conn.close()
+    return render_template("/med/med_create_form.html", MainUsers=MainUsers)
 
 
 # 新增
 @med_bp.route("/create", methods=["POST"])
+@login_required
 def med_create():
     try:
-        MemID = request.form.get("MemID")
+        MemID = session.get("MemID")
+        MainUserID = request.form.get("MainUserID")
         Title = request.form.get("Title")
         DateTime = request.form.get("DateTime")
         MedFeature = request.form.get("MedFeature")
@@ -36,13 +57,11 @@ def med_create():
 
         cursor.execute(
             """
-            SELECT COALESCE(f.FamilyID, l.FamilyID) AS A_FamilyID
-            FROM `113-ntub113506`.Member m 
-            LEFT JOIN `113-ntub113506`.Family as f ON m.MemID = f.MainUserID 
-            LEFT JOIN `113-ntub113506`.FamilyLink as l ON m.MemID = l.SubUserID
-            where MemID = %s
+            SELECT FamilyID
+            FROM `113-ntub113506`.Family
+            WHERE MainUserID = %s
             """,
-            (MemID),
+            (MainUserID,),
         )
         FamilyID = cursor.fetchone()[0]
 
