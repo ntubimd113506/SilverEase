@@ -55,6 +55,15 @@
                 <a href="/event/">新增排程</a>
             </div>
 
+            <label for="MainUserID">選擇主要用戶:</label>
+            <select id="MainUserID" name="MainUserID">
+                <option value="all">所有長者</option>
+                {% for user in MainUsers %}
+                <option value="{{ user[0] }}">{{ user[1] }}</option>
+                {% endfor %}
+            </select>
+            <br>
+
             <form method="GET" action="/event/history">
                 <label for="year">選擇年份:</label>
                 <select id="year" name="year">

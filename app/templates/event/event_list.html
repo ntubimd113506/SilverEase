@@ -50,6 +50,16 @@
                 <h1 class="content-header">紀念日清單</h1>
                 <a href="/event/history">紀錄</a>
             </div>
+
+            <label for="MainUserID">選擇主要用戶:</label>
+            <select id="MainUserID" name="MainUserID">
+                <option value="all">所有長者</option>
+                {% for user in MainUsers %}
+                <option value="{{ user[0] }}">{{ user[1] }}</option>
+                {% endfor %}
+            </select>
+            <br>
+            
             <form method="GET" action="/event/list">
                 <label for="year">選擇年份:</label>
                 <select id="year" name="year">

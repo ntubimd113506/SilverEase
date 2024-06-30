@@ -198,11 +198,24 @@ def event_list():
     MemID = session.get("MemID")
     year = request.args.get("year")
     month = request.args.get("month")
+    MainUserID = request.args.get("MainUserID")
 
     conn = db.get_connection()
     cursor = conn.cursor()
 
     if MemID:
+        cursor.execute(
+            """
+            SELECT m.MemID, m.MemName
+            FROM `113-ntub113506`.FamilyLink fl
+            JOIN `113-ntub113506`.Family f ON fl.FamilyID = f.FamilyID
+            JOIN `113-ntub113506`.Member m ON f.MainUserID = m.MemID
+            WHERE fl.SubUserID = %s
+            """,
+            (MemID,),
+        )
+        MainUsers = cursor.fetchall()
+
         cursor.execute(
             """
             SELECT COALESCE(f.FamilyID, l.FamilyID) AS A_FamilyID
@@ -233,6 +246,10 @@ def event_list():
 
             params = [id[0]]
 
+            if MainUserID and MainUserID != "all":
+                query += " AND f.MainUserID = %s"
+                params.append(MainUserID)
+
             if year and year != "all":
                 query += " AND YEAR(`DateTime`) = %s"
                 params.append(year)
@@ -247,10 +264,10 @@ def event_list():
     conn.close()
 
     if data:
-        return render_template("/event/event_list.html", data=data, liff=db.LIFF_ID)
+        return render_template("/event/event_list.html", data=data, MainUsers=MainUsers, liff=db.LIFF_ID)
     else:
-        return render_template("/event/event_not_found.html")
-
+        return render_template("/event/event_not_found.html", MainUsers=MainUsers)
+    
 
 # 歷史查詢
 @event_bp.route("/history")
@@ -261,11 +278,24 @@ def event_history():
     MemID = session.get("MemID")
     year = request.args.get("year")
     month = request.args.get("month")
+    MainUserID = request.args.get("MainUserID")
 
     conn = db.get_connection()
     cursor = conn.cursor()
 
     if MemID:
+        cursor.execute(
+            """
+            SELECT m.MemID, m.MemName
+            FROM `113-ntub113506`.FamilyLink fl
+            JOIN `113-ntub113506`.Family f ON fl.FamilyID = f.FamilyID
+            JOIN `113-ntub113506`.Member m ON f.MainUserID = m.MemID
+            WHERE fl.SubUserID = %s
+            """,
+            (MemID,),
+        )
+        MainUsers = cursor.fetchall()
+
         cursor.execute(
             """
             SELECT COALESCE(f.FamilyID, l.FamilyID) AS A_FamilyID
@@ -296,6 +326,10 @@ def event_history():
 
             params = [id[0]]
 
+            if MainUserID and MainUserID != "all":
+                query += " AND f.MainUserID = %s"
+                params.append(MainUserID)
+
             if year and year != "all":
                 query += " AND YEAR(`DateTime`) = %s"
                 params.append(year)
@@ -310,9 +344,9 @@ def event_history():
     conn.close()
 
     if data:
-        return render_template("/event/event_history.html", data=data, liff=db.LIFF_ID)
+        return render_template("/event/event_history.html", data=data, MainUsers=MainUsers, liff=db.LIFF_ID)
     else:
-        return render_template("/event/event_not_found.html")
+        return render_template("/event/event_not_found.html", MainUsers=MainUsers)
 
 
 # 更改確認
