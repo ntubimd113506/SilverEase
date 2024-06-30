@@ -190,6 +190,7 @@ def send_line_message(MemID, Title, Location):
         pass
 
 
+# 查詢
 @event_bp.route("/list")
 @login_required
 def event_list():

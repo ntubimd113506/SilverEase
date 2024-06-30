@@ -51,8 +51,8 @@
                 <a href="/event/history">紀錄</a>
             </div>        
             <form method="GET" action="/event/list">
-                <label for="MainUsers">選擇主要用戶:</label>
-                <select id="MainUsers" name="MainUsers">
+                <label for="MainUserID">選擇主要用戶:</label>
+                <select id="MainUserID" name="MainUserID">
                     <option value="all">所有長者</option>
                     {% for user in MainUsers %}
                     <option value="{{ user[0] }}">{{ user[1] }}</option>
