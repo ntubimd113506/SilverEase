@@ -198,7 +198,7 @@ def event_list():
     MemID = session.get("MemID")
     year = request.args.get("year")
     month = request.args.get("month")
-    MainUserID = request.args.get("MainUserID")
+    MainUsers = request.args.get("MainUsers")
 
     conn = db.get_connection()
     cursor = conn.cursor()
@@ -246,10 +246,6 @@ def event_list():
 
             params = [id[0]]
 
-            if MainUserID and MainUserID != "all":
-                query += " AND f.MainUserID = %s"
-                params.append(MainUserID)
-
             if year and year != "all":
                 query += " AND YEAR(`DateTime`) = %s"
                 params.append(year)
@@ -257,6 +253,10 @@ def event_list():
             if month and month != "all":
                 query += " AND MONTH(`DateTime`) = %s"
                 params.append(month)
+            
+            if MainUsers and MainUsers != "all":
+                query += " AND f.MainUserID = %s"
+                params.append(MainUsers)
 
             cursor.execute(query, tuple(params))
             data += cursor.fetchall()
