@@ -15,12 +15,10 @@ def handle_connect(client, userdata, flags, rc):
 
 @mqtt.on_message()
 def handle_mqtt_message(client, userdata, message):
-    print(
-        f'Received message on topic {message.topic}: {message.payload.decode()}')
+    print(f'Received message on topic {message.topic}: {message.payload.decode()}')
     if message.topic == 'ESP32/help':
         print("ESP32 need help")
-        print(
-            f'Received message on topic {message.topic}: {message.payload.decode()}')
+        print(f'Received message on topic {message.topic}: {message.payload.decode()}')
         try:
             data = json.loads(message.payload.decode())
             DevID = data['DevID']
@@ -30,8 +28,7 @@ def handle_mqtt_message(client, userdata, message):
             print("Invalid JSON")
     if message.topic == 'ESP32/conn':
         print("ESP32 connected")
-        print(
-            f'Received message on topic {message.topic}: {message.payload.decode()}')
+        print(f'Received message on topic {message.topic}: {message.payload.decode()}')
 
 
 def sent_mess(DevID, filename=None):

@@ -102,7 +102,7 @@ def event_create():
             args=[MemID, Title, Location],
         )
 
-        return render_template("/event/event_create_success.html")
+        return render_template("/schedule/create_success.html",Title="紀念日")
     except Exception as e:
         return render_template("/event/event_create_fail.html")
 
