@@ -1,9 +1,9 @@
-from datetime import datetime, timedelta
-from flask import Flask, request, render_template, Blueprint, redirect, url_for, session
+from flask import request, render_template, Blueprint, session
 from flask_login import login_required
-from services import scheduler, line_bot_api
-from utils import db
+from datetime import datetime, timedelta
 from linebot.models import *
+from utils import db
+from services import scheduler, line_bot_api
 
 med_bp = Blueprint("med_bp", __name__)
 
@@ -11,7 +11,7 @@ med_bp = Blueprint("med_bp", __name__)
 # 主頁
 @med_bp.route("/")
 def med():
-    return render_template("schedule_index.html")
+    return render_template("/schedule/schedule_index.html")
 
 
 # 新增表單
@@ -88,10 +88,14 @@ def med_create():
             """,
             (FamilyID, Title, DateTime, MemID, Cycle, Alert),
         )
+
         cursor.execute("Select MemoID from Memo order by MemoID Desc")
         memoID = cursor.fetchone()[0]
+
         cursor.execute(
-            """INSERT INTO Med (MemoID, MedFeature) 
+            """
+            INSERT INTO 
+            Med (MemoID, MedFeature) 
             VALUES (%s, %s)
             """,
             (memoID, MedFeature),
@@ -150,11 +154,12 @@ def med_create():
                 **interval,
             )
 
-        return render_template("/med/med_create_success.html")
+        return render_template("/schedule/result.html", schedule="med", list="", Title="新增用藥成功", img="S_create")
     except:
-        return render_template("/med/med_create_fail.html")
+        return render_template("/schedule/result.html", schedule="med", list="", Title="新增用藥失敗", img="F_create")
 
 
+# 傳送通知
 def send_line_message(MemID, Title, MedFeature):
     try:
         conn = db.get_connection()
@@ -179,7 +184,7 @@ def send_line_message(MemID, Title, MedFeature):
             """,
             (FamilyID,),
         )
-        main_user_id = cursor.fetchone()[0]
+        MainUserId = cursor.fetchone()[0]
 
         cursor.execute(
             """
@@ -188,11 +193,11 @@ def send_line_message(MemID, Title, MedFeature):
             WHERE FamilyID = (SELECT FamilyID 
                               FROM FamilyLink 
                               WHERE SubUserID = %s)
-        """,
+            """,
             (MemID,),
         )
         cursor.execute("SELECT MemID FROM Member WHERE MemID = %s", (MemID,))
-        sub_user_id = cursor.fetchone()[0]
+        SubUserId = cursor.fetchone()[0]
 
         conn.close()
 
@@ -209,10 +214,10 @@ def send_line_message(MemID, Title, MedFeature):
             ),
         )
 
-        if main_user_id != sub_user_id:
-            line_bot_api.push_message(main_user_id, body)
+        if MainUserId != SubUserId:
+            line_bot_api.push_message(MainUserId, body)
         else:
-            line_bot_api.push_message(main_user_id, body)
+            line_bot_api.push_message(MainUserId, body)
 
     except Exception as e:
         print(e)
@@ -262,16 +267,16 @@ def med_list():
     if FamilyID:
         for id in FamilyID:
             query = """
-                SELECT m.*, e.*, 
-                mu.MemName AS MainUserName, 
-                eu.MemName AS EditorUserName
-                FROM `113-ntub113506`.Memo m
-                JOIN `113-ntub113506`.Med e ON e.MemoID = m.MemoID
-                LEFT JOIN `113-ntub113506`.Family f ON f.FamilyID = m.FamilyID
-                LEFT JOIN `113-ntub113506`.Member mu ON mu.MemID = f.MainUserID
-                LEFT JOIN `113-ntub113506`.Member eu ON eu.MemID = m.EditorID
-                WHERE m.FamilyID = %s AND `DateTime` > NOW()
-                """
+                    SELECT m.*, e.*, 
+                    mu.MemName AS MainUserName, 
+                    eu.MemName AS EditorUserName
+                    FROM `113-ntub113506`.Memo m
+                    JOIN `113-ntub113506`.Med e ON e.MemoID = m.MemoID
+                    LEFT JOIN `113-ntub113506`.Family f ON f.FamilyID = m.FamilyID
+                    LEFT JOIN `113-ntub113506`.Member mu ON mu.MemID = f.MainUserID
+                    LEFT JOIN `113-ntub113506`.Member eu ON eu.MemID = m.EditorID
+                    WHERE m.FamilyID = %s AND `DateTime` > NOW()
+                    """
 
             params = [id[0]]
 
@@ -297,7 +302,7 @@ def med_list():
             "/med/med_list.html", data=data, MainUsers=MainUsers, liff=db.LIFF_ID
         )
     else:
-        return render_template("/med/med_not_found.html", MainUsers=MainUsers)
+        return render_template("/schedule/not_found.html", MainUsers=MainUsers, Title="用藥", schedule="med")
 
 
 # 歷史查詢
@@ -344,16 +349,16 @@ def med_history():
     if FamilyID:
         for id in FamilyID:
             query = """
-                SELECT m.*, e.*, 
-                mu.MemName AS MainUserName, 
-                eu.MemName AS EditorUserName
-                FROM `113-ntub113506`.Memo m
-                JOIN `113-ntub113506`.Med e ON e.MemoID = m.MemoID
-                LEFT JOIN `113-ntub113506`.Family f ON f.FamilyID = m.FamilyID
-                LEFT JOIN `113-ntub113506`.Member mu ON mu.MemID = f.MainUserID
-                LEFT JOIN `113-ntub113506`.Member eu ON eu.MemID = m.EditorID
-                WHERE m.FamilyID = %s AND `DateTime` <= NOW()
-                """
+                    SELECT m.*, e.*, 
+                    mu.MemName AS MainUserName, 
+                    eu.MemName AS EditorUserName
+                    FROM `113-ntub113506`.Memo m
+                    JOIN `113-ntub113506`.Med e ON e.MemoID = m.MemoID
+                    LEFT JOIN `113-ntub113506`.Family f ON f.FamilyID = m.FamilyID
+                    LEFT JOIN `113-ntub113506`.Member mu ON mu.MemID = f.MainUserID
+                    LEFT JOIN `113-ntub113506`.Member eu ON eu.MemID = m.EditorID
+                    WHERE m.FamilyID = %s AND `DateTime` <= NOW()
+                    """
 
             params = [id[0]]
 
@@ -379,7 +384,7 @@ def med_history():
             "/med/med_history.html", data=data, MainUsers=MainUsers, liff=db.LIFF_ID
         )
     else:
-        return render_template("/med/med_not_found.html", MainUsers=MainUsers)
+        return render_template("/schedule/not_found.html", MainUsers=MainUsers, Title="用藥", schedule="med")
 
 
 # 更改確認
@@ -404,10 +409,7 @@ def med_update_confirm():
 
     connection.close()
 
-    if data:
-        return render_template("/med/med_update_confirm.html", data=data)
-    else:
-        return render_template("/med/med_not_found.html")
+    return render_template("/med/med_update_confirm.html", data=data)
 
 
 # 更改
@@ -499,9 +501,9 @@ def med_update():
                 **interval,
             )
 
-        return render_template("med/med_update_success.html")
+        return render_template("/schedule/result.html", schedule="med", list="list", Title="編輯用藥成功", img="S_update")
     except:
-        return render_template("med/med_update_fail.html")
+        return render_template("/schedule/result.html", schedule="med", list="list", Title="編輯用藥成功", img="F_update")
 
 
 # 刪除確認
@@ -517,10 +519,7 @@ def med_delete_confirm():
 
     connection.close()
 
-    if data:
-        return render_template("/med/med_delete_confirm.html", data=data)
-    else:
-        return render_template("/med/med_not_found.html")
+    return render_template("/med/med_delete_confirm.html", data=data)
 
 
 # 刪除
@@ -542,6 +541,6 @@ def med_delete():
         if job:
             scheduler.remove_job(MemoID)
 
-        return render_template("med/med_delete_success.html")
+        return render_template("/schedule/result.html", schedule="med", list="list", Title="刪除用藥成功", img="S_delete")
     except:
-        return render_template("med/med_delete_fail.html")
+        return render_template("/schedule/result.html", schedule="med", list="list", Title="刪除用藥成功", img="F_delete")

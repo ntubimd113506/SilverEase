@@ -11,7 +11,7 @@ event_bp = Blueprint("event_bp", __name__)
 # 主頁
 @event_bp.route("/")
 def event():
-    return render_template("schedule_index.html")
+    return render_template("/schedule/schedule_index.html")
 
 
 # 新增表單
@@ -65,6 +65,8 @@ def event_create():
         Title = request.form.get("Title")
         DateTime = request.form.get("DateTime")
         Location = request.form.get("Location")
+        Cycle = request.form.get("Cycle")
+        Alert = int(request.form.get("Alert", 0))
 
         conn = db.get_connection()
         cursor = conn.cursor()
@@ -80,13 +82,23 @@ def event_create():
         FamilyID = cursor.fetchone()[0]
 
         cursor.execute(
-            "INSERT INTO Memo (FamilyID, Title, DateTime, Type, EditorID) VALUES (%s, %s, %s, '3', %s)",
-            (FamilyID, Title, DateTime, MemID),
+            """
+            INSERT INTO Memo (FamilyID, Title, DateTime, Type, EditorID, Cycle, Alert) 
+            VALUES (%s, %s, %s, '3', %s, %s, %s)
+            """,
+            (FamilyID, Title, DateTime, MemID, Cycle, Alert),
         )
+
         cursor.execute("SELECT MemoID FROM Memo ORDER BY MemoID DESC LIMIT 1")
         memoID = cursor.fetchone()[0]
+
         cursor.execute(
-            "INSERT INTO Event (MemoID, Location) VALUES (%s, %s)", (memoID, Location)
+            """
+            INSERT INTO 
+            Event (MemoID, Location) 
+            VALUES (%s, %s)
+            """,
+            (memoID, Location),
         )
 
         conn.commit()
@@ -94,50 +106,22 @@ def event_create():
 
         job_id = f"{memoID}"
         send_time = datetime.strptime(DateTime, "%Y-%m-%dT%H:%M")
+        reminder_time = send_time - timedelta(minutes=Alert)
+
         scheduler.add_job(
             id=job_id,
             func=send_line_message,
             trigger="date",
-            run_date=send_time,
-            args=[MemID, Title, Location],
+            run_date=reminder_time,
+            args=[MainUserID, Title, Location],
         )
 
-        return render_template("/schedule/create_success.html",Title="紀念日")
-    except Exception as e:
-        return render_template("/event/event_create_fail.html")
+        return render_template("/schedule/result.html", Title="新增紀念日成功", schedule="event", list="", img="S_create")
+    except:
+        return render_template("/schedule/result.html", Title="新增紀念日失敗", schedule="event", list="", img="F_create")
 
 
-@event_bp.route("/create/job/<string:jobID>/<int:time>")
-def create_job(jobID, time):
-    send_time = datetime.now() + timedelta(minutes=time)
-    scheduler.add_job(
-        id=jobID,
-        func=send_line_message,
-        trigger="date",
-        run_date=send_time,
-        args=["U1d38cccc9cc22a5538e2fd9cc71a32a5", "hi", "here"],
-    )
-    return f"{scheduler.get_jobs()}"
-
-
-@event_bp.route("/modify/job/<int:time>")
-def modify_job(time):
-    send_time = datetime.now() + timedelta(minutes=time)
-    scheduler.modify_job("job123", trigger="date", run_date=send_time)
-    return f"{scheduler.get_job('job123')}"
-
-
-@event_bp.route("/del/job")
-def del_job():
-    scheduler.remove_job("job123")
-    return "OK"
-
-
-@event_bp.route("/joblist")
-def job_list():
-    return f"{scheduler.get_jobs()}"
-
-
+# 傳送通知
 def send_line_message(MemID, Title, Location):
     try:
         conn = db.get_connection()
@@ -162,7 +146,7 @@ def send_line_message(MemID, Title, Location):
             """,
             (FamilyID,),
         )
-        main_user_id = cursor.fetchone()[0]
+        MainUserId = cursor.fetchone()[0]
 
         cursor.execute(
             """
@@ -175,7 +159,7 @@ def send_line_message(MemID, Title, Location):
             (MemID,),
         )
         cursor.execute("SELECT MemID FROM Member WHERE MemID = %s", (MemID,))
-        sub_user_id = cursor.fetchone()[0]
+        SubUserId = cursor.fetchone()[0]
 
         conn.close()
 
@@ -192,12 +176,12 @@ def send_line_message(MemID, Title, Location):
             ),
         )
 
-        if main_user_id != sub_user_id:
-            line_bot_api.push_message(main_user_id, body)
+        if MainUserId != SubUserId:
+            line_bot_api.push_message(MainUserId, body)
         else:
-            line_bot_api.push_message(main_user_id, body)
+            line_bot_api.push_message(MainUserId, body)
 
-    except Exception as e:
+    except:
         pass
 
 
@@ -245,16 +229,16 @@ def event_list():
     if FamilyID:
         for id in FamilyID:
             query = """
-                SELECT m.*, e.*, 
-                mu.MemName AS MainUserName, 
-                eu.MemName AS EditorUserName
-                FROM `113-ntub113506`.Memo m
-                JOIN `113-ntub113506`.Event e ON e.MemoID = m.MemoID
-                LEFT JOIN `113-ntub113506`.Family f ON f.FamilyID = m.FamilyID
-                LEFT JOIN `113-ntub113506`.Member mu ON mu.MemID = f.MainUserID
-                LEFT JOIN `113-ntub113506`.Member eu ON eu.MemID = m.EditorID
-                WHERE m.FamilyID = %s AND `DateTime` > NOW()
-                """
+                    SELECT m.*, e.*, 
+                    mu.MemName AS MainUserName, 
+                    eu.MemName AS EditorUserName
+                    FROM `113-ntub113506`.Memo m
+                    JOIN `113-ntub113506`.Event e ON e.MemoID = m.MemoID
+                    LEFT JOIN `113-ntub113506`.Family f ON f.FamilyID = m.FamilyID
+                    LEFT JOIN `113-ntub113506`.Member mu ON mu.MemID = f.MainUserID
+                    LEFT JOIN `113-ntub113506`.Member eu ON eu.MemID = m.EditorID
+                    WHERE m.FamilyID = %s AND `DateTime` > NOW()
+                    """
 
             params = [id[0]]
 
@@ -280,10 +264,10 @@ def event_list():
             "/event/event_list.html", data=data, MainUsers=MainUsers, liff=db.LIFF_ID
         )
     else:
-        return render_template("/event/event_not_found.html", MainUsers=MainUsers)
+        return render_template("/schedule/not_found.html", MainUsers=MainUsers, Title="紀念日", schedule="event")
 
 
-# 歷史查詢
+# 紀錄
 @event_bp.route("/history")
 @login_required
 def event_history():
@@ -327,16 +311,16 @@ def event_history():
     if FamilyID:
         for id in FamilyID:
             query = """
-                SELECT m.*, e.*, 
-                mu.MemName AS MainUserName, 
-                eu.MemName AS EditorUserName
-                FROM `113-ntub113506`.Memo m
-                JOIN `113-ntub113506`.Event e ON e.MemoID = m.MemoID
-                LEFT JOIN `113-ntub113506`.Family f ON f.FamilyID = m.FamilyID
-                LEFT JOIN `113-ntub113506`.Member mu ON mu.MemID = f.MainUserID
-                LEFT JOIN `113-ntub113506`.Member eu ON eu.MemID = m.EditorID
-                WHERE m.FamilyID = %s AND `DateTime` <= NOW()
-                """
+                    SELECT m.*, e.*, 
+                    mu.MemName AS MainUserName, 
+                    eu.MemName AS EditorUserName
+                    FROM `113-ntub113506`.Memo m
+                    JOIN `113-ntub113506`.Event e ON e.MemoID = m.MemoID
+                    LEFT JOIN `113-ntub113506`.Family f ON f.FamilyID = m.FamilyID
+                    LEFT JOIN `113-ntub113506`.Member mu ON mu.MemID = f.MainUserID
+                    LEFT JOIN `113-ntub113506`.Member eu ON eu.MemID = m.EditorID
+                    WHERE m.FamilyID = %s AND `DateTime` <= NOW()
+                    """
 
             params = [id[0]]
 
@@ -362,7 +346,7 @@ def event_history():
             "/event/event_history.html", data=data, MainUsers=MainUsers, liff=db.LIFF_ID
         )
     else:
-        return render_template("/event/event_not_found.html", MainUsers=MainUsers)
+        return render_template("/schedule/not_found.html", MainUsers=MainUsers, Title="紀念日", schedule="event")
 
 
 # 更改確認
@@ -387,10 +371,7 @@ def event_update_confirm():
 
     connection.close()
 
-    if data:
-        return render_template("/event/event_update_confirm.html", data=data)
-    else:
-        return render_template("/event/event_not_found.html")
+    return render_template("/event/event_update_confirm.html", data=data)
 
 
 # 更改
@@ -402,35 +383,45 @@ def event_update():
         Title = request.form.get("Title")
         DateTime = request.form.get("DateTime")
         Location = request.form.get("Location")
+        Cycle = request.form.get("Cycle")
+        Alert = int(request.form.get("Alert", 0))
 
         conn = db.get_connection()
         cursor = conn.cursor()
 
         cursor.execute(
-            "UPDATE Memo SET Title = %s, DateTime = %s, EditorID = %s WHERE MemoID = %s",
-            (Title, DateTime, EditorID, MemoID),
+            """
+            UPDATE Memo 
+            SET Title = %s, DateTime = %s, EditorID = %s, Cycle = %s, Alert = %s 
+            WHERE MemoID = %s
+            """,
+            (Title, DateTime, EditorID, Cycle, Alert, MemoID),
         )
         cursor.execute(
-            "UPDATE Event SET Location = %s WHERE MemoID = %s", (Location, MemoID)
+            """
+            UPDATE 
+            Event SET Location = %s WHERE MemoID = %s
+            """, 
+            (Location, MemoID)
         )
 
         conn.commit()
         conn.close()
 
-        job_id = MemoID
         send_time = datetime.strptime(DateTime, "%Y-%m-%dT%H:%M")
+        reminder_time = send_time - timedelta(minutes=Alert)
 
         if scheduler.get_job(MemoID) != None:
             scheduler.modify_job(
                 MemoID,
                 trigger="date",
-                run_date=send_time,
+                run_date=reminder_time,
                 args=[EditorID, Title, Location],
             )
 
-        return render_template("event/event_update_success.html")
-    except Exception as e:
-        return render_template("event/event_update_fail.html")
+        return render_template("/schedule/result.html", schedule="event", list="list", Title="編輯紀念日成功", img="S_update")
+    except:
+        return render_template("/schedule/result.html", schedule="event", list="list", Title="編輯紀念日失敗", img="F_update")
 
 
 # 刪除確認
@@ -446,10 +437,7 @@ def event_delete_confirm():
 
     connection.close()
 
-    if data:
-        return render_template("/event/event_delete_confirm.html", data=data)
-    else:
-        return render_template("/event/event_not_found.html")
+    return render_template("/event/event_delete_confirm.html", data=data)
 
 
 # 刪除
@@ -469,7 +457,6 @@ def event_delete():
 
         scheduler.remove_job(MemoID)
 
-        return render_template("event/event_delete_success.html")
-    except Exception as e:
-
-        return render_template("event/event_delete_fail.html")
+        return render_template("/schedule/result.html", Title="刪除紀念日成功", schedule="event", list="list", img="S_delete")
+    except:
+        return render_template("/schedule/result.html", Title="刪除紀念日失敗", schedule="event", list="list", img="F_delete")

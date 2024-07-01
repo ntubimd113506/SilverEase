@@ -1,10 +1,9 @@
-from datetime import datetime, timedelta
-from flask import Flask, request, render_template, Blueprint, redirect, url_for, session
+from flask import request, render_template, Blueprint, session
 from flask_login import login_required
-from services import scheduler, line_bot_api
-from utils import db
+from datetime import datetime, timedelta
 from linebot.models import *
-
+from utils import db
+from services import scheduler, line_bot_api
 
 hos_bp = Blueprint("hos_bp", __name__)
 
@@ -12,7 +11,7 @@ hos_bp = Blueprint("hos_bp", __name__)
 # 主頁
 @hos_bp.route("/")
 def hos():
-    return render_template("schedule_index.html")
+    return render_template("/schedule/schedule_index.html")
 
 
 # 新增表單
@@ -98,7 +97,8 @@ def hos_create():
 
         cursor.execute(
             """
-            INSERT INTO Hos (MemoID, Location, Doctor, Clinic, Num) 
+            INSERT INTO 
+            Hos (MemoID, Location, Doctor, Clinic, Num) 
             VALUES (%s, %s, %s, %s, %s)
             """,
             (memoID, Location, Doctor, Clinic, Num),
@@ -116,15 +116,27 @@ def hos_create():
             func=send_line_message,
             trigger="date",
             run_date=reminder_time,
-            args=[MemID, Title, Location, Doctor, Clinic, Num],
+            args=[MainUserID, Title, Location, Doctor, Clinic, Num],
         )
 
-        return render_template("/hos/hos_create_success.html")
-    except Exception as e:
-        print(e)
-        return render_template("/hos/hos_create_fail.html")
+        return render_template(
+            "/schedule/result.html",
+            schedule="hos",
+            list="",
+            Title="新增回診資料成功",
+            img="S_create",
+        )
+    except:
+        return render_template(
+            "/schedule/result.html",
+            schedule="hos",
+            list="",
+            Title="新增回診資料失敗",
+            img="F_create",
+        )
 
 
+# 傳送通知
 def send_line_message(MemID, Title, Location, Doctor, Clinic, Num):
     try:
         conn = db.get_connection()
@@ -149,18 +161,18 @@ def send_line_message(MemID, Title, Location, Doctor, Clinic, Num):
             """,
             (FamilyID,),
         )
-        main_user_id = cursor.fetchone()[0]
+        MainUserId = cursor.fetchone()[0]
 
         cursor.execute(
             """
             SELECT MainUserID 
             FROM Family 
             WHERE FamilyID = (SELECT FamilyID FROM FamilyLink WHERE SubUserID = %s)
-        """,
+            """,
             (MemID,),
         )
         cursor.execute("SELECT MemID FROM Member WHERE MemID = %s", (MemID,))
-        sub_user_id = cursor.fetchone()[0]
+        SubUserId = cursor.fetchone()[0]
 
         conn.close()
 
@@ -177,13 +189,13 @@ def send_line_message(MemID, Title, Location, Doctor, Clinic, Num):
             ),
         )
 
-        if main_user_id != sub_user_id:
-            line_bot_api.push_message(main_user_id, body)
+        if MainUserId != SubUserId:
+            line_bot_api.push_message(MainUserId, body)
         else:
-            line_bot_api.push_message(main_user_id, body)
+            line_bot_api.push_message(MainUserId, body)
 
-    except Exception as e:
-        print(e)
+    except:
+        pass
 
 
 # 查詢
@@ -230,16 +242,16 @@ def hos_list():
     if FamilyID:
         for id in FamilyID:
             query = """
-                SELECT m.*, e.*, 
-                mu.MemName AS MainUserName, 
-                eu.MemName AS EditorUserName
-                FROM `113-ntub113506`.Memo m
-                JOIN `113-ntub113506`.Hos e ON e.MemoID = m.MemoID
-                LEFT JOIN `113-ntub113506`.Family f ON f.FamilyID = m.FamilyID
-                LEFT JOIN `113-ntub113506`.Member mu ON mu.MemID = f.MainUserID
-                LEFT JOIN `113-ntub113506`.Member eu ON eu.MemID = m.EditorID
-                WHERE m.FamilyID = %s AND `DateTime` > NOW()
-                """
+                    SELECT m.*, e.*, 
+                    mu.MemName AS MainUserName, 
+                    eu.MemName AS EditorUserName
+                    FROM `113-ntub113506`.Memo m
+                    JOIN `113-ntub113506`.Hos e ON e.MemoID = m.MemoID
+                    LEFT JOIN `113-ntub113506`.Family f ON f.FamilyID = m.FamilyID
+                    LEFT JOIN `113-ntub113506`.Member mu ON mu.MemID = f.MainUserID
+                    LEFT JOIN `113-ntub113506`.Member eu ON eu.MemID = m.EditorID
+                    WHERE m.FamilyID = %s AND `DateTime` > NOW()
+                    """
 
             params = [id[0]]
 
@@ -265,10 +277,10 @@ def hos_list():
             "/hos/hos_list.html", data=data, MainUsers=MainUsers, liff=db.LIFF_ID
         )
     else:
-        return render_template("/hos/hos_not_found.html", MainUsers=MainUsers)
+        return render_template("/schedule/not_found.html", MainUsers=MainUsers, Title="回診資料", schedule="hos")
 
 
-# 歷史查詢
+# 紀錄
 @hos_bp.route("/history")
 @login_required
 def hos_history():
@@ -312,16 +324,16 @@ def hos_history():
     if FamilyID:
         for id in FamilyID:
             query = """
-                SELECT m.*, e.*, 
-                mu.MemName AS MainUserName, 
-                eu.MemName AS EditorUserName
-                FROM `113-ntub113506`.Memo m
-                JOIN `113-ntub113506`.Hos e ON e.MemoID = m.MemoID
-                LEFT JOIN `113-ntub113506`.Family f ON f.FamilyID = m.FamilyID
-                LEFT JOIN `113-ntub113506`.Member mu ON mu.MemID = f.MainUserID
-                LEFT JOIN `113-ntub113506`.Member eu ON eu.MemID = m.EditorID
-                WHERE m.FamilyID = %s AND `DateTime` <= NOW()
-                """
+                    SELECT m.*, e.*, 
+                    mu.MemName AS MainUserName, 
+                    eu.MemName AS EditorUserName
+                    FROM `113-ntub113506`.Memo m
+                    JOIN `113-ntub113506`.Hos e ON e.MemoID = m.MemoID
+                    LEFT JOIN `113-ntub113506`.Family f ON f.FamilyID = m.FamilyID
+                    LEFT JOIN `113-ntub113506`.Member mu ON mu.MemID = f.MainUserID
+                    LEFT JOIN `113-ntub113506`.Member eu ON eu.MemID = m.EditorID
+                    WHERE m.FamilyID = %s AND `DateTime` <= NOW()
+                    """
 
             params = [id[0]]
 
@@ -347,7 +359,7 @@ def hos_history():
             "/hos/hos_history.html", data=data, MainUsers=MainUsers, liff=db.LIFF_ID
         )
     else:
-        return render_template("/hos/hos_not_found.html", MainUsers=MainUsers)
+        return render_template("/schedule/not_found.html", MainUsers=MainUsers, Title="回診資料", schedule="hos")
 
 
 # 更改確認
@@ -372,10 +384,7 @@ def hos_update_confirm():
 
     connection.close()
 
-    if data:
-        return render_template("/hos/hos_update_confirm.html", data=data)
-    else:
-        return render_template("/hos/hos_not_found.html")
+    return render_template("/hos/hos_update_confirm.html", data=data)
 
 
 # 更改
@@ -470,10 +479,21 @@ def hos_update():
                 **interval,
             )
 
-        return render_template("hos/hos_update_success.html")
-    except Exception as e:
-        print(e)
-        return render_template("hos/hos_update_fail.html")
+        return render_template(
+            "/schedule/result.html",
+            schedule="hos",
+            list="list",
+            Title="編輯回診資料成功",
+            img="S_update",
+        )
+    except:
+        return render_template(
+            "/schedule/result.html",
+            schedule="hos",
+            list="list",
+            Title="編輯回診資料成功",
+            img="F_update",
+        )
 
 
 # 刪除確認
@@ -489,10 +509,7 @@ def hos_delete_confirm():
 
     connection.close()
 
-    if data:
-        return render_template("/hos/hos_delete_confirm.html", data=data)
-    else:
-        return render_template("/hos/hos_not_found.html")
+    return render_template("/hos/hos_delete_confirm.html", data=data)
 
 
 # 刪除
@@ -513,6 +530,18 @@ def hos_delete():
         conn.commit()
         conn.close()
 
-        return render_template("hos/hos_delete_success.html")
+        return render_template(
+            "/schedule/result.html",
+            schedule="hos",
+            list="list",
+            Title="刪除回診資料成功",
+            img="S_delete",
+        )
     except:
-        return render_template("hos/hos_delete_fail.html")
+        return render_template(
+            "/schedule/result.html",
+            schedule="hos",
+            list="list",
+            Title="刪除回診資料失敗",
+            img="F_delete",
+        )
