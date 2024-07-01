@@ -8,6 +8,7 @@ html, body{
     background-color: #f4f9f7;
     padding: 0%;
     margin: 0%;
+    padding-bottom: constant(safe-area-inset-bottom);
 }
 
 
