@@ -12,7 +12,7 @@ html, body{
     background-color: #F2F0EE;
     padding: 0;
     margin: 0;
-
+    padding-bottom: constant(safe-area-inset-bottom);
 }
 
 /* ------------------- */
@@ -101,31 +101,4 @@ div.card:nth-child(1),
 div.card:nth-child(2)
 {
     margin-bottom: 50px;
-}
-
-/* ------------------- */
-/* float_frame         */
-/* ------------------- */
-.float_frame {
-    position: fixed;
-    bottom: 0;
-    height: 60px;
-    width: 100%;
-    background-color: #F2F0EE;
-    padding: 10px 0;
-    z-index: 99;
-    text-decoration: none;
-}
-
-.float_frame img {
-    display: none;
-}
-
-@media (max-width: 768px) {
-    .float_frame img.lg_hide {
-        display: none;
-    }
-    .float_frame img.up_lg_hide {
-        display: block;
-    }
 }
