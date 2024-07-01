@@ -90,7 +90,7 @@ def event_create():
         )
 
         cursor.execute("SELECT MemoID FROM Memo ORDER BY MemoID DESC LIMIT 1")
-        memoID = cursor.fetchone()[0]
+        MemoID = cursor.fetchone()[0]
 
         cursor.execute(
             """
@@ -98,13 +98,13 @@ def event_create():
             Event (MemoID, Location) 
             VALUES (%s, %s)
             """,
-            (memoID, Location),
+            (MemoID, Location),
         )
 
         conn.commit()
         conn.close()
 
-        job_id = f"{memoID}"
+        job_id = f"{MemoID}"
         send_time = datetime.strptime(DateTime, "%Y-%m-%dT%H:%M")
         reminder_time = send_time - timedelta(minutes=Alert)
 
@@ -116,9 +116,21 @@ def event_create():
             args=[MainUserID, Title, Location],
         )
 
-        return render_template("/schedule/result.html", Title="新增紀念日成功", schedule="event", list="", img="S_create")
+        return render_template(
+            "/schedule/result.html",
+            Title="新增紀念日成功",
+            schedule="event",
+            list="",
+            img="S_create",
+        )
     except:
-        return render_template("/schedule/result.html", Title="新增紀念日失敗", schedule="event", list="", img="F_create")
+        return render_template(
+            "/schedule/result.html",
+            Title="新增紀念日失敗",
+            schedule="event",
+            list="",
+            img="F_create",
+        )
 
 
 # 傳送通知
@@ -264,7 +276,12 @@ def event_list():
             "/event/event_list.html", data=data, MainUsers=MainUsers, liff=db.LIFF_ID
         )
     else:
-        return render_template("/schedule/not_found.html", MainUsers=MainUsers, Title="紀念日", schedule="event")
+        return render_template(
+            "/schedule/not_found.html",
+            MainUsers=MainUsers,
+            Title="紀念日",
+            schedule="event",
+        )
 
 
 # 紀錄
@@ -346,7 +363,12 @@ def event_history():
             "/event/event_history.html", data=data, MainUsers=MainUsers, liff=db.LIFF_ID
         )
     else:
-        return render_template("/schedule/not_found.html", MainUsers=MainUsers, Title="紀念日", schedule="event")
+        return render_template(
+            "/schedule/not_found.html",
+            MainUsers=MainUsers,
+            Title="紀念日",
+            schedule="event",
+        )
 
 
 # 更改確認
@@ -401,13 +423,25 @@ def event_update():
             """
             UPDATE 
             Event SET Location = %s WHERE MemoID = %s
-            """, 
-            (Location, MemoID)
+            """,
+            (Location, MemoID),
         )
+
+        cursor.execute(
+            """
+            SELECT f.MainUserID
+            FROM `113-ntub113506`.Memo m
+            JOIN `113-ntub113506`.Family f ON m.FamilyID = f.FamilyID
+            WHERE m.MemoID = %s
+            """,
+            (MemoID,),
+        )
+        MainUserID = cursor.fetchone()[0]
 
         conn.commit()
         conn.close()
 
+        job_id = f"{MemoID}"
         send_time = datetime.strptime(DateTime, "%Y-%m-%dT%H:%M")
         reminder_time = send_time - timedelta(minutes=Alert)
 
@@ -416,12 +450,32 @@ def event_update():
                 MemoID,
                 trigger="date",
                 run_date=reminder_time,
-                args=[EditorID, Title, Location],
+                args=[MainUserID, Title, Location],
+            )
+        else:
+            scheduler.add_job(
+                id=job_id,
+                func=send_line_message,
+                trigger="date",
+                run_date=reminder_time,
+                args=[MainUserID, Title, Location],
             )
 
-        return render_template("/schedule/result.html", schedule="event", list="list", Title="編輯紀念日成功", img="S_update")
+        return render_template(
+            "/schedule/result.html",
+            schedule="event",
+            list="list",
+            Title="編輯紀念日成功",
+            img="S_update",
+        )
     except:
-        return render_template("/schedule/result.html", schedule="event", list="list", Title="編輯紀念日失敗", img="F_update")
+        return render_template(
+            "/schedule/result.html",
+            schedule="event",
+            list="list",
+            Title="編輯紀念日失敗",
+            img="F_update",
+        )
 
 
 # 刪除確認
@@ -457,6 +511,18 @@ def event_delete():
 
         scheduler.remove_job(MemoID)
 
-        return render_template("/schedule/result.html", Title="刪除紀念日成功", schedule="event", list="list", img="S_delete")
+        return render_template(
+            "/schedule/result.html",
+            Title="刪除紀念日成功",
+            schedule="event",
+            list="list",
+            img="S_delete",
+        )
     except:
-        return render_template("/schedule/result.html", Title="刪除紀念日失敗", schedule="event", list="list", img="F_delete")
+        return render_template(
+            "/schedule/result.html",
+            Title="刪除紀念日失敗",
+            schedule="event",
+            list="list",
+            img="F_delete",
+        )

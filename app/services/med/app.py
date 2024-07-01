@@ -90,7 +90,7 @@ def med_create():
         )
 
         cursor.execute("Select MemoID from Memo order by MemoID Desc")
-        memoID = cursor.fetchone()[0]
+        MemoID = cursor.fetchone()[0]
 
         cursor.execute(
             """
@@ -98,65 +98,39 @@ def med_create():
             Med (MemoID, MedFeature) 
             VALUES (%s, %s)
             """,
-            (memoID, MedFeature),
+            (MemoID, MedFeature),
         )
 
         conn.commit()
         conn.close()
 
-        job_id = f"{memoID}"
+        job_id = f"{MemoID}"
         send_time = datetime.strptime(DateTime, "%Y-%m-%dT%H:%M")
         reminder_time = send_time - timedelta(minutes=Alert)
 
-        if Cycle == "不重複":
-            scheduler.add_job(
-                id=job_id,
-                func=send_line_message,
-                trigger="date",
-                run_date=reminder_time,
-                args=[MemID, Title, MedFeature],
-            )
-        else:
-            trigger = None
-            interval = {}
+        scheduler.add_job(
+            id=job_id,
+            func=send_line_message,
+            trigger="date",
+            run_date=reminder_time,
+            args=[MainUserID, Title, MedFeature],
+        )
 
-            if Cycle == "一小時":
-                trigger = "interval"
-                interval = {"hours": 1}
-            elif Cycle == "一天":
-                trigger = "interval"
-                interval = {"days": 1}
-            elif Cycle == "一週":
-                trigger = "interval"
-                interval = {"weeks": 1}
-            elif Cycle == "一個月":
-                trigger = "cron"
-                interval = {
-                    "day": send_time.day,
-                    "hour": send_time.hour,
-                    "minute": send_time.minute,
-                }
-            elif Cycle == "一年":
-                trigger = "cron"
-                interval = {
-                    "month": send_time.month,
-                    "day": send_time.day,
-                    "hour": send_time.hour,
-                    "minute": send_time.minute,
-                }
-
-            scheduler.add_job(
-                id=job_id,
-                func=send_line_message,
-                trigger=trigger,
-                start_date=reminder_time,
-                args=[MemID, Title, MedFeature],
-                **interval,
-            )
-
-        return render_template("/schedule/result.html", schedule="med", list="", Title="新增用藥成功", img="S_create")
+        return render_template(
+            "/schedule/result.html",
+            schedule="med",
+            list="",
+            Title="新增用藥成功",
+            img="S_create",
+        )
     except:
-        return render_template("/schedule/result.html", schedule="med", list="", Title="新增用藥失敗", img="F_create")
+        return render_template(
+            "/schedule/result.html",
+            schedule="med",
+            list="",
+            Title="新增用藥失敗",
+            img="F_create",
+        )
 
 
 # 傳送通知
@@ -302,7 +276,12 @@ def med_list():
             "/med/med_list.html", data=data, MainUsers=MainUsers, liff=db.LIFF_ID
         )
     else:
-        return render_template("/schedule/not_found.html", MainUsers=MainUsers, Title="用藥", schedule="med")
+        return render_template(
+            "/schedule/not_found.html",
+            MainUsers=MainUsers,
+            Title="用藥",
+            schedule="med",
+        )
 
 
 # 歷史查詢
@@ -384,7 +363,12 @@ def med_history():
             "/med/med_history.html", data=data, MainUsers=MainUsers, liff=db.LIFF_ID
         )
     else:
-        return render_template("/schedule/not_found.html", MainUsers=MainUsers, Title="用藥", schedule="med")
+        return render_template(
+            "/schedule/not_found.html",
+            MainUsers=MainUsers,
+            Title="用藥",
+            schedule="med",
+        )
 
 
 # 更改確認
@@ -445,65 +429,55 @@ def med_update():
             (MedFeature, MemoID),
         )
 
+        cursor.execute(
+            """
+            SELECT f.MainUserID
+            FROM `113-ntub113506`.Memo m
+            JOIN `113-ntub113506`.Family f ON m.FamilyID = f.FamilyID
+            WHERE m.MemoID = %s
+            """,
+            (MemoID,),
+        )
+        MainUserID = cursor.fetchone()[0]
+
         conn.commit()
         conn.close()
 
-        if scheduler.get_job(MemoID) is not None:
-            scheduler.remove_job(MemoID)
-
-        job_id = MemoID
+        job_id = f"{MemoID}"
         send_time = datetime.strptime(DateTime, "%Y-%m-%dT%H:%M")
         reminder_time = send_time - timedelta(minutes=Alert)
 
-        if Cycle == "不重複":
+        if scheduler.get_job(MemoID) != None:
+            scheduler.modify_job(
+                MemoID,
+                trigger="date",
+                run_date=reminder_time,
+                args=[MainUserID, Title, MedFeature],
+            )
+        else:
             scheduler.add_job(
                 id=job_id,
                 func=send_line_message,
                 trigger="date",
                 run_date=reminder_time,
-                args=[EditorID, Title, MedFeature],
-            )
-        else:
-            trigger = None
-            interval = {}
-
-            if Cycle == "一小時":
-                trigger = "interval"
-                interval = {"hours": 1}
-            elif Cycle == "一天":
-                trigger = "interval"
-                interval = {"days": 1}
-            elif Cycle == "一週":
-                trigger = "interval"
-                interval = {"weeks": 1}
-            elif Cycle == "一個月":
-                trigger = "cron"
-                interval = {
-                    "day": send_time.day,
-                    "hour": send_time.hour,
-                    "minute": send_time.minute,
-                }
-            elif Cycle == "一年":
-                trigger = "cron"
-                interval = {
-                    "month": send_time.month,
-                    "day": send_time.day,
-                    "hour": send_time.hour,
-                    "minute": send_time.minute,
-                }
-
-            scheduler.add_job(
-                id=job_id,
-                func=send_line_message,
-                trigger=trigger,
-                start_date=reminder_time,
-                args=[EditorID, Title, MedFeature],
-                **interval,
+                args=[MainUserID, Title, MedFeature],
             )
 
-        return render_template("/schedule/result.html", schedule="med", list="list", Title="編輯用藥成功", img="S_update")
+        return render_template(
+            "/schedule/result.html",
+            schedule="med",
+            list="list",
+            Title="編輯用藥成功",
+            img="S_update",
+        )
     except:
-        return render_template("/schedule/result.html", schedule="med", list="list", Title="編輯用藥成功", img="F_update")
+        return render_template(
+            "/schedule/result.html",
+            schedule="med",
+            list="list",
+            Title="編輯用藥成功",
+            img="F_update",
+        )
 
 
 # 刪除確認
@@ -541,6 +515,18 @@ def med_delete():
         if job:
             scheduler.remove_job(MemoID)
 
-        return render_template("/schedule/result.html", schedule="med", list="list", Title="刪除用藥成功", img="S_delete")
+        return render_template(
+            "/schedule/result.html",
+            schedule="med",
+            list="list",
+            Title="刪除用藥成功",
+            img="S_delete",
+        )
     except:
-        return render_template("/schedule/result.html", schedule="med", list="list", Title="刪除用藥成功", img="F_delete")
+        return render_template(
+            "/schedule/result.html",
+            schedule="med",
+            list="list",
+            Title="刪除用藥成功",
+            img="F_delete",
+        )

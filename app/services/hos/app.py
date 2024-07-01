@@ -93,7 +93,7 @@ def hos_create():
         )
 
         cursor.execute("SELECT MemoID FROM Memo ORDER BY MemoID DESC")
-        memoID = cursor.fetchone()[0]
+        MemoID = cursor.fetchone()[0]
 
         cursor.execute(
             """
@@ -101,13 +101,13 @@ def hos_create():
             Hos (MemoID, Location, Doctor, Clinic, Num) 
             VALUES (%s, %s, %s, %s, %s)
             """,
-            (memoID, Location, Doctor, Clinic, Num),
+            (MemoID, Location, Doctor, Clinic, Num),
         )
 
         conn.commit()
         conn.close()
 
-        job_id = f"{memoID}"
+        job_id = f"{MemoID}"
         send_time = datetime.strptime(DateTime, "%Y-%m-%dT%H:%M")
         reminder_time = send_time - timedelta(minutes=Alert)
 
@@ -277,7 +277,12 @@ def hos_list():
             "/hos/hos_list.html", data=data, MainUsers=MainUsers, liff=db.LIFF_ID
         )
     else:
-        return render_template("/schedule/not_found.html", MainUsers=MainUsers, Title="回診資料", schedule="hos")
+        return render_template(
+            "/schedule/not_found.html",
+            MainUsers=MainUsers,
+            Title="回診資料",
+            schedule="hos",
+        )
 
 
 # 紀錄
@@ -359,7 +364,12 @@ def hos_history():
             "/hos/hos_history.html", data=data, MainUsers=MainUsers, liff=db.LIFF_ID
         )
     else:
-        return render_template("/schedule/not_found.html", MainUsers=MainUsers, Title="回診資料", schedule="hos")
+        return render_template(
+            "/schedule/not_found.html",
+            MainUsers=MainUsers,
+            Title="回診資料",
+            schedule="hos",
+        )
 
 
 # 更改確認
@@ -423,60 +433,41 @@ def hos_update():
             (Location, Doctor, Clinic, Num, MemoID),
         )
 
+        cursor.execute(
+            """
+            SELECT f.MainUserID
+            FROM `113-ntub113506`.Memo m
+            JOIN `113-ntub113506`.Family f ON m.FamilyID = f.FamilyID
+            WHERE m.MemoID = %s
+            """,
+            (MemoID,),
+        )
+        MainUserID = cursor.fetchone()[0]
+
         conn.commit()
         conn.close()
 
         if scheduler.get_job(MemoID) is not None:
             scheduler.remove_job(MemoID)
 
-        job_id = MemoID
+        job_id = f"{MemoID}"
         send_time = datetime.strptime(DateTime, "%Y-%m-%dT%H:%M")
         reminder_time = send_time - timedelta(minutes=Alert)
 
-        if Cycle == "不重複":
+        if scheduler.get_job(MemoID) != None:
+            scheduler.modify_job(
+                MemoID,
+                trigger="date",
+                run_date=reminder_time,
+                args=[MainUserID, Title, Location, Doctor, Clinic, Num],
+            )
+        else:
             scheduler.add_job(
                 id=job_id,
                 func=send_line_message,
                 trigger="date",
                 run_date=reminder_time,
-                args=[EditorID, Title, Location, Doctor, Clinic, Num],
-            )
-        else:
-            trigger = None
-            interval = {}
-
-            if Cycle == "一小時":
-                trigger = "interval"
-                interval = {"hours": 1}
-            elif Cycle == "一天":
-                trigger = "interval"
-                interval = {"days": 1}
-            elif Cycle == "一週":
-                trigger = "interval"
-                interval = {"weeks": 1}
-            elif Cycle == "一個月":
-                trigger = "cron"
-                interval = {
-                    "day": send_time.day,
-                    "hour": send_time.hour,
-                    "minute": send_time.minute,
-                }
-            elif Cycle == "一年":
-                trigger = "cron"
-                interval = {
-                    "month": send_time.month,
-                    "day": send_time.day,
-                    "hour": send_time.hour,
-                    "minute": send_time.minute,
-                }
-
-            scheduler.add_job(
-                id=job_id,
-                func=send_line_message,
-                trigger=trigger,
-                start_date=reminder_time,
-                args=[EditorID, Title, Location, Doctor, Clinic, Num],
-                **interval,
+                args=[MainUserID, Title, Location, Doctor, Clinic, Num],
             )
 
         return render_template(
