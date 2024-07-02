@@ -1,8 +1,8 @@
-from flask import Flask, render_template, session, request, jsonify
-from flask_login import login_required
+from flask import Flask, render_template
+from config import Config
 from utils import db
 from services import cam_bp, event_bp, hos_bp, linebot_bp, med_bp, set_bp, user_bp, scheduler, mqtt, login_manager
-from config import Config
+
 
 app = Flask(__name__)
 
@@ -26,5 +26,4 @@ def index():
 
 
 if __name__ == "__main__":
-    scheduler.start()
     app.run(debug=1)
