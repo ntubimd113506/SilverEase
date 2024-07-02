@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from linebot.models import *
 from utils import db
 from services import scheduler, line_bot_api
+import time, threading
 
 hos_bp = Blueprint("hos_bp", __name__)
 
@@ -116,7 +117,7 @@ def hos_create():
             func=send_line_message,
             trigger="date",
             run_date=reminder_time,
-            args=[MainUserID, Title, Location, Doctor, Clinic, Num],
+            args=[MainUserID, Title, Location, Doctor, Clinic, Num, Cycle, Alert, MemoID],
         )
 
         return render_template(
@@ -136,45 +137,24 @@ def hos_create():
         )
 
 
+message_status = {"received": False}
+
+
 # 傳送通知
-def send_line_message(MemID, Title, Location, Doctor, Clinic, Num):
+def send_line_message(MainUserID, Title, Location, Doctor, Clinic, Num, Cycle, Alert, MemoID):
     try:
         conn = db.get_connection()
         cursor = conn.cursor()
-        cursor.execute(
-            """
-            SELECT COALESCE(f.FamilyID, l.FamilyID) AS FamilyID
-            FROM `113-ntub113506`.Member m
-            LEFT JOIN `113-ntub113506`.Family f ON m.MemID = f.MainUserID
-            LEFT JOIN `113-ntub113506`.FamilyLink l ON m.MemID = l.SubUserID
-            WHERE m.MemID = %s
-            """,
-            (MemID,),
-        )
-        FamilyID = cursor.fetchone()[0]
 
         cursor.execute(
             """
-            SELECT MainUserID
-            FROM `113-ntub113506`.Family
-            WHERE FamilyID = %s
+            SELECT SubUserID FROM `113-ntub113506`.FamilyLink fl
+            Left join `113-ntub113506`.Family f on fl.FamilyID = f.FamilyID
+            where MainUserID = %s;
             """,
-            (FamilyID,),
+            (MainUserID,),
         )
-        MainUserId = cursor.fetchone()[0]
-
-        cursor.execute(
-            """
-            SELECT MainUserID 
-            FROM Family 
-            WHERE FamilyID = (SELECT FamilyID FROM FamilyLink WHERE SubUserID = %s)
-            """,
-            (MemID,),
-        )
-        cursor.execute("SELECT MemID FROM Member WHERE MemID = %s", (MemID,))
-        SubUserId = cursor.fetchone()[0]
-
-        conn.close()
+        SubUserIDs = cursor.fetchall()
 
         body = TemplateSendMessage(
             alt_text="回診通知",
@@ -189,13 +169,65 @@ def send_line_message(MemID, Title, Location, Doctor, Clinic, Num):
             ),
         )
 
-        if MainUserId != SubUserId:
-            line_bot_api.push_message(MainUserId, body)
-        else:
-            line_bot_api.push_message(MainUserId, body)
+        body1 = TextSendMessage(
+            text=f"長者尚未收到此回診通知\n請儘速與長者聯繫\n\n標題: {Title}\n醫院地點: {Location}\n看診醫生: {Doctor}\n門診: {Clinic}\n號碼: {Num}",
+        )
+
+        max = 3
+
+        def send_notification():
+            for a in range(max):
+                line_bot_api.push_message(MainUserID, body)
+                time.sleep(300)
+                if message_status["received"]:
+                    break
+            else:
+                for sub_id in SubUserIDs:
+                    line_bot_api.push_message(sub_id[0], body1)
+
+        threading.Thread(target=send_notification).start()
+
+        next_time = next_send_time(Cycle, datetime.now() + timedelta(minutes=Alert))
+        next_time_format = next_time.strftime("%Y-%m-%dT%H:%M")
+        reminder_time = (next_time - timedelta(minutes=Alert)).strftime(
+            "%Y-%m-%dT%H:%M"
+        )
+
+        cursor.execute(
+            """
+            UPDATE Memo
+            SET DateTime = %s
+            WHERE MemoID = %s
+            """,
+            (next_time_format, MemoID),
+        )
+        conn.commit()
+        conn.close()
+
+        scheduler.add_job(
+            id=f"{MemoID}",
+            func=send_line_message,
+            trigger="date",
+            run_date=reminder_time,
+            args=[MainUserID, Title, Location, Doctor, Clinic, Num, Cycle, Alert, MemoID],
+        )
 
     except:
         pass
+
+def next_send_time(Cycle, now=datetime.now()):
+    if Cycle == "一小時":
+        return now + timedelta(hours=1)
+    elif Cycle == "一天":
+        return now + timedelta(days=1)
+    elif Cycle == "一週":
+        return now + timedelta(weeks=1)
+    elif Cycle == "一個月":
+        return now + timedelta(days=30)
+    elif Cycle == "一年":
+        return now + timedelta(days=365)
+    else:
+        return now
 
 
 # 查詢
@@ -459,7 +491,7 @@ def hos_update():
                 MemoID,
                 trigger="date",
                 run_date=reminder_time,
-                args=[MainUserID, Title, Location, Doctor, Clinic, Num],
+                args=[MainUserID, Title, Location, Doctor, Clinic, Num, Cycle, Alert, MemoID],
             )
         else:
             scheduler.add_job(
@@ -467,7 +499,7 @@ def hos_update():
                 func=send_line_message,
                 trigger="date",
                 run_date=reminder_time,
-                args=[MainUserID, Title, Location, Doctor, Clinic, Num],
+                args=[MainUserID, Title, Location, Doctor, Clinic, Num, Cycle, Alert, MemoID],
             )
 
         return render_template(
