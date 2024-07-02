@@ -1,10 +1,10 @@
+import json
 from flask import request, render_template, Blueprint, session
 from flask_login import login_required
 from datetime import datetime, timedelta
 from linebot.models import *
 from utils import db
 from services import scheduler, line_bot_api
-import time, threading
 
 hos_bp = Blueprint("hos_bp", __name__)
 
@@ -117,7 +117,7 @@ def hos_create():
             func=send_line_message,
             trigger="date",
             run_date=reminder_time,
-            args=[MainUserID, Title, Location, Doctor, Clinic, Num, Cycle, Alert, MemoID],
+            args=[MemoID],
         )
 
         return render_template(
@@ -141,21 +141,24 @@ message_status = {"received": False}
 
 
 # 傳送通知
-def send_line_message(MainUserID, Title, Location, Doctor, Clinic, Num, Cycle, Alert, MemoID):
+def send_line_message(MemoID, cnt=0, got=False):
     try:
-        conn = db.get_connection()
-        cursor = conn.cursor()
-
-        cursor.execute(
-            """
-            SELECT SubUserID FROM `113-ntub113506`.FamilyLink fl
-            Left join `113-ntub113506`.Family f on fl.FamilyID = f.FamilyID
-            where MainUserID = %s;
-            """,
-            (MainUserID,),
+        data = db.get_memo_info(MemoID)
+        Title = data["Title"]
+        Location = data["Location"]
+        Doctor = data["Doctor"]
+        Clinic = data["Clinic"]
+        Num = data["Num"]
+        MainUserID = data["MainUser"]
+        SubUserIDs = data["SubUser"]
+        Cycle = data["Cycle"]
+        Alert = data["Alert"]
+        cnt += 1
+        reminder_time = (datetime.now() + timedelta(seconds=30)).strftime(
+            "%Y-%m-%dT%H:%M:%S"
         )
-        SubUserIDs = cursor.fetchall()
 
+        msg = json.dumps({"MemoID": MemoID, "time": reminder_time, "got": True})
         body = TemplateSendMessage(
             alt_text="回診通知",
             template=ButtonsTemplate(
@@ -165,7 +168,7 @@ def send_line_message(MainUserID, Title, Location, Doctor, Clinic, Num, Cycle, A
                 image_background_color="#FFFFFF",
                 title="回診通知",
                 text=f"標題: {Title}\n醫院地點: {Location}\n看診醫生: {Doctor}\n門診: {Clinic}\n號碼: {Num}",
-                actions=[MessageAction(label="收到", text="收到")],
+                actions=[PostbackAction(label="收到", data=msg, text="收到")],
             ),
         )
 
@@ -173,47 +176,46 @@ def send_line_message(MainUserID, Title, Location, Doctor, Clinic, Num, Cycle, A
             text=f"長者尚未收到此回診通知\n請儘速與長者聯繫\n\n標題: {Title}\n醫院地點: {Location}\n看診醫生: {Doctor}\n門診: {Clinic}\n號碼: {Num}",
         )
 
-        max = 3
-
-        def send_notification():
-            for a in range(max):
-                line_bot_api.push_message(MainUserID, body)
-                time.sleep(300)
-                if message_status["received"]:
-                    break
-            else:
+        if cnt <= 3 and not got:
+            line_bot_api.push_message(MainUserID, body)
+            cnt += 1
+        else:
+            if not got:
                 for sub_id in SubUserIDs:
-                    line_bot_api.push_message(sub_id[0], body1)
+                    line_bot_api.push_message(sub_id, body1)
+            
 
-        threading.Thread(target=send_notification).start()
+            next_time = next_send_time(Cycle, data["DateTime"])
+            next_time_format = next_time.strftime("%Y-%m-%dT%H:%M:%S")
+            reminder_time = (next_time - timedelta(minutes=Alert)).strftime(
+                "%Y-%m-%dT%H:%M:%S"
+            )
+            cnt = 0
+            got = False
 
-        next_time = next_send_time(Cycle, datetime.now() + timedelta(minutes=Alert))
-        next_time_format = next_time.strftime("%Y-%m-%dT%H:%M")
-        reminder_time = (next_time - timedelta(minutes=Alert)).strftime(
-            "%Y-%m-%dT%H:%M"
-        )
-
-        cursor.execute(
-            """
-            UPDATE Memo
-            SET DateTime = %s
-            WHERE MemoID = %s
-            """,
-            (next_time_format, MemoID),
-        )
-        conn.commit()
-        conn.close()
+            conn = db.get_connection()
+            cursor = conn.cursor()
+            cursor.execute(
+                """
+                UPDATE Memo
+                SET DateTime = %s
+                WHERE MemoID = %s
+                """,
+                (next_time_format, MemoID),
+            )
+            conn.commit()
+            conn.close()
 
         scheduler.add_job(
             id=f"{MemoID}",
             func=send_line_message,
             trigger="date",
             run_date=reminder_time,
-            args=[MainUserID, Title, Location, Doctor, Clinic, Num, Cycle, Alert, MemoID],
+            args=[MemoID, cnt, got],
         )
-
     except:
         pass
+
 
 def next_send_time(Cycle, now=datetime.now()):
     if Cycle == "一小時":
@@ -465,17 +467,6 @@ def hos_update():
             (Location, Doctor, Clinic, Num, MemoID),
         )
 
-        cursor.execute(
-            """
-            SELECT f.MainUserID
-            FROM `113-ntub113506`.Memo m
-            JOIN `113-ntub113506`.Family f ON m.FamilyID = f.FamilyID
-            WHERE m.MemoID = %s
-            """,
-            (MemoID,),
-        )
-        MainUserID = cursor.fetchone()[0]
-
         conn.commit()
         conn.close()
 
@@ -491,7 +482,7 @@ def hos_update():
                 MemoID,
                 trigger="date",
                 run_date=reminder_time,
-                args=[MainUserID, Title, Location, Doctor, Clinic, Num, Cycle, Alert, MemoID],
+                args=[MemoID],
             )
         else:
             scheduler.add_job(
@@ -499,7 +490,7 @@ def hos_update():
                 func=send_line_message,
                 trigger="date",
                 run_date=reminder_time,
-                args=[MainUserID, Title, Location, Doctor, Clinic, Num, Cycle, Alert, MemoID],
+                args=[MemoID],
             )
 
         return render_template(
