@@ -26,5 +26,4 @@ def index():
 
 
 if __name__ == "__main__":
-    scheduler.start()
     app.run(debug=1)
