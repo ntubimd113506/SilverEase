@@ -7,13 +7,20 @@ html, body{
     font-family: 'Noto Sans TC', sans-serif;
     background-color: #f0f0f0;
     width: 100%;
-    height: 100%;
+    /* height: 100%; */
     margin: 0;
     padding: 0;
     padding-bottom: 20px; 
     padding-bottom: constant(safe-area-inset-bottom);
     padding-bottom: env(safe-area-inset-bottom);
 }
+
+html, body {
+    padding-bottom: 0;
+    min-height: 100%;
+    height: auto;
+}
+
 
 /* ------------------- */
 /* container           */
@@ -25,7 +32,9 @@ div.container{
     text-align: justify;
     line-height: 26px;
     background-color: #F2F0EE;
-    padding-bottom: 20px; 
+    /* padding-bottom: 20px;  */
+    /* min-height: 100vh; */
+    padding-bottom: 50px;
 }
 
 
@@ -115,50 +124,33 @@ div.content h1{
     letter-spacing:8px;
 }
 
-input.input-field {
+/* input.input-field {
     width: 100%;
     height: 40px;
     border-radius: 6px;
     font-size: 19px;
     color: #333;
     padding-left: 10px;
-    /* padding-right: 40px; */
     box-sizing: border-box;
     border-width: 1px; 
     border-style: solid;
     background-color: white;
-}
+} */
 
-input[type="datetime-local"] {
+/* input[type="datetime-local"] {
     width: 100%;
     height: 42px;
     background-color: white;
     color: #333;
     text-align: left; 
     padding-left: 10px; 
-    padding-right: 40px; /* 為圖標留出空間 */
+    padding-right: 40px;
     border-width: 1px;
     border-style: solid;
-    box-sizing: border-box; /* 確保padding不會增加總寬度 */
-}
+    box-sizing: border-box;
+} */
 
-.input-icon {
-    position: relative;
-    width: 100%;
-}
-
-.fa-calendar-days {
-    position: absolute;
-    right: 10px;
-    top: 50%; 
-    transform: translateY(-50%); 
-    color: #809f68;
-    font-size: 19px;
-    pointer-events: none; 
-    z-index: 1; /* 確保圖標在輸入框上層 */
-}
-
-select {
+/* select {
     width: 100%;
     height: 40px;
     border-radius: 6px;
@@ -170,6 +162,50 @@ select {
     border-width: 1px;
     border-style: solid;
     background-color: white;
+} */
+
+input.input-field, 
+input[type="datetime-local"],
+select {
+    width: 100%;
+    height: 40px;
+    border-radius: 6px;
+    font-size: 19px;
+    color: #111111;
+    padding: 0 8px;
+    box-sizing: border-box;
+    border: 1px solid #747474;
+    background-color: white;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+input[type="datetime-local"] {
+    padding-right: 40px; /* 為圖標留出空間 */
+}
+
+
+/* 下拉選單箭頭 */
+select {
+    background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    margin-bottom: 24px;
+}
+
+.input-icon {
+    position: relative;
+}
+
+.fa-calendar-days {
+    position: absolute;
+    right: 10px;
+    top: 50%; 
+    transform: translateY(-50%); 
+    color: #809f68;
+    font-size: 19px;
+    pointer-events: none;
 }
 
 /* 輸入框間距 */
@@ -180,7 +216,6 @@ select {
 .name {
     font-size: 18px;
     margin-bottom: 5px; 
-    
 }  
 
 /* 送出按鈕設定 */
@@ -192,7 +227,7 @@ select {
     width: 100%; 
     height: 40px;
     border-style:none;
-    border-radius: 50px;
+    border-radius: 20px;
     color: #ffffff;
     font-size: 19px;
     font-weight: bolder;
@@ -212,13 +247,13 @@ select {
 /* delete_confirm的更改 */
 input[type="submit" i]{
     position: relative;
-    top: -20px;
+    top: -80px;
     align-items: center;
     background-color: #809f68;
     width: 100%;
     height: 40px;
     border-style:none;
-    border-radius: 50px;
+    border-radius: 20px;
     color: #ffffff;
     font-size: 19px;
     font-weight: bolder;
@@ -238,29 +273,36 @@ input[type="submit" i]:active {
 /* update_confirm的刪除 */
 .delete-btn{
     position: relative;
-    top: 90px;
+    top: 80px;
     align-items: center;
-    background-color: #F2F0EE;
-    color: #000000;
-    text-decoration: none;
-    font-size: 19px;
-    padding: 3px 130px; 
+    background-color: #ffffff;
+    /* background-color: #F2F0EE; */
     border: 4px solid #809f68;
-    font-weight: 600;
-    border-radius: 50px;
-    letter-spacing:5px;
+    width: 100%; 
+    height: 40px;
+    border-radius: 20px;
+    font-weight: bolder;
+    letter-spacing: 5px;
     margin: 0%;
     margin-bottom: 50px;
     cursor: pointer;
     transition: background-color 0.3s;
 }
 
-.delete-btn:hover,
-.delete-btn:active {
-    border: 5px solid #9fb889;
-    color: #3a3a3a;
+.delete-btn a{
+    align-items: center;
+    text-decoration: none;
+    color: #000000;
+    font-size: 19px;
+    letter-spacing:5px;
+    font-weight: 600;
 }
 
+.delete-btn:hover,
+.delete-btn:active {
+    border: 4px solid #9fb889;
+    color: #3a3a3a;
+}
 
 @media (max-width: 320px) {
     .delete-btn{
