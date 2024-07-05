@@ -3,7 +3,7 @@
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
 #include <PubSubClient.h>
-#include "Guineapig.WiFiConfig.h"
+#include "ESPWiFiConfig.h"
 #include "my-ca.h"
 
 #define BTN 12
