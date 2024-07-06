@@ -22,11 +22,19 @@
             <h1>SilverEase</h1>
         </div>
 
+        <i id="menu-bar" class="fa-solid fa-plus"></i>
+
+        <div class="navbar">
+            <ul id="navigation" class="nav">
+                <li><a href="/event/">新增排程</a></li>
+            </ul>
+        </div>
+
         <div class="content">
             <div class="header-container">
-                <h1 class="content-header">紀念日紀錄</h1>
-                <a href="/event/">新增排程</a>
+                <h1 class="content-header">紀念日紀錄</h1>   
             </div>
+            
             <form method="GET" action="/event/history">
                 <label for="MainUserID">選擇主要用戶:</label>
                 <select id="MainUserID" name="MainUserID">
