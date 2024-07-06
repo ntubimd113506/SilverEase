@@ -68,6 +68,7 @@ def event_create():
         Location = request.form.get("Location")
         Cycle = request.form.get("Cycle")
         Alert = int(request.form.get("Alert", 0))
+        CreateTime = datetime.now()
 
         conn = db.get_connection()
         cursor = conn.cursor()
@@ -84,10 +85,10 @@ def event_create():
 
         cursor.execute(
             """
-            INSERT INTO Memo (FamilyID, Title, MemoTime, MemoType, EditorID, Cycle, Alert, Status) 
-            VALUES (%s, %s, %s, '3', %s, %s, %s, '1')
+            INSERT INTO Memo (FamilyID, Title, MemoTime, MemoType, EditorID, Cycle, Alert, Status, CreateTime) 
+            VALUES (%s, %s, %s, '3', %s, %s, %s, '1', %s)
             """,
-            (FamilyID, Title, MemoTime, MemID, Cycle, Alert),
+            (FamilyID, Title, MemoTime, MemID, Cycle, Alert, CreateTime),
         )
 
         cursor.execute("SELECT MemoID FROM Memo ORDER BY MemoID DESC LIMIT 1")

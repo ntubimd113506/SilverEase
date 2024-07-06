@@ -68,6 +68,7 @@ def med_create():
         MedFeature = request.form.get("MedFeature")
         Cycle = request.form.get("Cycle")
         Alert = int(request.form.get("Alert", 0))
+        CreateTime = datetime.now()
 
         conn = db.get_connection()
         cursor = conn.cursor()
@@ -84,10 +85,10 @@ def med_create():
 
         cursor.execute(
             """
-            INSERT INTO Memo (FamilyID, Title, MemoTime, MemoType, EditorID, Cycle, Alert, Status)
-            VALUES(%s, %s, %s, '1', %s, %s, %s, '1')
+            INSERT INTO Memo (FamilyID, Title, MemoTime, MemoType, EditorID, Cycle, Alert, Status, CreateTime)
+            VALUES(%s, %s, %s, '1', %s, %s, %s, '1', %s)
             """,
-            (FamilyID, Title, MemoTime, MemID, Cycle, Alert),
+            (FamilyID, Title, MemoTime, MemID, Cycle, Alert, CreateTime),
         )
 
         cursor.execute("Select MemoID from Memo order by MemoID Desc")
