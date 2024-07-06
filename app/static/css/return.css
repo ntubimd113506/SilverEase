@@ -50,7 +50,7 @@ div.header h1{
 /* content             */
 /* ------------------- */
 div.content{
-    background-color: #F5F5F5;
+    background-color: #F2F0EE;
     padding: 20px 30px;
 }
 
@@ -62,8 +62,6 @@ div.cardrow{
     display: flex;
     /* 水平置中 */
     justify-content: center;  
-    width: 380px;
-    height: 90px;
     margin: auto;
 }
 div.content h1{
