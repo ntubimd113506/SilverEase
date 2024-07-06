@@ -33,10 +33,10 @@ def event_create_form():
         """,
         (MemID,),
     )
-    main_user_info = cursor.fetchone()
+    MainUserInfo = cursor.fetchone()
 
-    if main_user_info:
-        MainUsers = [(MemID, main_user_info[1])]
+    if MainUserInfo:
+        MainUsers = [(MemID, MainUserInfo[1])]
     else:
         cursor.execute(
             """
@@ -56,6 +56,7 @@ def event_create_form():
     return render_template("/event/event_create_form.html", MainUsers=MainUsers)
 
 
+# 新增
 @event_bp.route("/create", methods=["POST"])
 @login_required
 def event_create():
@@ -63,7 +64,7 @@ def event_create():
         MemID = session.get("MemID")
         MainUserID = request.form.get("MainUserID")
         Title = request.form.get("Title")
-        DateTime = request.form.get("DateTime")
+        MemoTime = request.form.get("MemoTime")
         Location = request.form.get("Location")
         Cycle = request.form.get("Cycle")
         Alert = int(request.form.get("Alert", 0))
@@ -83,10 +84,10 @@ def event_create():
 
         cursor.execute(
             """
-            INSERT INTO Memo (FamilyID, Title, DateTime, Type, EditorID, Cycle, Alert) 
-            VALUES (%s, %s, %s, '3', %s, %s, %s)
+            INSERT INTO Memo (FamilyID, Title, MemoTime, MemoType, EditorID, Cycle, Alert, Status) 
+            VALUES (%s, %s, %s, '3', %s, %s, %s, '1')
             """,
-            (FamilyID, Title, DateTime, MemID, Cycle, Alert),
+            (FamilyID, Title, MemoTime, MemID, Cycle, Alert),
         )
 
         cursor.execute("SELECT MemoID FROM Memo ORDER BY MemoID DESC LIMIT 1")
@@ -95,7 +96,7 @@ def event_create():
         cursor.execute(
             """
             INSERT INTO 
-            Event (MemoID, Location) 
+            EventMemo (MemoID, Location) 
             VALUES (%s, %s)
             """,
             (MemoID, Location),
@@ -105,7 +106,7 @@ def event_create():
         conn.close()
 
         job_id = f"{MemoID}"
-        send_time = datetime.strptime(DateTime, "%Y-%m-%dT%H:%M")
+        send_time = datetime.strptime(MemoTime, "%Y-%m-%dT%H:%M")
         reminder_time = send_time - timedelta(minutes=Alert)
 
         scheduler.add_job(
@@ -132,9 +133,6 @@ def event_create():
         )
 
 
-message_status = {"received": False}
-
-
 # 傳送通知
 def send_line_message(MemoID, cnt=0, got=False):
     try:
@@ -146,7 +144,7 @@ def send_line_message(MemoID, cnt=0, got=False):
         Cycle = data["Cycle"]
         Alert = data["Alert"]
         cnt += 1
-        reminder_time = (datetime.now() + timedelta(seconds=30)).strftime(
+        reminder_time = (datetime.now() + timedelta(seconds=60)).strftime(
             "%Y-%m-%dT%H:%M:%S"
         )
 
@@ -175,7 +173,7 @@ def send_line_message(MemoID, cnt=0, got=False):
                 for sub_id in SubUserIDs:
                     line_bot_api.push_message(sub_id, body1)
 
-            next_time = next_send_time(Cycle, data["DateTime"])
+            next_time = next_send_time(Cycle, data["MemoTime"])
             next_time_format = next_time.strftime("%Y-%m-%dT%H:%M:%S")
             reminder_time = (next_time - timedelta(minutes=Alert)).strftime(
                 "%Y-%m-%dT%H:%M:%S"
@@ -188,7 +186,7 @@ def send_line_message(MemoID, cnt=0, got=False):
             cursor.execute(
                 """
                 UPDATE Memo
-                SET DateTime = %s
+                SET MemoTime = %s
                 WHERE MemoID = %s
                 """,
                 (next_time_format, MemoID),
@@ -270,11 +268,11 @@ def event_list():
                     mu.MemName AS MainUserName, 
                     eu.MemName AS EditorUserName
                     FROM `113-ntub113506`.Memo m
-                    JOIN `113-ntub113506`.Event e ON e.MemoID = m.MemoID
+                    JOIN `113-ntub113506`.EventMemo e ON e.MemoID = m.MemoID
                     LEFT JOIN `113-ntub113506`.Family f ON f.FamilyID = m.FamilyID
                     LEFT JOIN `113-ntub113506`.Member mu ON mu.MemID = f.MainUserID
                     LEFT JOIN `113-ntub113506`.Member eu ON eu.MemID = m.EditorID
-                    WHERE m.FamilyID = %s AND `DateTime` > NOW()
+                    WHERE m.FamilyID = %s AND m.Status = '1' AND MemoTime > NOW()
                     """
 
             params = [id[0]]
@@ -284,11 +282,11 @@ def event_list():
                 params.append(MainUserID)
 
             if year and year != "all":
-                query += " AND YEAR(`DateTime`) = %s"
+                query += " AND YEAR(`MemoTime`) = %s"
                 params.append(year)
 
             if month and month != "all":
-                query += " AND MONTH(`DateTime`) = %s"
+                query += " AND MONTH(`MemoTime`) = %s"
                 params.append(month)
 
             cursor.execute(query, tuple(params))
@@ -297,8 +295,22 @@ def event_list():
     conn.close()
 
     if data:
+        values = []
+        for d in data:
+            values.append(
+                {
+                    "MemoID": d[0],
+                    "Title": d[2],
+                    "MemoTime": d[3],
+                    "Cycle": d[6],
+                    "Alert": d[7],
+                    "Location": d[10],
+                    "MainUserName": d[11],
+                    "EditorUserName": d[12],
+                }
+            )
         return render_template(
-            "/event/event_list.html", data=data, MainUsers=MainUsers, liff=db.LIFF_ID
+            "/event/event_list.html", data=values, MainUsers=MainUsers, liff=db.LIFF_ID
         )
     else:
         return render_template(
@@ -357,11 +369,11 @@ def event_history():
                     mu.MemName AS MainUserName, 
                     eu.MemName AS EditorUserName
                     FROM `113-ntub113506`.Memo m
-                    JOIN `113-ntub113506`.Event e ON e.MemoID = m.MemoID
+                    JOIN `113-ntub113506`.EventMemo e ON e.MemoID = m.MemoID
                     LEFT JOIN `113-ntub113506`.Family f ON f.FamilyID = m.FamilyID
                     LEFT JOIN `113-ntub113506`.Member mu ON mu.MemID = f.MainUserID
                     LEFT JOIN `113-ntub113506`.Member eu ON eu.MemID = m.EditorID
-                    WHERE m.FamilyID = %s AND `DateTime` <= NOW()
+                    WHERE m.FamilyID = %s AND m.Status = '1' AND MemoTime <= NOW()
                     """
 
             params = [id[0]]
@@ -371,11 +383,11 @@ def event_history():
                 params.append(MainUserID)
 
             if year and year != "all":
-                query += " AND YEAR(`DateTime`) = %s"
+                query += " AND YEAR(`MemoTime`) = %s"
                 params.append(year)
 
             if month and month != "all":
-                query += " AND MONTH(`DateTime`) = %s"
+                query += " AND MONTH(`MemoTime`) = %s"
                 params.append(month)
 
             cursor.execute(query, tuple(params))
@@ -384,8 +396,26 @@ def event_history():
     conn.close()
 
     if data:
+        values = []
+        for d in data:
+            values.append(
+                {
+                    "MemoID": d[0],
+                    "Title": d[2],
+                    "MemoTime": d[3],
+                    "Cycle": d[6],
+                    "Alert": d[7],
+                    "Location": d[10],
+                    "MainUserName": d[11],
+                    "EditorUserName": d[12],
+                }
+            )
+
         return render_template(
-            "/event/event_history.html", data=data, MainUsers=MainUsers, liff=db.LIFF_ID
+            "/event/event_history.html",
+            data=values,
+            MainUsers=MainUsers,
+            liff=db.LIFF_ID,
         )
     else:
         return render_template(
@@ -409,7 +439,7 @@ def event_update_confirm():
         SELECT * FROM 
         (SELECT * FROM `113-ntub113506`.Memo WHERE MemoID = %s) m 
         JOIN 
-        (SELECT * FROM `113-ntub113506`.Event) e 
+        (SELECT * FROM `113-ntub113506`.EventMemo) e 
         ON e.MemoID=m.MemoID
         """,
         (MemoID,),
@@ -418,7 +448,17 @@ def event_update_confirm():
 
     connection.close()
 
-    return render_template("/event/event_update_confirm.html", data=data)
+    if data:
+        values = {
+            "MemoID": data[0],
+            "Title": data[2],
+            "MemoTime": data[3],
+            "Cycle": data[6],
+            "Alert": data[7],
+            "Location": data[10],
+        }
+
+    return render_template("/event/event_update_confirm.html", data=values)
 
 
 # 更改
@@ -428,10 +468,10 @@ def event_update():
         EditorID = request.values.get("EditorID")
         MemoID = request.values.get("MemoID")
         Title = request.form.get("Title")
-        DateTime = request.form.get("DateTime")
+        MemoTime = request.form.get("MemoTime")
         Location = request.form.get("Location")
         Cycle = request.form.get("Cycle")
-        Alert = int(request.form.get("Alert", 0))
+        Alert = int(request.form.get("Alert"))
 
         conn = db.get_connection()
         cursor = conn.cursor()
@@ -439,15 +479,17 @@ def event_update():
         cursor.execute(
             """
             UPDATE Memo 
-            SET Title = %s, DateTime = %s, EditorID = %s, Cycle = %s, Alert = %s 
+            SET Title = %s, MemoTime = %s, EditorID = %s, Cycle = %s, Alert = %s 
             WHERE MemoID = %s
             """,
-            (Title, DateTime, EditorID, Cycle, Alert, MemoID),
+            (Title, MemoTime, EditorID, Cycle, Alert, MemoID),
         )
+
         cursor.execute(
             """
-            UPDATE 
-            Event SET Location = %s WHERE MemoID = %s
+            UPDATE EventMemo 
+            SET Location = %s 
+            WHERE MemoID = %s
             """,
             (Location, MemoID),
         )
@@ -456,7 +498,7 @@ def event_update():
         conn.close()
 
         job_id = f"{MemoID}"
-        send_time = datetime.strptime(DateTime, "%Y-%m-%dT%H:%M")
+        send_time = datetime.strptime(MemoTime, "%Y-%m-%dT%H:%M")
         reminder_time = send_time - timedelta(minutes=Alert)
 
         if scheduler.get_job(MemoID) != None:
@@ -514,16 +556,24 @@ def event_delete():
     try:
         MemoID = request.form.get("MemoID")
 
-        connection = db.get_connection()
-        cursor = connection.cursor()
+        job = scheduler.get_job(MemoID)
+        if job:
+            scheduler.remove_job(MemoID)
 
-        cursor.execute("DELETE FROM Event WHERE MemoID = %s", (MemoID,))
-        cursor.execute("DELETE FROM Memo WHERE MemoID = %s", (MemoID,))
+        conn = db.get_connection()
+        cursor = conn.cursor()
 
-        connection.commit()
-        connection.close()
+        cursor.execute(
+            """
+            UPDATE Memo 
+            SET Status='0'
+            WHERE MemoID=%s
+            """,
+            (MemoID,),
+        )
 
-        scheduler.remove_job(MemoID)
+        conn.commit()
+        conn.close()
 
         return render_template(
             "/schedule/result.html",

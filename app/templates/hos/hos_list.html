@@ -67,25 +67,26 @@
                 <button type="submit">查詢</button>
             </form>
 
-            {% for d in data %}
-            <div class="data-item">
-                <div class="title">標題：{{d[2]}}</div>
-                <div class="time">時間：{{d[3]}}</div>
-                <div class="repeat">多久重複：{{d[6]}}</div>
-                <div class="alert">幾分鐘前提醒：{{d[7]}}</div>
-                <div class="hospital-location">醫院地點：{{d[9]}}</div>
-                <div class="doctor">看診醫生：{{d[10]}}</div>
-                <div class="outpatient">門診：{{d[11]}}</div>
-                <div class="outpatient">號碼：{{d[12]}}</div>
-                <div class="mainuser">長者：{{d[13]}}</div>
-                <div class="editor">修改者：{{d[14]}}</div>
-                <div class="edit-link">
-                    <i class="fa-solid fa-pen-to-square"></i>
-                    <a href="/hos/update/confirm?MemoID={{d[0]}}">編輯</a>
-                </div>
-            </div>
-            {% endfor %}
-
+            {% if data %}
+                {% for item in data %}
+                    <div class="data-item">
+                        <div class="Title">標題：{{ item.Title }}</div>
+                        <div class="Memotime">時間：{{ item.MemoTime }}</div>
+                        <div class="Cycle">多久重複：{{ item.Cycle }}</div>
+                        <div class="Alert">幾分鐘前提醒：{{ item.Alert }}分鐘</div>
+                        <div class="Location">醫院地點：{{ item.Location }}</div>
+                        <div class="Doctor">看診醫生：{{ item.Doctor }}</div>
+                        <div class="Clinic">門診：{{ item.Clinic }}</div>
+                        <div class="Num">號碼：{{ item.Num }}</div>
+                        <div class="MainUserName">長者：{{ item.MainUserName }}</div>
+                        <div class="EditorUserName">修改者：{{ item.EditorUserName }}</div>
+                        <div class="edit-link">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                            <a href="/hos/update/confirm?MemoID={{ item.MemoID }}">編輯</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
         </div>
 
         <input type="hidden" id="MemID" name="MemID">

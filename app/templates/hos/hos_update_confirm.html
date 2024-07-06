@@ -40,7 +40,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-        var cycleValue = "{{data[6]}}";
+        var cycleValue = "{{ data.Cycle }}";
         var cycleSelectElement = document.querySelector('select[name="Cycle"]');
         for (var i = 0; i < cycleSelectElement.options.length; i++) {
             if (cycleSelectElement.options[i].value === cycleValue) {
@@ -49,7 +49,7 @@
             }
         }
 
-        var alertValue = "{{data[7]}}";
+        var alertValue = "{{ data.Alert }}";
         var alertSelectElement = document.querySelector('select[name="Alert"]');
         for (var i = 0; i < alertSelectElement.options.length; i++) {
             if (alertSelectElement.options[i].value === alertValue) {
@@ -85,13 +85,13 @@
                     <div class="form">
                         <div class="name">名稱</div>
                         <div class="value">
-                            <input type="text" name="Title" value="{{data[2]}}" class="input-field" required>
+                            <input type="text" name="Title" value="{{ data.Title }}" class="input-field" required>
                         </div>
 
                         <div class="name">日期</div>
                         <div class="value">
                             <div class="input-icon">
-                                <input type="datetime-local" name="DateTime" value="{{data[3]}}" class="input-field"
+                                <input type="datetime-local" name="MemoTime" value="{{ data.MemoTime }}" class="input-field"
                                     required>
                                 <i class="fa-solid fa-calendar-days calendar-icon"></i>
                             </div>
@@ -99,26 +99,26 @@
 
                         <div class="name">醫院地點</div>
                         <div class="value">
-                            <input type="text" name="Location" value="{{data[9]}}" class="input-field">
+                            <input type="text" name="Location" value="{{ data.Location }}" class="input-field">
                         </div>
 
                         <div class="name">看診醫生</div>
                         <div class="value">
-                            <input type="text" name="Doctor" value="{{data[10]}}" class="input-field">
+                            <input type="text" name="Doctor" value="{{ data.Doctor }}" class="input-field">
                         </div>
 
                         <div class="name">門診</div>
                         <div class="value">
-                            <input type="text" name="Clinic" value="{{data[11]}}" class="input-field">
+                            <input type="text" name="Clinic" value="{{ data.Clinic }}" class="input-field">
                         </div>
 
                         <div class="name">號碼</div>
                         <div class="value">
-                            <input type="text" name="Num" value="{{data[12]}}" class="input-field">
+                            <input type="text" name="Num" value="{{ data.Num }}" class="input-field">
                         </div>
 
                         <div class="name">多久重複</div>
-                        <select name="Cycle" value="{{data[6]}}">
+                        <select name="Cycle" value="{{ data.Cycle }}">
                             <option value="不重複">不重複</option>
                             <option value="一小時">一小時</option>
                             <option value="一天">一天</option>
@@ -128,7 +128,7 @@
                         </select>
 
                         <div class="name">幾分鐘前提醒</div>
-                        <select name="Alert" value="{{data[7]}}">
+                        <select name="Alert" value="{{ data.Alert }}">
                             <option value="0">當下</option>
                             <option value="1">1分鐘</option>
                             <option value="5">5分鐘</option>
@@ -138,9 +138,9 @@
                         </select>
 
                     </div>
-                    <a href="/hos/delete/confirm?MemoID={{data[0]}}" class="delete-btn">刪除</a>
+                    <a href="/hos/delete/confirm?MemoID={{ data.MemoID }}" class="delete-btn">刪除</a>
 
-                    <input type="hidden" name="MemoID" value="{{data[0]}}">
+                    <input type="hidden" name="MemoID" value="{{ data.MemoID }}">
                     <input type="hidden" id="EditorID" name="EditorID">
                     <div class="name"></div>
                     <div class="value"><input type="submit" value="更改"></div>

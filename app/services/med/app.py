@@ -33,10 +33,10 @@ def med_create_form():
         """,
         (MemID,),
     )
-    main_user_info = cursor.fetchone()
+    MainUserInfo = cursor.fetchone()
 
-    if main_user_info:
-        MainUsers = [(MemID, main_user_info[1])]
+    if MainUserInfo:
+        MainUsers = [(MemID, MainUserInfo[1])]
     else:
         cursor.execute(
             """
@@ -64,7 +64,7 @@ def med_create():
         MemID = session.get("MemID")
         MainUserID = request.form.get("MainUserID")
         Title = request.form.get("Title")
-        DateTime = request.form.get("DateTime")
+        MemoTime = request.form.get("MemoTime")
         MedFeature = request.form.get("MedFeature")
         Cycle = request.form.get("Cycle")
         Alert = int(request.form.get("Alert", 0))
@@ -84,10 +84,10 @@ def med_create():
 
         cursor.execute(
             """
-            INSERT INTO Memo (FamilyID, Title, DateTime, Type, EditorID, Cycle, Alert)
-            VALUES(%s, %s, %s, '1', %s, %s, %s)
+            INSERT INTO Memo (FamilyID, Title, MemoTime, MemoType, EditorID, Cycle, Alert, Status)
+            VALUES(%s, %s, %s, '1', %s, %s, %s, '1')
             """,
-            (FamilyID, Title, DateTime, MemID, Cycle, Alert),
+            (FamilyID, Title, MemoTime, MemID, Cycle, Alert),
         )
 
         cursor.execute("Select MemoID from Memo order by MemoID Desc")
@@ -106,7 +106,7 @@ def med_create():
         conn.close()
 
         job_id = f"{MemoID}"
-        send_time = datetime.strptime(DateTime, "%Y-%m-%dT%H:%M")
+        send_time = datetime.strptime(MemoTime, "%Y-%m-%dT%H:%M")
         reminder_time = send_time - timedelta(minutes=Alert)
 
         scheduler.add_job(
@@ -132,9 +132,6 @@ def med_create():
             Title="新增用藥失敗",
             img="F_create",
         )
-
-
-message_status = {"received": False}
 
 
 # 傳送通知
@@ -177,8 +174,7 @@ def send_line_message(MemoID, cnt=0, got=False):
                 for sub_id in SubUserIDs:
                     line_bot_api.push_message(sub_id, body1)
 
-
-            next_time = next_send_time(Cycle, data["DateTime"])
+            next_time = next_send_time(Cycle, data["MemoTime"])
             next_time_format = next_time.strftime("%Y-%m-%dT%H:%M:%S")
             reminder_time = (next_time - timedelta(minutes=Alert)).strftime(
                 "%Y-%m-%dT%H:%M:%S"
@@ -191,7 +187,7 @@ def send_line_message(MemoID, cnt=0, got=False):
             cursor.execute(
                 """
                 UPDATE Memo
-                SET DateTime = %s
+                SET MemoTime = %s
                 WHERE MemoID = %s
                 """,
                 (next_time_format, MemoID),
@@ -277,7 +273,7 @@ def med_list():
                     LEFT JOIN `113-ntub113506`.Family f ON f.FamilyID = m.FamilyID
                     LEFT JOIN `113-ntub113506`.Member mu ON mu.MemID = f.MainUserID
                     LEFT JOIN `113-ntub113506`.Member eu ON eu.MemID = m.EditorID
-                    WHERE m.FamilyID = %s AND `DateTime` > NOW()
+                    WHERE m.FamilyID = %s AND m.Status = '1' AND `MemoTime` > NOW()
                     """
 
             params = [id[0]]
@@ -287,11 +283,11 @@ def med_list():
                 params.append(MainUserID)
 
             if year and year != "all":
-                query += " AND YEAR(`DateTime`) = %s"
+                query += " AND YEAR(`MemoTime`) = %s"
                 params.append(year)
 
             if month and month != "all":
-                query += " AND MONTH(`DateTime`) = %s"
+                query += " AND MONTH(`MemoTime`) = %s"
                 params.append(month)
 
             cursor.execute(query, tuple(params))
@@ -300,8 +296,22 @@ def med_list():
     conn.close()
 
     if data:
+        values = []
+        for d in data:
+            values.append(
+                {
+                    "MemoID": d[0],
+                    "Title": d[2],
+                    "MemoTime": d[3],
+                    "Cycle": d[6],
+                    "Alert": d[7],
+                    "MedFeature": d[10],
+                    "MainUserName": d[11],
+                    "EditorUserName": d[12],
+                }
+            )
         return render_template(
-            "/med/med_list.html", data=data, MainUsers=MainUsers, liff=db.LIFF_ID
+            "/med/med_list.html", data=values, MainUsers=MainUsers, liff=db.LIFF_ID
         )
     else:
         return render_template(
@@ -364,7 +374,7 @@ def med_history():
                     LEFT JOIN `113-ntub113506`.Family f ON f.FamilyID = m.FamilyID
                     LEFT JOIN `113-ntub113506`.Member mu ON mu.MemID = f.MainUserID
                     LEFT JOIN `113-ntub113506`.Member eu ON eu.MemID = m.EditorID
-                    WHERE m.FamilyID = %s AND `DateTime` <= NOW()
+                    WHERE m.FamilyID = %s AND m.Status = '1' AND `MemoTime` <= NOW()
                     """
 
             params = [id[0]]
@@ -374,11 +384,11 @@ def med_history():
                 params.append(MainUserID)
 
             if year and year != "all":
-                query += " AND YEAR(`DateTime`) = %s"
+                query += " AND YEAR(`MemoTime`) = %s"
                 params.append(year)
 
             if month and month != "all":
-                query += " AND MONTH(`DateTime`) = %s"
+                query += " AND MONTH(`MemoTime`) = %s"
                 params.append(month)
 
             cursor.execute(query, tuple(params))
@@ -387,8 +397,22 @@ def med_history():
     conn.close()
 
     if data:
+        values = []
+        for d in data:
+            values.append(
+                {
+                    "MemoID": d[0],
+                    "Title": d[2],
+                    "MemoTime": d[3],
+                    "Cycle": d[6],
+                    "Alert": d[7],
+                    "MedFeature": d[10],
+                    "MainUserName": d[11],
+                    "EditorUserName": d[12],
+                }
+            )
         return render_template(
-            "/med/med_history.html", data=data, MainUsers=MainUsers, liff=db.LIFF_ID
+            "/med/med_history.html", data=values, MainUsers=MainUsers, liff=db.LIFF_ID
         )
     else:
         return render_template(
@@ -421,7 +445,17 @@ def med_update_confirm():
 
     connection.close()
 
-    return render_template("/med/med_update_confirm.html", data=data)
+    if data:
+        values = {
+            "MemoID": data[0],
+            "Title": data[2],
+            "MemoTime": data[3],
+            "Cycle": data[6],
+            "Alert": data[7],
+            "MedFeature": data[10],
+        }
+
+    return render_template("/med/med_update_confirm.html", data=values)
 
 
 # 更改
@@ -431,10 +465,10 @@ def med_update():
         EditorID = request.values.get("EditorID")
         MemoID = request.values.get("MemoID")
         Title = request.form.get("Title")
-        DateTime = request.form.get("DateTime")
+        MemoTime = request.form.get("MemoTime")
         MedFeature = request.form.get("MedFeature")
         Cycle = request.form.get("Cycle")
-        Alert = int(request.form.get("Alert", 0))
+        Alert = int(request.form.get("Alert"))
 
         conn = db.get_connection()
         cursor = conn.cursor()
@@ -442,10 +476,10 @@ def med_update():
         cursor.execute(
             """
             UPDATE Memo 
-            SET Title = %s, DateTime = %s, EditorID = %s, Cycle = %s, Alert = %s 
+            SET Title = %s, MemoTime = %s, EditorID = %s, Cycle = %s, Alert = %s 
             WHERE MemoID = %s
             """,
-            (Title, DateTime, EditorID, Cycle, Alert, MemoID),
+            (Title, MemoTime, EditorID, Cycle, Alert, MemoID),
         )
 
         cursor.execute(
@@ -457,22 +491,11 @@ def med_update():
             (MedFeature, MemoID),
         )
 
-        cursor.execute(
-            """
-            SELECT f.MainUserID
-            FROM `113-ntub113506`.Memo m
-            JOIN `113-ntub113506`.Family f ON m.FamilyID = f.FamilyID
-            WHERE m.MemoID = %s
-            """,
-            (MemoID,),
-        )
-        MainUserID = cursor.fetchone()[0]
-
         conn.commit()
         conn.close()
 
         job_id = f"{MemoID}"
-        send_time = datetime.strptime(DateTime, "%Y-%m-%dT%H:%M")
+        send_time = datetime.strptime(MemoTime, "%Y-%m-%dT%H:%M")
         reminder_time = send_time - timedelta(minutes=Alert)
 
         if scheduler.get_job(MemoID) != None:
@@ -530,18 +553,24 @@ def med_delete():
     try:
         MemoID = request.values.get("MemoID")
 
-        conn = db.get_connection()
-        cursor = conn.cursor()
-
-        cursor.execute("Delete FROM Med WHERE MemoID = %s", (MemoID,))
-        cursor.execute("Delete FROM Memo WHERE MemoID = %s", (MemoID,))
-
-        conn.commit()
-        conn.close()
-
         job = scheduler.get_job(MemoID)
         if job:
             scheduler.remove_job(MemoID)
+
+        conn = db.get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute(
+            """
+            UPDATE Memo 
+            SET Status='0'
+            WHERE MemoID=%s
+            """,
+            (MemoID,),
+        )
+
+        conn.commit()
+        conn.close()
 
         return render_template(
             "/schedule/result.html",
