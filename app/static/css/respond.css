@@ -100,3 +100,32 @@ ul li{
     letter-spacing: 5px;
     margin: 0%;
 }
+
+.history {
+    position: relative;
+    top: 50px; 
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+    background-color: #809f68;
+    width: 34%;
+    height: 40px;
+    border-radius: 20px;
+    font-weight: bolder;
+    letter-spacing: 5px;
+    text-align: center;
+    margin-bottom: 50px;
+    text-decoration: none;
+    color: #ffffff;
+    font-size: 19px;
+    box-sizing: border-box; 
+    padding-bottom: 2px;
+}
+
+.history .fa-solid {
+    color: #ffffff;
+    font-size: 17px;
+    margin-right: 5px; 
+    line-height: 40px;
+    vertical-align: middle;
+}
