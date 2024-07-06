@@ -306,9 +306,9 @@ def med_list():
                     "MemoTime": d[3],
                     "Cycle": d[6],
                     "Alert": d[7],
-                    "MedFeature": d[10],
-                    "MainUserName": d[11],
-                    "EditorUserName": d[12],
+                    "MedFeature": d[11],
+                    "MainUserName": d[12],
+                    "EditorUserName": d[13],
                 }
             )
         return render_template(
@@ -323,7 +323,7 @@ def med_list():
         )
 
 
-# 歷史查詢
+# 紀錄
 @med_bp.route("/history")
 @login_required
 def med_history():
@@ -344,7 +344,7 @@ def med_history():
             FROM `113-ntub113506`.FamilyLink fl
             JOIN `113-ntub113506`.Family f ON fl.FamilyID = f.FamilyID
             JOIN `113-ntub113506`.Member m ON f.MainUserID = m.MemID
-            WHERE m.MemID = %s
+            WHERE fl.SubUserID = %s
             """,
             (MemID,),
         )
@@ -375,7 +375,7 @@ def med_history():
                     LEFT JOIN `113-ntub113506`.Family f ON f.FamilyID = m.FamilyID
                     LEFT JOIN `113-ntub113506`.Member mu ON mu.MemID = f.MainUserID
                     LEFT JOIN `113-ntub113506`.Member eu ON eu.MemID = m.EditorID
-                    WHERE m.FamilyID = %s AND m.Status = '1' AND `MemoTime` <= NOW()
+                    WHERE m.FamilyID = %s AND m.Status = '1' AND MemoTime <= NOW()
                     """
 
             params = [id[0]]
@@ -407,9 +407,9 @@ def med_history():
                     "MemoTime": d[3],
                     "Cycle": d[6],
                     "Alert": d[7],
-                    "MedFeature": d[10],
-                    "MainUserName": d[11],
-                    "EditorUserName": d[12],
+                    "MedFeature": d[11],
+                    "MainUserName": d[12],
+                    "EditorUserName": d[13],
                 }
             )
         return render_template(
@@ -453,7 +453,7 @@ def med_update_confirm():
             "MemoTime": data[3],
             "Cycle": data[6],
             "Alert": data[7],
-            "MedFeature": data[10],
+            "MedFeature": data[11],
         }
 
     return render_template("/med/med_update_confirm.html", data=values)

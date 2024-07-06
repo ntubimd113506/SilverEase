@@ -305,9 +305,9 @@ def event_list():
                     "MemoTime": d[3],
                     "Cycle": d[6],
                     "Alert": d[7],
-                    "Location": d[10],
-                    "MainUserName": d[11],
-                    "EditorUserName": d[12],
+                    "Location": d[11],
+                    "MainUserName": d[12],
+                    "EditorUserName": d[13],
                 }
             )
         return render_template(
@@ -406,9 +406,9 @@ def event_history():
                     "MemoTime": d[3],
                     "Cycle": d[6],
                     "Alert": d[7],
-                    "Location": d[10],
-                    "MainUserName": d[11],
-                    "EditorUserName": d[12],
+                    "Location": d[11],
+                    "MainUserName": d[12],
+                    "EditorUserName": d[13],
                 }
             )
 
@@ -456,7 +456,7 @@ def event_update_confirm():
             "MemoTime": data[3],
             "Cycle": data[6],
             "Alert": data[7],
-            "Location": data[10],
+            "Location": data[11],
         }
 
     return render_template("/event/event_update_confirm.html", data=values)

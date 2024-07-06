@@ -312,12 +312,12 @@ def hos_list():
                     "MemoTime": d[3],
                     "Cycle": d[6],
                     "Alert": d[7],
-                    "Location": d[10],
-                    "Doctor": d[11],
-                    "Clinic": d[12],
-                    "Num": d[13],
-                    "MainUserName": d[14],
-                    "EditorUserName": d[15],
+                    "Location": d[11],
+                    "Doctor": d[12],
+                    "Clinic": d[13],
+                    "Num": d[14],
+                    "MainUserName": d[15],
+                    "EditorUserName": d[16],
                 }
             )
         return render_template(
@@ -416,12 +416,12 @@ def hos_history():
                     "MemoTime": d[3],
                     "Cycle": d[6],
                     "Alert": d[7],
-                    "Location": d[10],
-                    "Doctor": d[11],
-                    "Clinic": d[12],
-                    "Num": d[13],
-                    "MainUserName": d[14],
-                    "EditorUserName": d[15],
+                    "Location": d[11],
+                    "Doctor": d[12],
+                    "Clinic": d[13],
+                    "Num": d[14],
+                    "MainUserName": d[15],
+                    "EditorUserName": d[16],
                 }
             )
         return render_template(
@@ -465,10 +465,10 @@ def hos_update_confirm():
             "MemoTime": data[3],
             "Cycle": data[6],
             "Alert": data[7],
-            "Location": data[10],
-            "Doctor": data[11],
-            "Clinic": data[12],
-            "Num": data[13],
+            "Location": data[11],
+            "Doctor": data[12],
+            "Clinic": data[13],
+            "Num": data[14],
         }
 
     return render_template("/hos/hos_update_confirm.html", data=values)
