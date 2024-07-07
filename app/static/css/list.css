@@ -65,7 +65,7 @@ ul li{
 }
 
 div.navbar a{
-    text-decoration: none; /* 連結底線拿掉*/
+    text-decoration: none;
     color: #000000; 
 }
 
@@ -107,13 +107,13 @@ div.navbar a{
     right: 1em;
 }
 
-.title{
+.Title{
     font-size: 19px;
     color: #333;
     margin-bottom: 0.5em;
 }
 
-.title-row{
+.Title-row{
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -129,7 +129,7 @@ div.navbar a{
     width: 30px;
 }
 
-.time, .location, .hospital-location ,.doctor, .outpatient, .description, .cycle, .repeat, .alert, .mainuser, .editor{
+.Memotime, .Cycle, .Alert ,.Location, .MainUserName, .EditorUserName, .Doctor, .Clinic, .Num, .MedFeature{
     color: #666;
     margin-bottom: 0.5em;
     font-size: 16px;
@@ -137,18 +137,13 @@ div.navbar a{
 }
 
 /* 讓這兩個同一行 */
-/* .mainuser, .editor {
-    display: inline-block; 
-    margin-right: 30px; 
-} */
-
-.mainuser, .editor {
+.MainUserName, .EditorUserName {
     display: inline-block;
     margin-right: 15px;
     position: relative;
 }
 
-.mainuser::after {
+.MainUserName::after {
     content: '';
     position: absolute;
     right: -15px;
@@ -159,7 +154,7 @@ div.navbar a{
     background-color: #666;
 }
 
-.editor {
+.EditorUserName {
     margin-left: 10px;
 }
 
