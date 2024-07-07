@@ -35,29 +35,33 @@
                 <h1 class="content-header">紀念日紀錄</h1>   
             </div>
             
-            <form method="GET" action="/event/history">
-                <label for="MainUserID">選擇主要用戶:</label>
+            <form method="GET" action="/event/history" class="query-form">
+            <div class="form-group">
+                <label for="MainUserID">主要用戶</label>
                 <select id="MainUserID" name="MainUserID">
                     <option value="all">所有長者</option>
                     {% for user in MainUsers %}
                     <option value="{{ user[0] }}">{{ user[1] }}</option>
                     {% endfor %}
                 </select>
-                <br>
+            </div>
 
-                <label for="year">選擇年份:</label>
+            <div class="form-group">
+                <label for="year">年份</label>
                 <select id="year" name="year">
-                    <option value="all">全部</option>
+                    <option value="all">全部年份</option>
                     <option value="2024">2024</option>
                     <option value="2025">2025</option>
                     <option value="2026">2026</option>
                     <option value="2027">2027</option>
                     <option value="2028">2028</option>
                 </select>
+            </div>
 
-                <label for="month">選擇月份:</label>
+            <div class="form-group">
+                <label for="month">月份</label>
                 <select id="month" name="month">
-                    <option value="all">全部</option>
+                    <option value="all">全部月份</option>
                     <option value="01">1月</option>
                     <option value="02">2月</option>
                     <option value="03">3月</option>
@@ -71,9 +75,9 @@
                     <option value="11">11月</option>
                     <option value="12">12月</option>
                 </select>
-                <br />
+                </div>
 
-                <button type="submit">查詢</button>
+                <button type="submit" class="submit-button"><i class="fa-solid fa-magnifying-glass" id="search"></i>查詢</button>
             </form>
 
             {% if data %}
