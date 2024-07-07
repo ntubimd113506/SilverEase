@@ -64,9 +64,11 @@ div.cardrow{
     justify-content: center;
     margin: auto;
 }
+
 div.content h1{
     font-size: 30px;
     letter-spacing:8px;
+    margin-bottom: 0;
 }
 
 div.content h4{

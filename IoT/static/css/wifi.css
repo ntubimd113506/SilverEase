@@ -4,11 +4,16 @@
 /* ------------------- */
 /* html, body          */
 /* ------------------- */
+html{
+    overflow-y: hidden;
+}
+
 html, body{
     font-family: 'Noto Sans TC', sans-serif;
-    background-color: #f4f9f7;
+    background-color: #F2F0EE;
     padding: 0%;
     margin: 0%;
+    padding-bottom: constant(safe-area-inset-bottom);
 }
 
 
@@ -16,12 +21,12 @@ html, body{
 /* container           */
 /* ------------------- */
 div.container{
-    height: 1000px;
+    /* height: 1000px; */
     margin-left: auto;
     margin-right: auto;
     text-align: justify;
     line-height: 26px;
-    background-color: #ffffff;
+    background-color: #F2F0EE;
 }
 
 /* ------------------- */
@@ -49,9 +54,16 @@ div.header h1{
 /* content             */
 /* ------------------- */
 div.content{
-    background-color: #F5F5F5;
-    height: 600px;
-    padding: 20px 30px;
+    background-color: #F2F0EE;
+    /* height: 600px; */
+    padding: 0px 23px;
+}
+
+div.cardrow{
+    display: flex;
+    /* 水平置中 */
+    justify-content: center;
+    margin: auto;
 }
 
 div.content h1{
