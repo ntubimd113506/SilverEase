@@ -116,53 +116,13 @@ div.content{
     width: 100%;
     text-align: left;
     margin-top: 30px; 
-    margin-bottom: 30px;
+    margin-bottom: 35px;
 }
 
 div.content h1{
     font-size: 30px;
     letter-spacing:8px;
 }
-
-/* input.input-field {
-    width: 100%;
-    height: 40px;
-    border-radius: 6px;
-    font-size: 19px;
-    color: #333;
-    padding-left: 10px;
-    box-sizing: border-box;
-    border-width: 1px; 
-    border-style: solid;
-    background-color: white;
-} */
-
-/* input[type="datetime-local"] {
-    width: 100%;
-    height: 42px;
-    background-color: white;
-    color: #333;
-    text-align: left; 
-    padding-left: 10px; 
-    padding-right: 40px;
-    border-width: 1px;
-    border-style: solid;
-    box-sizing: border-box;
-} */
-
-/* select {
-    width: 100%;
-    height: 40px;
-    border-radius: 6px;
-    font-size: 19px;
-    color: #333;
-    box-sizing: border-box;
-    padding-left: 4px;
-    margin-bottom: 24px;
-    border-width: 1px;
-    border-style: solid;
-    background-color: white;
-} */
 
 input.input-field, 
 input[type="datetime-local"],
@@ -182,9 +142,9 @@ select {
 }
 
 input[type="datetime-local"] {
-    padding-right: 40px; /* 為圖標留出空間 */
+    padding: 0 40px 0 8px; 
+    text-align: left;
 }
-
 
 /* 下拉選單箭頭 */
 select {
@@ -294,14 +254,6 @@ input[type="submit" i]:active {
     font-size: 19px;
     box-sizing: border-box; 
 }
-/* .delete-btn a{
-    align-items: center;
-    text-decoration: none;
-    color: #000000;
-    font-size: 19px;
-    letter-spacing:5px;
-    font-weight: 600;
-} */
 
 .delete-btn:hover,
 .delete-btn:active {
