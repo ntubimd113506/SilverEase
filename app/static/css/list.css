@@ -5,9 +5,9 @@ html, body{
     padding: 0%;
     margin: 0%;
     height: 100%; 
-    padding-bottom: 20px; 
     padding-bottom: constant(safe-area-inset-bottom);
     padding-bottom: env(safe-area-inset-bottom);
+    padding-bottom: calc(30px + env(safe-area-inset-bottom));
 }
 
 .container{
@@ -19,6 +19,7 @@ html, body{
     background-color: #F2F0EE;
     min-height: calc(100vh - env(safe-area-inset-bottom));
     min-height: calc(100vh - constant(safe-area-inset-bottom));
+    padding-bottom: 30px; 
 }
 
 div.header{
@@ -135,7 +136,8 @@ div.navbar a{
     display: flex;
     flex-direction: column;
     margin-right: 0px;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
+    /* padding-right: 5px;  */
 }
 
 .form-group label {
@@ -151,19 +153,20 @@ div.navbar a{
     border-radius: 6px;
     font-size: 17px;
     font-weight: bold;
-    color: #666;
-    padding-top: 3px;
-    /* padding: 0 0px; */
+    color: #707070;
+    margin-top: 3px;
+    padding: 0 0px;
     box-sizing: border-box;
     border: none;
     background-color: white;
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
-    background-image: url('data:image/svg+xml;utf8,<svg fill="rgb(102,102,102)" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+    background-image: url('data:image/svg+xml;utf8,<svg fill="rgb(112,112,112)" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
     background-repeat: no-repeat;
     background-position: right -8px center;
     outline: none;
+    margin-left: -1px; 
 }
 
 .form-group select:focus {
@@ -189,6 +192,8 @@ div.navbar a{
     font-size: 16px;
     padding-right: 1px;
 }
+
+
 /* ////////////////////////////////////////// */
 
 .data-item {
@@ -252,7 +257,7 @@ div.navbar a{
     transform: translateY(-50%);
     height: 80%;
     width: 2px;
-    background-color: #666;
+    background-color: #707070;
 }
 
 .EditorUserName {

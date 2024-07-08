@@ -4,21 +4,22 @@
 /* html, body          */
 /* ------------------- */
 html, body {
-    font-family: 'Noto Sans TC', sans-serif;
-    background-color: #f4f9f7;
-    padding: 0;
-    margin: 0;
+    touch-action: manipulation;
     overflow-y: hidden;
-    padding-bottom: 20px; 
+    font-family: 'Noto Sans TC', sans-serif;
+    background-color: #F2F0EE;
+    padding: 0%;
+    margin: 0%;
+    height: 100%; 
     padding-bottom: constant(safe-area-inset-bottom);
     padding-bottom: env(safe-area-inset-bottom);
+    padding-bottom: calc(30px + env(safe-area-inset-bottom));
 }
 
 /* ------------------- */
 /* container           */ 
 /* ------------------- */
 .container{
-    /* height: 700px; */
     touch-action: manipulation;
     -ms-content-zooming: none;
     margin: 0 auto;
@@ -28,7 +29,6 @@ html, body {
     min-height: calc(100vh - env(safe-area-inset-bottom));
     min-height: calc(100vh - constant(safe-area-inset-bottom));
 }
-
 /* ------------------- */
 /* header              */
 /* ------------------- */
