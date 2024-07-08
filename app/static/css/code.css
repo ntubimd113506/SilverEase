@@ -55,7 +55,7 @@ div.header h1{
 /* ------------------- */
 div.content{
     background-color: #F2F0EE;
-    padding: 20px 30px;
+    padding: 0px 23px;
 }
 
 div.cardrow{
@@ -103,7 +103,7 @@ input[type="submit" i]{
 img.b{
     opacity: 0.5;
     width: 280px;
-    height: 280px;
+    height: 250px;
 }
 
 input.output{
