@@ -3,9 +3,6 @@
 /* ------------------- */
 /* html, body          */
 /* ------------------- */
-html{
-    overflow-y: hidden;
-}
 
 html, body{
     font-family: 'Noto Sans TC', sans-serif;
@@ -25,7 +22,7 @@ div.container{
     margin-right: auto;
     text-align: justify;
     line-height: 26px;
-    background-color: #F2F0EE;
+    /* background-color: #F2F0EE; */
 }
 
 
@@ -38,6 +35,7 @@ div.header{
     justify-content: center;  
     padding: 10px;
     height: 40px;
+    width: auto;
     background-color: #9FB889;
 }
 
@@ -54,8 +52,8 @@ div.header h1{
 /* content             */
 /* ------------------- */
 div.content{
-    background-color: #F2F0EE;
-    padding: 0px 23px;
+    position: relative; 
+    padding: 20px 30px;
 }
 
 div.cardrow{
@@ -63,33 +61,70 @@ div.cardrow{
     /* 水平置中 */
     justify-content: center;
     margin: auto;
+    z-index: 2;
 }
-
 div.content h1{
     font-size: 30px;
     letter-spacing:8px;
-    margin-bottom: 0;
+    color: #2e2e2e;
+    margin-bottom: 200px;
+    position: relative; /* 確保內容有定位 */
+    z-index: 2;
 }
 
 div.content h4{
+    font-weight: lighter;
+    color: #2e2e2e;
     font-size: 22px;
     letter-spacing:5px;
-    margin: 0%;
-    padding: 0px 0px 20px;
+    position: relative; /* 確保內容有定位 */
+    z-index: 2;
+    margin: 40px 0px;
 }
 
-input.input{
-    width: 320px;
-    height: 30px;
+.input-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+/* 實際內容 */
+.input-with-dot {
+    width: 300px;
+    height: 40px;
     border-radius: 6px;
-    font-size: 18px;
     border-style:solid;
-    border-color: #A8A8A8;
+    padding-left: 10px;
+    font-size: 24px;
+    text-align: center;
+    letter-spacing: 8px;
+    font-family: monospace;
+    background-color: #fff; /* 背景透明以便顯示佔位符 */
+    color: transparent; /* 文字透明以便使用佔位符 */
+    caret-color: rgba(255, 255, 255, 0); /* 設置光標顏色 */
+}
+.input-with-dot::placeholder {
+    color: #A8A8A8; /* 佔位符顏色 */
+}
+
+.placeholder-dots {
+    position: absolute;
+    top: 0;
+    pointer-events: none;
+    font-size: 24px;
+    color: #A8A8A8;
+    letter-spacing: 8px;
+    font-family: monospace;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 input[type="submit" i]{
-    background-color: #809f68;
-    width: 340px;
+    position: relative;
+    background-color: #9FB889;
+    width: 320px;
     height: 40px;
     border-style:none;
     border-radius: 50px;
@@ -101,26 +136,38 @@ input[type="submit" i]{
 }
 
 img.b{
-    opacity: 0.5;
-    width: 280px;
-    height: 250px;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 530px;
+    height: 500px;
+    z-index: 0;
+    opacity: 0.3; /* 可選：調整背景圖片的透明度 */
 }
 
+span.value{
+    display: flex;
+    align-items: center;
+}
 input.output{
+    position: relative;
     width: 265px;
     height: 30px;
     border-radius: 6px;
-    font-size: 18px;
-    border-radius: 5px;    
+    font-size: 18px;  
     border-style:solid;
     border-color: #A8A8A8;
+    margin-right: 12px;
 }
 button.btn{
+    position: relative;
     box-sizing: border-box; 
-    width: 40px;
+
 }
 
 img.btn{
-    height: 13px; 
-    width: 15px;
+    height: 22px; 
+    width: 25px;
+    z-index: 2;
 }

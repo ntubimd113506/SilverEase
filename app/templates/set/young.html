@@ -47,27 +47,42 @@
         </div>
 
         <div class="content">
+            <img src="/static/imgs/main.png" class="b">
             <h1>群組代碼</h1>
-            <div class="cardrow">
-                <img src="/static/imgs/code.png" class="b">
-            </div>
-            <form action="/set/CodeID" method="post" enctype="multipart/form-data" >
+            <form action="/set/CodeID" method="post" enctype="multipart/form-data">
                 <div class="form">
                     <h4>請輸入群組代碼</h4>
 
                     <div class="cardrow">
-                    <span class="value">
-                        <input class="input" type="text" name="CodeID" placeholder="輸入代碼" required></br>
-                        <input type="hidden" id="MemID" name="MemID">
-                    </span>
+                        <span class="value">
+                            <div class="input-wrapper">
+                                <input class="input-with-dot" type="text" id="input-with-dot" name="CodeID" maxlength="6" required oninput="updateDots()">
+                                <div id="placeholder-dots" class="placeholder-dots">••••••</div>
+                            </div>
+                            <input type="hidden" id="MemID" name="MemID">
+                        </span>
                     </div>
                     <div class="cardrow">
                         <span class="value"><input type="submit" value="確認"></span>
                     </div>
-                    
+
                 </div>
             </form>
         </div>
     </div>
+    <script>
+        function updateDots() {
+            const input = document.getElementById('input-with-dot');
+            const placeholderDots = document.getElementById('placeholder-dots');
+            const value = input.value;
+            const dots = '••••••';
+
+            // 將輸入的值和剩下的圓點結合起來
+            const newPlaceholder = value.split('').join('') + dots.slice(value.length);
+
+            // 更新佔位符的內容
+            placeholderDots.textContent = newPlaceholder;
+        }
+    </script>
 </body>
 </html>
