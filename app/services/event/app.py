@@ -1,4 +1,4 @@
-import json
+import json, random
 from flask import request, render_template, Blueprint, session
 from flask_login import login_required
 from datetime import datetime, timedelta
@@ -145,9 +145,11 @@ def send_line_message(MemoID, cnt=0, got=False):
         Cycle = data["Cycle"]
         Alert = data["Alert"]
         cnt += 1
-        reminder_time = (datetime.now() + timedelta(seconds=60)).strftime(
-            "%Y-%m-%dT%H:%M:%S"
-        )
+        reminder_time = (
+            datetime.now()
+            + timedelta(seconds=20)
+            + timedelta(seconds=random.uniform(-0.5, 0.5))
+        ).strftime("%Y-%m-%dT%H:%M:%S")
 
         msg = json.dumps({"MemoID": MemoID, "time": reminder_time, "got": True})
         body = TemplateSendMessage(
@@ -167,12 +169,24 @@ def send_line_message(MemoID, cnt=0, got=False):
             text=f"長者尚未收到此紀念日通知\n請儘速與長者聯繫\n\n標題: {Title}\n地點: {Location}",
         )
 
+        conn = db.get_connection()
+        cursor = conn.cursor()
+        
         if cnt <= 3 and not got:
             line_bot_api.push_message(MainUserID, body)
         else:
             if not got:
                 for sub_id in SubUserIDs:
                     line_bot_api.push_message(sub_id, body1)
+                
+                cursor.execute(
+                    """
+                    INSERT INTO Respond (MemoID, Times, RespondTime)
+                    VALUES (%s, %s, %s)
+                    """,
+                    (MemoID, 0, datetime.now().strftime("%Y-%m-%dT%H:%M:%S")),
+                )
+                conn.commit()
 
             next_time = next_send_time(Cycle, data["MemoTime"])
             next_time_format = next_time.strftime("%Y-%m-%dT%H:%M:%S")
@@ -182,8 +196,6 @@ def send_line_message(MemoID, cnt=0, got=False):
             cnt = 0
             got = False
 
-            conn = db.get_connection()
-            cursor = conn.cursor()
             cursor.execute(
                 """
                 UPDATE Memo
