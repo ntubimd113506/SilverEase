@@ -141,6 +141,7 @@ def send_line_message(MemoID, cnt=0, got=False):
         Title = data["Title"]
         Location = data["Location"]
         MainUserID = data["MainUser"]
+        MainUserName = data["MainUserName"]
         SubUserIDs = data["SubUser"]
         Cycle = data["Cycle"]
         Alert = data["Alert"]
@@ -160,13 +161,13 @@ def send_line_message(MemoID, cnt=0, got=False):
                 image_size="contain",
                 image_background_color="#FFFFFF",
                 title="紀念日通知",
-                text=f"標題: {Title}\n地點: {Location}",
+                text=f"📌標題: {Title}\n📍地點: {Location}",
                 actions=[PostbackAction(label="收到", data=msg, text="收到")],
             ),
         )
 
         body1 = TextSendMessage(
-            text=f"長者尚未收到此紀念日通知\n請儘速與長者聯繫\n\n標題: {Title}\n地點: {Location}",
+            text=f"{MainUserName}長者尚未收到此紀念日通知\n請儘速與長者聯繫\n\n📌標題: {Title}\n📍地點: {Location}",
         )
 
         conn = db.get_connection()

@@ -148,6 +148,7 @@ def send_line_message(MemoID, cnt=0, got=False):
         Clinic = data["Clinic"]
         Num = data["Num"]
         MainUserID = data["MainUser"]
+        MainUserName = data["MainUserName"]
         SubUserIDs = data["SubUser"]
         Cycle = data["Cycle"]
         Alert = data["Alert"]
@@ -167,17 +168,25 @@ def send_line_message(MemoID, cnt=0, got=False):
                 image_size="contain",
                 image_background_color="#FFFFFF",
                 title="回診通知",
-                text=f"標題: {Title}\n醫院地點: {Location}\n看診醫生: {Doctor}\n門診: {Clinic}\n號碼: {Num}",
+                text=f"📌標題: {Title}\n🏥醫院地點: {Location}\n👨‍⚕️看診醫生: {Doctor}\n🗓️門診: {Clinic}\n🔢號碼: {Num}",
                 actions=[PostbackAction(label="收到", data=msg, text="收到")],
             ),
         )
 
         body1 = TextSendMessage(
-            text=f"長者尚未收到此回診通知\n請儘速與長者聯繫\n\n標題: {Title}\n醫院地點: {Location}\n看診醫生: {Doctor}\n門診: {Clinic}\n號碼: {Num}",
+            text=f"{MainUserName}長者尚未收到此回診通知\n請儘速與長者聯繫\n\n📌標題: {Title}\n🏥醫院地點: {Location}\n👨‍⚕️看診醫生: {Doctor}\n🗓️門診: {Clinic}\n🔢號碼: {Num}",
         )
+
+        body2 = TextSendMessage(
+            text=f"{MainUserName}長者回診通知\n\n📌標題: {Title}\n🏥醫院地點: {Location}\n👨‍⚕️看診醫生: {Doctor}\n🗓️門診: {Clinic}\n🔢號碼: {Num}",
+        )    
 
         conn = db.get_connection()
         cursor = conn.cursor()
+
+        if cnt == 1:
+            for sub_id in SubUserIDs:
+                line_bot_api.push_message(sub_id, body2)
 
         if cnt <= 3 and not got:
             line_bot_api.push_message(MainUserID, body)
