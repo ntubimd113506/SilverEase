@@ -15,13 +15,18 @@ html, body {
 }
 
 /* ------------------- */
-/* container           */
+/* container           */ 
 /* ------------------- */
 .container{
-    height: 700px;
-    margin: 0 auto; 
+    /* height: 700px; */
+    touch-action: manipulation;
+    -ms-content-zooming: none;
+    margin: 0 auto;
+    text-align: justify;
     line-height: 26px;
     background-color: #F2F0EE;
+    min-height: calc(100vh - env(safe-area-inset-bottom));
+    min-height: calc(100vh - constant(safe-area-inset-bottom));
 }
 
 /* ------------------- */
@@ -90,8 +95,8 @@ ul li{
 
 /* 調整圖片 */
 .content img {
-    width: 280px;
-    height: 280px;
+    width: 250px;
+    height: 250px;
 }
 
 .content h2 {
@@ -108,7 +113,7 @@ ul li{
     justify-content: center; 
     align-items: center; 
     background-color: #809f68;
-    width: 34%;
+    width: 32%;
     height: 40px;
     border-radius: 20px;
     font-weight: bolder;
