@@ -1,3 +1,6 @@
+/* ------------------- */
+/* html, body          */
+/* ------------------- */
 html, body{
     touch-action: manipulation;
     font-family: 'Noto Sans TC', sans-serif;
@@ -10,6 +13,10 @@ html, body{
     padding-bottom: calc(30px + env(safe-area-inset-bottom));
 }
 
+/* ------------------- */
+/* container           */
+/* ------------------- */
+
 .container{
     touch-action: manipulation;
     -ms-content-zooming: none;
@@ -21,6 +28,10 @@ html, body{
     min-height: calc(100vh - constant(safe-area-inset-bottom));
     padding-bottom: 30px; 
 }
+
+/* ------------------- */
+/* header              */
+/* ------------------- */
 
 div.header{
     display: flex;
@@ -66,7 +77,7 @@ div.history-navbar a{
     text-decoration: none;
     color: #000000; 
 }
-/* ////////////////////////// */
+
 #menu-bar{
     z-index: 1;
     float: left;
@@ -97,7 +108,9 @@ div.navbar a{
     color: #000000; 
 }
 
-
+/* ------------------- */
+/* content             */
+/* ------------------- */
 
 .content{
     background-color: #F2F0EE;
@@ -121,6 +134,7 @@ div.navbar a{
 
 .query-form {
     width: 80%;
+    height: 80px;
     margin: 0 auto 40px;
     display: flex;
     align-items: center;
@@ -137,7 +151,8 @@ div.navbar a{
     flex-direction: column;
     margin-right: 0px;
     margin-bottom: 5px;
-    /* padding-right: 5px;  */
+    justify-content: center;
+    align-items: flex-start;
 }
 
 .form-group label {
@@ -149,12 +164,12 @@ div.navbar a{
 
 .form-group select {
     width: 82px;
-    height: 40px;
+    height: 35px;
     border-radius: 6px;
     font-size: 17px;
     font-weight: bold;
     color: #707070;
-    margin-top: 3px;
+    margin-top: 2px;
     padding: 0 0px;
     box-sizing: border-box;
     border: none;
@@ -176,12 +191,12 @@ div.navbar a{
 }
 
 .submit-button {
-    height: 40px;
+    height: 50px;
+    width: 50px;
     border: none;
     background-color: #809f68;
     color: white;
     font-size: 17px;
-    padding: 0 10px;
     border-radius: 9px;
     font-weight: bolder;
     letter-spacing:3px;
@@ -189,8 +204,9 @@ div.navbar a{
 
 #search{
     color: #ffffff;
-    font-size: 16px;
+    font-size: 19px;
     padding-right: 1px;
+    font-weight: bold;
 }
 
 
