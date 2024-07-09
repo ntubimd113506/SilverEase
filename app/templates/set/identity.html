@@ -20,30 +20,31 @@
         <div class="header">
             <h1>SilverEase</h1>
         </div>
-
-        <div class="content">
-            <img src="/static/imgs/main.png" class="p">
-            <div class="row">
-                <div class="center-image">
-                    <h1 id="name"></h1>
-                </div>
-            </div>
-
-            <div class="form">
-                <form id="form" action="/set/oy" method="post">
-                    <div class="cardrow">
-                        <!-- 這裡也要看看 -->
-                        <button type="button" class="card" id="old" onclick="selectButton('old')">長輩</button>
-                        <button type="button" class="card" id="young" onclick="selectButton('young')">照護者</button>
+        <div class="content-wrapper">
+            <div class="content">
+                <img src="/static/imgs/main.png" class="p">
+                <div class="row">
+                    <div class="center-image">
+                        <h1 id="name"></h1>
                     </div>
+                </div>
 
-                    <input type="hidden" id="MemID" name="MemID">
-                    <input type="hidden" id="MemName" name="MemName">
-                    <input type="hidden" id="option" name="option">
-                    <input type="hidden" id="checkMember" name="checkMember">
+                <div class="form">
+                    <form id="form" action="/set/oy" method="post">
+                        <div class="cardrow">
+                            <!-- 這裡也要看看 -->
+                            <button type="button" class="card" id="old" onclick="selectButton('old')">長輩</button>
+                            <button type="button" class="card" id="young" onclick="selectButton('young')">照護者</button>
+                        </div>
 
-                    <div class="cardrow"><input class="button" type="submit" value="確認" id="myButton"></div>
-                </form>
+                        <input type="hidden" id="MemID" name="MemID">
+                        <input type="hidden" id="MemName" name="MemName">
+                        <input type="hidden" id="option" name="option">
+                        <input type="hidden" id="checkMember" name="checkMember">
+
+                        <div class="cardrow"><input class="button" type="submit" value="確認" id="myButton"></div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

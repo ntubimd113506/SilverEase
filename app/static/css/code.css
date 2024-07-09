@@ -49,6 +49,15 @@ div.header h1{
 }
 
 /* ------------------- */
+/* content-wrapper     */
+/* ------------------- */
+div.content-wrapper {
+    display: flex;
+    justify-content: center;  /* 水平置中 */
+    height: 100vh;            /* 設置容器高度為視窗高度 */
+}
+
+/* ------------------- */
 /* content             */
 /* ------------------- */
 div.content{
@@ -170,4 +179,32 @@ img.btn{
     height: 22px; 
     width: 25px;
     z-index: 2;
+}
+
+@media only screen and (min-width: 768px) {
+    div.content{
+        width: 400px;
+    }
+    div.content h1 {
+        font-size: 36px;
+    }
+
+    img.p {
+        width: 100%;
+        height: auto;
+    }
+
+    div.button {
+        width: 100px;
+        font-size: 18px;
+    }
+
+    #myButton {
+        width: 100%;
+        font-size: 18px;
+    }
+
+    div.form {
+        margin-top: 120px;
+    }
 }

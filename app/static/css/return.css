@@ -5,7 +5,7 @@
 /* ------------------- */
 html, body{
     font-family: 'Noto Sans TC', sans-serif;
-    background-color: #f4f9f7;
+    background-color: #F2F0EE;
     padding: 0%;
     margin: 0%;
     padding-bottom: constant(safe-area-inset-bottom);
@@ -44,6 +44,15 @@ div.header h1{
     text-align:center;
     letter-spacing: 3px;
     margin: 0%;
+}
+
+/* ------------------- */
+/* content-wrapper     */
+/* ------------------- */
+div.content-wrapper {
+    display: flex;
+    justify-content: center;  /* 水平置中 */
+    height: 100vh;            /* 設置容器高度為視窗高度 */
 }
 
 /* ------------------- */
@@ -89,4 +98,32 @@ div.content p{
 img.b{
     width: 340px;
     height: 340px;
+}
+
+@media only screen and (min-width: 768px) {
+    div.content{
+        width: 400px;
+    }
+    div.content h1 {
+        font-size: 36px;
+    }
+
+    img.p {
+        width: 100%;
+        height: auto;
+    }
+
+    div.button {
+        width: 100px;
+        font-size: 18px;
+    }
+
+    #myButton {
+        width: 100%;
+        font-size: 18px;
+    }
+
+    div.form {
+        margin-top: 120px;
+    }
 }
