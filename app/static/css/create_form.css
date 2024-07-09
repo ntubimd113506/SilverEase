@@ -280,15 +280,3 @@ input[type="submit" i].delete_confirm:hover,
 input[type="submit" i].delete_confirm:active {
         background-color: #9fb889;
     }
-
-
-@media (max-width: 320px) {
-    .delete-btn{
-        padding: 3px 30px;
-    }
-
-    input[type="submit" i]{
-        top: -20px;
-    }
-
-}
