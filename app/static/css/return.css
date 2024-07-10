@@ -3,6 +3,10 @@
 /* ------------------- */
 /* html, body          */
 /* ------------------- */
+html{
+    overflow-y: hidden;
+}
+
 html, body{
     font-family: 'Noto Sans TC', sans-serif;
     background-color: #F2F0EE;
@@ -16,7 +20,6 @@ html, body{
 /* container           */
 /* ------------------- */
 div.container{
-    height: 900px;
     margin-left: auto;
     margin-right: auto;
     text-align: justify;
@@ -52,7 +55,7 @@ div.header h1{
 div.content-wrapper {
     display: flex;
     justify-content: center;  /* 水平置中 */
-    height: 100vh;            /* 設置容器高度為視窗高度 */
+    height: 100%;            /* 設置容器高度為視窗高度 */
 }
 
 /* ------------------- */
