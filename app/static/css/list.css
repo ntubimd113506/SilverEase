@@ -55,7 +55,7 @@ div.header h1{
     z-index: 1;
     float: left;
     padding-top: 12px;
-    padding-left: 5px;
+    padding-left: 10px;
     font-size: 17px;
     color: #809f68;
 }
@@ -82,7 +82,7 @@ div.history-navbar a{
     z-index: 1;
     float: left;
     padding-top: 12px;
-    padding-left: 5px;
+    padding-left: 10px;
     font-size: 17px;
     color: #809f68;
 }
@@ -285,4 +285,39 @@ div.navbar a{
 .edit-link {
     text-align: right;
 }
+
+
+/* 針對較小的手機屏幕（如 iPhone 12 mini） */
+@media screen and (max-width: 374px) {
+    .form-group select {
+        width: 77px;
+        height: 35px;
+        font-size: 16px;
+    }
+
+    .form-group label {
+        font-size: 15px;
+    }
+
+    .data-item, .query-form {
+        width: 77%; 
+    }
+    
+}
+
+/* 中等大小的手機屏幕 */
+@media screen and (min-width: 375px) and (max-width: 413px) {
+    body h1{
+        font-weight: 600;
+        }
+}
+
+/* 針對較大的手機屏幕（如 iPhone 14 Pro Max） */
+@media screen and (min-width: 414px) {
+    body h1{
+        font-weight: 800;
+    }
+
+}
+
 
