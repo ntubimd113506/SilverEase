@@ -59,7 +59,7 @@ div.header h1{
 #menu-bar{
     z-index: 1;
     float: left;
-    padding-top: 11px;
+    padding-top: 12px;
     padding-left: 5px;
     font-size: 17px;
 }
@@ -137,9 +137,16 @@ select {
     -moz-appearance: none;
 }
 
-input[type="datetime-local"] {
+/* input[type="datetime-local"] {
     padding: 0 40px 0 8px; 
     text-align: left;
+} */
+ 
+input[type="datetime-local"] {
+    padding: 0 40px 0 8px;
+    text-align: left;
+    box-sizing: border-box;
+    width: 100%;
 }
 
 /* 下拉選單箭頭 */

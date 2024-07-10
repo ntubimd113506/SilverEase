@@ -11,11 +11,11 @@ html, body {
     padding: 0;
     margin: 0;
     height: 100%;
-    padding-bottom: env(safe-area-inset-bottom, 30px);
     -webkit-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
     user-select: none;
     -webkit-user-drag: none;
+    box-sizing: border-box;
 }
 
 /* ------------------- */
@@ -26,12 +26,17 @@ html, body {
     -ms-content-zooming: none;
     -webkit-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
+    min-height: calc(100vh - env(safe-area-inset-bottom));
+    box-sizing: border-box;
     margin: 0 auto;
     text-align: justify;
     line-height: 26px;
     background-color: #F2F0EE;
-    min-height: calc(100vh - env(safe-area-inset-bottom, 30px));
+    padding-bottom: env(safe-area-inset-bottom);
+    display: flex;
+    flex-direction: column;
 }
+
 /* ------------------- */
 /* header              */
 /* ------------------- */
@@ -56,7 +61,7 @@ html, body {
 #menu-bar{
     z-index: 1;
     float: left;
-    padding-top: 11px;
+    padding-top: 12px;
     padding-left: 5px;
     font-size: 17px;
     color: #809f68;
@@ -94,12 +99,19 @@ ul li{
     justify-content: center; 
     width: 100%;            
     background-color: #F2F0EE;
+    flex: 1;
 }
 
 /* 調整圖片 */
-.content img {
+/* .content img {
     width: 250px;
     height: 250px;
+} */
+
+.content img {
+    width: 100%;     
+    max-width: 250px;    
+    height: auto;         
 }
 
 .content h2 {

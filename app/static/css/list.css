@@ -54,7 +54,7 @@ div.header h1{
 #history-bar{
     z-index: 1;
     float: left;
-    padding-top: 11px;
+    padding-top: 12px;
     padding-left: 5px;
     font-size: 17px;
     color: #809f68;
@@ -81,7 +81,7 @@ div.history-navbar a{
 #menu-bar{
     z-index: 1;
     float: left;
-    padding-top: 11px;
+    padding-top: 12px;
     padding-left: 5px;
     font-size: 17px;
     color: #809f68;
@@ -200,15 +200,17 @@ div.navbar a{
     border-radius: 9px;
     font-weight: bolder;
     letter-spacing:3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-#search{
+#search {
     color: #ffffff;
     font-size: 19px;
-    padding-right: 1px;
     font-weight: bold;
+    text-align: center;
 }
-
 
 /* ////////////////////////////////////////// */
 
@@ -283,25 +285,4 @@ div.navbar a{
 .edit-link {
     text-align: right;
 }
-
-
-@media only screen and (max-width: 600px) {
-    .edit-link {
-        top: 8px;
-        right: 12px;
-    }
-
-    .header-container {
-        width: 86%; 
-        margin: 0 auto;
-    }
-
-    .edit-link {
-        position: absolute;
-        top: 1em;
-        right: 1em;
-    }
-
-}
-
 
