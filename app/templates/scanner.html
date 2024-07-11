@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head></head>
+
+<body>
+    <div id="url"></div>
+</body>
+
+<script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+<script>
+
+    function initializeLiff(myLiffId) {
+        liff.init({
+            liffId: myLiffId
+        }).then(() => {
+            liff.scanCodeV2()
+            .then((result) => {
+                document.getElementById("url").innerHTML = result.value
+            })
+            .catch((error) => {
+                console.log("error", error);
+            });
+        })
+            .catch((err) => {
+                console.log('初始化失敗', err);
+            });
+
+    }
+
+    initializeLiff('{{liffid}}')
+</script>
+
+</html>

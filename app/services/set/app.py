@@ -1,5 +1,6 @@
 import json
-from flask import request, render_template, Blueprint
+from flask import request, render_template, Blueprint,session
+from flask_login import login_required
 from utils import db
 
 set_bp = Blueprint('set_bp',__name__)
@@ -147,3 +148,23 @@ def checkid():
       
     except Exception as e:
         return json.dumps({"error": "TryError"},ensure_ascii=False)
+    
+
+@set_bp.route("/qrcode")
+@login_required
+def scanner():
+    return render_template("scanner.html",liffid=db.LIFF_ID_FULL)
+
+@set_bp.route("/device/<DevID>/<Code>")
+# @login_required
+def device_index(DevID,Code):
+    session["DevID"]=DevID
+    session["Code"]=Code
+    return render_template("/set/device_index.html",DevID=DevID,Code=Code)
+
+
+@set_bp.route("/device/add",methods=["POST"])
+def add_device():
+    DevID=session.get("DevID")
+    Code=session.get("Code")
+    return "OK"

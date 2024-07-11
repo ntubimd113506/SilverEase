@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <p>初次設定裝置網路步驟</p>
+    <ol>
+        <li>開啟WiFi設定</li>
+        <li>連接{{DevID}}(密碼為{{Code}})</li>
+        <li><a href="http://192.168.4.1">點我進入設定頁面</a></li>
+    </ol>
+    <form action="/set/device/add" method="post">
+        <div>
+            家庭隨機碼<input type="text" namw="FamilyID">
+            <input type="hidden" name="DevID" value="{{DevID}}">
+        </div>
+        <div>
+            <button type="submit">裝置綁定</button>
+        </div>
+    </form>
+</body>
+
+</html>
