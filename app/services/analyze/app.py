@@ -1,6 +1,5 @@
 from flask import request, render_template, Blueprint, session, jsonify
 from flask_login import login_required
-from datetime import datetime
 from utils import db
 
 analyze_bp = Blueprint("analyze_bp", __name__)
@@ -26,13 +25,50 @@ def analyze():
     MainUserID = cursor.fetchone()
 
     if MainUserID:
-        return render_template("/analyze/analyze_index.html", Title="資料彙整", Index="", IndexName="", All="All", AllName="週報", SOS="SOS", SOSName="求救", Location="Location", LocationName="足跡", Create="Create", CreateName="新增排程", Respond="", RespondName="")
+        data = {
+            "Title": "資料彙整",
+            "Index": {"url": "", "name": ""},
+            "All": {"url": "all_weekly", "name": "週報"},
+            "SOS": {"url": "SOS", "name": "求救"},
+            "Location": {"url": "Location", "name": "足跡"},
+            "Create": {"url": "Create", "name": "新增排程"},
+            "Respond": {"url": "", "name": ""}
+        }
+        return render_template("/analyze/analyze_index.html", data = data)
     else:
-        return render_template("/analyze/analyze_index.html", Title="資料彙整", Index="", IndexName="", All="All", AllName="週報", SOS="SOS", SOSName="求救", Location="Location", LocationName="足跡", Create="Create", CreateName="新增排程", Respond="Respond", RespondName="接收通知")
+        data = {
+            "Title": "資料彙整",
+            "All": {"url": "all_weekly", "name": "週報"},
+            "SOS": {"url": "SOS", "name": "求救"},
+            "Location": {"url": "Location", "name": "足跡"},
+            "Create": {"url": "Create", "name": "新增排程"},
+            "Respond": {"url": "Respond", "name": "回應"}
+        }
+        return render_template("/analyze/analyze_index.html", data=data)
+    
+@analyze_bp.route("/all_data")
+@login_required
+def all_data():
+    endpoints = {
+        "abc": "/analyze/all_weekly_data",
+    }
+
+    return jsonify({"endpoints": endpoints})
 
 @analyze_bp.route("/all_weekly")
+def all_weekly():
+    data = {
+        "Title": "資料彙整",
+        "Index": {"url": " ", "name": "主頁"},
+        "SOS": {"url": "SOS", "name": "求救"},
+        "Create": {"url": "Create", "name": "新增排程"},
+        "Respond": {"url": "Respond", "name": "回應"}
+    }
+    return render_template("/analyze/analyze_index.html", data=data)
+
+@analyze_bp.route("/all_weekly_data")
 @login_required
-def get_weekly_data():
+def all_weekly_data():
     MemID = session.get("MemID")
 
     conn = db.get_connection()
@@ -81,10 +117,36 @@ def get_weekly_data():
     )
     memo_data = cursor.fetchall()
 
+    cursor.execute(
+        """
+        WITH RECURSIVE Days AS (
+        SELECT 1 AS n
+        UNION ALL
+        SELECT n + 1 FROM Days WHERE n < 7
+        )
+        SELECT 
+            ELT(Days.n, '星期天', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六') AS CreateDate,
+            COUNT(CASE WHEN Weekly.Times = 0 THEN 1 ELSE NULL END) AS C0,
+            COUNT(CASE WHEN Weekly.Times = 1 THEN 1 ELSE NULL END) AS C1,
+            COUNT(CASE WHEN Weekly.Times = 2 THEN 1 ELSE NULL END) AS C2,
+            COUNT(CASE WHEN Weekly.Times = 3 THEN 1 ELSE NULL END) AS C3
+        FROM Days
+        LEFT JOIN (
+            SELECT 
+                DAYOFWEEK(RespondTime) AS n,
+                Times,
+                COUNT(*) AS CountPerDay
+            FROM `113-ntub113506`.Respond
+            WHERE YEAR(RespondTime) = YEAR(NOW())
+            AND MONTH(RespondTime) = MONTH(NOW())
+            AND WEEK(RespondTime) = WEEK(NOW())
+            GROUP BY n, Times
+        ) Weekly ON Days.n = Weekly.n
+        GROUP BY Days.n;
+        """
+    )
+    respond_data = cursor.fetchall()
+
     conn.close()
 
-    return jsonify({
-        "sos_data": sos_data,
-        "memo_data": memo_data
-    })
-
+    return jsonify({"sos_data": sos_data, "memo_data": memo_data, "respond_data":respond_data})
