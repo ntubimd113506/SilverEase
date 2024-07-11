@@ -62,6 +62,7 @@ div.header h1{
     padding-top: 12px;
     padding-left: 10px;
     font-size: 17px;
+    color: #809f68;
 }
 
 div.navbar{
@@ -181,15 +182,17 @@ select {
     margin-bottom: 5px; 
 }  
 
+
+
 /* 送出按鈕設定 */
-.btn{
+.btn {
     position: relative;
     top: 20px;
     align-items: center;
     background-color: #809f68;
     width: 100%; 
     height: 40px;
-    border-style:none;
+    border-style: none;
     border-radius: 20px;
     color: #ffffff;
     font-size: 19px;
@@ -197,43 +200,38 @@ select {
     letter-spacing: 5px;
     margin: 0%;
     margin-bottom: 30px;
-    /* 動畫 */
     cursor: pointer;    
-    transition: background-color 0.3s;
+    transition: background-color 0.1s;
 }
 
-.btn:hover,
 .btn:active {
     background-color: #9fb889;
 }
 
 /* delete_confirm的更改 */
-input[type="submit" i]{
+input[type="submit" i] {
     position: relative;
     top: -70px;
     align-items: center;
     background-color: #809f68;
     width: 100%;
     height: 40px;
-    border-style:none;
+    border-style: none;
     border-radius: 20px;
     color: #ffffff;
     font-size: 19px;
     font-weight: bolder;
-    letter-spacing:5px;
-    /* 動畫 */
+    letter-spacing: 5px;
     margin: 0%;
     cursor: pointer;    
-    transition: background-color 0.3s;
+    transition: background-color 0.1s;
 }
 
-input[type="submit" i]:hover,
 input[type="submit" i]:active {
     background-color: #9fb889;
 }
 
-
-/* update_confirm的刪除 */
+/* 編輯資料的刪除 */
 .delete-btn {
     position: relative;
     top: 90px; 
@@ -251,42 +249,43 @@ input[type="submit" i]:active {
     margin: 0;
     margin-bottom: 50px;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.1s;
     text-decoration: none;
     color: #000000;
     font-size: 19px;
     box-sizing: border-box; 
 }
 
-.delete-btn:hover,
+
 .delete-btn:active {
+    background-color: #eaeaea; 
     border: 4px solid #9fb889;
     color: #3a3a3a;
 }
 
-input[type="submit" i].delete_confirm{
-        position: relative;
-        top: -13px;
-        align-items: center;
-        background-color: #809f68;
-        width: 100%;
-        height: 40px;
-        border-style:none;
-        border-radius: 20px;
-        color: #ffffff;
-        font-size: 19px;
-        font-weight: bolder;
-        letter-spacing:5px;
-        /* 動畫 */
-        margin: 0%;
-        cursor: pointer;    
-        transition: background-color 0.3s;
-    }
-    
-input[type="submit" i].delete_confirm:hover,
+/* .delete_confirm 的設定 */
+input[type="submit" i].delete_confirm {
+    position: relative;
+    top: -13px;
+    align-items: center;
+    background-color: #809f68;
+    width: 100%;
+    height: 40px;
+    border-style: none;
+    border-radius: 20px;
+    color: #ffffff;
+    font-size: 19px;
+    font-weight: bolder;
+    letter-spacing: 5px;
+    margin: 0%;
+    cursor: pointer;    
+    transition: background-color 0.1s;
+}
+
+
 input[type="submit" i].delete_confirm:active {
-        background-color: #9fb889;
-    }
+    background-color: #9fb889; 
+}
 
 
 /* 針對較小的手機屏幕（如 iPhone 12 mini） */

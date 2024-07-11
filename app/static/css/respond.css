@@ -55,6 +55,7 @@ div.header h1 {
     padding-top: 11px;
     padding-left: 10px;
     font-size: 17px;
+    color: #809f68;
 }
 
 div.navbar {
@@ -124,6 +125,12 @@ div.navbar a {
     font-size: 19px;
     box-sizing: border-box;
     padding-bottom: 2px;
+    cursor: pointer;
+    transition: background-color 0.1s;
+}
+
+.history:active {
+    background-color: #9fb889;
 }
 
 .history .fa-solid {
