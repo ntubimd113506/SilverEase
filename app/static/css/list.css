@@ -203,6 +203,12 @@ div.navbar a{
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.1s;
+}
+
+.submit-button:active {
+    background-color: #9fb889;
 }
 
 #search {
