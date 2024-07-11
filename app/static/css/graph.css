@@ -1,17 +1,10 @@
 @charset "utf-8";
 
-div.container{
-    width:800px;
-    margin:10px auto 10px auto;
-}
-
-div.content{
-    padding:20px 25px;    
-    text-align:justify;
-}
-
 .chart-box {
     border: 1px solid #000;
-    padding: 10px;
     margin: 10px 0;
+}
+
+.chart-box select {
+    padding: 5px;
 }
