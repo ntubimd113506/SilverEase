@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ Title }}</title>
+    <link href="/static/css/graph.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body onload="initializeLiff('2004699458-OR9pkZjP')">
+    <h1>SilverEase</h1>
+    <a href="{{ Index }}">{{ IndexName }}</a>
+    <a href="/{{ All }}">{{ AllName }}</a>
+    <div id="chartContainer"></div>
+    <a href="/{{ SOS }}">{{ SOSName }}</a>
+    <a href="/{{ Location }}">{{ LocationName }}</a>
+    <a href="/{{ Create }}">{{ CreateName }}</a>
+    <a href="/{{ Respond }}">{{ RespondName }}</a>
+    <script src="/static/js/Chart.bundle.js"></script>
+    <script src="/static/js/CB.js"></script>
+    <script src="/static/js/loadCharts.js"></script>
+    <input type="hidden" id="MemID" name="MemID">
+</body>
+</html>
