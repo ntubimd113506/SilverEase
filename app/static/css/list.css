@@ -292,7 +292,9 @@ div.navbar a{
     text-align: right;
 }
 
-
+/* ------------------- */
+/* Media Queries       */
+/* ------------------- */
 /* 針對較小的手機屏幕（如 iPhone 12 mini） */
 @media screen and (max-width: 374px) {
     .form-group select {
@@ -326,4 +328,160 @@ div.navbar a{
 
 }
 
+@media (min-width: 576px) {
+    /* For devices >= 576px */
+}
 
+@media (min-width: 768px) {
+    div.header {
+        height: 50px;
+    }
+    
+    div.header h1 {
+        padding: 12px;
+    }
+
+    #menu-bar {
+        padding-top: 13px;
+        padding-left: 13px;
+        font-size: 22px;
+    }
+    
+    ul li {
+        line-height: 50px;
+        width: 85px; 
+    }
+
+    div.navbar a {
+        font-size: 18px;
+    }
+
+    #history-bar{
+        padding-top: 13px;
+        padding-left: 13px;
+        font-size: 20px;
+    }
+    
+    div.history-navbar{
+        font-size: 18px;
+    }
+    
+    .his{
+        letter-spacing: 3px;
+        line-height: 50px;
+        width: 60px;     
+    }
+
+    .submit-button {
+        height: 50px;
+        width: 70px;
+    }
+
+    .submit-button:hover,
+    .submit-button:active {
+    background-color: #9fb889;
+    } 
+
+    .header-container {
+        width: 57%;
+    }
+
+    .query-form {
+        width: 55%; 
+    }
+    
+    .data-item {
+        width: 55%;
+    }
+
+    .form-group label {
+        font-size: 17px;
+    }
+
+    .form-group select {
+        width: 95px;
+        font-size: 19px;
+    }
+}
+
+@media (min-width: 992px) {
+    #menu-bar {
+        padding-top: 15px;
+        padding-left: 15px;
+        font-size: 25px;
+    }
+    
+    ul li {
+        line-height: 56px;
+    }
+
+    #history-bar{
+        padding-top: 15px;
+        padding-left: 15px;
+        font-size: 25px;
+    }
+    
+    .his{
+        line-height: 56px;
+    }
+
+    .header-container {
+        width: 50%;
+    }
+
+    .query-form  {
+        width: 47%; 
+    }
+    
+    .data-item {
+        width: 47%;
+    }
+    
+}
+
+@media (min-width: 1200px) {
+    .query-form  {
+        width: 42%; 
+    }
+    
+    .data-item {
+        width: 42%;
+    }
+
+    .header-container {
+        width: 44%;
+    }
+}
+
+@media (min-width: 1400px) {
+    #menu-bar {
+        padding-top: 20px;
+        padding-left: 20px;
+    }
+    
+    ul li {
+        line-height: 65px;
+    }
+
+    #history-bar{
+        padding-top: 20px;
+        padding-left: 20px;
+    }
+    
+    .his{
+        line-height: 65px;
+    }
+
+    .query-form  {
+        width: 38%; 
+    }
+    
+    .data-item {
+        width: 38%;
+    }
+
+    .header-container {
+        width: 40%;
+    }
+
+}
