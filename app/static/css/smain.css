@@ -102,3 +102,13 @@ div.card:nth-child(2)
 {
     margin-bottom: 50px;
 }
+
+@media only screen and (min-width: 768px) {
+    div.header {
+        height: 50px;
+    }
+    
+    div.header h1 {
+        padding: 12px;
+    }
+}

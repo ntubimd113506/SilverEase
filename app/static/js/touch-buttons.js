@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
-    var buttons = document.querySelectorAll('.btn, input[type="submit"], .delete-btn, input.delete_confirm, .submit-button');
+    var buttons = document.querySelectorAll('.btn, input[type="submit"], .delete-btn, input.delete_confirm, .submit-button, #myButton, input[type="submit" i]');
 
     buttons.forEach(function (button) {
         button.addEventListener('touchstart', function () {

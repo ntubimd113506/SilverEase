@@ -152,10 +152,16 @@ div button:first-child {
     height: 40px;
     border-style: none;
     border-radius: 50px;
-    color: #000000;
+    color: #ffffff;
     font-weight: bold;
     font-size: 20px;
     letter-spacing: 5px;
+    cursor: pointer;    
+    transition: background-color 0.1s;
+}
+
+#myButton:active {
+    background-color: #9fb889;
 }
 
 button h4 {
@@ -166,6 +172,13 @@ button h4 {
 }
 
 @media only screen and (max-width: 768px) {
+    div.header {
+        height: 50px;
+    }
+    
+    div.header h1 {
+        padding: 12px;
+    }
 
     div.content{
         width: 400px;
@@ -190,7 +203,8 @@ button h4 {
         font-size: 18px;
     }
 
-    div.form {
-        margin-top: 160px;
+    #myButton:hover,
+    #myButton:active {
+        background-color: #9fb889;
     }
 }

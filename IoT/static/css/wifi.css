@@ -114,3 +114,13 @@ button h3{
     letter-spacing:5px;
     margin: 0%;
 }
+
+@media only screen and (min-width: 768px) {
+    div.header {
+        height: 50px;
+    }
+    
+    div.header h1 {
+        padding: 12px;
+    }
+}
