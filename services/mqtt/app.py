@@ -43,12 +43,32 @@ def handle_mqtt_message(client, userdata, message):
             data = json.loads(message.payload.decode())
             DevID = data['DevID']
             sent_mess(DevID)
+            save_gps(DevID)
 
         except json.JSONDecodeError:
             print("Invalid JSON")
     if message.topic == 'ESP32/conn':
         print("ESP32 connected")
         print(f'Received message on topic {message.topic}: {message.payload.decode()}')
+
+#------------------------------------------------------    
+    if message.topic == 'ESP32/gps':
+        try:
+            data = json.loads(message.payload.decode())
+            Map = data.get('googleMapsUrl')
+            print(f"Received GPS data - GoogleMap:{Map}")
+            save_gps()
+        except json.JSONDecodeError:
+            print("Invalid JSON")
+
+def save_gps(DevID):
+    conn = db.get_connection()
+    cursor = conn.cursor()
+    cursor.execute('INSERT Location FROM Location where FamilyID = (SELECT FamilyID FROM Family WHERE DevID=%s)', (DevID))
+    data = cursor.fetchall()
+
+    conn.commit()
+    conn.close()
 
 def sent_mess(DevID,filename=None):
     #取得資料庫連線
