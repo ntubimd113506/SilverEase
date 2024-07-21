@@ -57,14 +57,14 @@ def handle_mqtt_message(client, userdata, message):
             data = json.loads(message.payload.decode())
             Map = data.get('googleMapsUrl')
             print(f"Received GPS data - GoogleMap:{Map}")
-            save_gps()
+            save_gps(Map)
         except json.JSONDecodeError:
             print("Invalid JSON")
 
-def save_gps(DevID):
+def save_gps(Map):
     conn = db.get_connection()
     cursor = conn.cursor()
-    cursor.execute('INSERT Location FROM Location where FamilyID = (SELECT FamilyID FROM Family WHERE DevID=%s)', (DevID))
+    cursor.execute('INSERT INTO Location (Location) VALUES (%s)', (Map))
     data = cursor.fetchall()
 
     conn.commit()
