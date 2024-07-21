@@ -114,6 +114,17 @@ button h3{
     letter-spacing:5px;
     margin: 0%;
 }
+@media only screen and (max-width: 360px) {
+    body h1{
+        font-weight: 600;
+        }
+}
+
+@media only screen and (max-width: 480px) {
+    body h1{
+        font-weight: 800;
+    }
+}
 
 @media only screen and (min-width: 768px) {
     div.header {

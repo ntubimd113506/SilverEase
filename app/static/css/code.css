@@ -203,16 +203,29 @@ img.btn{
     z-index: 2;
 }
 
+@media only screen and (max-width: 360px) {
+    body h1{
+        font-weight: 600;
+        }
+
+        img.b {
+            width: 420px;
+            height: 420px;
+        }
+}
+
+@media only screen and (max-width: 480px) {
+    body h1{
+        font-weight: 800;
+    }
+
+    img.b {
+        width: 440px;
+        height: 440px;
+    }
+}
 
 @media only screen and (max-width: 768px) {
-    div.header {
-        height: 50px;
-    }
-    
-    div.header h1 {
-        padding: 12px;
-    }
-
     div.content{
         width: 380px;
     }
@@ -241,5 +254,15 @@ img.btn{
     input[type="submit" i]:hover,
     input[type="submit" i]:active {
         background-color: #9fb889;
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    div.header {
+        height: 50px;
+    }
+    
+    div.header h1 {
+        padding: 12px;
     }
 }

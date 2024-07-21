@@ -102,16 +102,19 @@ img.b{
     width: 340px;
     height: 340px;
 }
+@media only screen and (max-width: 360px) {
+    body h1{
+        font-weight: 600;
+        }
+}
 
-@media only screen and (min-width: 768px) {
-    div.header {
-        height: 50px;
+@media only screen and (max-width: 480px) {
+    body h1{
+        font-weight: 800;
     }
-    
-    div.header h1 {
-        padding: 12px;
-    }
+}
 
+@media only screen and (max-width: 768px) {
     div.content{
         width: 400px;
     }
@@ -122,5 +125,15 @@ img.b{
     img.b {
         width: 100%;
         height: auto;
+    }
+}
+
+@media only screen and (min-width: 768px) {
+    div.header {
+        height: 50px;
+    }
+    
+    div.header h1 {
+        padding: 12px;
     }
 }

@@ -103,7 +103,23 @@ div.card:nth-child(2)
     margin-bottom: 50px;
 }
 
-@media only screen and (min-width: 768px) {
+@media only screen and (max-width: 360px) {
+    body h1{
+        font-weight: 600;
+        }
+}
+
+@media only screen and (max-width: 480px) {
+    body h1{
+        font-weight: 800;
+    }
+}
+@media (max-width: 768px) {
+    b.t{
+        font-size: 36px;
+    }
+}
+@media (min-width: 768px) {
     div.header {
         height: 50px;
     }
