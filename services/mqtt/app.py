@@ -64,11 +64,15 @@ def handle_mqtt_message(client, userdata, message):
 def save_gps(Map):
     conn = db.get_connection()
     cursor = conn.cursor()
-    cursor.execute('INSERT INTO Location (Location) VALUES (%s)', (Map))
-    data = cursor.fetchall()
-
-    conn.commit()
-    conn.close()
+    try:
+        cursor.execute('INSERT INTO Location (Location) VALUES (%s)', (Map,))
+        conn.commit()
+    except Exception as e:
+        print(f"Error inserting data: {e}")
+        conn.rollback()
+    finally:
+        cursor.close()
+        conn.close()
 
 def sent_mess(DevID,filename=None):
     #取得資料庫連線
