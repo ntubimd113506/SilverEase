@@ -81,15 +81,20 @@ def all_weekly_data():
         UNION ALL
         SELECT n + 1 FROM Days WHERE n < 7
         )
-        SELECT ELT(Days.n, '星期天', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六') CreateDate, IFNULL(Weekly.CountPerWeek, 0) CountPerWeek
-        FROM Days
+        SELECT 
+            ELT(Days.n, '星期天', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六') AS CreateDate,
+            IFNULL(Weekly.CountPerWeek, 0) CountPerWeek
+        FROM 
+            Days
         LEFT JOIN (
             SELECT DAYOFWEEK(LocationTime) AS n, COUNT(*) AS CountPerWeek
             FROM `113-ntub113506`.SOS s
             LEFT JOIN `113-ntub113506`.Location l on s.LocatNo = l.LocatNo
+            LEFT JOIN `113-ntub113506`.Access a ON l.FamilyID = a.FamilyID
             WHERE YEAR(LocationTime) = YEAR(NOW())
             AND MONTH(LocationTime) = MONTH(NOW())
             AND WEEK(LocationTime) = WEEK(NOW())
+            AND a.DataAnalyze = 1
             GROUP BY n
         ) Weekly ON Days.n = Weekly.n;
         """
@@ -99,18 +104,24 @@ def all_weekly_data():
     cursor.execute(
         """
         WITH RECURSIVE Days AS (
-        SELECT 1 AS n
-        UNION ALL
-        SELECT n + 1 FROM Days WHERE n < 7
+            SELECT 1 AS n
+            UNION ALL
+            SELECT n + 1 FROM Days WHERE n < 7
         )
-        SELECT ELT(Days.n, '星期天', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六') CreateDate, IFNULL(Weekly.CountPerWeek, 0) CountPerWeek
-        FROM Days
+        SELECT 
+            ELT(Days.n, '星期天', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六') AS CreateDate, 
+            IFNULL(Weekly.CountPerWeek, 0) AS CountPerWeek
+        FROM 
+            Days
         LEFT JOIN (
-            SELECT DAYOFWEEK(CreateTime) AS n, COUNT(*) AS CountPerWeek
-            FROM `113-ntub113506`.Memo 
-            WHERE YEAR(CreateTime) = YEAR(NOW())
-            AND MONTH(CreateTime) = MONTH(NOW())
-            AND WEEK(CreateTime) = WEEK(NOW())
+            SELECT DAYOFWEEK(Memo.CreateTime) AS n, COUNT(*) AS CountPerWeek
+            FROM `113-ntub113506`.Memo AS Memo
+            JOIN `113-ntub113506`.Access AS Access 
+            ON Memo.FamilyID = Access.FamilyID
+            WHERE Access.DataAnalyze = 1
+            AND YEAR(Memo.CreateTime) = YEAR(NOW())
+            AND MONTH(Memo.CreateTime) = MONTH(NOW())
+            AND WEEK(Memo.CreateTime) = WEEK(NOW())
             GROUP BY n
         ) Weekly ON Days.n = Weekly.n;
         """
@@ -119,30 +130,33 @@ def all_weekly_data():
 
     cursor.execute(
         """
-        WITH RECURSIVE Days AS (
-        SELECT 1 AS n
-        UNION ALL
-        SELECT n + 1 FROM Days WHERE n < 7
-        )
+WITH RECURSIVE Days AS (
+    SELECT 1 AS n
+    UNION ALL
+    SELECT n + 1 FROM Days WHERE n < 7
+    )
+    SELECT 
+        ELT(Days.n, '星期天', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六') AS CreateDate,
+        COUNT(CASE WHEN Weekly.Times = 0 THEN 1 ELSE NULL END) AS C0,
+        COUNT(CASE WHEN Weekly.Times = 1 THEN 1 ELSE NULL END) AS C1,
+        COUNT(CASE WHEN Weekly.Times = 2 THEN 1 ELSE NULL END) AS C2,
+        COUNT(CASE WHEN Weekly.Times = 3 THEN 1 ELSE NULL END) AS C3
+    FROM Days
+    LEFT JOIN (
         SELECT 
-            ELT(Days.n, '星期天', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六') AS CreateDate,
-            COUNT(CASE WHEN Weekly.Times = 0 THEN 1 ELSE NULL END) AS C0,
-            COUNT(CASE WHEN Weekly.Times = 1 THEN 1 ELSE NULL END) AS C1,
-            COUNT(CASE WHEN Weekly.Times = 2 THEN 1 ELSE NULL END) AS C2,
-            COUNT(CASE WHEN Weekly.Times = 3 THEN 1 ELSE NULL END) AS C3
-        FROM Days
-        LEFT JOIN (
-            SELECT 
-                DAYOFWEEK(RespondTime) AS n,
-                Times,
-                COUNT(*) AS CountPerDay
-            FROM `113-ntub113506`.Respond
-            WHERE YEAR(RespondTime) = YEAR(NOW())
-            AND MONTH(RespondTime) = MONTH(NOW())
-            AND WEEK(RespondTime) = WEEK(NOW())
-            GROUP BY n, Times
-        ) Weekly ON Days.n = Weekly.n
-        GROUP BY Days.n;
+            DAYOFWEEK(r.RespondTime) AS n,
+            r.Times,
+            COUNT(*) AS CountPerDay
+        FROM `113-ntub113506`.Respond r
+        LEFT JOIN `113-ntub113506`.Memo m ON m.MemoID = r.MemoID
+        LEFT JOIN `113-ntub113506`.Access a ON m.FamilyID = a.FamilyID
+        WHERE YEAR(r.RespondTime) = YEAR(NOW())
+        AND MONTH(r.RespondTime) = MONTH(NOW())
+        AND WEEK(r.RespondTime) = WEEK(NOW())
+        AND a.DataAnalyze = 1
+        GROUP BY n, r.Times
+    ) Weekly ON Days.n = Weekly.n
+    GROUP BY Days.n;
         """
     )
     respond_data = cursor.fetchall()
