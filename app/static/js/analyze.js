@@ -38,29 +38,31 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    function setupChart(chartInfo, label, data, bgColor, borderColor) {
+        return {
+            labels: data.labels,
+            datasets: [{
+                label: label,
+                data: data.values,
+                fill: false,
+                backgroundColor: bgColor,
+                borderColor: borderColor,
+                borderWidth: 1
+            }]
+        };
+    }
+
     function fetchData(url, chartTitle) {
         fetch(url)
             .then(response => response.json())
             .then(data => {
+                // SOS Chart
                 var sosData = data.SOSdata.map(item => item[1]);
-                var labels = data.SOSdata.map(item => item[0]);
+                var sosLabels = data.SOSdata.map(item => item[0]);
 
-                function setupChart(chartInfo, label, data, bgColor, borderColor) {
-                    return {
-                        labels: labels,
-                        datasets: [{
-                            label: label,
-                            data: data,
-                            fill: false,
-                            backgroundColor: bgColor,
-                            borderColor: borderColor
-                        }]
-                    };
-                }
-
-                var chartInfo = createChartBox('myChart', chartTitle);
-                var SOS = setupChart(chartInfo, '求救', sosData, 'rgba(255, 38, 38, 0.8)', 'rgba(255, 38, 38, 0.8)');
-                var chart = createChart(chartInfo, 'bar', SOS, {
+                var sosChartInfo = createChartBox('sosChart', chartTitle + ' (長條圖/折線圖)');
+                var SOS = setupChart(sosChartInfo, '求救次數', { labels: sosLabels, values: sosData }, 'rgba(255, 38, 38, 0.8)', 'rgba(255, 38, 38, 0.8)');
+                var sosChart = createChart(sosChartInfo, 'bar', SOS, {
                     scales: {
                         y: {
                             beginAtZero: true
@@ -68,9 +70,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 });
 
-                chartInfo.select.addEventListener('change', function () {
-                    chart.destroy();
-                    chart = createChart(chartInfo, this.value, SOS, {
+                sosChartInfo.select.addEventListener('change', function () {
+                    sosChart.destroy();
+                    sosChart = createChart(sosChartInfo, this.value, SOS, {
                         scales: {
                             y: {
                                 beginAtZero: true
@@ -78,6 +80,38 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                     });
                 });
+
+                var typeLabels = data.SOSTypedata.map(item => item[0]);
+                var typeData = data.SOSTypedata.map(item => item[1]);
+
+                var typeChartInfo = createChartBox('sosTypeChart', '求救類型分布（圓餅圖）');
+                typeChartInfo.select.style.display = 'none';
+
+                var SOSType = {
+                    labels: typeLabels,
+                    datasets: [{
+                        data: typeData,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                };
+
+                createChart(typeChartInfo, 'pie', SOSType);
             });
     }
 

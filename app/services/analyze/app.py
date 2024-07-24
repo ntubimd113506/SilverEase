@@ -22,7 +22,7 @@ def all_weekly():
     return render_template("/analyze/analyze.html", data=data)
 
 def fetch_weekly_data(cursor, FamilyID=None):
-    family_condition = "AND m.FamilyID = %s" if FamilyID else ""
+    family_condition = "AND l.FamilyID = %s" if FamilyID else ""
     family_param = (FamilyID,) if FamilyID else ()
 
     cursor.execute(
@@ -40,8 +40,8 @@ def fetch_weekly_data(cursor, FamilyID=None):
         LEFT JOIN (
             SELECT DAYOFWEEK(LocationTime) AS n, COUNT(*) AS CountPerWeek
             FROM `113-ntub113506`.SOS s
-            LEFT JOIN `113-ntub113506`.Location m on s.LocatNo = m.LocatNo
-            LEFT JOIN `113-ntub113506`.Access a ON m.FamilyID = a.FamilyID
+            LEFT JOIN `113-ntub113506`.Location l on s.LocatNo = l.LocatNo
+            LEFT JOIN `113-ntub113506`.Access a ON l.FamilyID = a.FamilyID
             WHERE YEAR(LocationTime) = YEAR(NOW())
             AND MONTH(LocationTime) = MONTH(NOW())
             AND WEEK(LocationTime) = WEEK(NOW())
@@ -54,7 +54,33 @@ def fetch_weekly_data(cursor, FamilyID=None):
     )
     SOSdata = cursor.fetchall()
 
-    return {"SOSdata": SOSdata}
+    cursor.execute(
+        f"""
+        SELECT 
+            st.TypeName, 
+            COUNT(CASE WHEN a.DataAnalyze = 1 THEN s.SOSType ELSE NULL END) AS Count
+        FROM 
+            `113-ntub113506`.SOSType st
+        LEFT JOIN 
+            `113-ntub113506`.SOS s ON s.SOSType = st.TypeNo
+        LEFT JOIN 
+            `113-ntub113506`.Location l ON l.LocatNo = s.LocatNo
+            AND YEAR(l.LocationTime) = YEAR(NOW())
+            AND MONTH(l.LocationTime) = MONTH(NOW())
+            AND WEEK(l.LocationTime) = WEEK(NOW())
+        LEFT JOIN 
+            `113-ntub113506`.Access a ON l.FamilyID = a.FamilyID
+            {family_condition}
+        GROUP BY 
+            st.TypeName, st.TypeNo
+        ORDER BY 
+            st.TypeNo;
+        """,
+        family_param,
+    )
+    SOSTypedata = cursor.fetchall()
+
+    return {"SOSdata": SOSdata, "SOSTypedata":SOSTypedata}
 
 @analyze_bp.route("/all_weekly_data")
 @login_required
