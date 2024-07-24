@@ -84,8 +84,5 @@ def mem_weekly_data():
         )
         FamilyID = cursor.fetchone()
 
-        if FamilyID:
-            data = fetch_weekly_data(cursor, FamilyID[0])
-        else:
-            data = {"SOSdata": []}  # 沒有資料時返回空數據
+        data = fetch_weekly_data(cursor, FamilyID[0])
     return jsonify(data)
