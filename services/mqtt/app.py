@@ -54,12 +54,12 @@ def handle_mqtt_message(client, userdata, message):
 #------------------------------------------------------    
     if message.topic == 'ESP32/gps':
         try:
-            data = json.loads(message.payload.decode())
-            Map = data.get('googleMapsUrl')
+            data = message.payload.decode()
+            Map = data('googleMapsUrl')
             print(f"Received GPS data - GoogleMap:{Map}")
             save_gps(Map)
-        except json.JSONDecodeError:
-            print("Invalid JSON")
+        except :
+            print("OK！")
 
 def save_gps(Map):
     conn = db.get_connection()
