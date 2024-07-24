@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     var chartContainer = document.getElementById('chartContainer');
 
-    function createChartBox(id, title) {
+    function createChartBox(id, title, dateRange) {
         var div = document.createElement('div');
         div.className = 'chart-box';
         div.style.border = '1px solid #000';
@@ -11,6 +11,12 @@ document.addEventListener('DOMContentLoaded', function () {
         var h2 = document.createElement('h2');
         h2.textContent = title;
         div.appendChild(h2);
+
+        var dateDiv = document.createElement('div');
+        dateDiv.textContent = dateRange;
+        dateDiv.style.fontSize = '12px';
+        dateDiv.style.color = '#555';
+        div.appendChild(dateDiv);
 
         var select = document.createElement('select');
         select.innerHTML = `
@@ -70,10 +76,41 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const predefinedBorderColors = predefinedColors.map(color => color.replace('0.5', '1'));
 
+    function getWeekRange(date) {
+        var day = date.getDay();
+        var diff = date.getDate() - day;
+        var startDate = new Date(date);
+        startDate.setDate(diff);
+        var endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + 6);
+
+        return {
+            start: startDate,
+            end: endDate
+        };
+    }
+
+    function formatDateToROC(date) {
+        var rocYear = date.getFullYear() - 1911;
+        var month = (date.getMonth() + 1).toString().padStart(2, '0');
+        var day = date.getDate().toString().padStart(2, '0');
+        return `${rocYear}年${month}月${day}日`;
+    }
+
+    function formatDateRange(startDate, endDate) {
+        var start = formatDateToROC(startDate);
+        var end = formatDateToROC(endDate);
+        return `${start} - ${end}`;
+    }
+
     function fetchData(url, chartTitle) {
         fetch(url)
             .then(response => response.json())
             .then(data => {
+                var currentDate = new Date();
+                var dateRange = getWeekRange(currentDate);
+                var formattedDateRange = formatDateRange(dateRange.start, dateRange.end);
+
                 var sosData = data.SOSdata.map(item => item[1]);
                 var sosLabels = data.SOSdata.map(item => item[0]);
 
@@ -83,7 +120,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     noDataMessage.style.color = 'red';
                     chartContainer.appendChild(noDataMessage);
                 } else {
-                    var sosChartInfo = createChartBox('sosChart', chartTitle);
+                    var sosChartInfo = createChartBox('sosChart', chartTitle, formattedDateRange);
                     var SOS = setupChart(sosChartInfo, '求救次數', { labels: sosLabels, values: sosData }, 'rgba(255, 38, 38, 0.5)', 'rgba(255, 38, 38, 0.5)');
                     var sosChart = createChart(sosChartInfo, 'bar', SOS, {
                         scales: {
@@ -114,7 +151,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     noDataMessage.style.color = 'red';
                     chartContainer.appendChild(noDataMessage);
                 } else {
-                    var typeChartInfo = createChartBox('sosTypeChart', '求救類型分布');
+                    var typeChartInfo = createChartBox('sosTypeChart', '求救類型分布', formattedDateRange);
                     typeChartInfo.select.style.display = 'none';
 
                     var SOSType = {
@@ -139,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     noDataMessage.style.color = 'red';
                     chartContainer.appendChild(noDataMessage);
                 } else {
-                    var placeChartInfo = createChartBox('sosPlaceChart', '求救家中地點分布');
+                    var placeChartInfo = createChartBox('sosPlaceChart', '求救家中地點分布', formattedDateRange);
                     placeChartInfo.select.style.display = 'none';
 
                     var SOSPlace = {
