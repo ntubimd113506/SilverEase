@@ -8,7 +8,8 @@ analyze_bp = Blueprint("analyze_bp", __name__)
 @login_required
 def analyze():
     data = {
-        "Title": "資料彙整",
+        "Title": "個人資料彙整",
+        "analyze": "個人分析",
         "All": {"url": "all_weekly", "name": "週報"},
     }
     return render_template("/analyze/analyze.html", data=data)
@@ -16,7 +17,8 @@ def analyze():
 @analyze_bp.route("/all_weekly")
 def all_weekly():
     data = {
-        "Title": "資料彙整",
+        "Title": "全體資料彙整",
+        "analyze": "全體分析",
         "Index": {"url": " ", "name": "主頁"},
     }
     return render_template("/analyze/analyze.html", data=data)
@@ -80,7 +82,32 @@ def fetch_weekly_data(cursor, FamilyID=None):
     )
     SOSTypedata = cursor.fetchall()
 
-    return {"SOSdata": SOSdata, "SOSTypedata":SOSTypedata}
+    cursor.execute(
+        f"""
+        SELECT 
+            sp.PlaceName, 
+            COUNT(CASE WHEN a.DataAnalyze = 1 THEN s.SOSPlace ELSE NULL END) AS Count
+        FROM 
+            `113-ntub113506`.SOSPlace sp
+        LEFT JOIN 
+            `113-ntub113506`.SOS s ON s.SOSPlace = sp.PlaceNo
+        LEFT JOIN 
+            `113-ntub113506`.Location l ON l.LocatNo = s.LocatNo
+            AND YEAR(l.LocationTime) = YEAR(NOW())
+            AND MONTH(l.LocationTime) = MONTH(NOW())
+            AND WEEK(l.LocationTime) = WEEK(NOW())
+        LEFT JOIN 
+            `113-ntub113506`.Access a ON l.FamilyID = a.FamilyID
+            {family_condition}
+        GROUP BY 
+            sp.PlaceName, sp.PlaceNo
+        ORDER BY 
+            sp.PlaceNo;
+        """,
+        family_param,
+    )
+    SOSPlacedata = cursor.fetchall()
+    return {"SOSdata": SOSdata, "SOSTypedata": SOSTypedata, "SOSPlacedata": SOSPlacedata}
 
 @analyze_bp.route("/all_weekly_data")
 @login_required

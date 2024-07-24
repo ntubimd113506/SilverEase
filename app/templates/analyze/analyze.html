@@ -9,6 +9,7 @@
 </head>
 <body>
     <h1>SilverEase</h1>
+    <div>{{ data.analyze }}</div>
     {% for key, value in data.items() %}
         {% if key != 'Title' %}
             {% if value.url %}
