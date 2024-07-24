@@ -1,7 +1,8 @@
 import json
-from flask import request, render_template, Blueprint,session
+from flask import request, render_template, Blueprint,session,url_for
 from flask_login import login_required
 from utils import db
+from services import mqtt
 
 set_bp = Blueprint('set_bp',__name__)
 
@@ -158,13 +159,32 @@ def scanner():
 @set_bp.route("/device/<DevID>/<Code>")
 # @login_required
 def device_index(DevID,Code):
-    session["DevID"]=DevID
-    session["Code"]=Code
     return render_template("/set/device_index.html",DevID=DevID,Code=Code)
 
 
-@set_bp.route("/device/add",methods=["POST"])
+@set_bp.route("/device/submit",methods=["POST"])
 def add_device():
-    DevID=session.get("DevID")
-    Code=session.get("Code")
-    return "OK"
+    DevID=request.form.get("DevID")
+    FamilyCode=request.form.get("FamilyCode")
+    msg=json.dumps({
+        "DevID":DevID,
+        "FamilyCode":FamilyCode
+    })
+    mqtt.publish(f"ESP32/{DevID}/check",msg)
+    return render_template("device_check.html")
+
+@set_bp.route("/access/check")
+def access_check():
+    # session[""]
+    return render_template("/set/access_index.html")
+
+# @set_bp.route("/access/submit")
+# def access_submit():
+#     conn=db.get_connection()
+#     cur=conn.cursor()
+
+#     cur.execute(
+#         """
+#         INSERT INTO Access (Family,)
+#         """)
+#     url_for("/set/identity")
