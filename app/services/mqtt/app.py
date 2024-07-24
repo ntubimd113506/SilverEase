@@ -30,6 +30,30 @@ def handle_mqtt_message(client, userdata, message):
         print("ESP32 connected")
         print(f'Received message on topic {message.topic}: {message.payload.decode()}')
 
+#-----------------------------------------------------------
+    if message.topic == 'ESP32/gps':
+            try:
+                data = message.payload.decode()
+                Map = str(data)
+                print(f"Received GPS data - GoogleMap:{Map}")
+                save_gps(Map)
+
+            except :
+                print("OK！")
+
+def save_gps(Map):
+    conn = db.get_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute('INSERT INTO `113-ntub113506`.Location (Location) VALUES (%s)', (Map,))
+        conn.commit()
+    except Exception as e:
+        print(f"Error inserting data: {e}")
+        conn.rollback()
+    finally:
+        cursor.close()
+        conn.close()
+
 
 def sent_mess(DevID, filename=None):
     # 取得資料庫連線
