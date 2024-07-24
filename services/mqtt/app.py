@@ -52,19 +52,14 @@ def handle_mqtt_message(client, userdata, message):
         print(f'Received message on topic {message.topic}: {message.payload.decode()}')
 
 #------------------------------------------------------    
-def on_message(client, userdata, message):
     if message.topic == 'ESP32/gps':
         try:
-            data = message.payload.decode()  # 解碼接收到的訊息
-            # 檢查並提取URL
-            if data.startswith("https://www.google.com/maps/search/"):
-                Map = data
-                print(f"Received GPS data - GoogleMap: {Map}")
-                save_gps(Map)
-            else:
-                print("Received data does not contain a valid Google Maps URL")
-        except Exception as e:
-            print(f"Error decoding or processing message: {e}")
+            data = message.payload.decode()
+            Map = data('googleMapsUrl.c_str()')
+            print(f"Received GPS data - GoogleMap:{Map}")
+            save_gps(Map)
+        except :
+            print("OK！")
 
 def save_gps(Map):
     conn = db.get_connection()
@@ -78,7 +73,6 @@ def save_gps(Map):
     finally:
         cursor.close()
         conn.close()
-
 
 def sent_mess(DevID,filename=None):
     #取得資料庫連線
