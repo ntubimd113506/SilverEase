@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ data.Title }}</title>
-    <link href="/static/css/graph.css" rel="stylesheet" type="text/css" />
+    <link href="/static/css/analyse.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -12,14 +12,14 @@
     {% for key, value in data.items() %}
         {% if key != 'Title' %}
             {% if value.url %}
-                <a href="/analyze/{{ value.url }}">{{ value.name }}</a>
+                <a href="/analyse/{{ value.url }}">{{ value.name }}</a>
                 <br>
             {% endif %}
         {% endif %}
     {% endfor %}
     <div id="chartContainer"></div>
     <script src="/static/js/Chart.bundle.js"></script>
-    <script src="/static/js/CB.js"></script>
+    <script src="/static/js/analyse.js"></script>
     <input type="hidden" id="MemID" name="MemID">
 </body>
 </html>
