@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 var sosData = data.SOSdata.map(item => item[1]);
                 var sosLabels = data.SOSdata.map(item => item[0]);
 
-                var sosChartInfo = createChartBox('sosChart', chartTitle + ' (長條圖/折線圖)');
+                var sosChartInfo = createChartBox('sosChart', chartTitle);
                 var SOS = setupChart(sosChartInfo, '求救次數', { labels: sosLabels, values: sosData }, 'rgba(255, 38, 38, 0.8)', 'rgba(255, 38, 38, 0.8)');
                 var sosChart = createChart(sosChartInfo, 'bar', SOS, {
                     scales: {
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 var typeLabels = data.SOSTypedata.map(item => item[0]);
                 var typeData = data.SOSTypedata.map(item => item[1]);
 
-                var typeChartInfo = createChartBox('sosTypeChart', '求救類型分布（圓餅圖）');
+                var typeChartInfo = createChartBox('sosTypeChart', '求救類型分布');
                 typeChartInfo.select.style.display = 'none';
 
                 var SOSType = {
