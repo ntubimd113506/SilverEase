@@ -55,9 +55,10 @@ def handle_mqtt_message(client, userdata, message):
     if message.topic == 'ESP32/gps':
         try:
             data = message.payload.decode()
-            Map = data('googleMapsUrl.c_str()')
+            Map = data
             print(f"Received GPS data - GoogleMap:{Map}")
             save_gps(Map)
+
         except :
             print("OK！")
 
@@ -65,7 +66,7 @@ def save_gps(Map):
     conn = db.get_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute('INSERT INTO Location (Location) VALUES (%s)', (Map,))
+        cursor.execute('INSERT INTO `113-ntub113506`.Location (Location) VALUES (%s)', (Map,))
         conn.commit()
     except Exception as e:
         print(f"Error inserting data: {e}")
