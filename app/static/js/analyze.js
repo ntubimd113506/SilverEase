@@ -194,9 +194,20 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
 
-    if (window.location.pathname === '/analyze/all_weekly') {
-        fetchData('/analyze/all_weekly_data', '求救次數');
-    } else {
-        fetchData('/analyze/mem_weekly_data', '求救次數');
+    const apiEndpoints = {
+        '/analyze/all_weekly': '/analyze/all_weekly_data',
+        '/analyze/all_monthly': '/analyze/all_monthly_data',
+        '/analyze/all_yearly': '/analyze/all_yearly_data',
+        '/analyze/mem_weekly': '/analyze/mem_weekly_data',
+        '/analyze/mem_monthly': '/analyze/mem_monthly_data',
+        '/analyze/mem_yearly': '/analyze/mem_yearly_data',
+    };
+
+    const currentPath = window.location.pathname;
+    const endpoint = apiEndpoints[currentPath];
+    const title = '求救次數';
+
+    if (endpoint) {
+        fetchData(endpoint, title);
     }
 });
