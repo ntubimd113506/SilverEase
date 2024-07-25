@@ -8,6 +8,7 @@
 #include <freertos/task.h>
 #include "esp_camera.h"
 #include "my-ca.h"
+#include "Base64.h"
 
 #define SERVER "silverease.ntub.edu.tw"
 #define MQTT_PORT 8883
@@ -18,9 +19,9 @@
 WiFiClientSecure client;
 PubSubClient mqtt(client);
 
-bool init_flag = false;
 bool dev_link = false;
 bool btn_flag = false;
+bool cam_flag = false;
 
 uint64_t macAddress = ESP.getEfuseMac();
 uint64_t macAddressTrunc = macAddress << 40;
@@ -30,31 +31,63 @@ const String TOPIC = String("ESP32/") + String(DevID.c_str());
 
 void callback(char *topic, byte *payload, unsigned int length)
 {
-  // Serial.print("收到訊息：");
   String message = "";
   for (int i = 0; i < length; i++)
   {
     message += (char)payload[i];
-    // Serial.print((char)payload[i]);
   }
-  // Serial.println();
   String action = topic + TOPIC.length() + 1;
-
-  Serial.println(action);
-  Serial.println(message);
-  Serial.print("ACTION: ");
-  Serial.println((action == "connect"));
-  Serial.print("MESSAGE: ");
-  Serial.println((message == "isLink"));
-  Serial.print("RESULT: ");
-  Serial.println((action == "connect" && message == "isLink"));
-  if (action == "connect" && message == "isLink")
+  if (action == "isLink")
   {
     dev_link = true;
     Serial.println("change");
   }
 
-  if (message == "收到")
+  if (action == "setLink")
+  {
+    int cnt = 0;
+    int res = 10;
+    while (res > 0 and cnt < 3)
+    {
+      digitalWrite(BUZZ, HIGH);
+      Serial.println(digitalRead(BTN));
+      if (digitalRead(BTN))
+      {
+        digitalWrite(BUZZ, LOW);
+        cnt++;
+      }
+      else
+      {
+        cnt = 0;
+      }
+      vTaskDelay(500 / portTICK_PERIOD_MS);
+      digitalWrite(BUZZ, LOW);
+      vTaskDelay(500 / portTICK_PERIOD_MS);
+      res--;
+    }
+    if (cnt >= 3)
+    {
+      dev_link = true;
+      mqtt.publish(String(TOPIC + "/link").c_str(), message.c_str());
+    }
+    else
+    {
+      mqtt.publish(String(TOPIC + "/link").c_str(), "fail");
+    }
+  }
+
+  if (action == "help")
+  {
+    for (int cnt = 0; cnt < 2; cnt++)
+    {
+      digitalWrite(BUZZ, HIGH);
+      vTaskDelay(250 / portTICK_PERIOD_MS);
+      digitalWrite(BUZZ, LOW);
+      vTaskDelay(250 / portTICK_PERIOD_MS);
+    }
+  }
+
+  if (action == "gotHelp")
   {
     int count = 0;
     while (count < 3)
@@ -73,8 +106,8 @@ void reconnect()
 {
   while (!mqtt.connected())
   {
-    Serial.print("嘗試 MQTT 連接...");
-    if (mqtt.connect("ESP32Client"))
+    Serial.print("MQTT 連接...");
+    if (mqtt.connect(DevID.c_str()))
     {
       Serial.println("已連接");
       mqtt.subscribe(String(TOPIC + "/#").c_str());
@@ -83,7 +116,7 @@ void reconnect()
     {
       Serial.print("失敗, rc=");
       Serial.print(mqtt.state());
-      Serial.println(" 5秒後重試");
+      Serial.println(" 1秒後重試");
       vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
   }
@@ -91,14 +124,14 @@ void reconnect()
 
 void mqttTask(void *parameter)
 {
-  for (;;)
+  while (1)
   {
     if (!mqtt.connected())
     {
       reconnect();
     }
     mqtt.loop();
-    vTaskDelay(10 / portTICK_PERIOD_MS);
+    vTaskDelay(50 / portTICK_PERIOD_MS);
   }
 }
 
@@ -131,6 +164,9 @@ bool initCamera()
       .fb_count = 1                   // 影像緩衝記憶區數量
   };
 
+  ledcSetup(LEDC_CHANNEL_0, 5000, LEDC_TIMER_0);
+  ledcAttachPin(FLASH, LEDC_CHANNEL_0);
+
   // 初始化攝像頭
   esp_err_t err = esp_camera_init(&camera_config);
   if (err != ESP_OK)
@@ -142,107 +178,104 @@ bool initCamera()
   return true;
 }
 
-String SendImageMQTT()
+void SendImageMQTT()
 {
-  camera_fb_t *fb = esp_camera_fb_get();
-  size_t fbLen = fb->len;
-  int ps = 512;
-  // 開始傳遞影像檔
-  mqtt.beginPublish("ESP32/cam", fbLen, false);
-  uint8_t *fbBuf = fb->buf;
-  for (size_t n = 0; n < fbLen; n = n + 2048)
+  camera_fb_t *fb;
+  String base64Image = "";
+  if (cam_flag)
   {
-    if (n + 2048 < fbLen)
-    {
-      mqtt.write(fbBuf, 2048);
-      fbBuf += 2048;
-    }
-    else if (fbLen % 2048 > 0)
-    {
-      size_t remainder = fbLen % 2048;
-      mqtt.write(fbBuf, remainder);
-    }
+    fb = esp_camera_fb_get();
+    String base64Image = base64::encode(fb->buf, fb->len);
   }
-  boolean isPublished = mqtt.endPublish();
-  esp_camera_fb_return(fb); // 清除緩衝區
-  if (isPublished)
+
+  JsonDocument doc;
+  doc["gps"] = "gpsInfo";
+  doc["image"] = base64Image;
+
+  String jsonString;
+  serializeJson(doc, jsonString);
+
+  // 發送JSON（包含圖片和訊息）
+  mqtt.beginPublish(String(TOPIC + "/help").c_str(), jsonString.length(), false);
+  mqtt.print(jsonString);
+  mqtt.endPublish();
+  if (cam_flag)
   {
-    return "MQTT傳輸成功";
-  }
-  else
-  {
-    return "MQTT傳輸失敗，請檢查網路設定";
+    esp_camera_fb_return(fb);
   }
 }
 
-void setup()
+void mainTask(void *parameter)
 {
-  Serial.begin(115200);
-  Serial.println("ESP32CAM 開始執行…");
-  pinMode(BTN, INPUT);
-  pinMode(BUZZ, OUTPUT);
-  Serial.println("初始化攝像頭…");
-  initCamera();
-  ledcSetup(LEDC_CHANNEL_0, 5000, LEDC_TIMER_0);
-  ledcAttachPin(FLASH, LEDC_CHANNEL_0);
-  Serial.println("初始化完成");
-  WiFiConfig.connectWiFi();
-  Serial.println("連接成功");
-  client.setCACert(root_ca);
-  mqtt.setServer(SERVER, MQTT_PORT);
-  mqtt.setCallback(callback);
-  
-  xTaskCreate(
-      mqttTask,    // 任務函數
-      "MQTT Task", // 任務名稱
-      8192,        // 堆棧大小
-      NULL,        // 任務參數
-      1,           // 任務優先級
-      NULL         // 任務句柄
-  );
-}
-
-void loop()
-{
-  Serial.println("執行主程式…");
-  if (WiFi.status() == WL_CONNECTED && mqtt.connected())
+  while (1)
   {
-    Serial.print("DEV Link: ");
-    Serial.println(dev_link);
-    if (dev_link)
+    if (WiFi.status() == WL_CONNECTED)
     {
-      // mqtt.loop();
       Serial.print("FLAG: ");
       bool flag = digitalRead(BTN) && !btn_flag;
       Serial.println(flag);
       if (flag)
       {
         btn_flag = true;
-        tone(BUZZ, 800, 5000);
-        noTone(BUZZ);
+        digitalWrite(BUZZ, HIGH);
         SendImageMQTT();
-        tone(BUZZ, 1280, 3000);
-        noTone(BUZZ);
-        delay(2000);
+        digitalWrite(BUZZ, LOW);
+        vTaskDelay(5000 / portTICK_PERIOD_MS);
+        btn_flag = false;
       }
     }
     else
     {
-      mqtt.publish(String(TOPIC + "/connect").c_str(), "check");
+      Serial.println("重新連接");
+      WiFiConfig.connectWiFi();
       vTaskDelay(5000 / portTICK_PERIOD_MS);
     }
+    vTaskDelay(500 / portTICK_PERIOD_MS);
   }
-  else
-  {
-    WiFiConfig.connectWiFi();
-    mqtt.connect("ESP32CAM");
-    if (mqtt.connected())
-    {
-      mqtt.subscribe("myTopic");
-      mqtt.publish("myTopic", "Hello World");
-    }
+}
 
-    delay(5000);
+void devInitTask(void *parameter)
+{
+  cam_flag = initCamera();
+  client.setCACert(root_ca);
+  mqtt.setServer(SERVER, MQTT_PORT);
+  mqtt.setCallback(callback);
+  WiFiConfig.connectWiFi();
+  while (!dev_link)
+  {
+    Serial.println("check");
+    mqtt.publish(String(TOPIC + "/checkLink").c_str(), "");
+    vTaskDelay(5000 / portTICK_PERIOD_MS);
   }
-  delay(1000);
+  xTaskCreate(mainTask, "Main_Task", 8192, NULL, 1, NULL);
+  vTaskDelete(NULL);
+}
+
+void setup()
+{
+  Serial.begin(115200);
+  Serial.println("ESP32CAM Setup…");
+  pinMode(BTN, INPUT);
+  pinMode(BUZZ, OUTPUT);
+  xTaskCreate(
+      devInitTask,    // 任務函數
+      "devInit_Task", // 任務名稱
+      8192,           // 堆棧大小
+      NULL,           // 任務參數
+      1,              // 任務優先級
+      NULL            // 任務句柄
+  );
+  xTaskCreatePinnedToCore(
+      mqttTask,    // 任務函數
+      "MQTT_Task", // 任務名稱
+      8192,        // 堆棧大小
+      NULL,        // 任務參數
+      1,           // 任務優先級
+      NULL,        // 任務句柄
+      0            // 任務核心
+  );
+}
+
+void loop()
+{
 }
