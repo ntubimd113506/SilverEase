@@ -60,9 +60,49 @@ def mem_monthly():
 def mem_yearly():
     return render_analyze_template("個人資料彙整", "個人分析", is_all=False)
 
-def fetch_data(cursor, period='weekly', FamilyID=None):
+@analyze_bp.route("/all_weekly_prev")
+def all_weekly_prev():
+    return render_analyze_template("全體資料彙整", "全體分析")
+
+@analyze_bp.route("/all_monthly_prev")
+def all_monthly_prev():
+    return render_analyze_template("全體資料彙整", "全體分析")
+
+@analyze_bp.route("/all_yearly_prev")
+def all_yearly_prev():
+    return render_analyze_template("全體資料彙整", "全體分析")
+
+@analyze_bp.route("/mem_weekly_prev")
+@login_required
+def analyze_prev():
+    return render_analyze_template("個人資料彙整", "個人分析", is_all=False)
+
+@analyze_bp.route("/mem_monthly_prev")
+@login_required
+def mem_monthly_prev():
+    return render_analyze_template("個人資料彙整", "個人分析", is_all=False)
+
+@analyze_bp.route("/mem_yearly_prev")
+@login_required
+def mem_yearly_prev():
+    return render_analyze_template("個人資料彙整", "個人分析", is_all=False)
+
+def fetch_data(cursor, period='weekly', FamilyID=None, prev_period=False):
     family_condition = "AND l.FamilyID = %s" if FamilyID else ""
     family_param = (FamilyID,) if FamilyID else ()
+
+    if prev_period:
+        period_condition = {
+            'weekly': 'WEEK(l.LocationTime) = WEEK(NOW()) - 1',
+            'monthly': 'MONTH(l.LocationTime) = MONTH(NOW()) - 1 AND YEAR(l.LocationTime) = YEAR(NOW())',
+            'yearly': 'YEAR(l.LocationTime) = YEAR(NOW()) - 1'
+        }[period]
+    else:
+        period_condition = {
+            'weekly': 'WEEK(l.LocationTime) = WEEK(NOW())',
+            'monthly': 'MONTH(l.LocationTime) = MONTH(NOW())',
+            'yearly': '1=1'
+        }[period]
 
     query_templates = {
         'weekly': """
@@ -83,7 +123,7 @@ def fetch_data(cursor, period='weekly', FamilyID=None):
                 LEFT JOIN `113-ntub113506`.Access a ON l.FamilyID = a.FamilyID
                 WHERE YEAR(LocationTime) = YEAR(NOW())
                 AND MONTH(LocationTime) = MONTH(NOW())
-                AND WEEK(LocationTime) = WEEK(NOW())
+                AND {period_condition}
                 AND a.DataAnalyze = 1
                 {family_condition}
                 GROUP BY n
@@ -105,7 +145,7 @@ def fetch_data(cursor, period='weekly', FamilyID=None):
                 LEFT JOIN `113-ntub113506`.Location l ON s.LocatNo = l.LocatNo
                 LEFT JOIN `113-ntub113506`.Access a ON l.FamilyID = a.FamilyID
                 WHERE YEAR(LocationTime) = YEAR(NOW()) 
-                AND MONTH(LocationTime) = MONTH(NOW())
+                AND {period_condition}
                 AND a.DataAnalyze = 1
                 {family_condition}
                 GROUP BY n
@@ -127,7 +167,7 @@ def fetch_data(cursor, period='weekly', FamilyID=None):
                 FROM `113-ntub113506`.SOS s
                 LEFT JOIN `113-ntub113506`.Location l ON s.LocatNo = l.LocatNo
                 LEFT JOIN `113-ntub113506`.Access a ON l.FamilyID = a.FamilyID
-                WHERE YEAR(LocationTime) = YEAR(NOW())
+                WHERE {period_condition}
                 AND a.DataAnalyze = 1
                 {family_condition}
                 GROUP BY n
@@ -136,14 +176,8 @@ def fetch_data(cursor, period='weekly', FamilyID=None):
         """
     }
 
-    cursor.execute(query_templates[period].format(family_condition=family_condition), family_param)
+    cursor.execute(query_templates[period].format(family_condition=family_condition, period_condition=period_condition), family_param)
     SOSdata = cursor.fetchall()
-
-    period_condition = {
-        'weekly': 'WEEK(l.LocationTime) = WEEK(NOW())',
-        'monthly': 'MONTH(l.LocationTime) = MONTH(NOW())',
-        'yearly': '1=1'
-    }[period]
 
     cursor.execute(
         f"""
@@ -197,15 +231,15 @@ def fetch_data(cursor, period='weekly', FamilyID=None):
 
     return {"SOSdata": SOSdata, "SOSTypedata": SOSTypedata, "SOSPlacedata": SOSPlacedata}
 
-def fetch_period_data(period, FamilyID=None):
+def fetch_period_data(period, FamilyID=None, prev_period=False):
     with db.get_connection() as conn:
         cursor = conn.cursor()
-        return fetch_data(cursor, period, FamilyID)
+        return fetch_data(cursor, period, FamilyID, prev_period)
 
-def fetch_member_data(period):
+def fetch_member_data(period, prev_period=False):
     MemID = session.get("MemID")
     FamilyID = get_family_id(MemID)
-    return fetch_period_data(period, FamilyID)
+    return fetch_period_data(period, FamilyID, prev_period)
 
 @analyze_bp.route("/all_weekly_data")
 @login_required
@@ -236,3 +270,33 @@ def mem_monthly_data():
 @login_required
 def mem_yearly_data():
     return jsonify(fetch_member_data('yearly'))
+
+@analyze_bp.route("/all_prev_weekly_data")
+@login_required
+def all_prev_weekly_data():
+    return jsonify(fetch_period_data('weekly', prev_period=True))
+
+@analyze_bp.route("/all_prev_monthly_data")
+@login_required
+def all_prev_monthly_data():
+    return jsonify(fetch_period_data('monthly', prev_period=True))
+
+@analyze_bp.route("/all_prev_yearly_data")
+@login_required
+def all_prev_yearly_data():
+    return jsonify(fetch_period_data('yearly', prev_period=True))
+
+@analyze_bp.route("/mem_prev_weekly_data")
+@login_required
+def mem_prev_weekly_data():
+    return jsonify(fetch_member_data('weekly', prev_period=True))
+
+@analyze_bp.route("/mem_prev_monthly_data")
+@login_required
+def mem_prev_monthly_data():
+    return jsonify(fetch_member_data('monthly', prev_period=True))
+
+@analyze_bp.route("/mem_prev_yearly_data")
+@login_required
+def mem_prev_yearly_data():
+    return jsonify(fetch_member_data('yearly', prev_period=True))

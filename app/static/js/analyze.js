@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     var chartContainer = document.getElementById('chartContainer');
 
-    function createChartBox(id, title, dateRange) {
+    function createChartBox(id, title, dateRange, periodType) {
         var div = document.createElement('div');
         div.className = 'chart-box';
         div.style.border = '1px solid #000';
@@ -17,6 +17,17 @@ document.addEventListener('DOMContentLoaded', function () {
         dateDiv.style.fontSize = '12px';
         dateDiv.style.color = '#555';
         div.appendChild(dateDiv);
+
+        var prevButton = document.createElement('button');
+        prevButton.textContent = periodType === 'weekly' ? '上一週' :
+                                 periodType === 'monthly' ? '上個月' :
+                                 '上一年';
+        prevButton.style.marginRight = '10px';
+        prevButton.addEventListener('click', function () {
+            chartContainer.innerHTML = '';  // Clear current charts
+            fetchData(apiEndpoints[currentPath + '_prev'], title, periodType);
+        });
+        div.appendChild(prevButton);
 
         var select = document.createElement('select');
         select.innerHTML = `
@@ -78,11 +89,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function getWeekRange(date) {
         var day = date.getDay();
-        var diff = date.getDate() - day;
+        var diff = date.getDate() - date.getDay(); // Start of the week
         var startDate = new Date(date);
         startDate.setDate(diff);
         var endDate = new Date(startDate);
-        endDate.setDate(startDate.getDate() + 6);
+        endDate.setDate(startDate.getDate() + 6); // End of the week
 
         return {
             start: startDate,
@@ -137,7 +148,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     noDataMessage.style.color = 'red';
                     chartContainer.appendChild(noDataMessage);
                 } else {
-                    var sosChartInfo = createChartBox('sosChart', chartTitle, formattedDateRange);
+                    var sosChartInfo = createChartBox('sosChart', chartTitle, formattedDateRange, type);
                     var SOS = setupChart(sosChartInfo, '求救次數', { labels: sosLabels, values: sosData }, 'rgba(255, 38, 38, 0.5)', 'rgba(255, 38, 38, 0.5)');
                     var sosChart = createChart(sosChartInfo, 'bar', SOS, {
                         scales: {
@@ -168,7 +179,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     noDataMessage.style.color = 'red';
                     chartContainer.appendChild(noDataMessage);
                 } else {
-                    var typeChartInfo = createChartBox('sosTypeChart', '求救類型分布', formattedDateRange);
+                    var typeChartInfo = createChartBox('sosTypeChart', '求救類型分布', formattedDateRange, type);
                     typeChartInfo.select.style.display = 'none';
 
                     var SOSType = {
@@ -193,7 +204,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     noDataMessage.style.color = 'red';
                     chartContainer.appendChild(noDataMessage);
                 } else {
-                    var placeChartInfo = createChartBox('sosPlaceChart', '求救家中地點分布', formattedDateRange);
+                    var placeChartInfo = createChartBox('sosPlaceChart', '求救家中地點分布', formattedDateRange, type);
                     placeChartInfo.select.style.display = 'none';
 
                     var SOSPlace = {
@@ -208,6 +219,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     createChart(placeChartInfo, 'pie', SOSPlace);
                 }
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                var errorMessage = document.createElement('div');
+                errorMessage.textContent = '資料加載失敗：' + error.message;
+                errorMessage.style.color = 'red';
+                chartContainer.appendChild(errorMessage);
             });
     }
 
@@ -218,6 +236,12 @@ document.addEventListener('DOMContentLoaded', function () {
         '/analyze/mem_weekly': '/analyze/mem_weekly_data',
         '/analyze/mem_monthly': '/analyze/mem_monthly_data',
         '/analyze/mem_yearly': '/analyze/mem_yearly_data',
+        '/analyze/all_weekly_prev': '/analyze/all_prev_weekly_data',
+        '/analyze/all_monthly_prev': '/analyze/all_prev_monthly_data',
+        '/analyze/all_yearly_prev': '/analyze/all_prev_yearly_data',
+        '/analyze/mem_weekly_prev': '/analyze/mem_prev_weekly_data',
+        '/analyze/mem_monthly_prev': '/analyze/mem_prev_monthly_data',
+        '/analyze/mem_yearly_prev': '/analyze/mem_prev_yearly_data',
     };
 
     const currentPath = window.location.pathname;
