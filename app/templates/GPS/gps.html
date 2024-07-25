@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>長輩定位</title>
+    <script type="text/javascript">
+        window.onload = function() {
+            // 指定你的目標URL
+            var targetURL = "https://www.google.com/maps/search/?api=1&query=25.043581,121.445679";
+            // 自動重定向到指定的 URL
+            window.location.href = targetURL;
+        }
+    </script>
+</head>
+<body>
+    <p>正在跳轉到指定網址...若未跳轉成功...</p>
+    <a href="https://www.google.com/maps/search/?api=1&query=25.043581,121.445679" id="redirect-link">請點此</a>
+</body>
+
+<script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+<script>
+
+    function initializeLiff(myLiffId) {
+        liff.init({
+            liffId: myLiffId
+        }).catch((err) => {
+            console.log('初始化失敗', err);
+        });
+    }
+
+    initializeLiff('{{liffid}}')
+</script>
+</html>

@@ -1,5 +1,6 @@
 import requests
 import json
+from datetime import datetime, timedelta
 from flask_mqtt import Mqtt
 from utils import db
 
@@ -34,7 +35,8 @@ def handle_mqtt_message(client, userdata, message):
     if message.topic == 'ESP32/gps':
             try:
                 data = message.payload.decode()
-                Map = str(data)
+                Map1 = str(data)
+                Map = Map1.replace(" ","")
                 print(f"Received GPS data - GoogleMap:{Map}")
                 save_gps(Map)
 
@@ -45,7 +47,8 @@ def save_gps(Map):
     conn = db.get_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute('INSERT INTO `113-ntub113506`.Location (Location) VALUES (%s)', (Map,))
+        now = datetime.now()
+        cursor.execute('INSERT INTO `113-ntub113506`.Location (Location,LocationTime) VALUES (%s,%s)', (Map,now,))
         conn.commit()
     except Exception as e:
         print(f"Error inserting data: {e}")
