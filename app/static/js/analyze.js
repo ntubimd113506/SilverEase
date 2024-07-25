@@ -97,19 +97,36 @@ document.addEventListener('DOMContentLoaded', function () {
         return `${rocYear}年${month}月${day}日`;
     }
 
-    function formatDateRange(startDate, endDate) {
-        var start = formatDateToROC(startDate);
-        var end = formatDateToROC(endDate);
-        return `${start} - ${end}`;
+    function formatDateRange(startDate, endDate, type) {
+        var start, end;
+        if (type === 'weekly') {
+            start = formatDateToROC(startDate);
+            end = formatDateToROC(endDate);
+            return `${start} - ${end}`;
+        } else if (type === 'monthly') {
+            var rocYear = startDate.getFullYear() - 1911;
+            var month = (startDate.getMonth() + 1).toString().padStart(2, '0');
+            return `${rocYear}年${month}月`;
+        } else if (type === 'yearly') {
+            var rocYear = startDate.getFullYear() - 1911;
+            return `${rocYear}年`;
+        }
     }
 
-    function fetchData(url, chartTitle) {
+    function fetchData(url, chartTitle, type) {
         fetch(url)
             .then(response => response.json())
             .then(data => {
                 var currentDate = new Date();
-                var dateRange = getWeekRange(currentDate);
-                var formattedDateRange = formatDateRange(dateRange.start, dateRange.end);
+                var dateRange;
+                if (type === 'weekly') {
+                    dateRange = getWeekRange(currentDate);
+                } else if (type === 'monthly') {
+                    dateRange = { start: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1), end: new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0) };
+                } else if (type === 'yearly') {
+                    dateRange = { start: new Date(currentDate.getFullYear(), 0, 1), end: new Date(currentDate.getFullYear(), 11, 31) };
+                }
+                var formattedDateRange = formatDateRange(dateRange.start, dateRange.end, type);
 
                 var sosData = data.SOSdata.map(item => item[1]);
                 var sosLabels = data.SOSdata.map(item => item[0]);
@@ -208,6 +225,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const title = '求救次數';
 
     if (endpoint) {
-        fetchData(endpoint, title);
+        let type = 'weekly';
+        if (currentPath.includes('monthly')) {
+            type = 'monthly';
+        } else if (currentPath.includes('yearly')) {
+            type = 'yearly';
+        }
+        fetchData(endpoint, title, type);
     }
 });
