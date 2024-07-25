@@ -24,8 +24,15 @@ document.addEventListener('DOMContentLoaded', function () {
                                  '上一年';
         prevButton.style.marginRight = '10px';
         prevButton.addEventListener('click', function () {
-            chartContainer.innerHTML = '';  // Clear current charts
-            fetchData(apiEndpoints[currentPath + '_prev'], title, periodType);
+            if (periodType === 'weekly') {
+                currentDate.setDate(currentDate.getDate() - 7);
+            } else if (periodType === 'monthly') {
+                currentDate.setMonth(currentDate.getMonth() - 1);
+            } else if (periodType === 'yearly') {
+                currentDate.setFullYear(currentDate.getFullYear() - 1);
+            }
+            chartContainer.innerHTML = ''; 
+            fetchData(apiEndpoints[currentPath + '_prev'], title, periodType, currentDate);
         });
         div.appendChild(prevButton);
 
@@ -89,11 +96,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function getWeekRange(date) {
         var day = date.getDay();
-        var diff = date.getDate() - date.getDay(); // Start of the week
+        var diff = date.getDate() - day;
         var startDate = new Date(date);
         startDate.setDate(diff);
         var endDate = new Date(startDate);
-        endDate.setDate(startDate.getDate() + 6); // End of the week
+        endDate.setDate(startDate.getDate() + 6); 
 
         return {
             start: startDate,
@@ -124,18 +131,17 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function fetchData(url, chartTitle, type) {
+    function fetchData(url, chartTitle, type, date) {
         fetch(url)
             .then(response => response.json())
             .then(data => {
-                var currentDate = new Date();
                 var dateRange;
                 if (type === 'weekly') {
-                    dateRange = getWeekRange(currentDate);
+                    dateRange = getWeekRange(date);
                 } else if (type === 'monthly') {
-                    dateRange = { start: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1), end: new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0) };
+                    dateRange = { start: new Date(date.getFullYear(), date.getMonth(), 1), end: new Date(date.getFullYear(), date.getMonth() + 1, 0) };
                 } else if (type === 'yearly') {
-                    dateRange = { start: new Date(currentDate.getFullYear(), 0, 1), end: new Date(currentDate.getFullYear(), 11, 31) };
+                    dateRange = { start: new Date(date.getFullYear(), 0, 1), end: new Date(date.getFullYear(), 11, 31) };
                 }
                 var formattedDateRange = formatDateRange(dateRange.start, dateRange.end, type);
 
@@ -255,6 +261,9 @@ document.addEventListener('DOMContentLoaded', function () {
         } else if (currentPath.includes('yearly')) {
             type = 'yearly';
         }
-        fetchData(endpoint, title, type);
+        
+        var currentDate = new Date();
+        
+        fetchData(endpoint, title, type, currentDate);
     }
 });
