@@ -8,17 +8,16 @@
 </head>
 <body>
     <div class="container">
-
         <div class="header">
-            <h1>SilverEase123</h1>
+            <h1>SilverEase</h1>
         </div>     
     </div>
+
     <div>{{ data.analyze }}</div>
     {% for key, value in data.items() %}
         {% if key != 'Title' %}
             {% if value.url %}
                 <a href="/analyze/{{ value.url }}">{{ value.name }}</a>
-                <br>
             {% endif %}
         {% endif %}
     {% endfor %}
@@ -26,6 +25,5 @@
     <script src="/static/js/Chart.bundle.js"></script>
     <script src="/static/js/analyze.js"></script>
     <input type="hidden" id="MemID" name="MemID">
-
 </body>
 </html>
