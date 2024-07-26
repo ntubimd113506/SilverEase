@@ -80,6 +80,12 @@ div.header h1{
     margin: 15px 0;
 }
 
+#dateContainer {
+    text-align: center;
+    font-size: 16px;
+    margin: 10px 0;
+}
+
 #chartContainer {
     display: flex;
     flex-direction: column;
@@ -103,12 +109,6 @@ div.header h1{
     color: #333;
 }
 
-.date-range {
-    font-size: 14px;
-    color: #777;
-    margin-bottom: 10px;
-}
-
 .chart-select {
     font-size: 14px;
     padding: 5px;
@@ -120,6 +120,7 @@ div.header h1{
     background-color: #4CAF50;
     color: white;
     padding: 10px 20px;
+    margin: 15px;
     border: none;
     border-radius: 8px;
     cursor: pointer;
@@ -138,4 +139,5 @@ div.header h1{
 .no-data-message, .error-message {
     color: red;
     margin-top: 10px;
-    font-size: 16px;}
+    font-size: 16px;
+}
