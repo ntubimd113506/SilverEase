@@ -74,3 +74,68 @@ div.header h1{
 
 } */
 
+#buttonContainer {
+    display: flex;
+    justify-content: center;
+    margin: 15px 0;
+}
+
+#chartContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+.chart-box {
+    border: 1px solid #ccc;
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.chart-box h2 {
+    margin-bottom: 10px;
+    font-size: 20px;
+    color: #333;
+}
+
+.date-range {
+    font-size: 14px;
+    color: #777;
+    margin-bottom: 10px;
+}
+
+.chart-select {
+    font-size: 14px;
+    padding: 5px;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.nav-button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 16px;
+    max-width: 200px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    display: block;
+    visibility: visible;
+}
+
+.nav-button:hover {
+    background-color: #45a049;
+}
+
+.no-data-message, .error-message {
+    color: red;
+    margin-top: 10px;
+    font-size: 16px;}
