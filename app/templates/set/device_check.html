@@ -1,11 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
+
 <body>
-    <p>裝置響後請長按五秒...</p>
+    <p>裝置響後請長按3秒...</p>
 </body>
+<script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+<script>
+    liff.init({
+        liffId: '{{liffid}}'
+    }).catch((err) => {
+        console.log('初始化失敗', err);
+    });
+
+    liff.ready.then(() => {
+        setTimeout(() => {
+            liff.closeWindow();
+        }, 5000);
+    });
+</script>
+
 </html>

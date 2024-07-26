@@ -1,5 +1,5 @@
 import json
-from flask import request, render_template, Blueprint,session,url_for
+from flask import request, render_template, Blueprint,session,url_for,redirect
 from flask_login import login_required
 from utils import db
 from services import mqtt
@@ -156,27 +156,40 @@ def checkid():
 def scanner():
     return render_template("scanner.html",liffid=db.LIFF_ID_FULL)
 
-@set_bp.route("/device/<DevID>/<Code>")
-# @login_required
-def device_index(DevID,Code):
-    return render_template("/set/device_index.html",DevID=DevID,Code=Code)
+@set_bp.route("/device/<DevID>")
+def device_index(DevID):
+    session["DevID"]=DevID
+    if devToFam(DevID):
+        return redirect("/lostAndFound")
+    else:
+        return redirect("/set/device/setting")
 
+@set_bp.route("/device/setting")
+# @login_required
+def device_setting():
+    DevID=session["DevID"]
+    return render_template("/set/device_setting.html",DevID=DevID)
 
 @set_bp.route("/device/submit",methods=["POST"])
 def add_device():
     DevID=request.form.get("DevID")
     FamilyCode=request.form.get("FamilyCode")
-    msg=json.dumps({
-        "DevID":DevID,
-        "FamilyCode":FamilyCode
-    })
-    mqtt.publish(f"ESP32/{DevID}/check",msg)
-    return render_template("device_check.html")
+    mqtt.publish(f"ESP32/{DevID}/setLink",str(FamilyCode))
+    return render_template("/set/device_check.html")
 
 @set_bp.route("/access/check")
 def access_check():
     # session[""]
     return render_template("/set/access_index.html")
+
+def devToFam(DevID):
+    conn=db.get_connection()
+    cur=conn.cursor()
+    cur.execute("SELECT FamilyID FROM Family WHERE DevID=%s",(DevID,))
+    res=cur.fetchone()
+    if res:
+        return res[0]
+    return False
 
 # @set_bp.route("/access/submit")
 # def access_submit():

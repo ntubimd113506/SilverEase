@@ -1,7 +1,11 @@
-import requests
 import json
+import base64
+import os
+from datetime import datetime
+from linebot.models import *
 from flask_mqtt import Mqtt
 from utils import db
+from services import line_bot_api
 
 
 mqtt = Mqtt()
@@ -18,105 +22,120 @@ def handle_mqtt_message(client, userdata, message):
     topic = str(message.topic).split("/")
     DevID = topic[1]
     action = topic[2]
-
     msg = message.payload.decode()
     try:
         data = json.loads(msg)
-        msg = data["Message"]
     except:
         pass
 
-    print(f"Received message on topic {message.topic}: {message.payload.decode()}")
+    print(
+        f"Received message on topic {message.topic}: {message.payload.decode()}")
+
     if action == "help":
-        print("ESP32 need help")
-        print(f"Received message on topic {message.topic}: {message.payload.decode()}")
         try:
             data = json.loads(msg)
-            DevID = data["DevID"]
-            sent_mess(DevID)
+            img=data["image"]
+            # gps=data["gps"]
+            sent_mess(DevID, img)
 
         except json.JSONDecodeError:
             print("Invalid JSON")
 
-    if action == "connect":
-        if msg == "check":
-            if check_device(DevID):
-                mqtt.publish(message.topic, "isLink")
-            else:
-                pass
-                # mqtt.publish(message.topic, "notLink")
+    if action == "checkLink":
+        if check_device(DevID):
+            mqtt.publish(f"ESP32/{DevID}/isLink")
 
-        if msg == "help":
-            print("HELP")
-            # try:
-            #     data = json.loads(msg)
-            #     FamilyID = db.get_decodeID(data["FamilyCode"])
-            #     conn = db.get_connection()
-            #     cur = conn.cursor()
-            #     res = cur.execute(
-            #         """
-            #                 SELECT DevID FROM Family WHERE DevID=%s
-            #                 """,
-            #         data["DevID"],
-            #     )
-            #     if res == 0:
-            #         mqtt.publish(f"ESP32/{data['DevID']}/exist")
-            #     else:
-            #         res = cur.execute(
-            #             """
-            #                 UPDATE DevID FROM Family WHERE FamilyID=%s
-            #                 """,
-            #             FamilyID,
-            #         )
-            #         if res:
-            #             mqtt.publish(f"ESP32/{data['DevID']}/setSuccess")
+    if action == "link":
+        FamilyID = decode_FamilyCode(msg)
+        if FamilyID:
+            conn = db.get_connection()
+            cur = conn.cursor()
+            cur.execute(
+                """
+                UPDATE Family SET DevID=%s WHERE FamilyID=%s
+                """,(DevID, FamilyID)
+            )
+            conn.commit()
+            conn.close()
 
-            # except:
-            #     pass
+            reMsg = FlexSendMessage(
+                alt_text="綁定成功",
+                contents={
+                    "type": "bubble",
+                    "hero": {
+                        "type": "image",
+                        "url": "https://silverease.ntub.edu.tw/static/imgs/S_create.png",
+                        "size": "full",
+                        "aspectRatio": "20:15",
+                        "aspectMode": "cover",
+                        "action": {
+                            "type": "uri",
+                            "label": "action",
+                            "uri": "https://silverease.ntub.edu.tw"
+                        }
+                    },
+                    "body": {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                            {
+                                "type": "text",
+                                "text": "綁定成功",
+                                "weight": "bold",
+                                "size": "xl",
+                                "align": "center"
+                            }
+                        ]
+                    }
+                })
+            user = get_FamilyUser(FamilyID)["MainUser"]
+            print(user)
+            line_bot_api.push_message(user, reMsg)
+
+def get_FamilyUser(FamilyID):
+    data = {}
+
+    conn = db.get_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT MainUserID FROM Family WHERE FamilyID=%s",
+                FamilyID)
+    res = cur.fetchone()
+    data["MainUser"] = res[0]
+
+    cur.execute(
+        "SELECT SubUserID FROM FamilyLink WHERE FamilyID=%s", FamilyID)
+    data["SubUser"] = [k[0] for k in cur.fetchall()]
+    return data
+
+
+def decode_FamilyCode(FamilyCode):
+    conn = db.get_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT FamilyID FROM FamilyCode WHERE CodeID=%s", FamilyCode)
+    return cur.fetchone()[0] or 0
 
 
 def check_device(DevID):
     conn = db.get_connection()
     cur = conn.cursor()
-    return cur.execute("SELECT DevID FROM Family WHERE DevID=%s", DevID)
+    cur.execute("SELECT FamilyID FROM Family WHERE DevID=%s", DevID)
+    return cur.fetchone()[0] or 0
 
+def sent_mess(DevID, img):
+    if not img=="":
+        imgdata = base64.b64decode(img)
+        filename=f"{DevID}_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.jpg"
+        filepath = os.path.join("app", "static", "imgs", "upload", filename)
+        with open(filepath, "wb") as f:
+            f.write(imgdata)
 
-def sent_mess(DevID, filename=None):
-    # 取得資料庫連線
-    conn = db.get_connection()
-
-    # 取得執行sql命令的cursor
-    cursor = conn.cursor()
-
-    # 取得傳入參數, 執行sql命令並取回資料
-    # DevID = request.values.get('DevID')
-
-    cursor.execute(
-        "SELECT SubUserID FROM FamilyLink where FamilyID = (SELECT FamilyID FROM Family WHERE DevID=%s)",
-        (DevID),
-    )
-    # cursor.execute('SELECT SubUserID FROM FamilyLink where FamilyID = (SELECT FamilyID FROM Family WHERE DevID="1")')
-
-    data = cursor.fetchall()
-
-    conn.commit()
-    conn.close()
+    users=get_FamilyUser(check_device(DevID))
 
     # 從資料庫檢索到的使用者資訊是一個列表，需要提取出每個使用者的 ID
-    UserIDs = [row[0] for row in data]
+    UserIDs = [row[0] for row in users["SubUser"]]
     print(UserIDs)
 
-    # thumbnail_image_url=str("https://silverease.ntub.edu.tw/cam/img/" + filename).replace(" ","%20")
-    headers = {
-        "Authorization": f"Bearer {db.LINE_TOKEN_2}",
-        "Content-Type": "application/json",
-    }
-    # res = requests.get(url=thumbnail_image_url, stream=True)
-    # try:
-    #     with Image.open(BytesIO(res.content)) as img:
-    #         img.load()
-    # except:
-    thumbnail_image_url = "https://silverease.ntub.edu.tw/cam/img/Fail.jpg"
+    thumbnail_image_url=f"https://silverease.ntub.edu.tw/img/{filename}"
 
     for userID in UserIDs:
 
@@ -148,13 +167,6 @@ def sent_mess(DevID, filename=None):
         }
 
         # 向指定網址發送 request
-        req = requests.request(
-            "POST",
-            "https://api.line.me/v2/bot/message/push",
-            headers=headers,
-            data=json.dumps(body).encode("utf-8"),
-        )
-        # 印出得到的結果
-        print(req.text)
+        line_bot_api.push_message(userID, body)
 
     return True

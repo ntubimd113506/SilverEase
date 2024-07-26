@@ -1,6 +1,7 @@
 from .scheduler.app import scheduler
+from .line.app import line_bot_api
 from .mqtt.app import mqtt
-from .line.app import linebot_bp, line_bot_api
+from .line.app import linebot_bp
 from .set.app import set_bp
 from .cam.app import cam_bp
 from .event.app import event_bp
