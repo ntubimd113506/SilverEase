@@ -5,7 +5,7 @@ from datetime import datetime
 from linebot.models import *
 from flask_mqtt import Mqtt
 from utils import db
-from services import line_bot_api
+from ..line import app as line
 
 
 mqtt = Mqtt()
@@ -91,7 +91,10 @@ def handle_mqtt_message(client, userdata, message):
             )
             user = get_FamilyUser(FamilyID)["MainUser"]
             print(user)
-            line_bot_api.push_message(user, reMsg)
+            line.line_bot_api.push_message(user, reMsg)
+
+def gotHelp(DevID):
+    mqtt.publish(f"ESP32/{DevID}/gotHelp", "")
 
 
 def get_FamilyUser(FamilyID):
@@ -258,6 +261,6 @@ def sent_mess(DevID, img):
         # }
 
         # 向指定網址發送 request
-        line_bot_api.push_message(userID, resMsg)
+        line.line_bot_api.push_message(userID, resMsg)
 
     return True
