@@ -116,6 +116,19 @@ div.header h1{
     width: 100%;
 }
 
+.date-range-container {
+    text-align: center;
+    font-size: 18px;
+    margin: 20px 0;
+    color: #333;
+    font-weight: bold;
+}
+
+.date-range-container span {
+    display: inline-block;
+    margin: 0 5px;
+}
+
 .nav-button {
     background-color: #4CAF50;
     color: white;
