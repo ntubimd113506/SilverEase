@@ -168,14 +168,14 @@ def device_index(DevID):
 # @login_required
 def device_setting():
     DevID=session["DevID"]
-    return render_template("/set/device_setting.html",DevID=DevID)
+    return render_template("/set/device_setting.html",DevID=DevID,liffid=db.LIFF_ID)
 
 @set_bp.route("/device/submit",methods=["POST"])
 def add_device():
     DevID=request.form.get("DevID")
     FamilyCode=request.form.get("FamilyCode")
     mqtt.publish(f"ESP32/{DevID}/setLink",str(FamilyCode))
-    return render_template("/set/device_check.html")
+    return render_template("/set/device_check.html",liffid=db.LIFF_ID)
 
 @set_bp.route("/access/check")
 def access_check():
