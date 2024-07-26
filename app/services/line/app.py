@@ -6,11 +6,13 @@ from linebot.models import *
 from datetime import datetime
 from utils import db
 from services import scheduler
+from ..mqtt import app as MQTT
 
 line_bot_api = LineBotApi(db.LINE_TOKEN)
 handler = WebhookHandler(db.LINE_HANDLER)
 linebot_bp = Blueprint("linebot_bp", __name__)
 
+mqtt = MQTT.mqtt
 
 @linebot_bp.route("/joblist")
 def joblist():
@@ -68,3 +70,8 @@ def handle_postback(event):
         )
         conn.commit()
         conn.close()
+
+@linebot_bp.route("/lineMqtt")
+def mqttsent():
+    mqtt.publish("ESP32/got", "OK")
+    return "OK"
