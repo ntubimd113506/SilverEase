@@ -43,12 +43,23 @@ def handle_mqtt_message(client, userdata, message):
             except :
                 print("OK！")
 
+    if message.topic == '/upGPS':
+            try:
+                data = message.payload.decode()
+                Map1 = str(data)
+                Map = Map1.replace(" ","")
+                print(f"Received GPS data - GoogleMap:{Map}")
+                upgrade_gps(Map)
+
+            except :
+                print("OK！")
+
 def save_gps(Map):
     conn = db.get_connection()
     cursor = conn.cursor()
     try:
         now = datetime.now()
-        cursor.execute('INSERT INTO `113-ntub113506`.Location (Location,LocationTime) VALUES (%s,%s)', (Map,now,))
+        cursor.execute('INSERT INTO `113-ntub113506`.Location (FamilyID,Location,LocationTime) VALUES (%s,%s,%s)', (54,Map,now,))
         conn.commit()
     except Exception as e:
         print(f"Error inserting data: {e}")
@@ -56,6 +67,26 @@ def save_gps(Map):
     finally:
         cursor.close()
         conn.close()
+
+def upgrade_gps(Map):
+    conn = db.get_connection()
+    cursor = conn.cursor()
+    cursor1 = conn.cursor()
+
+    try:
+        now = datetime.now()
+        cursor1.execute('SELECT SubUserID FROM FamilyLink WHERE FamilyID = %s', (54))
+        sub1 = cursor1.fetchone()
+        sub = sub1[0]
+        cursor.execute('INSERT INTO `113-ntub113506`.Location (FamilyID,Location,LocationTime) VALUES (%s,%s,%s)', (54,Map,now,))
+        conn.commit()
+    except Exception as e:
+        print(f"Error inserting data: {e}")
+        conn.rollback()
+    finally:
+        cursor.close()
+        conn.close()
+
 
 
 def sent_mess(DevID, filename=None):
