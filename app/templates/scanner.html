@@ -15,12 +15,15 @@
             liffId: myLiffId
         }).then(() => {
             liff.scanCodeV2()
-            .then((result) => {
-                document.getElementById("url").innerHTML = result.value
-            })
-            .catch((error) => {
-                console.log("error", error);
-            });
+                .then((result) => {
+                    document.getElementById("url").innerHTML = liff.permanentLink.createUrl()
+                    liff.openWindow({
+                        url: result.value
+                    })
+                })
+                .catch((error) => {
+                    console.log("error", error);
+                });
         })
             .catch((err) => {
                 console.log('初始化失敗', err);

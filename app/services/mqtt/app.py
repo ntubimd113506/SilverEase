@@ -141,7 +141,6 @@ def sent_mess(DevID, img):
 
     # 從資料庫檢索到的使用者資訊是一個列表，需要提取出每個使用者的 ID
     UserIDs = [row for row in users["SubUser"]]
-    UserIDs=[users["MainUser"]]
     print(UserIDs)
 
     thumbnail_image_url = f"https://silverease.ntub.edu.tw/img/{filename}"
