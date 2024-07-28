@@ -111,9 +111,25 @@ div.header h1{
 
 .chart-select {
     font-size: 14px;
-    padding: 5px;
+    padding: 10px 15px;
     margin-bottom: 10px;
     width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.chart-select:hover {
+    border-color: #888;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.chart-select:focus {
+    border-color: #4CAF50;
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.5);
+    outline: none;
 }
 
 .date-range-container {
@@ -153,4 +169,46 @@ div.header h1{
     color: red;
     margin-top: 10px;
     font-size: 16px;
+}
+
+.period-link {
+    display: inline-block;
+    margin: 5px;
+    padding: 10px 20px;
+    background-color: #6C757D;
+    color: white;
+    text-decoration: none;
+    border-radius: 25px;
+    transition: background-color 0.3s, transform 0.3s;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    font-size: 16px;
+}
+.period-link:hover {
+    background-color: #5A6268;
+    transform: translateY(-2px);
+}
+
+div.content{
+    background-color: #F2F0EE;
+    padding: 0px 23px;
+}
+
+.title-container {
+    width: 88%; 
+    margin: 0 auto;
+}
+
+.title-container .content-header {
+    color: #000000;
+    font-size: 30px;
+    letter-spacing: 5px;
+    width: 100%;
+    text-align: left;
+    margin-top: 30px; 
+    margin-bottom: 35px;
+}
+
+div.content h1{
+    font-size: 30px;
+    letter-spacing:8px;
 }

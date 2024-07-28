@@ -11,16 +11,20 @@
         <div class="header">
             <h1>SilverEase</h1>
         </div>
-    </div>
 
-    <div>{{ data.analyze }}</div>
-    {% for key, value in data.items() %}
-        {% if key != 'Title' %}
-            {% if value.url %}
-                <a href="/analyze/{{ value.url }}">{{ value.name }}</a>
+        <div class="title-container">
+            <h1 class="content-header">{{ data.analyze }}</h1>
+        </div>
+    </div>
+    <div class="button-group">
+        {% for key, value in data.items() %}
+            {% if key != 'Title' %}
+                {% if value.url %}
+                    <a class="period-link {{ 'main-page-link' if value.name == '主頁' else 'weekly-link' if value.name == '當週' else 'other-link' }}" href="/analyze/{{ value.url }}">{{ value.name }}</a>
+                {% endif %}
             {% endif %}
-        {% endif %}
-    {% endfor %}
+        {% endfor %}
+    </div>
     <div id="buttonContainer"></div>
     <div id="dateContainer"></div>
     <div id="chartContainer"></div>
