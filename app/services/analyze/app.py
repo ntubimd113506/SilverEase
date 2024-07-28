@@ -16,76 +16,64 @@ def render_analyze_template(title, analyze, is_all=True):
     }
     return render_template("/analyze/analyze.html", data=data)
 
-@analyze_bp.route("/all_weekly")
-def all_weekly():
-    return render_analyze_template("全體資料彙整", "當週全體分析")
+def register_routes():
+    analysis_routes = [
+        ('all_weekly', '全體資料彙整', '當週全體分析', True),
+        ('all_monthly', '全體資料彙整', '當月全體分析', True),
+        ('all_yearly', '全體資料彙整', '當年全體分析', True),
+        ('mem_weekly', '個人資料彙整', '當週個人分析', False),
+        ('mem_monthly', '個人資料彙整', '當月個人分析', False),
+        ('mem_yearly', '個人資料彙整', '當年個人分析', False),
+        ('all_weekly_prev', '全體資料彙整', '上週全體分析', True),
+        ('all_monthly_prev', '全體資料彙整', '上個月全體分析', True),
+        ('all_yearly_prev', '全體資料彙整', '去年全體分析', True),
+        ('mem_weekly_prev', '個人資料彙整', '上週個人分析', False),
+        ('mem_monthly_prev', '個人資料彙整', '上個月個人分析', False),
+        ('mem_yearly_prev', '個人資料彙整', '去年個人分析', False),
+    ]
 
-@analyze_bp.route("/all_monthly")
-def all_monthly():
-    return render_analyze_template("全體資料彙整", "當月全體分析")
+    data_routes = [
+        ('all_weekly_data', 'weekly', True, False),
+        ('all_monthly_data', 'monthly', True, False),
+        ('all_yearly_data', 'yearly', True, False),
+        ('mem_weekly_data', 'weekly', False, False),
+        ('mem_monthly_data', 'monthly', False, False),
+        ('mem_yearly_data', 'yearly', False, False),
+        ('all_prev_weekly_data', 'weekly', True, True),
+        ('all_prev_monthly_data', 'monthly', True, True),
+        ('all_prev_yearly_data', 'yearly', True, True),
+        ('mem_prev_weekly_data', 'weekly', False, True),
+        ('mem_prev_monthly_data', 'monthly', False, True),
+        ('mem_prev_yearly_data', 'yearly', False, True),
+    ]
 
-@analyze_bp.route("/all_yearly")
-def all_yearly():
-    return render_analyze_template("全體資料彙整", "當年全體分析")
+    for route, title, analyze, is_all in analysis_routes:
+        view_func = (
+            lambda title=title, analyze=analyze, is_all=is_all: render_analyze_template(title, analyze, is_all)
+        )
+        view_func.__name__ = route
+        analyze_bp.route(f"/{route}")(login_required(view_func) if not is_all else view_func)
 
-@analyze_bp.route("/mem_weekly")
-@login_required
-def analyze():
-    return render_analyze_template("個人資料彙整", "當週個人分析", is_all=False)
+    for route, period, is_all, prev_period in data_routes:
+        view_func = (
+            lambda period=period, is_all=is_all, prev_period=prev_period: (
+                jsonify(fetch_period_data(period, None, prev_period) if is_all else fetch_member_data(period, prev_period))
+            )
+        )
+        view_func.__name__ = route
+        analyze_bp.route(f"/{route}")(login_required(view_func))
 
-@analyze_bp.route("/mem_monthly")
-@login_required
-def mem_monthly():
-    return render_analyze_template("個人資料彙整", "當月個人分析", is_all=False)
-
-@analyze_bp.route("/mem_yearly")
-@login_required
-def mem_yearly():
-    return render_analyze_template("個人資料彙整", "當年個人分析", is_all=False)
-
-@analyze_bp.route("/all_weekly_prev")
-def all_weekly_prev():
-    return render_analyze_template("全體資料彙整", "上週全體分析")
-
-@analyze_bp.route("/all_monthly_prev")
-def all_monthly_prev():
-    return render_analyze_template("全體資料彙整", "上個月全體分析")
-
-@analyze_bp.route("/all_yearly_prev")
-def all_yearly_prev():
-    return render_analyze_template("全體資料彙整", "去年全體分析")
-
-@analyze_bp.route("/mem_weekly_prev")
-@login_required
-def analyze_prev():
-    return render_analyze_template("個人資料彙整", "上週個人分析", is_all=False)
-
-@analyze_bp.route("/mem_monthly_prev")
-@login_required
-def mem_monthly_prev():
-    return render_analyze_template("個人資料彙整", "上個月個人分析", is_all=False)
-
-@analyze_bp.route("/mem_yearly_prev")
-@login_required
-def mem_yearly_prev():
-    return render_analyze_template("個人資料彙整", "去年個人分析", is_all=False)
+register_routes()
 
 def fetch_data(cursor, period='weekly', FamilyID=None, prev_period=False):
     family_condition = "AND l.FamilyID = %s" if FamilyID else ""
     family_param = (FamilyID,) if FamilyID else ()
 
-    if prev_period:
-        period_condition = {
-            'weekly': 'WEEK(l.LocationTime) = WEEK(NOW()) - 1',
-            'monthly': 'MONTH(l.LocationTime) = MONTH(NOW()) - 1 AND YEAR(l.LocationTime) = YEAR(NOW())',
-            'yearly': 'YEAR(l.LocationTime) = YEAR(NOW()) - 1'
-        }[period]
-    else:
-        period_condition = {
-            'weekly': 'WEEK(l.LocationTime) = WEEK(NOW())',
-            'monthly': 'MONTH(l.LocationTime) = MONTH(NOW())',
-            'yearly': '1=1'
-        }[period]
+    period_condition = {
+        'weekly': 'WEEK(l.LocationTime) = WEEK(NOW()) - 1' if prev_period else 'WEEK(l.LocationTime) = WEEK(NOW())',
+        'monthly': 'MONTH(l.LocationTime) = MONTH(NOW()) - 1 AND YEAR(l.LocationTime) = YEAR(NOW())' if prev_period else 'MONTH(l.LocationTime) = MONTH(NOW())',
+        'yearly': 'YEAR(l.LocationTime) = YEAR(NOW()) - 1' if prev_period else 'YEAR(l.LocationTime) = YEAR(NOW())',
+    }[period]
 
     query_templates = {
         'weekly': """
@@ -223,64 +211,3 @@ def fetch_member_data(period, prev_period=False):
     MemID = session.get("MemID")
     FamilyID = db.get_family_id(MemID)
     return fetch_period_data(period, FamilyID, prev_period)
-
-@analyze_bp.route("/all_weekly_data")
-@login_required
-def all_weekly_data():
-    return jsonify(fetch_period_data('weekly'))
-
-@analyze_bp.route("/all_monthly_data")
-@login_required
-def all_monthly_data():
-    return jsonify(fetch_period_data('monthly'))
-
-@analyze_bp.route("/all_yearly_data")
-@login_required
-def all_yearly_data():
-    return jsonify(fetch_period_data('yearly'))
-
-@analyze_bp.route("/mem_weekly_data")
-@login_required
-def mem_weekly_data():
-    return jsonify(fetch_member_data('weekly'))
-
-@analyze_bp.route("/mem_monthly_data")
-@login_required
-def mem_monthly_data():
-    return jsonify(fetch_member_data('monthly'))
-
-@analyze_bp.route("/mem_yearly_data")
-@login_required
-def mem_yearly_data():
-    return jsonify(fetch_member_data('yearly'))
-
-@analyze_bp.route("/all_prev_weekly_data")
-@login_required
-def all_prev_weekly_data():
-    return jsonify(fetch_period_data('weekly', prev_period=True))
-
-@analyze_bp.route("/all_prev_monthly_data")
-@login_required
-def all_prev_monthly_data():
-    return jsonify(fetch_period_data('monthly', prev_period=True))
-
-@analyze_bp.route("/all_prev_yearly_data")
-@login_required
-def all_prev_yearly_data():
-    return jsonify(fetch_period_data('yearly', prev_period=True))
-
-@analyze_bp.route("/mem_prev_weekly_data")
-@login_required
-def mem_prev_weekly_data():
-    return jsonify(fetch_member_data('weekly', prev_period=True))
-
-@analyze_bp.route("/mem_prev_monthly_data")
-@login_required
-def mem_prev_monthly_data():
-    return jsonify(fetch_member_data('monthly', prev_period=True))
-
-@analyze_bp.route("/mem_prev_yearly_data")
-@login_required
-def mem_prev_yearly_data():
-    return jsonify(fetch_member_data('yearly', prev_period=True))
-
