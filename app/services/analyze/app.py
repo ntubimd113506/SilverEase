@@ -16,76 +16,59 @@ def render_analyze_template(title, analyze, is_all=True):
     }
     return render_template("/analyze/analyze.html", data=data)
 
-def get_family_id(MemID):
-    with db.get_connection() as conn:
-        cursor = conn.cursor()
-        cursor.execute(
-            """
-            SELECT COALESCE(f.FamilyID, fl.FamilyID) AS FamilyID
-            FROM `113-ntub113506`.Member m
-            LEFT JOIN `113-ntub113506`.Family f ON f.MainUserID = m.MemID
-            LEFT JOIN `113-ntub113506`.FamilyLink fl ON fl.SubUserID = m.MemID
-            WHERE m.MemID = %s
-            """,
-            (MemID,),
-        )
-        FamilyID = cursor.fetchone()
-        return FamilyID[0] if FamilyID else None
-
-
 @analyze_bp.route("/all_weekly")
 def all_weekly():
-    return render_analyze_template("全體資料彙整", "全體分析")
+    return render_analyze_template("全體資料彙整", "當週全體分析")
 
 @analyze_bp.route("/all_monthly")
 def all_monthly():
-    return render_analyze_template("全體資料彙整", "全體分析")
+    return render_analyze_template("全體資料彙整", "當月全體分析")
 
 @analyze_bp.route("/all_yearly")
 def all_yearly():
-    return render_analyze_template("全體資料彙整", "全體分析")
+    return render_analyze_template("全體資料彙整", "當年全體分析")
 
 @analyze_bp.route("/mem_weekly")
 @login_required
 def analyze():
-    return render_analyze_template("個人資料彙整", "個人分析", is_all=False)
+    return render_analyze_template("個人資料彙整", "當週個人分析", is_all=False)
 
 @analyze_bp.route("/mem_monthly")
 @login_required
 def mem_monthly():
-    return render_analyze_template("個人資料彙整", "個人分析", is_all=False)
+    return render_analyze_template("個人資料彙整", "當月個人分析", is_all=False)
 
 @analyze_bp.route("/mem_yearly")
 @login_required
 def mem_yearly():
-    return render_analyze_template("個人資料彙整", "個人分析", is_all=False)
+    return render_analyze_template("個人資料彙整", "當年個人分析", is_all=False)
 
 @analyze_bp.route("/all_weekly_prev")
 def all_weekly_prev():
-    return render_analyze_template("全體資料彙整", "全體分析")
+    return render_analyze_template("全體資料彙整", "上週全體分析")
 
 @analyze_bp.route("/all_monthly_prev")
 def all_monthly_prev():
-    return render_analyze_template("全體資料彙整", "全體分析")
+    return render_analyze_template("全體資料彙整", "上個月全體分析")
 
 @analyze_bp.route("/all_yearly_prev")
 def all_yearly_prev():
-    return render_analyze_template("全體資料彙整", "全體分析")
+    return render_analyze_template("全體資料彙整", "去年全體分析")
 
 @analyze_bp.route("/mem_weekly_prev")
 @login_required
 def analyze_prev():
-    return render_analyze_template("個人資料彙整", "個人分析", is_all=False)
+    return render_analyze_template("個人資料彙整", "上週個人分析", is_all=False)
 
 @analyze_bp.route("/mem_monthly_prev")
 @login_required
 def mem_monthly_prev():
-    return render_analyze_template("個人資料彙整", "個人分析", is_all=False)
+    return render_analyze_template("個人資料彙整", "上個月個人分析", is_all=False)
 
 @analyze_bp.route("/mem_yearly_prev")
 @login_required
 def mem_yearly_prev():
-    return render_analyze_template("個人資料彙整", "個人分析", is_all=False)
+    return render_analyze_template("個人資料彙整", "去年個人分析", is_all=False)
 
 def fetch_data(cursor, period='weekly', FamilyID=None, prev_period=False):
     family_condition = "AND l.FamilyID = %s" if FamilyID else ""
@@ -238,7 +221,7 @@ def fetch_period_data(period, FamilyID=None, prev_period=False):
 
 def fetch_member_data(period, prev_period=False):
     MemID = session.get("MemID")
-    FamilyID = get_family_id(MemID)
+    FamilyID = db.get_family_id(MemID)
     return fetch_period_data(period, FamilyID, prev_period)
 
 @analyze_bp.route("/all_weekly_data")
@@ -300,3 +283,4 @@ def mem_prev_monthly_data():
 @login_required
 def mem_prev_yearly_data():
     return jsonify(fetch_member_data('yearly', prev_period=True))
+
