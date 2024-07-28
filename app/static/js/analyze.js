@@ -265,6 +265,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
         var isCurrent = currentPath.includes('_prev');
         var currentDate = new Date();
+
+        if (isCurrent) {
+            if (type === 'weekly') {
+                currentDate.setDate(currentDate.getDate() - 7);
+            } else if (type === 'monthly') {
+                currentDate.setMonth(currentDate.getMonth() - 1);
+            } else if (type === 'yearly') {
+                currentDate.setFullYear(currentDate.getFullYear() - 1);
+            }
+        }
+
         var navButton = createNavButton(type, linkType, isCurrent);
         buttonContainer.appendChild(navButton);
 
