@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>{{ data.Title }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
     <link href="/static/css/graph.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -26,7 +27,7 @@
         {% endfor %}
     </div>
     <div id="buttonContainer"></div>
-    <div id="dateContainer"></div>
+    <div id="dateContainer"><i class="fa-solid fa-calendar-days calendar-icon "></i></div>
     <div id="chartContainer"></div>
     <script src="/static/js/Chart.bundle.js"></script>
     <script src="/static/js/analyze.js"></script>
