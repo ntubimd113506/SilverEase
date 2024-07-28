@@ -166,10 +166,20 @@ div.header h1{
 }
 
 .no-data-message, .error-message {
-    color: red;
+    color: #000000;
+    /* background-color: #000000; */
+    border: 3px solid #ff0000;
+    border-radius: 8px;
+    padding: 10px 20px;
     margin-top: 10px;
     font-size: 16px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
 }
+
 
 .period-link {
     display: inline-block;
