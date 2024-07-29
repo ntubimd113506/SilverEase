@@ -67,12 +67,21 @@ div.title-container h1{
     margin: 0 auto;
     margin-top: 30px;
 }
-
+/* 
 #dateContainer {
     text-align: center;
     font-size: 16px;
     margin-top: 30px; 
     margin-bottom: 10px; 
+} */
+
+#dateContainer {
+    padding: 0px 23px;
+    display: flex; 
+    justify-content: center;
+    margin-top: 50px;
+    text-align: center; 
+    align-items: center;
 }
 
 #chartContainer {
@@ -123,11 +132,21 @@ div.title-container h1{
 }
 
 .date-range-container {
-    text-align: center;
-    font-size: 18px;
-    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #ffffff; 
+    border-radius: 10px; 
+    padding: 10px 20px; 
+    font-size: 18px; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
     font-weight: bold;
-    margin-top: 50px;
+    color: #333;
+    width: 90%; 
+    max-width: 600px;
+    height: 40px;
+    margin: 0 auto;
+    text-align: center; 
 }
 
 .date-range-container span {
@@ -148,10 +167,10 @@ div.button-group{
     /* padding: 10px 20px; */
     padding: 10px;
     width: 88%;
-    height: 40px;
+    height: 45px;
     margin: 15px;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     cursor: pointer;
     transition: background-color 0.3s;
     font-size: 16px;
@@ -206,9 +225,10 @@ div.button-group{
     background-color: #9fb889;
 }
 
-.calendar-icon {
-    margin-right: 3px; 
-    color: #809f68;
+@media screen and (min-width: 414px) {
+    .nav-button{
+        width: 89%;
+    }
 }
 
 @media (min-width: 576px) {
@@ -237,15 +257,15 @@ div.button-group{
     }
 
     .title-container {
-        width: 57%; 
+        width: 67%; 
     }
 
     .nav-button{
-        width: 56%;
+        width: 66%;
     }
 
     .period-link {
-        width: 9.5%;
+        width: 12%;
     }
 
     .period-link:hover,
@@ -265,34 +285,38 @@ div.button-group{
     }
 
     .nav-button{
-        width: 54%;
+        width: 55%;
     }
 
     .period-link {
-        width: 9.5%;
+        width: 10%;
     }
 }
 
 @media (min-width: 1200px) {
     .title-container {
-        width: 53%; 
+        width: 48%; 
     }
 
     .nav-button{
-        width: 53%;
+        width: 47%;
     }
     .period-link {
-        width: 10%;
+        width: 8.5%;
     }
     
 }
 
 @media (min-width: 1400px) {
     .title-container {
-        width: 52%; 
+        width: 44%; 
     }
 
     .nav-button{
-        width: 52%;
+        width: 44.5%;
+    }
+
+    .period-link {
+        width: 8%;
     }
 }
