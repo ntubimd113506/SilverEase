@@ -1,41 +1,23 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>長輩定位</title>
-    <script type="text/javascript">
-        window.onload = function() {
-            // 從 Flask 傳遞的 URL 變量
-            var targetURL = "{{ url }}";
-            // 自動重定向到指定的 URL
-            if (targetURL && targetURL !== "no_data") {
-                window.location.href = targetURL;
-            } else {
-                document.getElementById('redirect-message').innerText = '無此資料';
-            }
-        }
-    </script>
+    <title>選擇長輩</title>
 </head>
 <body>
-    <p id="redirect-message">正在跳轉到指定網址...若未跳轉成功，可重新開啟，或點選下列按鈕</p>
-    {% if url and url != "no_data" %}
-        <a href="{{ url }}" id="redirect-link">請點此</a>
-    {% else %}
-        <p>無此資料</p>
-    {% endif %}
+    <form method="GET" action="/check" class="query-form">
+        <div class="form-group">
+            <label for="MainUserID">主要用戶</label>
+            <select id="MainUserID" name="MainUserID">
+                <option value="all">所有長者</option>
+                {% for user in MainUsers %}
+                <option value="{{ user[0] }}">{{ user[1] }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <br><br>
+        <input type="submit" value="提交">
+    </form>
 </body>
-
-<script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
-<script>
-    function initializeLiff(myLiffId) {
-        liff.init({
-            liffId: myLiffId
-        }).catch((err) => {
-            console.log('初始化失敗', err);
-        });
-    }
-
-    initializeLiff('{{ liffid }}')
-</script>
 </html>
