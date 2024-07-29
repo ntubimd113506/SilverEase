@@ -35,43 +35,24 @@ def gps():
 @gps_bp.route('/check')
 @login_required
 def check():
-    MemID = session.get("MemID")
-
+    MainUserID = request.args.get("MainUserID")
     conn = db.get_connection()
     cursor = conn.cursor()
-
-    MainUserID = request.args.get("MainUserID")
-
-    cursor.execute(
-                """
-                SELECT COALESCE(f.FamilyID, l.FamilyID) AS A_FamilyID
-                FROM `113-ntub113506`.Member m 
-                LEFT JOIN `113-ntub113506`.Family as f ON m.MemID = f.MainUserID 
-                LEFT JOIN `113-ntub113506`.FamilyLink as l ON m.MemID = l.SubUserID
-                WHERE MemID = %s
-                """,
-                (MemID,),
-            )
+    cursor.execute('SELECT FamilyID FROM Family WHERE MainUserID = %s',(MainUserID,))
     famID = cursor.fetchall() #取得familyID
+    if famID:
+        famID = famID[0]
+    else:
+        famID = None
 
-    cursor.execute('SELECT Location FROM Location WHERE FamilyID = %s ORDER BY LocatNo DESC LIMIT 1', (famID,))
-    latest_location = cursor.fetchone()
-        
-    params = [id[0]]
-    if MainUserID and MainUserID != "all":
-        query += " AND f.MainUserID = %s"
-        params.append(MainUserID)
+    if famID:
+        cursor.execute('SELECT Location FROM Location WHERE FamilyID = %s ORDER BY LocatNo DESC LIMIT 1', (famID,))
+        latest_location = cursor.fetchone()
+    else:
+        latest_location = None
             
     cursor.close()
     conn.close()
-
-    # cursor.execute('SELECT FamilyID FROM Family WHERE MainUserID = %s,'(MemID,))
-    # famID = cursor.fetchall()
-    # if not famID:
-    #     cursor.execute('SELECT FamilyID FROM FamilyLink WHERE SubUserID = %s,'(MemID,))
-    #     famID = cursor.fetchone()
-
-    # cursor.execute('SELECT Location FROM Location WHERE FamilyID = %s ORDER BY LocatNo DESC LIMIT 1', (famID,))
 
     # 如果資料庫中有數據，將最新的 GPS URL 傳遞給模板，否則傳遞 "no_data"
     url = latest_location[0] if latest_location else "no_data"
