@@ -82,3 +82,19 @@ def get_memo_info(MemoID):
     data["SubUser"]=[k[0] for k in cur.fetchall()]
 
     return data
+
+def get_family_id(MemID):
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            SELECT COALESCE(f.FamilyID, fl.FamilyID) AS FamilyID
+            FROM `113-ntub113506`.Member m
+            LEFT JOIN `113-ntub113506`.Family f ON f.MainUserID = m.MemID
+            LEFT JOIN `113-ntub113506`.FamilyLink fl ON fl.SubUserID = m.MemID
+            WHERE m.MemID = %s
+            """,
+            (MemID,),
+        )
+        FamilyID = cursor.fetchone()
+        return FamilyID[0] if FamilyID else None
