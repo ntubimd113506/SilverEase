@@ -17,6 +17,11 @@
             <h1 class="content-header">{{ data.analyze }}</h1>
         </div>
     </div>
+    <select id="MainUserID" name="MainUserID">
+        {% for user in MainUsers %}
+        <option value="{{ user[0] }}">{{ user[1] }}</option>
+        {% endfor %}
+    </select>
     <div class="button-group">
         {% for key, value in data.items() %}
             {% if key != 'Title' %}

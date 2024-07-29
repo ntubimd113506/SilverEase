@@ -5,6 +5,34 @@ from utils import db
 analyze_bp = Blueprint("analyze_bp", __name__)
 
 def render_analyze_template(title, analyze, is_all=True):
+    MemID = session.get("MemID")
+
+    conn = db.get_connection()
+    cursor = conn.cursor()
+
+    if MemID:
+        cursor.execute(
+            """
+            SELECT m.MemID, m.MemName
+            FROM `113-ntub113506`.FamilyLink fl
+            JOIN `113-ntub113506`.Family f ON fl.FamilyID = f.FamilyID
+            JOIN `113-ntub113506`.Member m ON f.MainUserID = m.MemID
+            WHERE fl.SubUserID = %s
+            """,
+            (MemID,),
+        )
+        MainUsers = cursor.fetchall()
+
+        if not MainUsers:
+            cursor.execute(
+                """
+                SELECT MemID, MemName FROM `113-ntub113506`.Member
+                WHERE MemID = %s
+                """,
+                (MemID,),
+            )
+            MainUsers = cursor.fetchall()
+            
     data_url = "all" if is_all else "mem"
     data = {
         "Title": title,
@@ -14,7 +42,7 @@ def render_analyze_template(title, analyze, is_all=True):
         "monthly": {"url": f"{data_url}_monthly", "name": "月"},
         "yearly": {"url": f"{data_url}_yearly", "name": "年"},
     }
-    return render_template("/analyze/analyze.html", data=data)
+    return render_template("/analyze/analyze.html", data=data, MainUsers=MainUsers)
 
 def register_routes():
     analysis_routes = [
