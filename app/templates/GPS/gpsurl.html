@@ -20,7 +20,7 @@
 <body>
     <p id="redirect-message">正在跳轉到指定網址...若未跳轉成功，可重新開啟，或點選下列按鈕</p>
     {% if url and url != "no_data" %}
-        <a href="{{ url }}" id="redirect-link">請點此</a>
+        <a href="{{url}}" id="redirect-link">請點此</a>
     {% else %}
         <p>無此資料</p>
     {% endif %}
