@@ -88,7 +88,6 @@ def upgrade_gps(Map):
         conn.close()
 
 
-
 def sent_mess(DevID, filename=None):
     # 取得資料庫連線
     conn = db.get_connection()

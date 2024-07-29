@@ -6,21 +6,28 @@
     <title>長輩定位</title>
     <script type="text/javascript">
         window.onload = function() {
-            // 指定你的目標URL
-            var targetURL = "https://www.google.com/maps/search/?api=1&query=25.043581,121.445679";
+            // 從 Flask 傳遞的 URL 變量
+            var targetURL = "{{ url }}";
             // 自動重定向到指定的 URL
-            window.location.href = targetURL;
+            if (targetURL && targetURL !== "no_data") {
+                window.location.href = targetURL;
+            } else {
+                document.getElementById('redirect-message').innerText = '無此資料';
+            }
         }
     </script>
 </head>
 <body>
-    <p>正在跳轉到指定網址...若未跳轉成功...</p>
-    <a href="https://www.google.com/maps/search/?api=1&query=25.043581,121.445679" id="redirect-link">請點此</a>
+    <p id="redirect-message">正在跳轉到指定網址...若未跳轉成功，可重新開啟，或點選下列按鈕</p>
+    {% if url and url != "no_data" %}
+        <a href="{{ url }}" id="redirect-link">請點此</a>
+    {% else %}
+        <p>無此資料</p>
+    {% endif %}
 </body>
 
 <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
 <script>
-
     function initializeLiff(myLiffId) {
         liff.init({
             liffId: myLiffId
@@ -29,6 +36,6 @@
         });
     }
 
-    initializeLiff('{{liffid}}')
+    initializeLiff('{{ liffid }}')
 </script>
 </html>
