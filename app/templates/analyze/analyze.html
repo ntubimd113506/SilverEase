@@ -19,7 +19,11 @@
     </div>
     <select id="MainUserID" name="MainUserID" onchange="updateMainUserID()">
         {% for user in MainUsers %}
-        <option value="{{ user[0] }}">{{ user[1] }}</option>
+            {% if Whose== user[0] %}
+                <option value="{{ user[0] }}" selected>{{ user[1] }}</option>
+            {% else %} 
+                <option value="{{ user[0] }}">{{ user[1] }}</option>
+            {% endif %}
         {% endfor %}
     </select>    
     <div class="button-group">
@@ -47,7 +51,9 @@
                 },
                 body: JSON.stringify({ mainUserID: mainUserID })
             })
-            .then(response => response.json());
+            .then(response => {
+                location.reload()
+            });
         }
     </script>
 </body>

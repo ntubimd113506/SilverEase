@@ -8,6 +8,7 @@ analyze_bp = Blueprint("analyze_bp", __name__)
 def update_main_user_id():
     main_user_id = request.json.get('mainUserID')
     session['MainUserID'] = main_user_id
+    return jsonify({'status': 'success'})
 
 def render_analyze_template(title, analyze, is_all=True):
     MemID = session.get("MemID")
@@ -38,6 +39,8 @@ def render_analyze_template(title, analyze, is_all=True):
             )
             MainUsers = cursor.fetchall()
             
+        MainUser=session.get("MainUserID")
+
     data_url = "all" if is_all else "mem"
     data = {
         "Title": title,
@@ -47,7 +50,7 @@ def render_analyze_template(title, analyze, is_all=True):
         "monthly": {"url": f"{data_url}_monthly", "name": "月"},
         "yearly": {"url": f"{data_url}_yearly", "name": "年"},
     }
-    return render_template("/analyze/analyze.html", data=data, MainUsers=MainUsers)
+    return render_template("/analyze/analyze.html", data=data, MainUsers=MainUsers, Whose=MainUser)
 
 def register_routes():
     analysis_routes = [
@@ -254,5 +257,4 @@ def fetch_member_data(period='weekly', prev_period=False):
             (MainUserID,),
         )
         FamilyID = cursor.fetchone()
-        if FamilyID:
-            return fetch_data(cursor, period, FamilyID[0], prev_period)
+        return fetch_data(cursor, period, FamilyID, prev_period)
