@@ -4,6 +4,11 @@ from utils import db
 
 analyze_bp = Blueprint("analyze_bp", __name__)
 
+@analyze_bp.route('/update_main_user_id', methods=['POST'])
+def update_main_user_id():
+    main_user_id = request.json.get('mainUserID')
+    session['MainUserID'] = main_user_id
+
 def render_analyze_template(title, analyze, is_all=True):
     MemID = session.get("MemID")
 
@@ -235,7 +240,19 @@ def fetch_period_data(period, FamilyID=None, prev_period=False):
         cursor = conn.cursor()
         return fetch_data(cursor, period, FamilyID, prev_period)
 
-def fetch_member_data(period, prev_period=False):
-    MemID = session.get("MemID")
-    FamilyID = db.get_family_id(MemID)
-    return fetch_period_data(period, FamilyID, prev_period)
+def fetch_member_data(period='weekly', prev_period=False):
+    MainUserID = session.get("MainUserID")
+
+    with db.get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            SELECT FamilyID
+            FROM `113-ntub113506`.Family
+            WHERE MainUserID = %s
+            """,
+            (MainUserID,),
+        )
+        FamilyID = cursor.fetchone()
+        if FamilyID:
+            return fetch_data(cursor, period, FamilyID[0], prev_period)

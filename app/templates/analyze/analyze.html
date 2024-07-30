@@ -17,11 +17,11 @@
             <h1 class="content-header">{{ data.analyze }}</h1>
         </div>
     </div>
-    <select id="MainUserID" name="MainUserID">
+    <select id="MainUserID" name="MainUserID" onchange="updateMainUserID()">
         {% for user in MainUsers %}
         <option value="{{ user[0] }}">{{ user[1] }}</option>
         {% endfor %}
-    </select>
+    </select>    
     <div class="button-group">
         {% for key, value in data.items() %}
             {% if key != 'Title' %}
@@ -37,5 +37,18 @@
     <script src="/static/js/Chart.bundle.js"></script>
     <script src="/static/js/analyze.js"></script>
     <input type="hidden" id="MemID" name="MemID">
+    <script>
+        function updateMainUserID() {
+            var mainUserID = document.getElementById('MainUserID').value;
+            fetch('/analyze/update_main_user_id', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ mainUserID: mainUserID })
+            })
+            .then(response => response.json());
+        }
+    </script>
 </body>
 </html>
