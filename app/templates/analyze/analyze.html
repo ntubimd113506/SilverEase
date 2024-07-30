@@ -14,11 +14,24 @@
         </div>
 
         <div class="title-container">
-            <h1 class="content-header">{{ data.analyze }}</h1>
+            <h1 class="content-header">
+                {% if not is_all %}
+                <select id="MainUserID" name="MainUserID" class="MainUserID" onchange="updateMainUserID()">
+                    {% for user in MainUsers %}
+                        {% if Whose == user[0] %}
+                            <option value="{{ user[0] }}" selected>{{ user[1] }}</option>
+                        {% else %} 
+                            <option value="{{ user[0] }}">{{ user[1] }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+                {% endif %}
+                
+                {{ data.analyze }}</h1>
         </div>
     </div>
 
-    {% if not is_all %}
+    <!-- {% if not is_all %}
     <select id="MainUserID" name="MainUserID" onchange="updateMainUserID()">
         {% for user in MainUsers %}
             {% if Whose == user[0] %}
@@ -28,7 +41,7 @@
             {% endif %}
         {% endfor %}
     </select>
-    {% endif %}
+    {% endif %} -->
     
     <div class="button-group">
         {% for key, value in data.items() %}

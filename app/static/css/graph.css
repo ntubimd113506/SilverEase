@@ -52,6 +52,24 @@ div.title-container h1{
     letter-spacing:8px;
 }
 
+#MainUserID {
+  width: auto; 
+  padding: 5px 10px; 
+  border-radius: 10px; 
+  background-color: #d3d3d3; 
+  border: 1px solid #ffffff;  
+  font-size: 18px;
+  font-weight: bold;
+  position: relative; 
+  top: -5px; 
+}
+
+
+#MainUserID:focus {
+  outline: none;
+  box-shadow: 0 0 5px #666; 
+}
+
 .chart-box {
     border: 1px solid #000;
     margin: 10px 0;
@@ -138,11 +156,11 @@ div.title-container h1{
     background-color: #ffffff; 
     border-radius: 10px; 
     padding: 10px 20px; 
-    font-size: 18px; 
+    font-size: 17px; 
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
     font-weight: bold;
     color: #333;
-    width: 90%; 
+    width: 72%; 
     max-width: 600px;
     height: 40px;
     margin: 0 auto;
@@ -224,6 +242,17 @@ div.button-group{
 .period-link:active {
     background-color: #9fb889;
 }
+
+@media screen and (min-width: 375px) and (max-width: 413px) {
+    .nav-button{
+        width: 89%;
+    }
+
+    .period-link {
+        margin: 0px 12px;
+    }
+}
+
 
 @media screen and (min-width: 414px) {
     .nav-button{
