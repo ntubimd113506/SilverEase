@@ -7,7 +7,7 @@ from services import mqtt
 gps_bp = Blueprint('gps_bp',__name__)
 
 @gps_bp.route('/')
-# @login_required
+@login_required
 def gps():
     MemID = session.get("MemID")
     mqtt.publish("/nowGPS", "Request GPS Data")
@@ -33,7 +33,7 @@ def gps():
 
 @gps_bp.route('/check', methods=['POST'])
 def check():
-    MainUserID = request.args.get("MainUserID")
+    MainUserID = request.form.get("MainUserID")
     conn = db.get_connection()
     cursor = conn.cursor()
     
@@ -42,7 +42,7 @@ def check():
     famID = cursor.fetchone()  # 使用 fetchone 取得單個結果
 
     if famID:
-        cursor.execute('SELECT Location FROM `113-ntub113506`.Location WHERE FamilyID = %s ORDER BY LocatNo DESC LIMIT 1', (famID,))
+        cursor.execute('SELECT Location FROM `113-ntub113506`.Location WHERE FamilyID = %s ORDER BY LocatNo DESC LIMIT 1', (famID[0],))
         latest_location = cursor.fetchone()  # 使用 fetchone 取得單個結果
     else:
         latest_location = None
