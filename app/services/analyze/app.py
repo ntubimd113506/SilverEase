@@ -39,7 +39,7 @@ def render_analyze_template(title, analyze, is_all=True):
             )
             MainUsers = cursor.fetchall()
             
-        MainUser=session.get("MainUserID")
+        MainUser = session.get("MainUserID")
 
     data_url = "all" if is_all else "mem"
     data = {
@@ -50,7 +50,7 @@ def render_analyze_template(title, analyze, is_all=True):
         "monthly": {"url": f"{data_url}_monthly", "name": "月"},
         "yearly": {"url": f"{data_url}_yearly", "name": "年"},
     }
-    return render_template("/analyze/analyze.html", data=data, MainUsers=MainUsers, Whose=MainUser)
+    return render_template("/analyze/analyze.html", data=data, MainUsers=MainUsers, Whose=MainUser, is_all=is_all)
 
 def register_routes():
     analysis_routes = [

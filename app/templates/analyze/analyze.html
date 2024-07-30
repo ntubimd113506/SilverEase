@@ -17,15 +17,19 @@
             <h1 class="content-header">{{ data.analyze }}</h1>
         </div>
     </div>
+
+    {% if not is_all %}
     <select id="MainUserID" name="MainUserID" onchange="updateMainUserID()">
         {% for user in MainUsers %}
-            {% if Whose== user[0] %}
+            {% if Whose == user[0] %}
                 <option value="{{ user[0] }}" selected>{{ user[1] }}</option>
             {% else %} 
                 <option value="{{ user[0] }}">{{ user[1] }}</option>
             {% endif %}
         {% endfor %}
-    </select>    
+    </select>
+    {% endif %}
+    
     <div class="button-group">
         {% for key, value in data.items() %}
             {% if key != 'Title' %}
@@ -52,7 +56,7 @@
                 body: JSON.stringify({ mainUserID: mainUserID })
             })
             .then(response => {
-                location.reload()
+                location.reload();
             });
         }
     </script>
