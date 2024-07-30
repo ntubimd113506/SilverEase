@@ -246,15 +246,20 @@ def fetch_period_data(period, FamilyID=None, prev_period=False):
 def fetch_member_data(period='weekly', prev_period=False):
     MainUserID = session.get("MainUserID")
 
-    with db.get_connection() as conn:
-        cursor = conn.cursor()
-        cursor.execute(
-            """
-            SELECT FamilyID
-            FROM `113-ntub113506`.Family
-            WHERE MainUserID = %s
-            """,
-            (MainUserID,),
-        )
-        FamilyID = cursor.fetchone()
-        return fetch_data(cursor, period, FamilyID, prev_period)
+    if MainUserID:
+        with db.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                """
+                SELECT FamilyID
+                FROM `113-ntub113506`.Family
+                WHERE MainUserID = %s
+                """,
+                (MainUserID,),
+            )
+            FamilyID = cursor.fetchone()
+            return fetch_data(cursor, period, FamilyID, prev_period)
+    else:
+        MemID = session.get("MemID")
+        FamilyID = db.get_family_id(MemID)
+        return fetch_period_data(period, FamilyID, prev_period)
