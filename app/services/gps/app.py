@@ -14,11 +14,20 @@ def gps():
     conn = db.get_connection()
     cursor = conn.cursor()
 
-    if MemID:
-        cursor.execute("SELECT MemName FROM `113-ntub113506`.Member WHERE MemID = %s",(MemID,))
-        MainUsers = cursor.fetchall() #長輩中文名
+    cursor.execute(
+        """
+        SELECT f.MainUserID, m.MemName
+        FROM `113-ntub113506`.Family f
+        JOIN `113-ntub113506`.Member m ON f.MainUserID = m.MemID
+        WHERE f.MainUserID = %s
+        """,
+        (MemID,),
+    )
+    MainUserInfo = cursor.fetchone()
 
-    if MemID:
+    if MainUserInfo:
+        MainUsers = [(MemID, MainUserInfo[1])]
+    else:
         cursor.execute(
             """
             SELECT m.MemID, m.MemName
@@ -29,7 +38,7 @@ def gps():
             """,
             (MemID,),
         )
-        MainUsers = cursor.fetchall() #長輩中文名
+        MainUsers = cursor.fetchall()
 
     cursor.close()
     conn.close()
