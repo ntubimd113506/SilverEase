@@ -15,6 +15,10 @@ def gps():
     cursor = conn.cursor()
 
     if MemID:
+        cursor.execute("SELECT MemName FROM `113-ntub113506`.Member WHERE MemID = %s",(MemID,))
+        MainUsers = cursor.fetchall() #長輩中文名
+
+    if MemID:
         cursor.execute(
             """
             SELECT m.MemID, m.MemName
