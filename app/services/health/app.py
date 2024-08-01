@@ -12,8 +12,8 @@ def health():
 def health_self():
     return render_template("/health/health.html")
 
-@health_bp.route("/health/<category>")
-def health(category):
+@health_bp.route("/<category>")
+def health_category(category):
     data = {
         "death": {
             "title": "十大死因",
@@ -54,4 +54,4 @@ def health(category):
         }
     }
 
-    return render_template("health/health.html", title=data[category]["title"], items=data[category]["items"])
+    return render_template("/health/health.html", title=data[category]["title"], items=data[category]["items"])

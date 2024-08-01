@@ -3,19 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>健康資訊</title>
+    <title>{{ title }}</title>
+    <style>
+        .item-image {
+            display: none;
+        }
+    </style>
 </head>
 <body>
-    <h1>{{ title }}</h1>
+    <h1>{{ title }}1234</h1>
+    <a href="{{ url_for('health_bp.health') }}">返回主頁</a>
     <div class="content">
         <ul>
             {% for item in items %}
             <li>
-                <h2>{{ item.name }}</h2>
-                <img src="{{ url_for('static', filename='imgs/' + item.image) }}" alt="{{ item.name }}">
+                <h2 class="item-title" onclick="toggleImage('{{ loop.index0 }}')">{{ item.name }}</h2>
+                <img id="image-{{ loop.index0 }}" class="item-image" src="{{ url_for('static', filename='imgs/' + item.image) }}" alt="{{ item.name }}">
             </li>
             {% endfor %}
         </ul>
     </div>
+    <script>
+        function toggleImage(index) {
+            var image = document.getElementById('image-' + index);
+            if (image.style.display === 'none' || image.style.display === '') {
+                image.style.display = 'block';
+            } else {
+                image.style.display = 'none';
+            }
+        }
+    </script>
 </body>
 </html>
