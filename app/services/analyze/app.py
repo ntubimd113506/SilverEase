@@ -106,9 +106,9 @@ def fetch_data(cursor, period='weekly', FamilyID=None, prev_period=False):
     family_param = (FamilyID,) if FamilyID else ()
 
     period_condition = {
-        'weekly': 'WEEK(l.LocationTime) = WEEK(NOW()) - 1' if prev_period else 'WEEK(l.LocationTime) = WEEK(NOW())',
-        'monthly': 'MONTH(l.LocationTime) = MONTH(NOW()) - 1 AND YEAR(l.LocationTime) = YEAR(NOW())' if prev_period else 'MONTH(l.LocationTime) = MONTH(NOW())',
-        'yearly': 'YEAR(l.LocationTime) = YEAR(NOW()) - 1' if prev_period else 'YEAR(l.LocationTime) = YEAR(NOW())',
+        'weekly': 'WEEK(l.LocationTime, 1) = WEEK(CURRENT_DATE, 1) - 1' if prev_period else 'WEEK(l.LocationTime, 1) = WEEK(CURRENT_DATE, 1)',
+        'monthly': 'MONTH(l.LocationTime) = MONTH(CURRENT_DATE) - 1' if prev_period else 'MONTH(l.LocationTime) = MONTH(CURRENT_DATE)',
+        'yearly': 'YEAR(l.LocationTime) = YEAR(CURRENT_DATE) - 1' if prev_period else 'YEAR(l.LocationTime) = YEAR(CURRENT_DATE)',
     }[period]
 
     query_templates = {
@@ -128,8 +128,7 @@ def fetch_data(cursor, period='weekly', FamilyID=None, prev_period=False):
                 FROM `113-ntub113506`.SOS s
                 LEFT JOIN `113-ntub113506`.Location l ON s.LocatNo = l.LocatNo
                 LEFT JOIN `113-ntub113506`.Access a ON l.FamilyID = a.FamilyID
-                WHERE YEAR(LocationTime) = YEAR(NOW())
-                AND MONTH(LocationTime) = MONTH(NOW())
+                WHERE YEAR(LocationTime) = YEAR(CURRENT_DATE)
                 AND {period_condition}
                 AND a.DataAnalyze = 1
                 {family_condition}
@@ -140,10 +139,11 @@ def fetch_data(cursor, period='weekly', FamilyID=None, prev_period=False):
             WITH RECURSIVE Days AS (
                 SELECT 1 AS n
                 UNION ALL
-                SELECT n + 1 FROM Days WHERE n < DAY(LAST_DAY(NOW()))
+                SELECT n + 1 FROM Days WHERE n <= DAY(LAST_DAY(NOW()))
             )
             SELECT 
-                Days.n, IFNULL(Monthly.CountPerMonth, 0) AS CountPerMonth
+                Days.n, 
+                IFNULL(Monthly.CountPerMonth, 0) AS CountPerMonth
             FROM 
                 Days
             LEFT JOIN (
@@ -197,7 +197,7 @@ def fetch_data(cursor, period='weekly', FamilyID=None, prev_period=False):
             `113-ntub113506`.SOS s ON s.SOSType = st.TypeNo
         LEFT JOIN 
             `113-ntub113506`.Location l ON l.LocatNo = s.LocatNo
-            AND YEAR(l.LocationTime) = YEAR(NOW())
+            AND YEAR(l.LocationTime) = YEAR(CURRENT_DATE)
             AND {period_condition}
         LEFT JOIN 
             `113-ntub113506`.Access a ON l.FamilyID = a.FamilyID
@@ -222,7 +222,7 @@ def fetch_data(cursor, period='weekly', FamilyID=None, prev_period=False):
             `113-ntub113506`.SOS s ON s.SOSPlace = sp.PlaceNo
         LEFT JOIN 
             `113-ntub113506`.Location l ON l.LocatNo = s.LocatNo
-            AND YEAR(l.LocationTime) = YEAR(NOW())
+            AND YEAR(l.LocationTime) = YEAR(CURRENT_DATE)
             AND {period_condition}
         LEFT JOIN 
             `113-ntub113506`.Access a ON l.FamilyID = a.FamilyID
