@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>選擇長輩</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 400px;
+            width: 100%;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
     <div class="form">
@@ -22,7 +30,11 @@
             </div>
         </form>
     </div>
+    <div id="gps-url" style="margin-top: 20px;"></div>
+    <div id="map"></div>
+
     <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script>
         function initializeLiff(myLiffId) {
             liff.init({
@@ -32,7 +44,45 @@
             });
         }
 
-        initializeLiff('{{ liffid }}')
+        initializeLiff('{{ liffid }}');
+
+        document.getElementById('form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var formData = new FormData(this);
+            fetch('/gps/check', {
+                method: 'POST',
+                body: formData
+            }).then(response => response.json())
+            .then(data => {
+                var gpsUrlElement = document.getElementById('gps-url');
+                if (data.url === 'no_data') {
+                    gpsUrlElement.innerHTML = '沒有資料';
+                    document.getElementById('map').style.display = 'none';
+                } else {
+                    gpsUrlElement.innerHTML = `<a href="${data.url}" target="_blank">點擊查看地圖</a>`;
+                    showMap(data.url);
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+            });
+        });
+
+        function showMap(url) {
+            var coords = parseUrl(url);
+            var map = L.map('map').setView([coords.lat, coords.lng], 15);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+            L.marker([coords.lat, coords.lng]).addTo(map)
+                .bindPopup('最新的GPS位置')
+                .openPopup();
+            document.getElementById('map').style.display = 'block';
+        }
+
+        function parseUrl(url) {
+            var coords = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+            return { lat: parseFloat(coords[1]), lng: parseFloat(coords[2]) };
+        }
     </script>
 </body>
 </html>
