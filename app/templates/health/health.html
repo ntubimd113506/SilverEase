@@ -11,17 +11,13 @@
     </style>
 </head>
 <body>
-    <h1>{{ title }}1234</h1>
+    <h2>{{ title }}</h2>
     <a href="{{ url_for('health_bp.health') }}">返回主頁</a>
     <div class="content">
-        <ul>
-            {% for item in items %}
-            <li>
-                <h2 class="item-title" onclick="toggleImage('{{ loop.index0 }}')">{{ item.name }}</h2>
-                <img id="image-{{ loop.index0 }}" class="item-image" src="{{ url_for('static', filename='imgs/' + item.image) }}" alt="{{ item.name }}">
-            </li>
-            {% endfor %}
-        </ul>
+        {% for item in items %}
+            <h3 class="item-title" onclick="toggleImage('{{ loop.index0 }}')">{{ item.name }}</h3>
+            <img id="image-{{ loop.index0 }}" class="item-image" src="{{ url_for('static', filename='imgs/' + item.image) }}" alt="{{ item.name }}">
+        {% endfor %}
     </div>
     <script>
         function toggleImage(index) {
