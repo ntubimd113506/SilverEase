@@ -6,28 +6,45 @@
 <body>
     <form action="/sos/sos_report" method="post">
         <div>求救事件後續追蹤</div>
+        {% if report[0]!=None %}
+        <div>您的家人已完成填寫，歡迎修正或補充說明</div>
+        {%endif%}
+        <div>
+            發生時間： {{Time}}
+        </div>
         <div>
             求救事件類型
             <select name="Type" id="" onchange=typechange()>
                 {%for type in Type%}
-                <option value="{{type[0]}}">{{type[1]}}</option>
+                    {% if report[0]== type[0] %}
+                        <option value="{{type[0]}}" selected>{{type[1]}}</option>
+                    {%else%}
+                        <option value="{{type[0]}}">{{type[1]}}</option>
+                    {%endif%}
                 {%endfor%}
             </select>
         </div>
+        {% if report[1]!= None %}
+        <div id="Place">
+        {%else%}
         <div id="Place" hidden>
+        {%endif%}
             室內位置
             <select name="Place">
-                <option value="" selected></option>
                 {%for place in Place%}
-                <option value="{{place[0]}}">{{place[1]}}</option>
+                    {% if report[1]== place[0] %}
+                        <option value="{{place[0]}}" selected>{{place[1]}}</option>
+                    {%else%}
+                        <option value="{{place[0]}}">{{place[1]}}</option>
+                    {%endif%}
                 {%endfor%}
             </select>
         </div>
         <div>
             求救事件描述
-            <textarea name="Description" id=""></textarea>
+            <textarea name="Description" id="">{{report[2]}}</textarea>
         </div>
-        
+
         <input type="submit" value="送出">
     </form>
 </body>
