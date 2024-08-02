@@ -121,6 +121,8 @@ def fetch_data(cursor, period='weekly', FamilyID=None, prev_period=False):
         'yearly': 'YEAR(l.LocationTime) = YEAR(CURRENT_DATE) - 1' if prev_period else 'YEAR(l.LocationTime) = YEAR(CURRENT_DATE)',
     }[period]
 
+    day_last_day = 'DAY(LAST_DAY(DATE_SUB(NOW(), INTERVAL 1 MONTH)))' if prev_period else 'DAY(LAST_DAY(NOW()))'
+
     query_templates = {
         'weekly': """
             WITH RECURSIVE Days AS (
@@ -145,29 +147,42 @@ def fetch_data(cursor, period='weekly', FamilyID=None, prev_period=False):
                 GROUP BY n
             ) Weekly ON Days.n = Weekly.n;
         """,
-        'monthly': """
+        'monthly': f"""
             WITH RECURSIVE Days AS (
                 SELECT 1 AS n
                 UNION ALL
-                SELECT n + 1 FROM Days WHERE n <= DAY(LAST_DAY(NOW()))
+                SELECT n + 1 
+                FROM Days 
+                WHERE n < {day_last_day}
+            ),
+            Periods AS (
+                SELECT 
+                    CEIL(n / 5) AS period,
+                    MIN(n) AS start_day,
+                    LEAST(MIN(n) + 4, {day_last_day}) AS end_day
+                FROM Days
+                GROUP BY CEIL(n / 5)
             )
             SELECT 
-                Days.n, 
-                IFNULL(Monthly.CountPerMonth, 0) AS CountPerMonth
+                CONCAT(Periods.start_day, '日-', Periods.end_day, '日') AS PeriodRange,
+                IFNULL(SUM(Monthly.CountPerPeriod), 0) AS CountPerPeriod
             FROM 
-                Days
+                Periods
             LEFT JOIN (
-                SELECT DAYOFMONTH(LocationTime) AS n, COUNT(*) AS CountPerMonth
+                SELECT 
+                    CEIL(DAYOFMONTH(LocationTime) / 5) AS period,
+                    COUNT(*) AS CountPerPeriod
                 FROM `113-ntub113506`.SOS s
                 LEFT JOIN `113-ntub113506`.Location l ON s.LocatNo = l.LocatNo
                 LEFT JOIN `113-ntub113506`.Access a ON l.FamilyID = a.FamilyID
-                WHERE YEAR(LocationTime) = YEAR(NOW()) 
+                WHERE YEAR(LocationTime) = YEAR(NOW())
                 AND {period_condition}
                 AND a.DataAnalyze = 1
                 {family_condition}
-                GROUP BY n
-            ) Monthly ON Days.n = Monthly.n
-            ORDER BY Days.n;
+                GROUP BY period
+            ) Monthly ON Periods.period = Monthly.period
+            GROUP BY Periods.period, Periods.start_day, Periods.end_day
+            ORDER BY Periods.period;
         """,
         'yearly': """
             WITH RECURSIVE Months AS (
@@ -176,7 +191,8 @@ def fetch_data(cursor, period='weekly', FamilyID=None, prev_period=False):
                 SELECT n + 1 FROM Months WHERE n < 12
             )
             SELECT 
-                Months.n, IFNULL(Yearly.CountPerMonth, 0) AS CountPerMonth
+                CONCAT(Months.n, '月') AS MonthName, 
+                IFNULL(Yearly.CountPerMonth, 0) AS CountPerMonth
             FROM 
                 Months
             LEFT JOIN (
