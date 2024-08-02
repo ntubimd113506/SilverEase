@@ -27,37 +27,32 @@
                 </select>
                 {% endif %}
                 
-                {{ data.analyze }}</h1>
+                {{ data.analyze }}
+            </h1>
         </div>
     </div>
-
-    <!-- {% if not is_all %}
-    <select id="MainUserID" name="MainUserID" onchange="updateMainUserID()">
-        {% for user in MainUsers %}
-            {% if Whose == user[0] %}
-                <option value="{{ user[0] }}" selected>{{ user[1] }}</option>
-            {% else %} 
-                <option value="{{ user[0] }}">{{ user[1] }}</option>
-            {% endif %}
-        {% endfor %}
-    </select>
-    {% endif %} -->
     
-    <div class="button-group">
-        {% for key, value in data.items() %}
-            {% if key != 'Title' %}
-                {% if value.url %}
-                    <a class="period-link {{ 'main-page-link' if value.name == '主頁' else 'weekly-link' if value.name == '當週' else 'other-link' }}" href="/analyze/{{ value.url }}">{{ value.name }}</a>
+    {% if not is_all and not data.DataAnalyze %}
+        <div class="no-access">
+            目前無權限，<a href="/health/">點擊此設定</a>
+        </div>
+    {% else %}
+        <div class="button-group">
+            {% for key, value in data.items() %}
+                {% if key != 'Title' and key != 'DataAnalyze' %}
+                    {% if value.url %}
+                        <a class="period-link {{ 'main-page-link' if value.name == '主頁' else 'weekly-link' if value.name == '當週' else 'other-link' }}" href="/analyze/{{ value.url }}">{{ value.name }}</a>
+                    {% endif %}
                 {% endif %}
-            {% endif %}
-        {% endfor %}
-    </div>
-    <div id="buttonContainer"></div>
-    <div id="dateContainer"></div>
-    <div id="chartContainer"></div>
-    <script src="/static/js/Chart.bundle.js"></script>
-    <script src="/static/js/analyze.js"></script>
-    <input type="hidden" id="MemID" name="MemID">
+            {% endfor %}
+        </div>
+        <div id="buttonContainer"></div>
+        <div id="dateContainer"></div>
+        <div id="chartContainer"></div>
+        <script src="/static/js/Chart.bundle.js"></script>
+        <script src="/static/js/analyze.js"></script>
+    {% endif %}
+    
     <script>
         function updateMainUserID() {
             var mainUserID = document.getElementById('MainUserID').value;

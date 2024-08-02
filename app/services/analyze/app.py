@@ -12,6 +12,8 @@ def update_main_user_id():
 
 def render_analyze_template(title, analyze, is_all=True):
     MemID = session.get("MemID")
+    MainUser = session.get("MainUserID")
+    DataAnalyze = True
 
     conn = db.get_connection()
     cursor = conn.cursor()
@@ -19,10 +21,11 @@ def render_analyze_template(title, analyze, is_all=True):
     if MemID:
         cursor.execute(
             """
-            SELECT m.MemID, m.MemName
+            SELECT m.MemID, m.MemName, IFNULL(a.DataAnalyze, 0)
             FROM `113-ntub113506`.FamilyLink fl
             JOIN `113-ntub113506`.Family f ON fl.FamilyID = f.FamilyID
             JOIN `113-ntub113506`.Member m ON f.MainUserID = m.MemID
+            LEFT JOIN `113-ntub113506`.Access a ON f.FamilyID = a.FamilyID
             WHERE fl.SubUserID = %s
             """,
             (MemID,),
@@ -32,14 +35,20 @@ def render_analyze_template(title, analyze, is_all=True):
         if not MainUsers:
             cursor.execute(
                 """
-                SELECT MemID, MemName FROM `113-ntub113506`.Member
-                WHERE MemID = %s
+                SELECT m.MemID, m.MemName, IFNULL(a.DataAnalyze, 0) 
+                FROM `113-ntub113506`.Member m
+                LEFT JOIN `113-ntub113506`.Access a ON f.FamilyID = a.FamilyID
+                WHERE m.MemID = %s
                 """,
                 (MemID,),
             )
             MainUsers = cursor.fetchall()
-            
-        MainUser = session.get("MainUserID")
+            DataAnalyze = 0
+        else:
+            for user in MainUsers:
+                if user[0] == MainUser:
+                    DataAnalyze = user[2]
+                    break
 
     data_url = "all" if is_all else "mem"
     data = {
@@ -49,6 +58,7 @@ def render_analyze_template(title, analyze, is_all=True):
         "weekly": {"url": f"{data_url}_weekly", "name": "週"},
         "monthly": {"url": f"{data_url}_monthly", "name": "月"},
         "yearly": {"url": f"{data_url}_yearly", "name": "年"},
+        "DataAnalyze": DataAnalyze,
     }
     return render_template("/analyze/analyze.html", data=data, MainUsers=MainUsers, Whose=MainUser, is_all=is_all)
 
