@@ -206,8 +206,7 @@ def sent_mess(DevID, img):
         },
     )
 
-    line.line_bot_api.push_message(users["MainUser"], resMsg)
-    # for userID in UserIDs:
-    #     line.line_bot_api.push_message(userID, resMsg)
+    for userID in UserIDs:
+        line.line_bot_api.push_message(userID, resMsg)
 
     return True
