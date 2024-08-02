@@ -164,8 +164,8 @@ bool initCamera()
       .fb_count = 1                   // 影像緩衝記憶區數量
   };
 
-  ledcSetup(LEDC_CHANNEL_0, 5000, LEDC_TIMER_0);
-  ledcAttachPin(FLASH, LEDC_CHANNEL_0);
+  // ledcSetup(LEDC_CHANNEL_0, 5000, LEDC_TIMER_0);
+  // ledcAttachPin(FLASH, LEDC_CHANNEL_0);
 
   // 初始化攝像頭
   esp_err_t err = esp_camera_init(&camera_config);
@@ -174,23 +174,20 @@ bool initCamera()
     Serial.printf("攝像頭出錯了，錯誤碼：0x%x", err);
     return false;
   }
-
+  Serial.println("攝像頭初始化成功");
   return true;
 }
 
 void SendImageMQTT()
 {
-  camera_fb_t *fb;
+  camera_fb_t *fb= esp_camera_fb_get();;
   String base64Image = "";
-  if (cam_flag)
-  {
-    fb = esp_camera_fb_get();
-    String base64Image = base64::encode(fb->buf, fb->len);
-  }
+  base64Image = base64::encode(fb->buf, fb->len);
+  uint8_t *fbBuf = fb->buf;
 
   JsonDocument doc;
   doc["gps"] = "gpsInfo";
-  doc["image"] = base64Image;
+  doc["image"] = fbBuf;
 
   String jsonString;
   serializeJson(doc, jsonString);
@@ -203,7 +200,32 @@ void SendImageMQTT()
   {
     esp_camera_fb_return(fb);
   }
+
+  camera_fb_t * fb =  esp_camera_fb_get();
+  size_t fbLen = fb->len;
+  int ps = 512;
+  //開始傳遞影像檔
+  mqtt.beginPublish(String(TOPIC + "/help").c_str(), fbLen, false);
+  uint8_t *fbBuf = fb->buf;
+  for (size_t n = 0; n < fbLen; n = n + 2048) {
+    if (n + 2048 < fbLen) {
+      mqtt.write(fbBuf, 2048);
+      fbBuf += 2048;
+    } else if (fbLen % 2048 > 0) {
+      size_t remainder = fbLen % 2048;
+      mqtt.write(fbBuf, remainder);
+    }
+  }
+  boolean isPublished = mqtt.endPublish();
+  esp_camera_fb_return(fb);//清除緩衝區
+  if (isPublished) {
+    // return "MQTT傳輸成功";
+  }
+  else {
+    // return "MQTT傳輸失敗，請檢查網路設定";
+  }
 }
+
 
 void mainTask(void *parameter)
 {
