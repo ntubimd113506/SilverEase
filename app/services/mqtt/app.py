@@ -147,6 +147,7 @@ def sent_mess(DevID, img):
     LocatNo=cur.fetchone()[0]
     cur.execute("INSERT INTO SOS (LocatNo) Values(%s)",(LocatNo))
     cur.execute("SELECT SOSNo FROM SOS WHERE LocatNo=%s",LocatNo)
+    conn.commit()
     SOSNo=cur.fetchone()[0]
 
     thumbnail_image_url = f"https://silverease.ntub.edu.tw/img/{filename}"

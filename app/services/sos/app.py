@@ -20,11 +20,12 @@ def sos_report_post():
     cur=conn.cursor()
     SOSNo=session["SOSNo"]
     try:
-        SOSPlace=request.form.get["Place"]
+        SOSPlace=request.form["Place"]
     except:
         SOSPlace=None
     SOSType=request.form["Type"]
-    res=cur.execute("UPDATE SOS SET SOSPlace=%s,SOSType=%s WHERE SOSNo=%s",(SOSPlace,SOSType,SOSNo))
+    SOSDes=request.form["Description"]
+    res=cur.execute("UPDATE SOS SET SOSPlace=%s,SOSType=%s,SOSDes=%s WHERE SOSNo=%s",(SOSPlace,SOSType,SOSDes,SOSNo))
     conn.commit()
 
     return render_template("/sos/result.html",result=res,liffid=db.LIFF_ID,SOSNo=SOSNo)
