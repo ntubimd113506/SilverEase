@@ -85,13 +85,6 @@ div.title-container h1{
     margin: 0 auto;
     margin-top: 30px;
 }
-/* 
-#dateContainer {
-    text-align: center;
-    font-size: 16px;
-    margin-top: 30px; 
-    margin-bottom: 10px; 
-} */
 
 #dateContainer {
     padding: 0px 23px;
@@ -116,7 +109,6 @@ div.title-container h1{
     border-radius: 10px;
     width: 90%;
     max-width: 600px;
-    /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); */
     box-shadow: 0px 5px 6px #e3e3e3;
 }
 
@@ -178,11 +170,9 @@ div.button-group{
     margin: 0 auto;
 }
 
-
 .nav-button {
     background-color: #809f68;
     color: white;
-    /* padding: 10px 20px; */
     padding: 10px;
     width: 88%;
     height: 45px;
@@ -207,7 +197,6 @@ div.button-group{
 
 .no-data-message, .error-message {
     color: #000000;
-    /* background-color: #000000; */
     border: 3px solid #ff0000;
     border-radius: 8px;
     padding: 10px 20px;
