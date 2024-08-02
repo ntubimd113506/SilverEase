@@ -34,18 +34,10 @@
     
     {% if not is_all and not data.DataAnalyze %}
         <div class="no-access">
-            目前無權限，<a href="/health/">點擊此設定</a>
+            目前無權限，<a href="/set/access/check">點此設定</a>
         </div>
-    {% endif %}
-
-    <div class="button-group">
-        {% if data['All'] %}
-            <a class="period-link {{ 'main-page-link' if data['All'].name == '主頁' else 'weekly-link' }}" href="/analyze/{{ data['All'].url }}">{{ data['All'].name }}</a>
-        {% endif %}
-        {% if data['weekly'] %}
-            <a class="period-link weekly-link" href="/analyze/{{ data['weekly'].url }}">{{ data['weekly'].name }}</a>
-        {% endif %}
-        {% if data.DataAnalyze %}
+    {% else %}
+        <div class="button-group">
             {% for key, value in data.items() %}
                 {% if key != 'Title' and key != 'DataAnalyze' %}
                     {% if value.url %}
@@ -53,14 +45,13 @@
                     {% endif %}
                 {% endif %}
             {% endfor %}
-        {% endif %}
-    </div>
-    
-    <div id="buttonContainer"></div>
-    <div id="dateContainer"></div>
-    <div id="chartContainer"></div>
-    <script src="/static/js/Chart.bundle.js"></script>
-    <script src="/static/js/analyze.js"></script>
+        </div>
+        <div id="buttonContainer"></div>
+        <div id="dateContainer"></div>
+        <div id="chartContainer"></div>
+        <script src="/static/js/Chart.bundle.js"></script>
+        <script src="/static/js/analyze.js"></script>
+    {% endif %}
     
     <script>
         function updateMainUserID() {
