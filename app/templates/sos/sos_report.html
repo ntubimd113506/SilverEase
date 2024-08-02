@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head></head>
+
+<body>
+    <form action="/sos/sos_report" method="post">
+        <div>求救事件後續追蹤</div>
+        <div>
+            求救事件類型
+            <select name="Type" id="" onchange=typechange()>
+                {%for type in Type%}
+                <option value="{{type[0]}}">{{type[1]}}</option>
+                {%endfor%}
+            </select>
+        </div>
+        <div id="Place" hidden>
+            室內位置
+            <select name="Place">
+                <option value="" selected></option>
+                {%for place in Place%}
+                <option value="{{place[0]}}">{{place[1]}}</option>
+                {%endfor%}
+            </select>
+        </div>
+        <div>
+            求救事件描述
+            <textarea name="Description" id=""></textarea>
+        </div>
+        
+        <input type="submit" value="送出">
+    </form>
+</body>
+
+<script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+<script>
+
+    function initializeLiff(myLiffId) {
+        liff.init({
+            liffId: myLiffId
+        }).catch((err) => {
+            console.log('初始化失敗', err);
+        });
+    }
+
+    initializeLiff('{{liffid}}')
+
+    function typechange() {
+        var type = document.querySelector('select[name="Type"]').value
+        if (type == 2) {
+            document.getElementById('Place').hidden = false
+        } else {
+            document.getElementById('Place').hidden = true
+        }
+    }
+</script>
+
+</html>

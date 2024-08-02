@@ -3,7 +3,7 @@ from flask import Blueprint, request, abort
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import *
-from datetime import datetime
+from datetime import datetime, timedelta
 from utils import db
 from services import scheduler
 from ..mqtt import app as MQTT
@@ -53,7 +53,7 @@ def callback():
 @handler.add(PostbackEvent)
 def handle_postback(event):
     data = json.loads(event.postback.data)
-    
+
     try:
         job = scheduler.get_job(data["MemoID"])
         if data["got"] and job.next_run_time.strftime("%Y-%m-%dT%H:%M:%S") == data["time"]:
@@ -68,11 +68,85 @@ def handle_postback(event):
                 INSERT INTO Respond (MemoID, Times, RespondTime)
                 VALUES (%s, %s, %s)
                 """,
-                (data["MemoID"], job.args[1], datetime.now().strftime("%Y-%m-%dT%H:%M:%S")),
+                (data["MemoID"], job.args[1],
+                 datetime.now().strftime("%Y-%m-%dT%H:%M:%S")),
             )
             conn.commit()
             conn.close()
     except:
-        
-        if data["action"]=="help":
-            mqtt.publish(f"ESP32/{data["DevID"]}/gotHelp","")
+        if data["action"] == "help":
+            mqtt.publish(f"ESP32/{data['DevID']}/gotHelp", "")
+            scheduler.add_job(id=data['DevID'], func=report_SOS, args=[data['DevID'],data['SOSNo'] ], trigger="date" , run_date=datetime.now() + timedelta(minutes=5))
+
+def report_SOS(DevID,SOSNo):
+    msg=FlexSendMessage(
+        alt_text="求救事件追蹤",
+        contents={
+            "type": "bubble",
+            "body": {
+                "type": "box",
+                "layout": "vertical",
+                "contents": [
+                    {
+                        "type": "text",
+                        "text": "求救事件追蹤",
+                        "weight": "bold",
+                        "size": "xl",
+                        "align": "center"
+                    },
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "margin": "lg",
+                        "spacing": "sm",
+                        "contents": [
+                            {
+                                "type": "text",
+                                "text": "為更了解居家危險因子，\n請協助填寫來打造更好的居家環境",
+                                "wrap": True
+                            }
+                        ]
+                    }
+                ]
+            },
+            "footer": {
+                "type": "box",
+                "layout": "vertical",
+                "spacing": "sm",
+                "contents": [
+                    {
+                        "type": "button",
+                        "style": "link",
+                        "height": "sm",
+                        "action": {
+                            "type": "uri",
+                            "label": "填寫表單",
+                            "uri": f"https://liff.line.me/{db.LIFF_ID}/sos/sos_report/{SOSNo}"
+                        }
+                    },
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [],
+                        "margin": "sm"
+                    }
+                ],
+                "flex": 0
+            }
+        }
+    )
+    
+    FamilyID=check_device(DevID)
+
+    if FamilyID:
+        cursor = db.get_connection().cursor()
+        cursor.execute("SELECT SubUserID FROM FamilyLink WHERE FamilyID=%s", FamilyID)
+
+        for SubUserID in cursor.fetchall():
+            line_bot_api.push_message(SubUserID[0], msg)
+
+def check_device(DevID):
+    conn = db.get_connection()
+    cur = conn.cursor()
+    res = cur.execute("SELECT FamilyID FROM Family WHERE DevID=%s", DevID)
+    return cur.fetchone()[0] if res else 0

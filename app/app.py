@@ -3,7 +3,7 @@ from PIL import Image
 from flask import Flask, render_template, session, request, jsonify, redirect, url_for
 from flask_login import login_required
 from utils import db
-from services import cam_bp, event_bp, hos_bp, linebot_bp, med_bp, set_bp, user_bp , scheduler, mqtt, login_manager
+from services import cam_bp, event_bp, hos_bp, linebot_bp, med_bp, set_bp, user_bp , scheduler, mqtt, login_manager,sos_bp
 from config import Config
 
 app = Flask(__name__)
@@ -16,6 +16,7 @@ app.register_blueprint(cam_bp, url_prefix="/cam")
 app.register_blueprint(set_bp, url_prefix="/set")
 app.register_blueprint(linebot_bp, url_prefix="/")
 app.register_blueprint(user_bp, url_prefix="/user")
+app.register_blueprint(sos_bp, url_prefix="/sos")
 
 scheduler.init_app(app)
 mqtt.init_app(app)
@@ -38,7 +39,6 @@ def display_image(img):
         return redirect(url_for('static', filename=f'imgs/upload/{img}'))
     except:
         return redirect(url_for('static', filename='/imgs/help.png'))
-
 
 if __name__ == "__main__":
     app.run(debug=1)

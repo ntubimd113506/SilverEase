@@ -191,13 +191,13 @@ def devToFam(DevID):
         return res[0]
     return False
 
-# @set_bp.route("/access/submit")
-# def access_submit():
-#     conn=db.get_connection()
-#     cur=conn.cursor()
+@set_bp.route("/access/submit")
+def access_submit():
+    conn=db.get_connection()
+    cur=conn.cursor()
 
-#     cur.execute(
-#         """
-#         INSERT INTO Access (Family,)
-#         """)
-#     url_for("/set/identity")
+    cur.execute(
+        """
+        INSERT INTO Access (Family,)
+        """)
+    url_for("/set/identity")

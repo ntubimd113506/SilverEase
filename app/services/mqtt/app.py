@@ -93,10 +93,6 @@ def handle_mqtt_message(client, userdata, message):
             print(user)
             line.line_bot_api.push_message(user, reMsg)
 
-def gotHelp(DevID):
-    mqtt.publish(f"ESP32/{DevID}/gotHelp", "")
-
-
 def get_FamilyUser(FamilyID):
     data = {}
 
@@ -137,11 +133,21 @@ def sent_mess(DevID, img):
         with open(filepath, "wb") as f:
             f.write(imgdata)
 
-    users = get_FamilyUser(check_device(DevID))
+    FamilyID=check_device(DevID)
+    users = get_FamilyUser(FamilyID)
 
     # 從資料庫檢索到的使用者資訊是一個列表，需要提取出每個使用者的 ID
     UserIDs = [row for row in users["SubUser"]]
     print(UserIDs)
+    
+    conn=db.get_connection()
+    cur=conn.cursor()
+    cur.execute('INSERT INTO `113-ntub113506`.Location (FamilyID) VALUES (%s)', (FamilyID))
+    cur.execute("SELECT LocatNo FROM Location WHERE FamilyID=%s order by LocatNo desc limit 1",(FamilyID))
+    LocatNo=cur.fetchone()[0]
+    cur.execute("INSERT INTO SOS (LocatNo) Values(%s)",(LocatNo))
+    cur.execute("SELECT SOSNo FROM SOS WHERE LocatNo=%s",LocatNo)
+    SOSNo=cur.fetchone()[0]
 
     thumbnail_image_url = f"https://silverease.ntub.edu.tw/img/{filename}"
     resMsg = FlexSendMessage(
@@ -181,7 +187,7 @@ def sent_mess(DevID, img):
                         "action": {
                             "type": "postback",
                             "label": "收到",
-                            "data": json.dumps({"action": "help", "DevID": DevID}),
+                            "data": json.dumps({"action": "help", "DevID": DevID, "SOSNo": SOSNo}),
                             "text":"你按ㄌ"
                         },
                     },
@@ -199,67 +205,8 @@ def sent_mess(DevID, img):
         },
     )
 
-    # resMsg = FlexSendMessage(
-    #     alt_text="綁定成功",
-    #     contents={
-    #         "type": "bubble",
-    #         "hero": {
-    #             "type": "image",
-    #             "url": "https://silverease.ntub.edu.tw/static/imgs/S_create.png",
-    #             "size": "full",
-    #             "aspectRatio": "20:15",
-    #             "aspectMode": "cover",
-    #             "action": {
-    #                 "type": "uri",
-    #                 "label": "action",
-    #                 "uri": "https://silverease.ntub.edu.tw",
-    #             },
-    #         },
-    #         "body": {
-    #             "type": "box",
-    #             "layout": "vertical",
-    #             "contents": [
-    #                 {
-    #                     "type": "text",
-    #                     "text": "綁定成功",
-    #                     "weight": "bold",
-    #                     "size": "xl",
-    #                     "align": "center",
-    #                 }
-    #             ],
-    #         },
-    #     },
-    # )
-    for userID in UserIDs:
-
-        # body = {
-        #     "to": userID,
-        #     "messages": [
-        #         {
-        #             "type": "template",
-        #             "altText": "緊急通知!!!",
-        #             "template": {
-        #                 "type": "buttons",
-        #                 "thumbnailImageUrl": thumbnail_image_url,
-        #                 "imageAspectRatio": "rectangle",
-        #                 "imageSize": "cover",
-        #                 "imageBackgroundColor": "#FFFFFF",
-        #                 "title": "緊急通知",
-        #                 "text": "是否收到",
-        #                 "defaultAction": {
-        #                     "type": "uri",
-        #                     "label": "View detail",
-        #                     "uri": thumbnail_image_url,
-        #                 },
-        #                 "actions": [
-        #                     {"type": "message", "label": "收到", "text": "收到"}
-        #                 ],
-        #             },
-        #         }
-        #     ],
-        # }
-
-        # 向指定網址發送 request
-        line.line_bot_api.push_message(userID, resMsg)
+    line.line_bot_api.push_message(users["MainUser"], resMsg)
+    # for userID in UserIDs:
+    #     line.line_bot_api.push_message(userID, resMsg)
 
     return True

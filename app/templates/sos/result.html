@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="result">
+    </div>
+</body>
+<script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+<script>
+    liff.init({
+        liffId: "{{liffid}}"
+    });
+    document.addEventListener('DOMContentLoaded', function () {
+        var result = parseInt("{{ result }}");
+        resultDiv = document.getElementById('result');
+
+        if (result == 1) {
+            resultDiv.innerHTML = '感謝您的填寫，改善大家的生活環境';
+            setTimeout(() => {
+                liff.closeWindow();
+            }, 5000);
+        } else {
+            resultDiv.innerHTML = '伺服器異常，請再試一次';
+            setTimeout(() => {
+                liff.openWindow({
+                    url: 'https://liff.line.me/{{liffid}}/sos_report/{{SOSNo}}',
+                    external: true
+                });
+            }, 5000);
+        }
+    });
+</script>
+
+</html>
