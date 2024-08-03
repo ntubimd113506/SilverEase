@@ -52,6 +52,53 @@ div.title-container h1{
     letter-spacing:8px;
 }
 
+
+
+.no-access {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #000;
+    font-weight: 800;
+}
+
+.no-access-content {
+    display: flex;
+    align-items: center;
+    gap: 8px; 
+    font-size: 20px;
+    margin-top: 30px;
+
+}
+
+.fa-solid{
+    color: #E8933D;
+}
+
+.set-btn {
+    height: 40px;
+    width: 100px;
+    border: none;
+    background-color: #809f68;
+    color: white;
+    font-size: 17px;
+    border-radius: 9px;
+    font-weight: bolder;
+    letter-spacing: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    margin-top: 15px;
+    padding-left: 4px;
+    transition: background-color 0.1s;
+}
+
+.set-btn:active {
+    background-color: #9fb889; 
+}
+
+
 #MainUserID {
   width: auto; 
   padding: 5px 10px; 
@@ -62,6 +109,7 @@ div.title-container h1{
   font-weight: bold;
   position: relative; 
   top: -5px; 
+  color: #000;
 }
 
 
@@ -197,7 +245,7 @@ div.button-group{
 
 .no-data-message, .error-message {
     color: #000000;
-    border: 3px solid #ff0000;
+    border: 3px solid #E8933D;
     border-radius: 8px;
     padding: 10px 20px;
     margin-top: 10px;
@@ -205,6 +253,7 @@ div.button-group{
     text-align: center;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     width: 90%;
+    max-width: 600px;
     margin-left: auto;
     margin-right: auto;
 }

@@ -34,7 +34,11 @@
     
     {% if not is_all and not data.DataAnalyze %}
         <div class="no-access">
-            目前無權限，<a href="/set/access/check">點此設定</a>
+            <div class="no-access-content">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span>目前無權限</span>
+            </div>
+            <a href="/set/access/check">點此設定</a>
         </div>
     {% else %}
         <div class="button-group">
