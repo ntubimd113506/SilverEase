@@ -44,24 +44,34 @@
 
                         <div class="name">名稱</div>
                         <div class="value">
-                            <input type="text" name="Title" class="input-field" required>
+                            <input type="text" name="Title" class="input-field" placeholder="請輸入名稱" required>
                         </div>
+
+                        <!-- <div class="name">日期</div>
+                        <div class="value">
+                            <div class="input-icon">
+                                <input type="datetime-local" name="MemoTime" class="input-field" required>
+                                <i class="fa-solid fa-calendar-days calendar-icon"></i>
+                            </div>
+                        </div> -->
 
                         <div class="name">日期</div>
                         <div class="value">
                             <div class="input-icon">
-                                <input type="datetime-local" name="MemoTime" class="input-field" required>
+                                <input type="datetime-local" name="MemoTime" id="MemoTime" class="input-field" required>
+                                <label for="MemoTime" id="placeholder" class="placeholder">選擇欲提醒的日期</label>
                                 <i class="fa-solid fa-calendar-days calendar-icon"></i>
                             </div>
                         </div>
 
                         <div class="name">藥盒與藥袋外觀描述</div>
                         <div class="value">
-                            <input type="text" name="MedFeature" class="input-field">
+                            <input type="text" name="MedFeature" class="input-field" placeholder="請輸入藥品描述">
                         </div>
 
                         <div class="name">多久重複</div>
-                        <select name="Cycle">
+                        <select name="Cycle" required>
+                            <option value="" disabled selected>請選擇重複頻率</option>
                             <option value="不重複">不重複</option>
                             <option value="一小時">一小時</option>
                             <option value="一天">一天</option>
@@ -71,7 +81,8 @@
                         </select>
 
                         <div class="name">幾分鐘前提醒</div>
-                        <select name="Alert">
+                        <select name="Alert" required>
+                            <option value="" disabled selected>請選擇提醒時間</option>
                             <option value="0">當下</option>
                             <option value="1">1分鐘</option>
                             <option value="5">5分鐘</option>
@@ -91,6 +102,24 @@
 
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var datetimeInput = document.getElementById('MemoTime');
+            var placeholder = document.getElementById('placeholder');
+        
+            datetimeInput.addEventListener('input', function() {
+                if (this.value) {
+                    placeholder.style.display = 'none';
+                } else {
+                    placeholder.style.display = 'block';
+                }
+            });
+        
+            datetimeInput.dispatchEvent(new Event('input'));
+        });
+        
+        </script>
+
 </body>
 
 </html>

@@ -286,6 +286,49 @@ input[type="submit" i].delete_confirm:active {
     background-color: #9fb889; 
 }
 
+select option[disabled] {
+    color: #878787;
+}
+
+select:invalid {
+    color: #878787;
+}
+.input-icon {
+    position: relative;
+}
+
+.placeholder {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+    color: #878787;
+    pointer-events: none;
+    font-size: 19px;
+    font-weight: 100;
+}
+
+.input-field:valid + .placeholder {
+    display: none;
+}
+
+input[type="datetime-local"]::-webkit-datetime-edit { 
+    color: transparent; 
+}
+
+input[type="datetime-local"]:focus::-webkit-datetime-edit,
+input[type="datetime-local"]:valid::-webkit-datetime-edit { 
+    color: #111111; 
+}
+
+input[type="datetime-local"]::placeholder {
+    color: #5a5a5a;
+    font-weight: 100;
+}
+
+input[type="datetime-local"]:valid::placeholder {
+    color: transparent;
+}
 /* ------------------- */
 /* Media Queries       */
 /* ------------------- */
