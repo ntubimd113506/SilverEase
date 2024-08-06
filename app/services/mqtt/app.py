@@ -73,7 +73,7 @@ def SOS_gps(Map):
         cursor1.execute('SELECT LocatNo FROM Location WHERE FamilyID = %s',(54))
         LocatNo=cursor1.fetchone()[0]
         cursor.execute('INSERT INTO `113-ntub113506`.Location (FamilyID,Location,LocationTime) VALUES (%s,%s,%s)', (54,Map,now,))
-        cursor1.execute('INSERT INTO `113-ntub113506`.SOS (LocatNo,) VALUES (%s,)', (LocatNo,))
+        cursor.execute('INSERT INTO `113-ntub113506`.SOS (LocatNo,) VALUES (%s,)', (LocatNo,))
         conn.commit()
     except Exception as e:
         print(f"Error inserting data: {e}")
