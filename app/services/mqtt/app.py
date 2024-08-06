@@ -92,8 +92,6 @@ def handle_mqtt_message(client, userdata, message):
             print(user)
             line.line_bot_api.push_message(user, reMsg)
 
-def get_FamilyUser(FamilyID):
-    data = {}
 #-----------------------------------------------------------
     if message.topic == 'ESP32/gps':
             try:
@@ -181,7 +179,9 @@ def upgrade_gps(Map):
     finally:
         cursor.close()
         conn.close()
-
+        
+def get_FamilyUser(FamilyID):
+    data = {}
     conn = db.get_connection()
     cur = conn.cursor()
     cur.execute("SELECT MainUserID FROM Family WHERE FamilyID=%s", FamilyID)
