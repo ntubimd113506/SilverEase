@@ -3,6 +3,7 @@ from PIL import Image
 from flask import Flask, render_template, session, request, jsonify, redirect, url_for
 from flask_login import login_required
 from utils import db
+from services import cam_bp, event_bp, hos_bp, analyze_bp, linebot_bp, med_bp, set_bp, user_bp, scheduler, mqtt, login_manager,gps_bp
 from services import cam_bp, event_bp, hos_bp, linebot_bp, med_bp, set_bp, user_bp , scheduler, mqtt, login_manager,sos_bp
 from config import Config
 
@@ -12,10 +13,12 @@ app.config.from_object(Config())
 app.register_blueprint(med_bp, url_prefix="/med")
 app.register_blueprint(hos_bp, url_prefix="/hos")
 app.register_blueprint(event_bp, url_prefix="/event")
+app.register_blueprint(analyze_bp, url_prefix="/analyze")
 app.register_blueprint(cam_bp, url_prefix="/cam")
 app.register_blueprint(set_bp, url_prefix="/set")
 app.register_blueprint(linebot_bp, url_prefix="/")
 app.register_blueprint(user_bp, url_prefix="/user")
+app.register_blueprint(gps_bp, url_prefix="/gps")
 app.register_blueprint(sos_bp, url_prefix="/sos")
 
 scheduler.init_app(app)

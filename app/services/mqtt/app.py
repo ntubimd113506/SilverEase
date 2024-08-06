@@ -1,21 +1,20 @@
+import requests
 import json
 import base64
 import os
 from datetime import datetime
 from linebot.models import *
+from datetime import datetime, timedelta
 from flask_mqtt import Mqtt
 from utils import db
 from ..line import app as line
 
-
 mqtt = Mqtt()
-
 
 @mqtt.on_connect()
 def handle_connect(client, userdata, flags, rc):
     mqtt.subscribe("myTopic")
     mqtt.subscribe("ESP32/#")
-
 
 @mqtt.on_message()
 def handle_mqtt_message(client, userdata, message):
@@ -95,6 +94,93 @@ def handle_mqtt_message(client, userdata, message):
 
 def get_FamilyUser(FamilyID):
     data = {}
+#-----------------------------------------------------------
+    if message.topic == 'ESP32/gps':
+            try:
+                data = message.payload.decode()
+                Map1 = str(data)
+                Map = Map1.replace(" ","")
+                print(f"Received GPS data - GoogleMap:{Map}")
+                save_gps(Map)
+
+            except :
+                print("OK！")
+
+    if message.topic == '/upGPS':
+            try:
+                data = message.payload.decode()
+                Map1 = str(data)
+                Map = Map1.replace(" ","")
+                print(f"Received GPS data - GoogleMap:{Map}")
+                upgrade_gps(Map)
+
+            except :
+                print("OK！")
+    
+    if message.topic == '/SOSgps':
+            try:
+                data = message.payload.decode()
+                Map1 = str(data)
+                Map = Map1.replace(" ","")
+                print(f"Received GPS data - GoogleMap:{Map}")
+                SOS_gps(Map)
+
+            except :
+                print("OK！")
+
+def SOS_gps(Map):
+    conn = db.get_connection()
+    cursor = conn.cursor() #INSERT
+    cursor1 = conn.cursor() #SELECT
+    try:
+        now = datetime.now()
+        # cursor1.execute('SELECT FamilyID FROM Family WHERE DevID = %s',(DevID))
+        # FamID=cursor1.fetchone()[0]
+        cursor1.execute('SELECT LocatNo FROM Location WHERE FamilyID = %s',(54))
+        LocatNo=cursor1.fetchone()[0]
+        cursor.execute('INSERT INTO `113-ntub113506`.Location (FamilyID,Location,LocationTime) VALUES (%s,%s,%s)', (54,Map,now,))
+        cursor.execute('INSERT INTO `113-ntub113506`.SOS (LocatNo,) VALUES (%s,)', (LocatNo,))
+        conn.commit()
+    except Exception as e:
+        print(f"Error inserting data: {e}")
+        conn.rollback()
+    finally:
+        cursor.close()
+        conn.close()
+
+def save_gps(Map):
+    conn = db.get_connection()
+    cursor = conn.cursor()
+    cursor1 = conn.cursor()
+    try:
+        now = datetime.now()
+        # cursor1.execute('SELECT FamilyID FROM Family WHERE DevID = %s',(DevID))
+        # FamID=cursor1.fetchone()[0]
+        cursor.execute('INSERT INTO `113-ntub113506`.Location (FamilyID,Location,LocationTime) VALUES (%s,%s,%s)', (54,Map,now,))
+        conn.commit()
+    except Exception as e:
+        print(f"Error inserting data: {e}")
+        conn.rollback()
+    finally:
+        cursor.close()
+        conn.close()
+
+def upgrade_gps(Map):
+    conn = db.get_connection()
+    cursor = conn.cursor()
+    cursor1 = conn.cursor()
+    try:
+        now = datetime.now()
+        # cursor1.execute('SELECT FamilyID FROM Family WHERE DevID = %s',(DevID))
+        # FamID=cursor1.fetchone()[0]
+        cursor.execute('INSERT INTO `113-ntub113506`.Location (FamilyID,Location,LocationTime) VALUES (%s,%s,%s)', (54,Map,now,))
+        conn.commit()
+    except Exception as e:
+        print(f"Error inserting data: {e}")
+        conn.rollback()
+    finally:
+        cursor.close()
+        conn.close()
 
     conn = db.get_connection()
     cur = conn.cursor()
@@ -210,3 +296,5 @@ def sent_mess(DevID, img):
         line.line_bot_api.push_message(userID, resMsg)
 
     return True
+
+

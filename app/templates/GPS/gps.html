@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>選擇長輩</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA4cVXQgyJq-DSWAA_CfAagMIA6xnW8PhU"></script>
+    <style>
+        #map {
+            height: 400px;
+            width: 100%;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="form">
+        <form id="form" method="POST" action="/gps/check">
+            <div class="form-group">
+                <label for="MainUserID">主要用戶</label>
+                <select id="MainUserID" name="MainUserID">
+                    {% for user in MainUsers %}
+                    <option value="{{ user[0] }}">{{ user[1] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <br><br>
+            <div>
+                <input class="button" id="but" type="submit" value="提交">
+            </div>
+        </form>
+    </div>
+    <div id="gps-url" style="margin-top: 20px;"></div>
+    <div id="map"></div>
+
+    <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+    <script>
+        function initializeLiff(myLiffId) {
+            liff.init({
+                liffId: myLiffId
+            }).catch((err) => {
+                console.log('初始化失敗', err);
+            });
+        }
+
+        initializeLiff('{{ liffid }}');
+
+        document.getElementById('form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var formData = new FormData(this);
+            fetch('/gps/check', {
+                method: 'POST',
+                body: formData
+            }).then(response => response.json())
+            .then(data => {
+                var gpsUrlElement = document.getElementById('gps-url');
+                if (data.url === 'no_data') {
+                    gpsUrlElement.innerHTML = '沒有資料';
+                    document.getElementById('map').style.display = 'none';
+                } else {
+                    gpsUrlElement.innerHTML = `<a href="${data.url}" target="_blank" rel="noopener noreferrer">點擊查看地圖</a>`;
+                    showMap(data.url);
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+            });
+        });
+
+        function showMap(url) {
+            var coords = parseUrl(url);
+            if (coords.lat && coords.lng) {
+                var map = new google.maps.Map(document.getElementById('map'), {
+                    zoom: 15,
+                    center: coords
+                });
+                var marker = new google.maps.Marker({
+                    position: coords,
+                    map: map
+                });
+                document.getElementById('map').style.display = 'block';
+            } else {
+                console.error('無法解析坐標', coords);
+                document.getElementById('map').style.display = 'none';
+            }
+        }
+
+        function parseUrl(url) {
+            var params = new URLSearchParams(new URL(url).search);
+            var coords = params.get('query');
+            if (coords) {
+                var [lat, lng] = coords.split(',');
+                return { lat: parseFloat(lat), lng: parseFloat(lng) };
+            }
+            return {};
+        }
+    </script>
+</body>
+</html>
