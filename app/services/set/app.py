@@ -2,14 +2,61 @@ import json
 from flask import request, render_template, Blueprint,session,url_for,redirect
 from flask_login import login_required
 from utils import db
-from services import mqtt
+from services import mqtt,line_bot_api
 
 set_bp = Blueprint('set_bp',__name__)
 
 #-----登入-----
 @set_bp.route('/')
+# @login_required
 def setting():
-    return render_template('/set/identity.html', liffid=db.LIFF_ID)
+    session["MemID"]=db.CHICHI
+    MemID=session.get("MemID")
+    conn = db.get_connection()
+    cursor = conn.cursor()
+    old=cursor.execute('SELECT FamilyID FROM Family where MainUserID = %s',(MemID))
+    session["FamilyID"]=cursor.fetchone()[0] if old else None
+    # return f"{MemID},,{session.get('FamilyID')}"
+    return render_template('/set/index.html', liffid=db.LIFF_ID,old=old)
+
+@set_bp.route('/get_code_id')
+def get_code_id():
+    FamilyID=session.get("FamilyID")
+    if FamilyID is None:
+        MemID=session.get("MemID")
+        conn=db.get_connection()
+        cur=conn.cursor()
+        cur.execute('INSERT INTO Family (MainUserID) VALUES (%s)', (MemID))
+        conn.commit()
+        cur.execute('SELECT FamilyID FROM Family WHERE MainUserID = %s', (MemID,))
+        session["FamilyID"]=cur.fetchone()[0]
+        
+    code_id=db.get_codeID(session.get("FamilyID"))
+    return  render_template('/set/old.html', code_id=code_id)
+
+@set_bp.route('/join_family')
+@set_bp.route('/join_family/<code>')
+def join_family(code=""):
+    return render_template('/set/young.html', code=code)
+
+@set_bp.route('/family_list')
+def family_list():
+    conn = db.get_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM Family WHERE MainUserID = %s', (session.get("MemID"),))
+    res=cursor.fetchone()
+    MainFamily={cursor.description[i][0]:res[i] for i in range(len(res))} if res else None
+    SubFamilys=[]
+    cursor.execute('SELECT * FROM Family WHERE FamilyID in (SELECT FamilyID FROM FamilyLink WHERE SubUserID = %s)', (session.get("MemID"),))
+    for res in cursor.fetchall():
+        SubFamilys.append({cursor.description[i][0]:res[i] for i in range(len(res))})
+    conn.close()
+
+    MainInfo=line_bot_api.get_profile(MainFamily["MainUserID"])
+    return f'{MainInfo}'
+    
+    return render_template('/set/family_list.html',MainFamily=MainFamily,SubFamilys=SubFamilys)
+
 
 def check_member_exists(MemID):  #確認使用者資料是否存在資料庫中
     conn = db.get_connection()
@@ -81,7 +128,7 @@ def CodeID():
     cursor1 = conn.cursor()
     cursor2 = conn.cursor()
 
-    MemID = request.values.get('MemID')
+    MemID = session.get("MemID")
     CodeID = request.values.get("CodeID")
 
     # 檢查 CodeID 是否存在於 FamilyCode 表中

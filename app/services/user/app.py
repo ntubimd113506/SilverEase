@@ -63,18 +63,17 @@ def user_login():
 
         conn = db.get_connection()
         cursor = conn.cursor()
-        cursor.execute("SELECT MemID FROM Member WHERE MemID = %s", (user_id,))
-        member = cursor.fetchone()
-        if member:
-            user = User(user_id)
-
-            login_user(user)
-            session['MemID'] = user_id
-            session['MemName'] = user_name
-            return jsonify({"msg": "ok"})
-        else:
-            return url_for("https://liff.line.me/2004699458-a7DORnXp/set/identity")
+        if not cursor.execute("SELECT MemID FROM Member WHERE MemID = %s", (user_id,)):
+            cursor.execute("INSERT INTO Member (MemID, MemName) VALUES (%s, %s)", (user_id, user_name))
+            conn.commit()
+           
+        user = User(user_id)
+        login_user(user)
     
+        session['MemID'] = user_id
+        session['MemName'] = user_name
+        return jsonify({"msg": "ok"})
+
 #---------------------------
 # 登出
 #---------------------------
