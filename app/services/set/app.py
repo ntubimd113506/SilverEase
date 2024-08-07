@@ -8,15 +8,13 @@ set_bp = Blueprint('set_bp',__name__)
 
 #-----登入-----
 @set_bp.route('/')
-# @login_required
+@login_required
 def setting():
-    session["MemID"]=db.CHICHI
     MemID=session.get("MemID")
     conn = db.get_connection()
     cursor = conn.cursor()
     old=cursor.execute('SELECT FamilyID FROM Family where MainUserID = %s',(MemID))
     session["FamilyID"]=cursor.fetchone()[0] if old else None
-    # return f"{MemID},,{session.get('FamilyID')}"
     return render_template('/set/index.html', liffid=db.LIFF_ID,old=old)
 
 @set_bp.route('/get_code_id')
