@@ -1,17 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
-        img{
+        img {
             width: 200px;
             height: 200px;
             border-radius: 100px;
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         家庭清單
@@ -24,11 +26,29 @@
         {% if SubFamilys %}
         <div class="sub_box">
             {% for family in SubFamilys %}
-            <img src="{{family['Picture']}}" alt="">
-            <div class="name">{{family["Name"]}}</div>
+            <div id="sub{{family['FamilyID']}}">
+                <img src="" alt="">
+                <div class="name">{{family["Name"]}}</div>
+            </div>
             {% endfor %}
         </div>
         {% endif %}
     </div>
 </body>
+<script>
+    fetch('/set/get_line_info', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+
+    }).then(response => response.json().then(data => {
+        console.log(data);
+        for (i in data) {
+            subDiv=document.getElementById('sub' + data[i]['FamilyID'])
+            subDiv.getElementsByTagName('img')[0].src = data[i]['Picture']
+        }
+    }));
+</script>
+
 </html>

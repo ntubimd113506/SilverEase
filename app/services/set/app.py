@@ -1,5 +1,5 @@
 import json
-from flask import request, render_template, Blueprint,session,url_for,redirect
+from flask import request, render_template, Blueprint,session,url_for,redirect,jsonify
 from flask_login import login_required
 from utils import db
 from services import mqtt,line_bot_api
@@ -8,7 +8,7 @@ set_bp = Blueprint('set_bp',__name__)
 
 #-----登入-----
 @set_bp.route('/')
-@login_required
+# @login_required
 def setting():
     MemID=session.get("MemID")
     conn = db.get_connection()
@@ -53,15 +53,19 @@ def family_list():
     MainInfo=line_bot_api.get_profile(MainFamily["MainUserID"]).as_json_dict()
     MainFamily["Name"]=MainInfo["displayName"]
     MainFamily["Picture"]=MainInfo["pictureUrl"]
-    
+    session["SubFamilys"]=SubFamilys
+    # return f"{MainFamily},{SubFamilys}"
+    return render_template('/set/family_list.html',MainFamily=MainFamily,SubFamilys=SubFamilys)
+
+@set_bp.route('/get_line_info')
+def get_line_info():
+    SubFamilys=session.get("SubFamilys")
     for SubFamily in SubFamilys:
         SubInfo=line_bot_api.get_profile(SubFamily["MainUserID"]).as_json_dict()
         SubFamily["Name"]=SubInfo["displayName"]
         SubFamily["Picture"]=SubInfo["pictureUrl"]
     
-    # return f"{MainFamily},{SubFamilys}"
-    return render_template('/set/family_list.html',MainFamily=MainFamily,SubFamilys=SubFamilys)
-
+    return jsonify(SubFamilys)
 
 def check_member_exists(MemID):  #確認使用者資料是否存在資料庫中
     conn = db.get_connection()
