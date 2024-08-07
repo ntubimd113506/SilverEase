@@ -50,9 +50,16 @@ def family_list():
         SubFamilys.append({cursor.description[i][0]:res[i] for i in range(len(res))})
     conn.close()
 
-    MainInfo=line_bot_api.get_profile(MainFamily["MainUserID"])
-    return f'{MainInfo}'
+    MainInfo=line_bot_api.get_profile(MainFamily["MainUserID"]).as_json_dict()
+    MainFamily["Name"]=MainInfo["displayName"]
+    MainFamily["Picture"]=MainInfo["pictureUrl"]
     
+    for SubFamily in SubFamilys:
+        SubInfo=line_bot_api.get_profile(SubFamily["MainUserID"]).as_json_dict()
+        SubFamily["Name"]=SubInfo["displayName"]
+        SubFamily["Picture"]=SubInfo["pictureUrl"]
+    
+    # return f"{MainFamily},{SubFamilys}"
     return render_template('/set/family_list.html',MainFamily=MainFamily,SubFamilys=SubFamilys)
 
 

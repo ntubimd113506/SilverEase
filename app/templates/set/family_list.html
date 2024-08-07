@@ -4,14 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+        img{
+            width: 200px;
+            height: 200px;
+            border-radius: 100px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         家庭清單
         {% if MainFamily %}
         <div class="main_box">
-            {% for key,value in MainFamily.items() %}
-            <div class="main_{{key}}">{{value}}</div> 
+            <img src="{{MainFamily['Picture']}}" alt="">
+            <div class="name">{{MainFamily["Name"]}}</div>
+        </div>
+        {% endif %}
+        {% if SubFamilys %}
+        <div class="sub_box">
+            {% for family in SubFamilys %}
+            <img src="{{family['Picture']}}" alt="">
+            <div class="name">{{family["Name"]}}</div>
             {% endfor %}
         </div>
         {% endif %}
