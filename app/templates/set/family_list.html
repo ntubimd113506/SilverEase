@@ -7,8 +7,8 @@
     <title>Document</title>
     <style>
         img {
-            width: 200px;
-            height: 200px;
+            width: 100px;
+            height: 100px;
             border-radius: 100px;
         }
     </style>
@@ -19,36 +19,71 @@
         家庭清單
         {% if MainFamily %}
         <div class="main_box">
+            <div>
+                您的家庭
+            </div>
             <img src="{{MainFamily['Picture']}}" alt="">
             <div class="name">{{MainFamily["Name"]}}</div>
+            <button onclick=deleteFamily()>刪除家庭</button>
+            <a href="/set/access_index">查看同意政策</a>
         </div>
         {% endif %}
         {% if SubFamilys %}
+        您所加入的家庭
         <div class="sub_box">
             {% for family in SubFamilys %}
             <div id="sub{{family['FamilyID']}}">
                 <img src="{{family['Picture']}}" alt="">
                 <div class="name">{{family["Name"]}}</div>
+                <button onclick=leaveFamily() value="{{family['FamilyID']}}">退出家庭</button>
             </div>
             {% endfor %}
         </div>
         {% endif %}
     </div>
 </body>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <script>
-    // fetch('/set/get_line_info', {
-    //     method: 'GET',
-    //     headers: {
-    //         'Content-Type': 'application/json',
-    //     },
+    function deleteFamily() {
+        swal({
+            title: "確認刪除家庭?",
+            text: "刪除後將遺失該家庭所有資料並移除成員",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+            .then((willDelete) => {
+                if (willDelete) {
+                    fetch(`/set/family_delete`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    }).then(response => {
+                        return response.json();
+                    }).then(data => {
+                        console.log(data);
+                        if (data['status'] == 'success') {
+                            swal("刪除成功", {
+                                icon: "success",
+                            }).then(() => {
+                                location.reload();
+                            });                            
+                        } else {
+                            swal("刪除失敗", {
+                                icon: "error",
+                            });
+                        }
+                    });
+                } else {
+                    swal("Your imaginary file is safe!");
+                }
+            });
+    }
 
-    // }).then(response => response.json().then(data => {
-    //     console.log(data);
-    //     for (i in data) {
-    //         subDiv=document.getElementById('sub' + data[i]['FamilyID'])
-    //         subDiv.getElementsByTagName('img')[0].src = data[i]['Picture']
-    //     }
-    // }));
+    function leaveFamily(){
+        
+    }
 </script>
 
 </html>
