@@ -35,20 +35,24 @@ def hos_create_form():
     )
     MainUserInfo = cursor.fetchone()
 
+    MainUsers = []
+
     if MainUserInfo:
-        MainUsers = [(MemID, MainUserInfo[1])]
-    else:
-        cursor.execute(
-            """
-            SELECT m.MemID, m.MemName
-            FROM `113-ntub113506`.FamilyLink fl
-            JOIN `113-ntub113506`.Family f ON fl.FamilyID = f.FamilyID
-            JOIN `113-ntub113506`.Member m ON f.MainUserID = m.MemID
-            WHERE fl.SubUserID = %s
-            """,
-            (MemID,),
-        )
-        MainUsers = cursor.fetchall()
+        MainUsers.append((MainUserInfo[0], MainUserInfo[1]))
+
+    cursor.execute(
+        """
+        SELECT m.MemID, m.MemName
+        FROM `113-ntub113506`.FamilyLink fl
+        JOIN `113-ntub113506`.Family f ON fl.FamilyID = f.FamilyID
+        JOIN `113-ntub113506`.Member m ON f.MainUserID = m.MemID
+        WHERE fl.SubUserID = %s
+        """,
+        (MemID,),
+    )
+    additional_users = cursor.fetchall()
+
+    MainUsers.extend(additional_users)
 
     conn.commit()
     conn.close()
@@ -266,6 +270,22 @@ def hos_list():
     if MemID:
         cursor.execute(
             """
+            SELECT f.MainUserID, m.MemName
+            FROM `113-ntub113506`.Family f
+            JOIN `113-ntub113506`.Member m ON f.MainUserID = m.MemID
+            WHERE f.MainUserID = %s
+            """,
+            (MemID,),
+        )
+        MainUserInfo = cursor.fetchone()
+
+        MainUsers = []
+
+        if MainUserInfo:
+            MainUsers.append((MainUserInfo[0], MainUserInfo[1]))
+
+        cursor.execute(
+            """
             SELECT m.MemID, m.MemName
             FROM `113-ntub113506`.FamilyLink fl
             JOIN `113-ntub113506`.Family f ON fl.FamilyID = f.FamilyID
@@ -274,15 +294,22 @@ def hos_list():
             """,
             (MemID,),
         )
-        MainUsers = cursor.fetchall()
+        additional_users = cursor.fetchall()
+
+        MainUsers.extend(additional_users)
 
         cursor.execute(
             """
-            SELECT COALESCE(f.FamilyID, l.FamilyID) AS A_FamilyID
-            FROM `113-ntub113506`.Member m 
-            LEFT JOIN `113-ntub113506`.Family as f ON m.MemID = f.MainUserID 
-            LEFT JOIN `113-ntub113506`.FamilyLink as l ON m.MemID = l.SubUserID
-            WHERE MemID = %s
+            SELECT fl.FamilyID AS A_FamilyID
+            FROM `113-ntub113506`.Member m
+            LEFT JOIN (
+                SELECT MainUserID AS UserID, FamilyID
+                FROM `113-ntub113506`.Family
+                UNION
+                SELECT SubUserID AS UserID, FamilyID
+                FROM `113-ntub113506`.FamilyLink
+            ) AS fl ON m.MemID = fl.UserID
+            WHERE m.MemID = %s
             """,
             (MemID,),
         )
@@ -370,6 +397,22 @@ def hos_history():
     if MemID:
         cursor.execute(
             """
+            SELECT f.MainUserID, m.MemName
+            FROM `113-ntub113506`.Family f
+            JOIN `113-ntub113506`.Member m ON f.MainUserID = m.MemID
+            WHERE f.MainUserID = %s
+            """,
+            (MemID,),
+        )
+        MainUserInfo = cursor.fetchone()
+
+        MainUsers = []
+
+        if MainUserInfo:
+            MainUsers.append((MainUserInfo[0], MainUserInfo[1]))
+
+        cursor.execute(
+            """
             SELECT m.MemID, m.MemName
             FROM `113-ntub113506`.FamilyLink fl
             JOIN `113-ntub113506`.Family f ON fl.FamilyID = f.FamilyID
@@ -378,15 +421,22 @@ def hos_history():
             """,
             (MemID,),
         )
-        MainUsers = cursor.fetchall()
+        additional_users = cursor.fetchall()
+
+        MainUsers.extend(additional_users)
 
         cursor.execute(
             """
-            SELECT COALESCE(f.FamilyID, l.FamilyID) AS A_FamilyID
-            FROM `113-ntub113506`.Member m 
-            LEFT JOIN `113-ntub113506`.Family as f ON m.MemID = f.MainUserID 
-            LEFT JOIN `113-ntub113506`.FamilyLink as l ON m.MemID = l.SubUserID
-            WHERE MemID = %s
+            SELECT fl.FamilyID AS A_FamilyID
+            FROM `113-ntub113506`.Member m
+            LEFT JOIN (
+                SELECT MainUserID AS UserID, FamilyID
+                FROM `113-ntub113506`.Family
+                UNION
+                SELECT SubUserID AS UserID, FamilyID
+                FROM `113-ntub113506`.FamilyLink
+            ) AS fl ON m.MemID = fl.UserID
+            WHERE m.MemID = %s
             """,
             (MemID,),
         )
