@@ -15,7 +15,7 @@
 </head>
 <body>
     <div class="form">
-        <form id="form" method="POST" action="/gps/check">
+        <form id="form">
             <div class="form-group">
                 <label for="MainUserID">主要用戶</label>
                 <select id="MainUserID" name="MainUserID">
@@ -23,10 +23,6 @@
                     <option value="{{ user[0] }}">{{ user[1] }}</option>
                     {% endfor %}
                 </select>
-            </div>
-            <br><br>
-            <div>
-                <input class="button" id="but" type="submit" value="提交">
             </div>
         </form>
     </div>
@@ -45,9 +41,8 @@
 
         initializeLiff('{{ liffid }}');
 
-        document.getElementById('form').addEventListener('submit', function(event) {
-            event.preventDefault();
-            var formData = new FormData(this);
+        document.getElementById('MainUserID').addEventListener('change', function() {
+            var formData = new FormData(document.getElementById('form'));
             fetch('/gps/check', {
                 method: 'POST',
                 body: formData
