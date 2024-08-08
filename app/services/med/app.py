@@ -1,13 +1,33 @@
-import json, random, base64, io
+import json, random, os
 from flask import request, render_template, Blueprint, session
 from flask_login import login_required
 from datetime import datetime, timedelta
 from linebot.models import *
 from utils import db
 from services import scheduler, line_bot_api
-from PIL import Image
 
 med_bp = Blueprint("med_bp", __name__)
+
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
+UPLOAD_FOLDER = "static/imgs/med/"
+
+
+def allowed_file(filename, file):
+    return (
+        "." in filename
+        and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+        and file.mimetype.startswith("image/")
+    )
+
+
+def save_file(file, memo_id):
+    if file and allowed_file(file.filename, file):
+        extension = file.filename.rsplit(".", 1)[1].lower()
+        filename = f"{memo_id}.{extension}"
+        filepath = os.path.join(UPLOAD_FOLDER, filename)
+        file.save(filepath)
+        return extension
+    return None
 
 
 # 主頁
@@ -75,10 +95,6 @@ def med_create():
         Alert = int(request.form.get("Alert", 0))
         CreateTime = datetime.now()
         file = request.files.get("Pic")
-        if file:
-            pic_data = file.read()
-        else:
-            pic_data = None
 
         conn = db.get_connection()
         cursor = conn.cursor()
@@ -101,16 +117,17 @@ def med_create():
             (FamilyID, Title, MemoTime, MemID, Cycle, Alert, CreateTime),
         )
 
-        cursor.execute("Select MemoID from Memo order by MemoID Desc")
+        cursor.execute("SELECT MemoID FROM Memo ORDER BY MemoID DESC")
         MemoID = cursor.fetchone()[0]
+
+        pic_extension = save_file(file, MemoID) if file else None
 
         cursor.execute(
             """
-            INSERT INTO 
-            Med (MemoID, MedFeature, Pic) 
+            INSERT INTO Med (MemoID, MedFeature, Pic)
             VALUES (%s, %s, %s)
             """,
-            (MemoID, MedFeature, pic_data),
+            (MemoID, MedFeature, pic_extension),
         )
 
         conn.commit()
@@ -345,11 +362,6 @@ def med_list():
     if data:
         values = []
         for d in data:
-            pic_data = d[12]
-            pic_base64 = None
-
-            if pic_data:
-                pic_base64 = base64.b64encode(pic_data).decode("utf-8")
 
             values.append(
                 {
@@ -359,7 +371,7 @@ def med_list():
                     "Cycle": d[6],
                     "Alert": d[7],
                     "MedFeature": d[11],
-                    "Pic": pic_base64,
+                    "Pic": d[12],
                     "MainUserName": d[13],
                     "EditorUserName": d[14],
                 }
@@ -476,12 +488,6 @@ def med_history():
     if data:
         values = []
         for d in data:
-            pic_data = d[12]
-            pic_base64 = None
-
-            if pic_data:
-                pic_base64 = base64.b64encode(pic_data).decode("utf-8")
-
 
             values.append(
                 {
@@ -491,7 +497,7 @@ def med_history():
                     "Cycle": d[6],
                     "Alert": d[7],
                     "MedFeature": d[11],
-                    "Pic": pic_base64,
+                    "Pic": d[12],
                     "MainUserName": d[13],
                     "EditorUserName": d[14],
                 }
@@ -530,18 +536,15 @@ def med_update_confirm():
 
     connection.close()
 
-    if data:
-        pic_base64 = base64.b64encode(data[12]).decode("utf-8") if data[12] else None
-
-        values = {
-            "MemoID": data[0],
-            "Title": data[2],
-            "MemoTime": data[3],
-            "Cycle": data[6],
-            "Alert": data[7],
-            "MedFeature": data[11],
-            "Pic": pic_base64,
-        }
+    values = {
+        "MemoID": data[0],
+        "Title": data[2],
+        "MemoTime": data[3],
+        "Cycle": data[6],
+        "Alert": data[7],
+        "MedFeature": data[11],
+        "Pic": data[12],
+    }
 
     return render_template("/med/med_update_confirm.html", data=values)
 
@@ -557,39 +560,30 @@ def med_update():
         MedFeature = request.form.get("MedFeature")
         Cycle = request.form.get("Cycle")
         Alert = int(request.form.get("Alert"))
-        pic_file = request.files.get("Pic")
-        pic_data = pic_file.read() if pic_file else None
+        file = request.files.get("Pic")
 
         conn = db.get_connection()
         cursor = conn.cursor()
 
         cursor.execute(
             """
-            UPDATE Memo 
-            SET Title = %s, MemoTime = %s, EditorID = %s, Cycle = %s, Alert = %s 
+            UPDATE Memo
+            SET Title = %s, MemoTime = %s, EditorID = %s, Cycle = %s, Alert = %s
             WHERE MemoID = %s
             """,
             (Title, MemoTime, EditorID, Cycle, Alert, MemoID),
         )
 
-        if pic_data:
-            cursor.execute(
-                """
-                UPDATE Med 
+        pic_extension = save_file(file, MemoID) if file else None
+
+        cursor.execute(
+            """
+                UPDATE Med
                 SET MedFeature = %s, Pic = %s
                 WHERE MemoID = %s
                 """,
-                (MedFeature, pic_data, MemoID),
-            )
-        else:
-            cursor.execute(
-                """
-                UPDATE Med 
-                SET MedFeature = %s 
-                WHERE MemoID = %s
-                """,
-                (MedFeature, MemoID),
-            )
+            (MedFeature, pic_extension, MemoID),
+        )
 
         conn.commit()
         conn.close()

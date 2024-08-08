@@ -106,7 +106,7 @@
                 <div class="MedFeature">藥盒與藥袋外觀描述：{{ item.MedFeature }}</div>
                 <div class="Pic">圖片：
                     {% if item.Pic %}
-                    <img src="data:image/png;base64,{{ item.Pic }}" alt="藥品圖片" style="width: 100px; height: auto;">
+                    <img src="/static/imgs/med/{{item.MemoID}}.{{item.Pic}}" style="width: 100px; height: auto;">
                     {% else %}
                     無圖片
                     {% endif %}

@@ -105,7 +105,7 @@
                         <div class="name">藥品圖片</div>
                         <div class="value">
                             {% if data.Pic %}
-                            <img src="data:image/png;base64,{{ data.Pic }}" alt="藥品圖片" style="width: 100px; height: auto;">
+                            <img src="/static/imgs/med/{{data.MemoID}}.{{data.Pic}}" style="width: 100px; height: auto;">
                             {% else %}
                             無圖片
                             {% endif %}
