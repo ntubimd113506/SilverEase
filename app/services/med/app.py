@@ -1,5 +1,5 @@
 import json, random, os
-from flask import request, render_template, Blueprint, session
+from flask import request, render_template, Blueprint, session, jsonify
 from flask_login import login_required
 from datetime import datetime, timedelta
 from linebot.models import *
@@ -117,17 +117,18 @@ def med_create():
             (FamilyID, Title, MemoTime, MemID, Cycle, Alert, CreateTime),
         )
 
-        cursor.execute("SELECT MemoID FROM Memo ORDER BY MemoID DESC")
+        cursor.execute("Select MemoID from Memo order by MemoID Desc")
         MemoID = cursor.fetchone()[0]
 
-        pic_extension = save_file(file, MemoID) if file else None
+        save_file(file, MemoID) if file else None
 
         cursor.execute(
             """
-            INSERT INTO Med (MemoID, MedFeature, Pic)
-            VALUES (%s, %s, %s)
+            INSERT INTO 
+            Med (MemoID, MedFeature) 
+            VALUES (%s, %s)
             """,
-            (MemoID, MedFeature, pic_extension),
+            (MemoID, MedFeature),
         )
 
         conn.commit()
@@ -371,9 +372,8 @@ def med_list():
                     "Cycle": d[6],
                     "Alert": d[7],
                     "MedFeature": d[11],
-                    "Pic": d[12],
-                    "MainUserName": d[13],
-                    "EditorUserName": d[14],
+                    "MainUserName": d[12],
+                    "EditorUserName": d[13],
                 }
             )
         return render_template(
@@ -488,7 +488,6 @@ def med_history():
     if data:
         values = []
         for d in data:
-
             values.append(
                 {
                     "MemoID": d[0],
@@ -497,9 +496,8 @@ def med_history():
                     "Cycle": d[6],
                     "Alert": d[7],
                     "MedFeature": d[11],
-                    "Pic": d[12],
-                    "MainUserName": d[13],
-                    "EditorUserName": d[14],
+                    "MainUserName": d[12],
+                    "EditorUserName": d[13],
                 }
             )
         return render_template(
@@ -543,7 +541,6 @@ def med_update_confirm():
         "Cycle": data[6],
         "Alert": data[7],
         "MedFeature": data[11],
-        "Pic": data[12],
     }
 
     return render_template("/med/med_update_confirm.html", data=values)
@@ -562,38 +559,36 @@ def med_update():
         Alert = int(request.form.get("Alert"))
         file = request.files.get("Pic")
 
+        if file:
+            for ext in ALLOWED_EXTENSIONS:
+                existing_file_path = os.path.join(UPLOAD_FOLDER, f"{MemoID}.{ext}")
+                if os.path.exists(existing_file_path):
+                    os.remove(existing_file_path)
+                    break
+
         conn = db.get_connection()
         cursor = conn.cursor()
 
         cursor.execute(
             """
-            UPDATE Memo
-            SET Title = %s, MemoTime = %s, EditorID = %s, Cycle = %s, Alert = %s
+            UPDATE Memo 
+            SET Title = %s, MemoTime = %s, EditorID = %s, Cycle = %s, Alert = %s 
             WHERE MemoID = %s
             """,
             (Title, MemoTime, EditorID, Cycle, Alert, MemoID),
         )
 
-        pic_extension = save_file(file, MemoID) if file else None
+        if file:
+            save_file(file, MemoID)
 
-        if pic_extension:
-            cursor.execute(
-                """
-                UPDATE Med 
-                SET MedFeature = %s, Pic = %s
-                WHERE MemoID = %s
-                """,
-                (MedFeature, pic_extension, MemoID),
-            )
-        else:
-            cursor.execute(
-                """
-                UPDATE Med 
-                SET MedFeature = %s 
-                WHERE MemoID = %s
-                """,
-                (MedFeature, MemoID),
-            )
+        cursor.execute(
+            """
+            UPDATE Med 
+            SET MedFeature = %s 
+            WHERE MemoID = %s
+            """,
+            (MedFeature, MemoID),
+        )
 
         conn.commit()
         conn.close()
@@ -633,6 +628,17 @@ def med_update():
             Title="編輯用藥失敗",
             img="F_update",
         )
+
+
+# 刪除圖片
+@med_bp.route("/delete/image/<int:memo_id>", methods=["DELETE"])
+def delete_image(memo_id):
+    for ext in ALLOWED_EXTENSIONS:
+        filepath = os.path.join(UPLOAD_FOLDER, f"{memo_id}.{ext}")
+        if os.path.exists(filepath):
+            os.remove(filepath)
+            return jsonify({"success": True})
+    return jsonify({"success": False, "error": "圖片文件不存在"})
 
 
 # 刪除確認

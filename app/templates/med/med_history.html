@@ -12,23 +12,6 @@
     <link href="/static/css/list.css" rel="stylesheet" />
     <script src="/static/js/touch-buttons.js" defer></script>
     <script src="/static/js/img.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', (event) => {
-            document.getElementById('MainUserID').value = localStorage.getItem('selectedMainUserID') || 'all';
-            document.getElementById('year').value = localStorage.getItem('selectedYear') || 'all';
-            document.getElementById('month').value = localStorage.getItem('selectedMonth') || 'all';
-
-            document.getElementById('MainUserID').onchange = function () {
-                localStorage.setItem('selectedMainUserID', this.value);
-            }
-            document.getElementById('year').onchange = function () {
-                localStorage.setItem('selectedYear', this.value);
-            }
-            document.getElementById('month').onchange = function () {
-                localStorage.setItem('selectedMonth', this.value);
-            }
-        });
-    </script>
 </head>
 
 <body onload="initializeLiff('2004699458-OR9pkZjP')">
@@ -104,12 +87,12 @@
                 <div class="Cycle">多久重複：{{ item.Cycle }}</div>
                 <div class="Alert">幾分鐘前提醒：{{ item.Alert }}分鐘</div>
                 <div class="MedFeature">藥盒與藥袋外觀描述：{{ item.MedFeature }}</div>
-                <div class="Pic">圖片：
-                    {% if item.Pic %}
-                    <img src="/static/imgs/med/{{item.MemoID}}.{{item.Pic}}" style="width: 100px; height: auto;">
-                    {% else %}
-                    無圖片
-                    {% endif %}
+                <div class="Pic" id="pic-{{ item.MemoID }}">圖片：
+                    {% set image_found = false %}
+                    {% for ext in ['png', 'jpg', 'jpeg', 'gif'] %}
+                    <img src="/static/imgs/med/{{ item.MemoID }}.{{ ext }}" style="width: 100px; height: 100px;"
+                        onerror="this.style.display='none'; checkImageError('{{ item.MemoID }}');">
+                    {% endfor %}
                 </div>
                 <div class="MainUserName">長者：{{ item.MainUserName }}</div>
                 <div class="EditorUserName">修改者：{{ item.EditorUserName }}</div>

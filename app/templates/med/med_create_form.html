@@ -69,9 +69,12 @@
                             <input type="text" name="MedFeature" class="input-field" placeholder="請輸入藥品描述">
                         </div>
 
-                        <div class="name">上傳藥品圖片</div>
-                        <div><input type="file" name="Pic" accept="image/*" class="input-field"></div>
-
+                        <div class="name">圖片</div>
+                        <div>
+                            <input type="file" name="Pic" accept="image/*" id="fileInput" onchange="fileSelected()">
+                            <button type="button" id="removeSelectionBtn" style="display:none;" onclick="removeSelection()">移除所選圖片</button>
+                        </div>
+                        
                         <div class="name">多久重複</div>
                         <select name="Cycle" required>
                             <option value="" disabled selected>請選擇重複頻率</option>
@@ -120,7 +123,26 @@
         
             datetimeInput.dispatchEvent(new Event('input'));
         });
-        
+
+        function fileSelected() {
+            const fileInput = document.getElementById('fileInput');
+            const removeSelectionBtn = document.getElementById('removeSelectionBtn');
+
+            if (fileInput.files.length > 0) {
+                removeSelectionBtn.style.display = 'inline-block';
+            } else {
+                removeSelectionBtn.style.display = 'none';
+            }
+        }
+
+        function removeSelection() {
+            const fileInput = document.getElementById('fileInput');
+            const removeSelectionBtn = document.getElementById('removeSelectionBtn');
+
+            fileInput.value = '';
+            removeSelectionBtn.style.display = 'none';
+        }
+
         </script>
 
 </body>
