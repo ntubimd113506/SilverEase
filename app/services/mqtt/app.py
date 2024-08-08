@@ -121,30 +121,11 @@ def handle_mqtt_message(client, userdata, message):
                 Map1 = str(data)
                 Map = Map1.replace(" ","")
                 print(f"Received GPS data - GoogleMap:{Map}")
-                SOS_gps(Map)
+                upgrade_gps(Map)
 
             except :
                 print("OK！")
 
-def SOS_gps(Map):
-    conn = db.get_connection()
-    cursor = conn.cursor() #INSERT
-    cursor1 = conn.cursor() #SELECT
-    try:
-        now = datetime.now()
-        # cursor1.execute('SELECT FamilyID FROM Family WHERE DevID = %s',(DevID))
-        # FamID=cursor1.fetchone()[0]
-        cursor1.execute('SELECT LocatNo FROM Location WHERE FamilyID = %s',(54))
-        LocatNo=cursor1.fetchone()[0]
-        cursor.execute('INSERT INTO `113-ntub113506`.Location (FamilyID,Location,LocationTime) VALUES (%s,%s,%s)', (54,Map,now,))
-        cursor.execute('INSERT INTO `113-ntub113506`.SOS (LocatNo,) VALUES (%s,)', (LocatNo,))
-        conn.commit()
-    except Exception as e:
-        print(f"Error inserting data: {e}")
-        conn.rollback()
-    finally:
-        cursor.close()
-        conn.close()
 
 def save_gps(Map):
     conn = db.get_connection()
@@ -219,7 +200,7 @@ def sent_mess(DevID, img):
         with open(filepath, "wb") as f:
             f.write(imgdata)
 
-    FamilyID=check_device(DevID)
+    FamilyID=54 #check_device(DevID)
     users = get_FamilyUser(FamilyID)
 
     # 從資料庫檢索到的使用者資訊是一個列表，需要提取出每個使用者的 ID
@@ -235,6 +216,11 @@ def sent_mess(DevID, img):
     cur.execute("SELECT SOSNo FROM SOS WHERE LocatNo=%s",LocatNo)
     conn.commit()
     SOSNo=cur.fetchone()[0]
+    #Map
+    cur.execute("SELECT Location FROM Location WHERE LocatNo=%s",(LocatNo))
+    Map=cur.fetchone()[0]
+
+
 
     thumbnail_image_url = f"https://silverease.ntub.edu.tw/img/{filename}"
     resMsg = FlexSendMessage(
@@ -283,7 +269,7 @@ def sent_mess(DevID, img):
                         "action": {
                             "type": "uri",
                             "label": "定位資訊",
-                            "uri": "https://silverease.ntub.edu.tw",
+                            "uri": Map,
                         },
                     },
                 ],
