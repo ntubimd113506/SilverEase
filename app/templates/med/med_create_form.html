@@ -2,7 +2,8 @@
 <html>
 
 <head>
-    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta charset="utf-8" name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>新增用藥</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -72,9 +73,10 @@
                         <div class="name">圖片</div>
                         <div>
                             <input type="file" name="Pic" accept="image/*" id="fileInput" onchange="fileSelected()">
-                            <button type="button" id="removeSelectionBtn" style="display:none;" onclick="removeSelection()">移除所選圖片</button>
+                            <button type="button" id="removeSelectionBtn" style="display:none;"
+                                onclick="removeSelection()">移除所選圖片</button>
                         </div>
-                        
+
                         <div class="name">多久重複</div>
                         <select name="Cycle" required>
                             <option value="" disabled selected>請選擇重複頻率</option>
@@ -103,32 +105,38 @@
                     </div>
             </div>
             <input type="hidden" id="MemID" name="MemID">
-
             </form>
-
         </div>
     </div>
+
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             var datetimeInput = document.getElementById('MemoTime');
             var placeholder = document.getElementById('placeholder');
-        
-            datetimeInput.addEventListener('input', function() {
+
+            datetimeInput.addEventListener('input', function () {
                 if (this.value) {
                     placeholder.style.display = 'none';
                 } else {
                     placeholder.style.display = 'block';
                 }
             });
-        
+
             datetimeInput.dispatchEvent(new Event('input'));
         });
 
         function fileSelected() {
             const fileInput = document.getElementById('fileInput');
             const removeSelectionBtn = document.getElementById('removeSelectionBtn');
+            const allowedExtensions = ['png', 'jpg', 'jpeg', 'gif'];
+            const file = fileInput.files[0];
+            const fileExtension = file ? file.name.split('.').pop().toLowerCase() : '';
 
-            if (fileInput.files.length > 0) {
+            if (file && !allowedExtensions.includes(fileExtension)) {
+                alert('圖檔只能是 "png", "jpg", "jpeg", "gif"，請重新選擇或移除所選圖片');
+                fileInput.value = '';
+                removeSelectionBtn.style.display = 'none';
+            } else if (file) {
                 removeSelectionBtn.style.display = 'inline-block';
             } else {
                 removeSelectionBtn.style.display = 'none';
@@ -142,8 +150,7 @@
             fileInput.value = '';
             removeSelectionBtn.style.display = 'none';
         }
-
-        </script>
+    </script>
 
 </body>
 

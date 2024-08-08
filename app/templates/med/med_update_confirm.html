@@ -94,8 +94,15 @@
     function fileSelected() {
         const fileInput = document.getElementById('fileInput');
         const removeSelectionBtn = document.getElementById('removeSelectionBtn');
+        const allowedExtensions = ['png', 'jpg', 'jpeg', 'gif'];
+        const file = fileInput.files[0];
+        const fileExtension = file ? file.name.split('.').pop().toLowerCase() : '';
 
-        if (fileInput.files.length > 0) {
+        if (file && !allowedExtensions.includes(fileExtension)) {
+            alert('圖檔只能是「.png、.jpg、.jpeg或.gif」請重新選擇。');
+            fileInput.value = '';
+            removeSelectionBtn.style.display = 'none';
+        } else if (file) {
             removeSelectionBtn.style.display = 'inline-block';
         } else {
             removeSelectionBtn.style.display = 'none';
