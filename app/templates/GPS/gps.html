@@ -41,7 +41,15 @@
 
         initializeLiff('{{ liffid }}');
 
-        document.getElementById('MainUserID').addEventListener('change', function() {
+        // 自動觸發選單變更事件
+        function triggerChange() {
+            var selectElement = document.getElementById('MainUserID');
+            if (selectElement.options.length === 1) {
+                fetchGPSData(); // 只有一個選項時自動載入地圖
+            }
+        }
+
+        function fetchGPSData() {
             var formData = new FormData(document.getElementById('form'));
             fetch('/gps/check', {
                 method: 'POST',
@@ -59,7 +67,7 @@
             }).catch(error => {
                 console.error('Error:', error);
             });
-        });
+        }
 
         function showMap(url) {
             var coords = parseUrl(url);
@@ -88,6 +96,13 @@
             }
             return {};
         }
+
+        // 註冊事件
+        document.getElementById('MainUserID').addEventListener('change', fetchGPSData);
+
+        // 自動觸發一次
+        triggerChange();
+
     </script>
 </body>
 </html>
