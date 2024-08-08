@@ -8,7 +8,7 @@ set_bp = Blueprint('set_bp',__name__)
 
 #-----登入-----
 @set_bp.route('/')
-# @login_required
+@login_required
 def setting():
     MemID=session.get("MemID")
     conn = db.get_connection()
@@ -54,14 +54,21 @@ def family_list():
     MainFamily["Name"]=MainInfo["displayName"]
     MainFamily["Picture"]=MainInfo["pictureUrl"]
     session["SubFamilys"]=SubFamilys
-    # return f"{MainFamily},{SubFamilys}"
+    for SubFamily in SubFamilys:
+        SubInfo=line_bot_api.get_profile(SubFamily["MainUserID"]).as_json_dict()
+        # return f"{SubInfo}"
+        SubFamily["Name"]=SubInfo["displayName"]
+        SubFamily["Picture"]=SubInfo["pictureUrl"]
+    
     return render_template('/set/family_list.html',MainFamily=MainFamily,SubFamilys=SubFamilys)
 
 @set_bp.route('/get_line_info')
 def get_line_info():
     SubFamilys=session.get("SubFamilys")
+    # return f"{SubFamilys}"
     for SubFamily in SubFamilys:
         SubInfo=line_bot_api.get_profile(SubFamily["MainUserID"]).as_json_dict()
+        # return f"{SubInfo}"
         SubFamily["Name"]=SubInfo["displayName"]
         SubFamily["Picture"]=SubInfo["pictureUrl"]
     
