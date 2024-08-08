@@ -27,7 +27,7 @@
         <div class="sub_box">
             {% for family in SubFamilys %}
             <div id="sub{{family['FamilyID']}}">
-                <img src="" alt="">
+                <img src="{{family['Picture']}}" alt="">
                 <div class="name">{{family["Name"]}}</div>
             </div>
             {% endfor %}
@@ -36,19 +36,19 @@
     </div>
 </body>
 <script>
-    fetch('/set/get_line_info', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-        },
+    // fetch('/set/get_line_info', {
+    //     method: 'GET',
+    //     headers: {
+    //         'Content-Type': 'application/json',
+    //     },
 
-    }).then(response => response.json().then(data => {
-        console.log(data);
-        for (i in data) {
-            subDiv=document.getElementById('sub' + data[i]['FamilyID'])
-            subDiv.getElementsByTagName('img')[0].src = data[i]['Picture']
-        }
-    }));
+    // }).then(response => response.json().then(data => {
+    //     console.log(data);
+    //     for (i in data) {
+    //         subDiv=document.getElementById('sub' + data[i]['FamilyID'])
+    //         subDiv.getElementsByTagName('img')[0].src = data[i]['Picture']
+    //     }
+    // }));
 </script>
 
 </html>

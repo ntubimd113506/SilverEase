@@ -16,13 +16,14 @@
         }).then(() => {
             liff.scanCodeV2()
                 .then((result) => {
-                    document.getElementById("url").innerHTML = liff.permanentLink.createUrl()
                     liff.openWindow({
                         url: result.value
                     })
+                    document.getElementById("url").innerHTML = liff.permanentLink.createUrl()
                 })
                 .catch((error) => {
                     console.log("error", error);
+                    liff.closeWindow();
                 });
         })
             .catch((err) => {
