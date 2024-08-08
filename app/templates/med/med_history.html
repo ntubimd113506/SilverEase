@@ -104,6 +104,13 @@
                 <div class="Cycle">多久重複：{{ item.Cycle }}</div>
                 <div class="Alert">幾分鐘前提醒：{{ item.Alert }}分鐘</div>
                 <div class="MedFeature">藥盒與藥袋外觀描述：{{ item.MedFeature }}</div>
+                <div class="Pic">圖片：
+                    {% if item.Pic %}
+                    <img src="data:image/png;base64,{{ item.Pic }}" alt="藥品圖片" style="width: 100px; height: auto;">
+                    {% else %}
+                    無圖片
+                    {% endif %}
+                </div>
                 <div class="MainUserName">長者：{{ item.MainUserName }}</div>
                 <div class="EditorUserName">修改者：{{ item.EditorUserName }}</div>
                 <div class="edit-link">

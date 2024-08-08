@@ -102,6 +102,16 @@
                             <input type="text" name="MedFeature" value="{{ data.MedFeature }}" class="input-field">
                         </div>
 
+                        <div class="name">藥品圖片</div>
+                        <div class="value">
+                            {% if data.Pic %}
+                            <img src="data:image/png;base64,{{ data.Pic }}" alt="藥品圖片" style="width: 100px; height: auto;">
+                            {% else %}
+                            無圖片
+                            {% endif %}
+                            更新圖片<input type="file" name="Pic" accept="image/*">
+                        </div>
+
                         <div class="name">多久重複</div>
                         <select name="Cycle" value="{{ data.Cycle }}">
                             <option value="不重複">不重複</option>

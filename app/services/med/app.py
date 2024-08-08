@@ -1,10 +1,11 @@
-import json, random
+import json, random, base64, io
 from flask import request, render_template, Blueprint, session
 from flask_login import login_required
 from datetime import datetime, timedelta
 from linebot.models import *
 from utils import db
 from services import scheduler, line_bot_api
+from PIL import Image
 
 med_bp = Blueprint("med_bp", __name__)
 
@@ -73,6 +74,11 @@ def med_create():
         Cycle = request.form.get("Cycle")
         Alert = int(request.form.get("Alert", 0))
         CreateTime = datetime.now()
+        file = request.files.get("Pic")
+        if file:
+            pic_data = file.read()
+        else:
+            pic_data = None
 
         conn = db.get_connection()
         cursor = conn.cursor()
@@ -101,10 +107,10 @@ def med_create():
         cursor.execute(
             """
             INSERT INTO 
-            Med (MemoID, MedFeature) 
-            VALUES (%s, %s)
+            Med (MemoID, MedFeature, Pic) 
+            VALUES (%s, %s, %s)
             """,
-            (MemoID, MedFeature),
+            (MemoID, MedFeature, pic_data),
         )
 
         conn.commit()
@@ -174,7 +180,7 @@ def send_line_message(MemoID, cnt=0, got=False):
         body1 = TextSendMessage(
             text=f"{MainUserName}長者尚未收到此用藥通知\n請儘速與長者聯繫\n\n📌標題: {Title}\n💊藥盒與藥袋外觀描述: {MedFeature}",
         )
-        
+
         conn = db.get_connection()
         cursor = conn.cursor()
 
@@ -184,7 +190,7 @@ def send_line_message(MemoID, cnt=0, got=False):
             if not got:
                 for sub_id in SubUserIDs:
                     line_bot_api.push_message(sub_id, body1)
-                
+
                 cursor.execute(
                     """
                     INSERT INTO Respond (MemoID, Times, RespondTime)
@@ -339,6 +345,12 @@ def med_list():
     if data:
         values = []
         for d in data:
+            pic_data = d[12]
+            pic_base64 = None
+
+            if pic_data:
+                pic_base64 = base64.b64encode(pic_data).decode("utf-8")
+
             values.append(
                 {
                     "MemoID": d[0],
@@ -347,8 +359,9 @@ def med_list():
                     "Cycle": d[6],
                     "Alert": d[7],
                     "MedFeature": d[11],
-                    "MainUserName": d[12],
-                    "EditorUserName": d[13],
+                    "Pic": pic_base64,
+                    "MainUserName": d[13],
+                    "EditorUserName": d[14],
                 }
             )
         return render_template(
@@ -463,6 +476,13 @@ def med_history():
     if data:
         values = []
         for d in data:
+            pic_data = d[12]
+            pic_base64 = None
+
+            if pic_data:
+                pic_base64 = base64.b64encode(pic_data).decode("utf-8")
+
+
             values.append(
                 {
                     "MemoID": d[0],
@@ -471,8 +491,9 @@ def med_history():
                     "Cycle": d[6],
                     "Alert": d[7],
                     "MedFeature": d[11],
-                    "MainUserName": d[12],
-                    "EditorUserName": d[13],
+                    "Pic": pic_base64,
+                    "MainUserName": d[13],
+                    "EditorUserName": d[14],
                 }
             )
         return render_template(
@@ -498,18 +519,20 @@ def med_update_confirm():
     cursor.execute(
         """
         SELECT * FROM 
-        (select * from`113-ntub113506`.Memo Where MemoID = %s) m 
-        join 
-        (select * from `113-ntub113506`.`Med`) e 
-        on e.MemoID=m.MemoID
+        (SELECT * FROM `113-ntub113506`.Memo WHERE MemoID = %s) m 
+        JOIN 
+        (SELECT * FROM `113-ntub113506`.Med) e 
+        ON e.MemoID = m.MemoID
         """,
-        (MemoID),
+        (MemoID,),
     )
     data = cursor.fetchone()
 
     connection.close()
 
     if data:
+        pic_base64 = base64.b64encode(data[12]).decode("utf-8") if data[12] else None
+
         values = {
             "MemoID": data[0],
             "Title": data[2],
@@ -517,6 +540,7 @@ def med_update_confirm():
             "Cycle": data[6],
             "Alert": data[7],
             "MedFeature": data[11],
+            "Pic": pic_base64,
         }
 
     return render_template("/med/med_update_confirm.html", data=values)
@@ -533,6 +557,8 @@ def med_update():
         MedFeature = request.form.get("MedFeature")
         Cycle = request.form.get("Cycle")
         Alert = int(request.form.get("Alert"))
+        pic_file = request.files.get("Pic")
+        pic_data = pic_file.read() if pic_file else None
 
         conn = db.get_connection()
         cursor = conn.cursor()
@@ -546,14 +572,24 @@ def med_update():
             (Title, MemoTime, EditorID, Cycle, Alert, MemoID),
         )
 
-        cursor.execute(
-            """
-            UPDATE Med 
-            SET MedFeature = %s 
-            WHERE MemoID = %s
-            """,
-            (MedFeature, MemoID),
-        )
+        if pic_data:
+            cursor.execute(
+                """
+                UPDATE Med 
+                SET MedFeature = %s, Pic = %s
+                WHERE MemoID = %s
+                """,
+                (MedFeature, pic_data, MemoID),
+            )
+        else:
+            cursor.execute(
+                """
+                UPDATE Med 
+                SET MedFeature = %s 
+                WHERE MemoID = %s
+                """,
+                (MedFeature, MemoID),
+            )
 
         conn.commit()
         conn.close()
@@ -590,7 +626,7 @@ def med_update():
             "/schedule/result.html",
             schedule="med",
             list="list",
-            Title="編輯用藥成功",
+            Title="編輯用藥失敗",
             img="F_update",
         )
 
