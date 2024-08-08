@@ -576,14 +576,24 @@ def med_update():
 
         pic_extension = save_file(file, MemoID) if file else None
 
-        cursor.execute(
-            """
-                UPDATE Med
+        if pic_extension:
+            cursor.execute(
+                """
+                UPDATE Med 
                 SET MedFeature = %s, Pic = %s
                 WHERE MemoID = %s
                 """,
-            (MedFeature, pic_extension, MemoID),
-        )
+                (MedFeature, pic_extension, MemoID),
+            )
+        else:
+            cursor.execute(
+                """
+                UPDATE Med 
+                SET MedFeature = %s 
+                WHERE MemoID = %s
+                """,
+                (MedFeature, MemoID),
+            )
 
         conn.commit()
         conn.close()
