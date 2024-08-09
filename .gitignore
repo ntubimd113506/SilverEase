@@ -3,6 +3,7 @@ web.config
 lineToken.py
 db.py
 scheduler.db
+/app/static/imgs/med
 # __init__.py
 
 static/uploads/
