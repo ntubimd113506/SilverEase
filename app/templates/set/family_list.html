@@ -40,6 +40,10 @@
             {% endfor %}
         </div>
         {% endif %}
+        {% if not (MainFamily and SubFamilys)%}
+        暫無任何家庭資料
+        <a href="/set/join_family">加入家庭</a>
+        {% endif %}
     </div>
 </body>
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
@@ -82,7 +86,45 @@
     }
 
     function leaveFamily(){
-        
+        swal({
+            title: "確認退出家庭?",
+            text: "退出後將無法再查看該家庭資料",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+            .then((willDelete) => {
+                if (willDelete) {
+                    fetch(`/set/family_leave`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            FamilyID: familyID
+                        })
+                    }).then(response => {
+                        return response.json();
+                    }).then(data => {
+                        console.log(data);
+                        if (data['status'] == 'success') {
+                            swal("退出成功", {
+                                icon: "success",
+                            }).then(() => {
+                                location.reload();
+                            });                            
+                        } else {
+                            swal("退出失敗", {
+                                icon: "error",
+                            });
+                        }
+                    });
+                } else {
+                    swal("Your imaginary file is safe!");
+                }
+            });
+        familyID=event.target.value;
+        console.log(familyID);
     }
 </script>
 

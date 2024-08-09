@@ -127,6 +127,16 @@ def delete_family():
     session["MainFamilyID"]=""
     return jsonify({"status": "success"})
 
+@set_bp.route('/family_leave',methods=['Delete'])
+def leave_family():
+    FamilyID=request.json["FamilyID"]
+    conn = db.get_connection()
+    cursor = conn.cursor()
+    cursor.execute('Delete FROM FamilyLink WHERE SubUserID = %s AND FamilyID= %s',(session.get("MemID"),FamilyID))
+    conn.commit()
+    conn.close()
+    return jsonify({"status": "success"})
+
 @set_bp.route("/qrcode")
 @login_required
 def scanner():
