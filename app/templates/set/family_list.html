@@ -40,7 +40,7 @@
             {% endfor %}
         </div>
         {% endif %}
-        {% if not (MainFamily and SubFamilys)%}
+        {% if not MainFamily and not SubFamilys%}
         暫無任何家庭資料
         <a href="/set/join_family">加入家庭</a>
         {% endif %}
