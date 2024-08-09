@@ -6,6 +6,32 @@
     <title>Document</title>
 </head>
 <body>
-    <button>通報遺失/走失</button>
+    感謝您發現走失老人/遺失裝置，
+    請點擊以下按鈕協助通知家屬
+    <textarea name="" id="message" placeholder="希望您能留下聯繫方式"></textarea>
+    <button onclick=lostReport()>通報遺失/走失</button>
+    <img src="/static/imgs/thanks.png" alt="感謝圖" srcset="" id="thanksImg" hidden>
 </body>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script>
+    function lostReport() {
+        fetch('/lost_report', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                message: document.getElementById('message').value
+            })  
+        }).then(res => res.json())
+            .then(data => {
+                if (data['status'] == 'success') {
+                    swal("通報成功", "已通知家屬", "success");
+                    document.getElementById("thanksImg").hidden = false
+                } else {
+                    swal("通報失敗", "請再試一次", "error");
+                }
+            })
+    }
+</script>
 </html>

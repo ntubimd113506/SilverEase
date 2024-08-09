@@ -66,7 +66,7 @@ def user_login():
         if not cursor.execute("SELECT MemID FROM Member WHERE MemID = %s", (user_id,)):
             cursor.execute("INSERT INTO Member (MemID, MemName) VALUES (%s, %s)", (user_id, user_name))
             conn.commit()
-           
+        conn.close()
         user = User(user_id)
         login_user(user)
     
