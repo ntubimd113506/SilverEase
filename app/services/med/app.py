@@ -372,8 +372,8 @@ def med_list():
                     "Cycle": d[6],
                     "Alert": d[7],
                     "MedFeature": d[11],
-                    "MainUserName": d[14],
-                    "EditorUserName": d[15],
+                    "MainUserName": d[15],
+                    "EditorUserName": d[16],
                 }
             )
         return render_template(
@@ -496,8 +496,8 @@ def med_history():
                     "Cycle": d[6],
                     "Alert": d[7],
                     "MedFeature": d[11],
-                    "MainUserName": d[14],
-                    "EditorUserName": d[15],
+                    "MainUserName": d[15],
+                    "EditorUserName": d[16],
                 }
             )
         return render_template(
