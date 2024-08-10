@@ -90,6 +90,9 @@ def med_create():
         MainUserID = request.form.get("MainUserID")
         Title = request.form.get("Title")
         MemoTime = request.form.get("MemoTime")
+        SecondTime = request.form.get("SecondTime")
+        ThirdTime = request.form.get("ThirdTime")
+        EndDate = request.form.get("EndDate")
         MedFeature = request.form.get("MedFeature")
         Cycle = request.form.get("Cycle")
         Alert = int(request.form.get("Alert", 0))
@@ -125,10 +128,10 @@ def med_create():
         cursor.execute(
             """
             INSERT INTO 
-            Med (MemoID, MedFeature) 
-            VALUES (%s, %s)
+            Med (MemoID, MedFeature, SecondTime, ThirdTime, EndDate) 
+            VALUES (%s, %s, %s, %s, %s)
             """,
-            (MemoID, MedFeature),
+            (MemoID, MedFeature, SecondTime, ThirdTime, EndDate),
         )
 
         conn.commit()

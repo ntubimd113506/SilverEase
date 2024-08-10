@@ -65,6 +65,22 @@
                             </div>
                         </div>
 
+                        <div class="name" id="secondTimeContainer" style="display:none;">第二次用藥時間</div>
+                        <div class="value" id="secondTimeValue" style="display:none;">
+                            <div class="input-icon">
+                                <input type="time" name="SecondTime" id="SecondTime" class="input-field">
+                                <label for="SecondTime" class="placeholder">選擇第二次用藥時間</label>
+                            </div>
+                        </div>
+
+                        <div class="name" id="thirdTimeContainer" style="display:none;">第三次用藥時間</div>
+                        <div class="value" id="thirdTimeValue" style="display:none;">
+                            <div class="input-icon">
+                                <input type="time" name="ThirdTime" id="ThirdTime" class="input-field">
+                                <label for="ThirdTime" class="placeholder">選擇第三次用藥時間</label>
+                            </div>
+                        </div>
+
                         <div class="name">用藥目的</div>
                         <div class="value">
                             <input type="text" name="MedFeature" class="input-field" placeholder="請輸入使用藥物的具體原因或目標（可留空）">
@@ -113,12 +129,38 @@
         document.addEventListener('DOMContentLoaded', function () {
             var datetimeInput = document.getElementById('MemoTime');
             var placeholder = document.getElementById('placeholder');
+            const secondTimeContainer = document.getElementById('secondTimeContainer');
+            const secondTimeValue = document.getElementById('secondTimeValue');
+            const secondTimeInput = document.getElementById('SecondTime');
+            const thirdTimeContainer = document.getElementById('thirdTimeContainer');
+            const thirdTimeValue = document.getElementById('thirdTimeValue');
+            const thirdTimeInput = document.getElementById('ThirdTime');
 
             datetimeInput.addEventListener('input', function () {
                 if (this.value) {
                     placeholder.style.display = 'none';
+                    secondTimeContainer.style.display = 'block';
+                    secondTimeValue.style.display = 'block';
+
+                    var selectedDate = this.value.split('T')[0];
+                    secondTimeInput.value = selectedDate + "T" + secondTimeInput.value.split('T')[1];
+                    thirdTimeInput.value = selectedDate + "T" + thirdTimeInput.value.split('T')[1];
                 } else {
                     placeholder.style.display = 'block';
+                    secondTimeContainer.style.display = 'none';
+                    secondTimeValue.style.display = 'none';
+                    thirdTimeContainer.style.display = 'none';
+                    thirdTimeValue.style.display = 'none';
+                }
+            });
+
+            secondTimeInput.addEventListener('input', function () {
+                if (this.value) {
+                    thirdTimeContainer.style.display = 'block';
+                    thirdTimeValue.style.display = 'block';
+                } else {
+                    thirdTimeContainer.style.display = 'none';
+                    thirdTimeValue.style.display = 'none';
                 }
             });
 
