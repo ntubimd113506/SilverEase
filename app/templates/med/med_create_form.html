@@ -48,37 +48,40 @@
                             <input type="text" name="Title" class="input-field" placeholder="請輸入名稱" required>
                         </div>
 
-                        <!-- <div class="name">日期</div>
-                        <div class="value">
-                            <div class="input-icon">
-                                <input type="datetime-local" name="MemoTime" class="input-field" required>
-                                <i class="fa-solid fa-calendar-days calendar-icon"></i>
-                            </div>
-                        </div> -->
-
-                        <div class="name">日期</div>
+                        <div class="name">日期時間</div>
                         <div class="value">
                             <div class="input-icon">
                                 <input type="datetime-local" name="MemoTime" id="MemoTime" class="input-field" required>
-                                <label for="MemoTime" id="placeholder" class="placeholder">選擇欲提醒的日期</label>
+                                <label for="MemoTime" id="placeholder" class="placeholder">選擇欲提醒的日期和時間</label>
                                 <i class="fa-solid fa-calendar-days calendar-icon"></i>
                             </div>
                         </div>
 
-                        <div class="name" id="secondTimeContainer" style="display:none;">第二次用藥時間</div>
-                        <div class="value" id="secondTimeValue" style="display:none;">
-                            <div class="input-icon">
-                                <input type="time" name="SecondTime" id="SecondTime" class="input-field">
-                                <label for="SecondTime" class="placeholder">選擇第二次用藥時間</label>
+                        <div id="timesContainer" style="display: flex; gap: 10px;">
+                            <div id="secondTimeContainer" style="flex: 1; display: none;">
+                                <div class="name">第二次用藥時間</div>
+                                <div class="value">
+                                    <div class="input-icon">
+                                        <input type="time" name="SecondTime" id="SecondTime" class="input-field">
+                                        <label for="SecondTime" class="placeholder">選擇欲提醒的第二次用藥時間</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="thirdTimeContainer" style="flex: 1; display: none;">
+                                <div class="name">第三次用藥時間</div>
+                                <div class="value">
+                                    <div class="input-icon">
+                                        <input type="time" name="ThirdTime" id="ThirdTime" class="input-field">
+                                        <label for="ThirdTime" class="placeholder">選擇欲提醒的第三次用藥時間</label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="name" id="thirdTimeContainer" style="display:none;">第三次用藥時間</div>
-                        <div class="value" id="thirdTimeValue" style="display:none;">
-                            <div class="input-icon">
-                                <input type="time" name="ThirdTime" id="ThirdTime" class="input-field">
-                                <label for="ThirdTime" class="placeholder">選擇第三次用藥時間</label>
-                            </div>
+                        <div class="name">結束日期時間</div>
+                        <div class="value">
+                            <input type="datetime-local" name="EndDate" class="input-field">
                         </div>
 
                         <div class="name">用藥目的</div>
@@ -158,6 +161,12 @@
                 if (this.value) {
                     thirdTimeContainer.style.display = 'block';
                     thirdTimeValue.style.display = 'block';
+
+                    secondTimeValue.style.display = 'inline-block';
+                    thirdTimeValue.style.display = 'inline-block';
+
+                    secondTimeValue.parentElement.style.display = 'flex';
+                    secondTimeValue.parentElement.style.gap = '10px';
                 } else {
                     thirdTimeContainer.style.display = 'none';
                     thirdTimeValue.style.display = 'none';

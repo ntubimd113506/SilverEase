@@ -99,6 +99,8 @@ def med_create():
         CreateTime = datetime.now()
         file = request.files.get("Pic")
 
+        EndDate = EndDate if EndDate else None
+
         conn = db.get_connection()
         cursor = conn.cursor()
 
@@ -375,6 +377,9 @@ def med_list():
                     "Cycle": d[6],
                     "Alert": d[7],
                     "MedFeature": d[11],
+                    "SecondTime": d[12],
+                    "ThirdTime": d[13],
+                    "EndDate": d[14],
                     "MainUserName": d[15],
                     "EditorUserName": d[16],
                 }
@@ -499,6 +504,9 @@ def med_history():
                     "Cycle": d[6],
                     "Alert": d[7],
                     "MedFeature": d[11],
+                    "SecondTime": d[12],
+                    "ThirdTime": d[13],
+                    "EndDate": d[14],
                     "MainUserName": d[15],
                     "EditorUserName": d[16],
                 }
@@ -544,6 +552,9 @@ def med_update_confirm():
         "Cycle": data[6],
         "Alert": data[7],
         "MedFeature": data[11],
+        "SecondTime": data[12],
+        "ThirdTime": data[13],
+        "EndDate": data[14],
     }
 
     return render_template("/med/med_update_confirm.html", data=values)
@@ -558,9 +569,14 @@ def med_update():
         Title = request.form.get("Title")
         MemoTime = request.form.get("MemoTime")
         MedFeature = request.form.get("MedFeature")
+        SecondTime = request.form.get("SecondTime")
+        ThirdTime = request.form.get("ThirdTime")
+        EndDate = request.form.get("EndDate")
         Cycle = request.form.get("Cycle")
         Alert = int(request.form.get("Alert"))
         file = request.files.get("Pic")
+
+        EndDate = EndDate if EndDate else None
 
         if file:
             for ext in ALLOWED_EXTENSIONS:
@@ -587,10 +603,10 @@ def med_update():
         cursor.execute(
             """
             UPDATE Med 
-            SET MedFeature = %s 
+            SET MedFeature = %s, SecondTime = %s, ThirdTime = %s, EndDate = %s
             WHERE MemoID = %s
             """,
-            (MedFeature, MemoID),
+            (MedFeature, SecondTime, ThirdTime, EndDate, MemoID),
         )
 
         conn.commit()

@@ -118,6 +118,25 @@
     }
 </script>
 
+<script>
+    function toggleThirdTime() {
+        const secondTimeInput = document.getElementById('secondTimeInput');
+        const thirdTimeContainer = document.getElementById('thirdTimeContainer');
+
+        if (secondTimeInput.value) {
+            thirdTimeContainer.style.display = 'block';
+            document.getElementById('secondThirdTimeContainer').style.display = 'flex';
+        } else {
+            thirdTimeContainer.style.display = 'none';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        toggleThirdTime();
+        document.getElementById('secondTimeInput').addEventListener('input', toggleThirdTime); // Check on change
+    });
+</script>
+
 <body onload="initializeLiff('2004699458-OR9pkZjP')">
     <div class="container">
 
@@ -146,12 +165,42 @@
                             <input type="text" name="Title" value="{{ data.Title }}" class="input-field" required>
                         </div>
 
-                        <div class="name">日期</div>
+                        <div class="name">日期時間</div>
                         <div class="value">
                             <div class="input-icon">
                                 <input type="datetime-local" name="MemoTime" value="{{ data.MemoTime }}"
                                     class="input-field" required>
                                 <i class="fa-solid fa-calendar-days calendar-icon"></i>
+                            </div>
+                        </div>
+
+                        <div id="secondThirdTimeContainer">
+                            <div style="display: flex; gap: 10px; width: 100%;">
+                                <div style="flex: 1;">
+                                    <div class="name">第二次用藥時間</div>
+                                    <div class="value">
+                                        <div class="input-icon">
+                                            <input type="time" name="SecondTime" id="secondTimeInput" value="{{ data.SecondTime }}" class="input-field">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div id="thirdTimeContainer" style="flex: 1; display: none;">
+                                    <div class="name">第三次用藥時間</div>
+                                    <div class="value">
+                                        <div class="input-icon">
+                                            <input type="time" name="ThirdTime" id="thirdTimeInput" value="{{ data.ThirdTime }}" class="input-field">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="name">結束日期時間</div>
+                        <div class="value">
+                            <div class="input-icon">
+                                <input type="datetime-local" name="EndDate" value="{{ data.EndDate }}" class="input-field">
+                                <label for="EndDate" class="placeholder">選擇欲結束提醒日期時間</label>
                             </div>
                         </div>
 
