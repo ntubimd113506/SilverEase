@@ -109,10 +109,13 @@ def foot():
             # 保存地圖為 HTML 文件
             map_path = f"static/maps/{MainUserID}_footprint_map.html"
             mymap.save(map_path)
-            return jsonify({'success': True, 'map_path': map_path})
+
+            # 返回包含地圖的 HTML 頁面
+            return render_template('my_map.html', map_path=map_path)
         else:
-            return jsonify({'success': False, 'message': 'No locations found.'})
+            return render_template('my_map.html', map_path=None, message='No locations found.')
     else:
-        return jsonify({'success': False, 'message': 'Invalid MainUserID'})
+        return render_template('my_map.html', map_path=None, message='Invalid MainUserID')
+
 
 

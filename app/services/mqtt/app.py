@@ -15,6 +15,8 @@ mqtt = Mqtt()
 def handle_connect(client, userdata, flags, rc):
     mqtt.subscribe("myTopic")
     mqtt.subscribe("ESP32/#")
+    mqtt.subscribe("/SOSgps")
+
 
 @mqtt.on_message()
 def handle_mqtt_message(client, userdata, message):
@@ -172,8 +174,8 @@ def sos_gps(Map):
     conn.commit()
 
     # 獲取所有的 SubUserID
-    cursor.execute('SELECT SubUserID FROM `113-ntub113506`.FamilyLink WHERE FamilyID = %s', (FamID,))
-    Sub = cursor.fetchall()
+    # cursor.execute('SELECT SubUserID FROM `113-ntub113506`.FamilyLink WHERE FamilyID = %s', (FamID,))
+    # Sub = cursor.fetchall()
 
     # 獲取最新的 LocatNo
     cursor.execute("SELECT LocatNo FROM Location WHERE FamilyID=%s ORDER BY LocatNo DESC LIMIT 1", (FamID,))
@@ -183,66 +185,66 @@ def sos_gps(Map):
     cursor.execute('INSERT INTO `113-ntub113506`.SOS (LocatNo) VALUES (%s)', (LocatNo,))
     conn.commit()
 
-    # 緊急通知訊息
-    thumbnail_image_url = "https://silverease.ntub.edu.tw/static//imgs/help.png"
-    resMsg = FlexSendMessage(
-        alt_text="緊急通知",
-        contents={
-            "type": "bubble",
-            "hero": {
-                "type": "image",
-                "url": thumbnail_image_url,
-                "size": "full",
-                "aspectRatio": "20:15",
-                "aspectMode": "cover",
-                "action": {"type": "uri", "uri": thumbnail_image_url},
-            },
-            "body": {
-                "type": "box",
-                "layout": "vertical",
-                "contents": [
-                    {
-                        "type": "text",
-                        "text": "緊急通知",
-                        "weight": "bold",
-                        "size": "xl",
-                        "align": "center",
-                    }
-                ],
-            },
-            "footer": {
-                "type": "box",
-                "layout": "vertical",
-                "spacing": "sm",
-                "contents": [
-                    {
-                        "type": "button",
-                        "style": "link",
-                        "height": "sm",
-                        "action": {
-                            "type": "postback",
-                            "label": "收到",
-                            "data": json.dumps({"action": "help"}),
-                            "text":"你按ㄌ"
-                        },
-                    },
-                    {
-                        "type": "button",
-                        "action": {
-                            "type": "uri",
-                            "label": "定位資訊",
-                            "uri": Map,
-                        },
-                    },
-                ],
-                "flex": 0,
-            },
-        },
-    )
+    # # 緊急通知訊息
+    # thumbnail_image_url = "https://silverease.ntub.edu.tw/static//imgs/help.png"
+    # resMsg = FlexSendMessage(
+    #     alt_text="緊急通知",
+    #     contents={
+    #         "type": "bubble",
+    #         "hero": {
+    #             "type": "image",
+    #             "url": thumbnail_image_url,
+    #             "size": "full",
+    #             "aspectRatio": "20:15",
+    #             "aspectMode": "cover",
+    #             "action": {"type": "uri", "uri": thumbnail_image_url},
+    #         },
+    #         "body": {
+    #             "type": "box",
+    #             "layout": "vertical",
+    #             "contents": [
+    #                 {
+    #                     "type": "text",
+    #                     "text": "緊急通知",
+    #                     "weight": "bold",
+    #                     "size": "xl",
+    #                     "align": "center",
+    #                 }
+    #             ],
+    #         },
+    #         "footer": {
+    #             "type": "box",
+    #             "layout": "vertical",
+    #             "spacing": "sm",
+    #             "contents": [
+    #                 {
+    #                     "type": "button",
+    #                     "style": "link",
+    #                     "height": "sm",
+    #                     "action": {
+    #                         "type": "postback",
+    #                         "label": "收到",
+    #                         "data": json.dumps({"action": "help"}),
+    #                         "text":"你按ㄌ"
+    #                     },
+    #                 },
+    #                 {
+    #                     "type": "button",
+    #                     "action": {
+    #                         "type": "uri",
+    #                         "label": "定位資訊",
+    #                         "uri": Map,
+    #                     },
+    #                 },
+    #             ],
+    #             "flex": 0,
+    #         },
+    #     },
+    # )
 
-    # 推送訊息給所有 SubUserID
-    for user in Sub:
-        line.line_bot_api.push_message(user[0], resMsg)
+    # # 推送訊息給所有 SubUserID
+    # for user in Sub:
+    #     line.line_bot_api.push_message(user[0], resMsg)
 
 
 # def get_FamilyUser(FamilyID):
@@ -365,6 +367,6 @@ def sos_gps(Map):
 #     for userID in UserIDs:
 #         line.line_bot_api.push_message(userID, resMsg)
 
-    return True
+    # return True
 
 
