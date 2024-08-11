@@ -2,6 +2,9 @@ from flask import request, render_template, Blueprint, session, jsonify
 from flask_login import login_required
 from utils import db
 from services import mqtt
+import re
+import folium
+
 
 gps_bp = Blueprint('gps_bp', __name__)
 
@@ -63,3 +66,53 @@ def check():
 
     url = latest_location[0] if latest_location else "no_data"
     return jsonify({'url': url})
+
+@gps_bp.route('/foot', methods=['POST'])
+def foot():
+    MainUserID = request.form.get("MainUserID")
+    conn = db.get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT FamilyID FROM `113-ntub113506`.Family WHERE MainUserID = %s", (MainUserID,))
+    FamID = cursor.fetchone()
+
+    if FamID:
+        cursor.execute('SELECT Location FROM `113-ntub113506`.Location WHERE FamilyID = %s', (FamID[0],))
+        rows = cursor.fetchall()
+
+        pattern = r"query=(-?\d+\.\d+),(-?\d+\.\d+)"
+
+        locations = []
+
+        for row in rows:
+            url = row[0]
+            match = re.search(pattern, url)
+            if match:
+                latitude = float(match.group(1))
+                longitude = float(match.group(2))
+                locations.append({"latitude": latitude, "longitude": longitude})
+
+        # 初始化地圖（以第一個地點為中心）
+        if locations:
+            mymap = folium.Map(location=[locations[0]["latitude"], locations[0]["longitude"]], zoom_start=13)
+
+            # 添加標記和路徑
+            for location in locations:
+                folium.Marker(
+                    location=[location["latitude"], location["longitude"]],
+                    popup=f"Lat: {location['latitude']}, Lon: {location['longitude']}"
+                ).add_to(mymap)
+
+            # 添加路徑
+            folium.PolyLine([(loc["latitude"], loc["longitude"]) for loc in locations], color="blue").add_to(mymap)
+
+            # 保存地圖為 HTML 文件
+            map_path = f"static/maps/{MainUserID}_footprint_map.html"
+            mymap.save(map_path)
+            return jsonify({'success': True, 'map_path': map_path})
+        else:
+            return jsonify({'success': False, 'message': 'No locations found.'})
+    else:
+        return jsonify({'success': False, 'message': 'Invalid MainUserID'})
+
+
