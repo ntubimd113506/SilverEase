@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title }}</title>
+    <title>個人推薦</title>
     <style>
         .item-image {
             display: none;
@@ -11,10 +11,10 @@
     </style>
 </head>
 <body>
-    <h2>{{ title }}</h2>
+    <h2>個人推薦</h2>
     <a href="{{ url_for('health_bp.health') }}">返回主頁</a>
-    <div class="content">
-        {% for item in items %}
+    <div class="symptom-images">
+        {% for item in image_items %}
             <h3 class="item-title" onclick="toggleImage('{{ loop.index0 }}')">{{ item.name }}</h3>
             <img id="image-{{ loop.index0 }}" class="item-image" src="{{ url_for('static', filename='/imgs/health/' + item.image) }}" alt="{{ item.name }}">
         {% endfor %}
