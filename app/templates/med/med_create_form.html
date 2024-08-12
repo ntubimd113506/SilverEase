@@ -43,9 +43,25 @@
                             {% endfor %}
                         </select>
 
-                        <div class="name">名稱</div>
+                        <div class="name">藥物名稱</div>
                         <div class="value">
-                            <input type="text" name="Title" class="input-field" placeholder="請輸入名稱" required>
+                            <select name="Title" id="TitleSelect" class="input-field" required>
+                                <option value="" disabled selected>請選擇藥物名稱</option>
+                                <option value="感冒藥">感冒藥</option>
+                                <option value="頭痛藥">頭痛藥</option>
+                                <option value="止痛藥">止痛藥</option>
+                                <option value="高血壓藥物">高血壓藥物</option>
+                                <option value="糖尿病藥物">糖尿病藥物</option>
+                                <option value="心臟病藥物">心臟病藥物</option>
+                                <option value="降膽固醇藥物">降膽固醇藥物</option>
+                                <option value="腎臟內科">腎臟內科</option>
+                                <option value="抗凝劑">抗凝劑</option>
+                                <option value="抗血小板藥物">抗血小板藥物</option>
+                                <option value="癌症藥物">癌症藥物</option>
+                                <option value="其他">其他</option>
+                            </select>
+                            <input type="text" name="OtherTitle" id="OtherTitle" class="input-field"
+                                placeholder="請輸入其他藥物名稱" style="display:none;">
                         </div>
 
                         <div class="name">日期時間</div>
@@ -82,11 +98,6 @@
                         <div class="name">結束日期時間</div>
                         <div class="value">
                             <input type="datetime-local" name="EndDate" class="input-field">
-                        </div>
-
-                        <div class="name">用藥目的</div>
-                        <div class="value">
-                            <input type="text" name="MedFeature" class="input-field" placeholder="請輸入使用藥物的具體原因或目標（可留空）">
                         </div>
 
                         <div class="name">圖片</div>
@@ -201,6 +212,19 @@
             fileInput.value = '';
             removeSelectionBtn.style.display = 'none';
         }
+
+        var titleSelect = document.getElementById('TitleSelect');
+            var otherTitleInput = document.getElementById('OtherTitle');
+
+            titleSelect.addEventListener('change', function() {
+                if (this.value === '其他') {
+                    otherTitleInput.style.display = 'block';
+                    otherTitleInput.required = true;
+                } else {
+                    otherTitleInput.style.display = 'none';
+                    otherTitleInput.required = false;
+                }
+            });
     </script>
 
 </body>

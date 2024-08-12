@@ -14,132 +14,8 @@
     <script src="/static/js/img.js"></script>
 </head>
 
-<script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
-<script>
-    var EditorID;
-    function initializeLiff(myLiffId) {
-        liff.init({
-            liffId: myLiffId
-        }).then(() => {
-            if (!liff.isLoggedIn()) {
-                alert("用戶未登入");
-                liff.login();
-            } else {
-                liff.getProfile()
-                    .then(profile => {
-                        var EditorID = profile.userId;
-                        document.getElementById("EditorID").value = EditorID;
-                    })
-                    .catch((err) => {
-                        console.log('error', err);
-                    });
-            }
-
-        }).catch((err) => {
-            console.log('初始化失敗', err);
-        });
-    }
-
-    document.addEventListener('DOMContentLoaded', function () {
-        var cycleValue = "{{ data.Cycle }}";
-        var cycleSelectElement = document.querySelector('select[name="Cycle"]');
-        for (var i = 0; i < cycleSelectElement.options.length; i++) {
-            if (cycleSelectElement.options[i].value === cycleValue) {
-                cycleSelectElement.options[i].selected = true;
-                break;
-            }
-        }
-
-        var alertValue = "{{ data.Alert }}";
-        var alertSelectElement = document.querySelector('select[name="Alert"]');
-        for (var i = 0; i < alertSelectElement.options.length; i++) {
-            if (alertSelectElement.options[i].value === alertValue) {
-                alertSelectElement.options[i].selected = true;
-                break;
-            }
-        }
-    });
-
-</script>
-
-<script>
-    function removeImage(memoID) {
-        if (confirm("您確定要移除這張圖片嗎？")) {
-            fetch(`/med/delete/image/${memoID}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        const imageElement = document.querySelector(`#pic-${memoID} img`);
-                        if (imageElement) {
-                            imageElement.style.display = 'none';
-                        }
-                        alert("圖片已成功移除");
-                        location.reload();
-                    } else {
-                        alert("移除圖片失敗：" + data.error);
-                    }
-                })
-                .catch(error => {
-                    console.error("Error removing image:", error);
-                    alert("發生錯誤，無法移除圖片");
-                });
-        }
-    }
-
-    function fileSelected() {
-        const fileInput = document.getElementById('fileInput');
-        const removeSelectionBtn = document.getElementById('removeSelectionBtn');
-        const allowedExtensions = ['png', 'jpg', 'jpeg', 'gif'];
-        const file = fileInput.files[0];
-        const fileExtension = file ? file.name.split('.').pop().toLowerCase() : '';
-
-        if (file && !allowedExtensions.includes(fileExtension)) {
-            alert('圖檔只能是「.png、.jpg、.jpeg或.gif」請重新選擇。');
-            fileInput.value = '';
-            removeSelectionBtn.style.display = 'none';
-        } else if (file) {
-            removeSelectionBtn.style.display = 'inline-block';
-        } else {
-            removeSelectionBtn.style.display = 'none';
-        }
-    }
-
-    function removeSelection() {
-        const fileInput = document.getElementById('fileInput');
-        const removeSelectionBtn = document.getElementById('removeSelectionBtn');
-
-        fileInput.value = '';
-        removeSelectionBtn.style.display = 'none';
-    }
-</script>
-
-<script>
-    function toggleThirdTime() {
-        const secondTimeInput = document.getElementById('secondTimeInput');
-        const thirdTimeContainer = document.getElementById('thirdTimeContainer');
-
-        if (secondTimeInput.value) {
-            thirdTimeContainer.style.display = 'block';
-            document.getElementById('secondThirdTimeContainer').style.display = 'flex';
-        } else {
-            thirdTimeContainer.style.display = 'none';
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', function () {
-        toggleThirdTime();
-        document.getElementById('secondTimeInput').addEventListener('input', toggleThirdTime); // Check on change
-    });
-</script>
-
 <body onload="initializeLiff('2004699458-OR9pkZjP')">
     <div class="container">
-
         <div class="header">
             <h1>SilverEase</h1>
         </div>
@@ -160,10 +36,23 @@
             <div class="form-container">
                 <form action="/med/update" method="post" enctype="multipart/form-data">
                     <div class="form">
-                        <div class="name">名稱</div>
-                        <div class="value">
-                            <input type="text" name="Title" value="{{ data.Title }}" class="input-field" required>
-                        </div>
+                        <div class="name">藥物名稱</div>
+                        <select name="Title">
+                            <option value="感冒藥" {% if data.Title=="感冒藥" %}selected{% endif %}>感冒藥</option>
+                            <option value="頭痛藥" {% if data.Title=="頭痛藥" %}selected{% endif %}>頭痛藥</option>
+                            <option value="止痛藥" {% if data.Title=="止痛藥" %}selected{% endif %}>止痛藥</option>
+                            <option value="高血壓藥物" {% if data.Title=="高血壓藥物" %}selected{% endif %}>高血壓藥物</option>
+                            <option value="糖尿病藥物" {% if data.Title=="糖尿病藥物" %}selected{% endif %}>糖尿病藥物</option>
+                            <option value="心臟病藥物" {% if data.Title=="心臟病藥物" %}selected{% endif %}>心臟病藥物</option>
+                            <option value="降膽固醇藥物" {% if data.Title=="降膽固醇藥物" %}selected{% endif %}>降膽固醇藥物</option>
+                            <option value="抗凝劑" {% if data.Title=="抗凝劑" %}selected{% endif %}>抗凝劑</option>
+                            <option value="抗血小板藥物" {% if data.Title=="抗血小板藥物" %}selected{% endif %}>抗血小板藥物</option>
+                            <option value="癌症藥物" {% if data.Title=="癌症藥物" %}selected{% endif %}>癌症藥物</option>
+                            <option value="其他" {% if data.Title=="其他" %}selected{% endif %}>其他</option>
+                        </select>
+                        <input type="text" name="OtherTitle" id="OtherTitle" class="input-field"
+                            value="{{ data.OtherTitle if data.OtherTitle else '' }}" placeholder="請輸入其他藥物名稱"
+                            style="display:none;">
 
                         <div class="name">日期時間</div>
                         <div class="value">
@@ -180,16 +69,18 @@
                                     <div class="name">第二次用藥時間</div>
                                     <div class="value">
                                         <div class="input-icon">
-                                            <input type="time" name="SecondTime" id="secondTimeInput" value="{{ data.SecondTime }}" class="input-field">
+                                            <input type="time" name="SecondTime" id="secondTimeInput"
+                                                value="{{ data.SecondTime }}" class="input-field">
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div id="thirdTimeContainer" style="flex: 1; display: none;">
                                     <div class="name">第三次用藥時間</div>
                                     <div class="value">
                                         <div class="input-icon">
-                                            <input type="time" name="ThirdTime" id="thirdTimeInput" value="{{ data.ThirdTime }}" class="input-field">
+                                            <input type="time" name="ThirdTime" id="thirdTimeInput"
+                                                value="{{ data.ThirdTime }}" class="input-field">
                                         </div>
                                     </div>
                                 </div>
@@ -199,14 +90,10 @@
                         <div class="name">結束日期時間</div>
                         <div class="value">
                             <div class="input-icon">
-                                <input type="datetime-local" name="EndDate" value="{{ data.EndDate }}" class="input-field">
+                                <input type="datetime-local" name="EndDate" value="{{ data.EndDate }}"
+                                    class="input-field">
                                 <label for="EndDate" class="placeholder">選擇欲結束提醒日期時間</label>
                             </div>
-                        </div>
-
-                        <div class="name">用藥目的</div>
-                        <div class="value">
-                            <input type="text" name="MedFeature" value="{{ data.MedFeature }}" class="input-field">
                         </div>
 
                         <div class="name">圖片</div>
@@ -250,12 +137,151 @@
                     <input type="hidden" id="EditorID" name="EditorID">
                     <div class="name"></div>
                     <div class="value"><input type="submit" value="更改"></div>
+                </form>
             </div>
-            </form>
-
         </div>
-
     </div>
+
+    <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+    <script>
+        var EditorID;
+        function initializeLiff(myLiffId) {
+            liff.init({
+                liffId: myLiffId
+            }).then(() => {
+                if (!liff.isLoggedIn()) {
+                    alert("用戶未登入");
+                    liff.login();
+                } else {
+                    liff.getProfile()
+                        .then(profile => {
+                            var EditorID = profile.userId;
+                            document.getElementById("EditorID").value = EditorID;
+                        })
+                        .catch((err) => {
+                            console.log('error', err);
+                        });
+                }
+
+            }).catch((err) => {
+                console.log('初始化失敗', err);
+            });
+        }
+
+        function removeImage(memoID) {
+            if (confirm("您確定要移除這張圖片嗎？")) {
+                fetch(`/med/delete/image/${memoID}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            const imageElement = document.querySelector(`#pic-${memoID} img`);
+                            if (imageElement) {
+                                imageElement.style.display = 'none';
+                            }
+                            alert("圖片已成功移除");
+                            location.reload();
+                        } else {
+                            alert("移除圖片失敗：" + data.error);
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error removing image:", error);
+                        alert("發生錯誤，無法移除圖片");
+                    });
+            }
+            }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var cycleValue = "{{ data.Cycle }}";
+            var cycleSelectElement = document.querySelector('select[name="Cycle"]');
+            for (var i = 0; i < cycleSelectElement.options.length; i++) {
+                if (cycleSelectElement.options[i].value === cycleValue) {
+                    cycleSelectElement.options[i].selected = true;
+                    break;
+                }
+            }
+
+            var alertValue = "{{ data.Alert }}";
+            var alertSelectElement = document.querySelector('select[name="Alert"]');
+            for (var i = 0; i < alertSelectElement.options.length; i++) {
+                if (alertSelectElement.options[i].value === alertValue) {
+                    alertSelectElement.options[i].selected = true;
+                    break;
+                }
+            }
+
+            var titleSelectElement = document.querySelector('select[name="Title"]');
+            var otherTitleInput = document.getElementById('OtherTitle');
+
+            if (titleSelectElement.value === '其他') {
+                otherTitleInput.style.display = 'block';
+                otherTitleInput.required = true;
+                otherTitleInput.value = "{{ data.OtherTitle }}";
+            } else {
+                otherTitleInput.style.display = 'none';
+                otherTitleInput.required = false;
+            }
+        });
+
+        document.querySelector('select[name="Title"]').addEventListener('change', function () {
+            var otherTitleInput = document.getElementById('OtherTitle');
+            if (this.value === '其他') {
+                otherTitleInput.style.display = 'block';
+                otherTitleInput.required = true;
+            } else {
+                otherTitleInput.style.display = 'none';
+                otherTitleInput.required = false;
+            }
+        });
+
+        function fileSelected() {
+            const fileInput = document.getElementById('fileInput');
+            const removeSelectionBtn = document.getElementById('removeSelectionBtn');
+            const allowedExtensions = ['png', 'jpg', 'jpeg', 'gif'];
+            const file = fileInput.files[0];
+            const fileExtension = file ? file.name.split('.').pop().toLowerCase() : '';
+
+            if (file && !allowedExtensions.includes(fileExtension)) {
+                alert('圖檔只能是「.png、.jpg、.jpeg或.gif」請重新選擇。');
+                fileInput.value = '';
+                removeSelectionBtn.style.display = 'none';
+            } else if (file) {
+                removeSelectionBtn.style.display = 'inline-block';
+            } else {
+                removeSelectionBtn.style.display = 'none';
+            }
+        }
+
+        function removeSelection() {
+            const fileInput = document.getElementById('fileInput');
+            const removeSelectionBtn = document.getElementById('removeSelectionBtn');
+
+            fileInput.value = '';
+            removeSelectionBtn.style.display = 'none';
+        }
+
+        function toggleThirdTime() {
+            const secondTimeInput = document.getElementById('secondTimeInput');
+            const thirdTimeContainer = document.getElementById('thirdTimeContainer');
+
+            if (secondTimeInput.value) {
+                thirdTimeContainer.style.display = 'block';
+                document.getElementById('secondThirdTimeContainer').style.display = 'flex';
+            } else {
+                thirdTimeContainer.style.display = 'none';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            toggleThirdTime();
+            document.getElementById('secondTimeInput').addEventListener('input', toggleThirdTime); // Check on change
+        });
+    </script>
 </body>
 
 </html>

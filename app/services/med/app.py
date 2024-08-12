@@ -89,11 +89,11 @@ def med_create():
         MemID = session.get("MemID")
         MainUserID = request.form.get("MainUserID")
         Title = request.form.get("Title")
+        OtherTitle = request.form.get("OtherTitle")
         MemoTime = request.form.get("MemoTime")
         SecondTime = request.form.get("SecondTime")
         ThirdTime = request.form.get("ThirdTime")
         EndDate = request.form.get("EndDate")
-        MedFeature = request.form.get("MedFeature")
         Cycle = request.form.get("Cycle")
         Alert = int(request.form.get("Alert", 0))
         CreateTime = datetime.now()
@@ -114,12 +114,14 @@ def med_create():
         )
         FamilyID = cursor.fetchone()[0]
 
+        TitleValue = OtherTitle if Title == "其他" else Title
+
         cursor.execute(
             """
             INSERT INTO Memo (FamilyID, Title, MemoTime, MemoType, EditorID, Cycle, Alert, Status, CreateTime)
             VALUES(%s, %s, %s, '1', %s, %s, %s, '1', %s)
             """,
-            (FamilyID, Title, MemoTime, MemID, Cycle, Alert, CreateTime),
+            (FamilyID, TitleValue, MemoTime, MemID, Cycle, Alert, CreateTime),
         )
 
         cursor.execute("Select MemoID from Memo order by MemoID Desc")
@@ -130,10 +132,10 @@ def med_create():
         cursor.execute(
             """
             INSERT INTO 
-            Med (MemoID, MedFeature, SecondTime, ThirdTime, EndDate) 
-            VALUES (%s, %s, %s, %s, %s)
+            Med (MemoID, SecondTime, ThirdTime, EndDate) 
+            VALUES (%s, %s, %s, %s)
             """,
-            (MemoID, MedFeature, SecondTime, ThirdTime, EndDate),
+            (MemoID, SecondTime, ThirdTime, EndDate),
         )
 
         conn.commit()
@@ -173,7 +175,6 @@ def send_line_message(MemoID, cnt=0, got=False):
     try:
         data = db.get_memo_info(MemoID)
         Title = data["Title"]
-        MedFeature = data["MedFeature"]
         MainUserID = data["MainUser"]
         MainUserName = data["MainUserName"]
         SubUserIDs = data["SubUser"]
@@ -195,13 +196,13 @@ def send_line_message(MemoID, cnt=0, got=False):
                 image_size="contain",
                 image_background_color="#FFFFFF",
                 title="用藥通知",
-                text=f"📌標題: {Title}\n💊藥盒與藥袋外觀描述: {MedFeature}",
+                text=f"📌標題: {Title}\n",
                 actions=[PostbackAction(label="收到", data=msg, text="收到")],
             ),
         )
 
         body1 = TextSendMessage(
-            text=f"{MainUserName}長者尚未收到此用藥通知\n請儘速與長者聯繫\n\n📌標題: {Title}\n💊藥盒與藥袋外觀描述: {MedFeature}",
+            text=f"{MainUserName}長者尚未收到此用藥通知\n請儘速與長者聯繫\n\n📌標題: {Title}\n💊",
         )
 
         conn = db.get_connection()
@@ -376,12 +377,11 @@ def med_list():
                     "MemoTime": d[3],
                     "Cycle": d[6],
                     "Alert": d[7],
-                    "MedFeature": d[11],
-                    "SecondTime": d[12],
-                    "ThirdTime": d[13],
-                    "EndDate": d[14],
-                    "MainUserName": d[15],
-                    "EditorUserName": d[16],
+                    "SecondTime": d[11],
+                    "ThirdTime": d[12],
+                    "EndDate": d[13],
+                    "MainUserName": d[14],
+                    "EditorUserName": d[15],
                 }
             )
         return render_template(
@@ -503,12 +503,11 @@ def med_history():
                     "MemoTime": d[3],
                     "Cycle": d[6],
                     "Alert": d[7],
-                    "MedFeature": d[11],
-                    "SecondTime": d[12],
-                    "ThirdTime": d[13],
-                    "EndDate": d[14],
-                    "MainUserName": d[15],
-                    "EditorUserName": d[16],
+                    "SecondTime": d[11],
+                    "ThirdTime": d[12],
+                    "EndDate": d[13],
+                    "MainUserName": d[14],
+                    "EditorUserName": d[15],
                 }
             )
         return render_template(
@@ -545,16 +544,24 @@ def med_update_confirm():
 
     connection.close()
 
+    if data:
+        department_list = [
+            "感冒藥", "頭痛藥", "止痛藥", "高血壓藥物", 
+            "糖尿病藥物", "心臟病藥物", "降膽固醇藥物", "抗凝劑", 
+            "抗血小板藥物", "癌症藥物", ""        ]
+
+        department = data[2] if data[2] in department_list else "其他"
+
     values = {
         "MemoID": data[0],
-        "Title": data[2],
+        "Title": department,
+        "OtherTitle": data[2],
         "MemoTime": data[3],
         "Cycle": data[6],
         "Alert": data[7],
-        "MedFeature": data[11],
-        "SecondTime": data[12],
-        "ThirdTime": data[13],
-        "EndDate": data[14],
+        "SecondTime": data[11],
+        "ThirdTime": data[12],
+        "EndDate": data[13],
     }
 
     return render_template("/med/med_update_confirm.html", data=values)
@@ -567,8 +574,8 @@ def med_update():
         EditorID = request.values.get("EditorID")
         MemoID = request.values.get("MemoID")
         Title = request.form.get("Title")
+        OtherTitle = request.form.get("OtherTitle")
         MemoTime = request.form.get("MemoTime")
-        MedFeature = request.form.get("MedFeature")
         SecondTime = request.form.get("SecondTime")
         ThirdTime = request.form.get("ThirdTime")
         EndDate = request.form.get("EndDate")
@@ -588,13 +595,15 @@ def med_update():
         conn = db.get_connection()
         cursor = conn.cursor()
 
+        TitleValue = OtherTitle if Title == "其他" else Title
+
         cursor.execute(
             """
             UPDATE Memo 
             SET Title = %s, MemoTime = %s, EditorID = %s, Cycle = %s, Alert = %s 
             WHERE MemoID = %s
             """,
-            (Title, MemoTime, EditorID, Cycle, Alert, MemoID),
+            (TitleValue, MemoTime, EditorID, Cycle, Alert, MemoID),
         )
 
         if file:
@@ -603,10 +612,10 @@ def med_update():
         cursor.execute(
             """
             UPDATE Med 
-            SET MedFeature = %s, SecondTime = %s, ThirdTime = %s, EndDate = %s
+            SET SecondTime = %s, ThirdTime = %s, EndDate = %s
             WHERE MemoID = %s
             """,
-            (MedFeature, SecondTime, ThirdTime, EndDate, MemoID),
+            (SecondTime, ThirdTime, EndDate, MemoID),
         )
 
         conn.commit()
