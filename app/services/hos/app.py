@@ -536,7 +536,7 @@ def hos_update_confirm():
         department_list = [
             "心臟內科", "內分泌新陳代謝科", "腫瘤科", "胸腔內科", 
             "神經內科", "腎臟內科", "外科", "骨科", 
-            "復健科", "呼吸內科", "耳鼻喉科", "精神科", ""
+            "復健科", "呼吸內科", "耳鼻喉科", "一般內科", "精神科", ""
         ]
 
         department = data[13] if data[13] in department_list else "其他"

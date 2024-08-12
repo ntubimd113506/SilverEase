@@ -104,7 +104,7 @@
                             <input type="text" name="Title" value="{{ data.Title }}" class="input-field" required>
                         </div>
 
-                        <div class="name">日期</div>
+                        <div class="name">日期時間</div>
                         <div class="value">
                             <div class="input-icon">
                                 <input type="datetime-local" name="MemoTime" value="{{ data.MemoTime }}"
@@ -113,7 +113,7 @@
                             </div>
                         </div>
 
-                        <div class="name">醫院地點</div>
+                        <div class="name">醫院/診所地點</div>
                         <div class="value">
                             <input type="text" name="Location" value="{{ data.Location }}" class="input-field">
                         </div>
@@ -125,6 +125,8 @@
 
                         <div class="name">門診科別</div>
                         <select name="Clinic">
+                            <option value="耳鼻喉科" {% if data.Clinic=="耳鼻喉科" %}selected{% endif %}>耳鼻喉科</option>
+                            <option value="一般內科" {% if data.Clinic=="一般內科" %}selected{% endif %}>一般內科</option>
                             <option value="心臟內科" {% if data.Clinic=="心臟內科" %}selected{% endif %}>心臟內科</option>
                             <option value="內分泌新陳代謝科" {% if data.Clinic=="內分泌新陳代謝科" %}selected{% endif %}>內分泌新陳代謝科
                             </option>
@@ -136,7 +138,6 @@
                             <option value="骨科" {% if data.Clinic=="骨科" %}selected{% endif %}>骨科</option>
                             <option value="復健科" {% if data.Clinic=="復健科" %}selected{% endif %}>復健科</option>
                             <option value="呼吸內科" {% if data.Clinic=="呼吸內科" %}selected{% endif %}>呼吸內科</option>
-                            <option value="耳鼻喉科" {% if data.Clinic=="耳鼻喉科" %}selected{% endif %}>耳鼻喉科</option>
                             <option value="精神科" {% if data.Clinic=="精神科" %}selected{% endif %}>精神科</option>
                             <option value="中醫" {% if data.Clinic=="中醫" %}selected{% endif %}>中醫</option>
                             <option value="其他" {% if data.Clinic=="其他" %}selected{% endif %}>其他</option>
