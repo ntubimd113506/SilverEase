@@ -118,11 +118,6 @@
                             <input type="text" name="Location" value="{{ data.Location }}" class="input-field">
                         </div>
 
-                        <div class="name">看診醫生</div>
-                        <div class="value">
-                            <input type="text" name="Doctor" value="{{ data.Doctor }}" class="input-field">
-                        </div>
-
                         <div class="name">門診科別</div>
                         <select name="Clinic">
                             <option value="耳鼻喉科" {% if data.Clinic=="耳鼻喉科" %}selected{% endif %}>耳鼻喉科</option>
@@ -145,6 +140,11 @@
                         <input type="text" name="OtherClinic" id="OtherClinic" class="input-field"
                             value="{{ data.OtherClinic if data.OtherClinic else '' }}" placeholder="請輸入其他門診科別"
                             style="display:none;">
+
+                        <div class="name">看診醫生</div>
+                        <div class="value">
+                            <input type="text" name="Doctor" value="{{ data.Doctor }}" class="input-field">
+                        </div>
 
                         <div class="name">號碼</div>
                         <div class="value">
