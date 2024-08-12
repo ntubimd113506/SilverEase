@@ -72,6 +72,7 @@ def hos_create():
         Location = request.form.get("Location")
         Doctor = request.form.get("Doctor")
         Clinic = request.form.get("Clinic")
+        OtherClinic = request.form.get("OtherClinic")
         Num = request.form.get("Num")
         Cycle = request.form.get("Cycle")
         Alert = int(request.form.get("Alert", 0))
@@ -101,13 +102,15 @@ def hos_create():
         cursor.execute("SELECT MemoID FROM Memo ORDER BY MemoID DESC")
         MemoID = cursor.fetchone()[0]
 
+        ClinicValue = OtherClinic if Clinic == "其他" else Clinic
+
         cursor.execute(
             """
             INSERT INTO 
             Hos (MemoID, Location, Doctor, Clinic, Num) 
             VALUES (%s, %s, %s, %s, %s)
             """,
-            (MemoID, Location, Doctor, Clinic, Num),
+            (MemoID, Location, Doctor, ClinicValue, Num),
         )
 
         conn.commit()
@@ -530,6 +533,15 @@ def hos_update_confirm():
     connection.close()
 
     if data:
+        department_list = [
+            "心臟內科", "內分泌新陳代謝科", "腫瘤科", "胸腔內科", 
+            "神經內科", "腎臟內科", "外科", "骨科", 
+            "復健科", "呼吸內科", "耳鼻喉科", "精神科", ""
+        ]
+
+        department = data[13] if data[13] in department_list else "其他"
+
+    if data:
         values = {
             "MemoID": data[0],
             "Title": data[2],
@@ -538,7 +550,8 @@ def hos_update_confirm():
             "Alert": data[7],
             "Location": data[11],
             "Doctor": data[12],
-            "Clinic": data[13],
+            "Clinic": department,
+            "OtherClinic": data[13],
             "Num": data[14],
         }
 
@@ -556,6 +569,7 @@ def hos_update():
         Location = request.form.get("Location")
         Doctor = request.form.get("Doctor")
         Clinic = request.form.get("Clinic")
+        OtherClinic = request.form.get("OtherClinic")
         Num = request.form.get("Num")
         Cycle = request.form.get("Cycle")
         Alert = int(request.form.get("Alert"))
@@ -572,13 +586,15 @@ def hos_update():
             (Title, MemoTime, EditorID, Cycle, Alert, MemoID),
         )
 
+        ClinicValue = OtherClinic if Clinic == "其他" else Clinic
+
         cursor.execute(
             """
             UPDATE Hos 
             SET Location = %s, Doctor = %s, Clinic = %s, Num = %s 
             WHERE MemoID = %s
             """,
-            (Location, Doctor, Clinic, Num, MemoID),
+            (Location, Doctor, ClinicValue, Num, MemoID),
         )
 
         conn.commit()

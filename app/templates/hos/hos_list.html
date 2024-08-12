@@ -104,7 +104,7 @@
                 <div class="Alert">幾分鐘前提醒：{{ item.Alert }}分鐘</div>
                 <div class="Location">醫院地點：{{ item.Location }}</div>
                 <div class="Doctor">看診醫生：{{ item.Doctor }}</div>
-                <div class="Clinic">門診：{{ item.Clinic }}</div>
+                <div class="Clinic">門診科別：{{ item.Clinic if item.Clinic else '' }}</div>
                 <div class="Num">號碼：{{ item.Num }}</div>
                 <div class="MainUserName">長者：{{ item.MainUserName }}</div>
                 <div class="EditorUserName">修改者：{{ item.EditorUserName }}</div>
