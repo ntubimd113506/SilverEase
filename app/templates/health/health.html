@@ -1,33 +1,58 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title }}</title>
-    <style>
-        .item-image {
-            display: none;
-        }
-    </style>
+    <link href="/static/css/health.css" rel="stylesheet" />
 </head>
+
 <body>
     <h2>{{ title }}</h2>
     <a href="{{ url_for('health_bp.health') }}">返回主頁</a>
     <div class="content">
         {% for item in items %}
-            <h3 class="item-title" onclick="toggleImage('{{ loop.index0 }}')">{{ item.name }}</h3>
-            <img id="image-{{ loop.index0 }}" class="item-image" src="{{ url_for('static', filename='/imgs/health/' + item.image) }}" alt="{{ item.name }}">
+        <h3 class="item-title" onclick="toggleImage('{{ loop.index0 }}')">{{ item.name }}</h3>
+        <img id="image-{{ loop.index0 }}" class="item-image"
+            src="{{ url_for('static', filename='imgs/health/' + item.image) }}" alt="{{ item.name }}"
+            onclick="enlargeImage(this)">
         {% endfor %}
     </div>
+    <div id="overlay" class="overlay" onclick="closeImage()"></div>
+
     <script>
         function toggleImage(index) {
             var image = document.getElementById('image-' + index);
+            var overlay = document.getElementById('overlay');
             if (image.style.display === 'none' || image.style.display === '') {
                 image.style.display = 'block';
             } else {
                 image.style.display = 'none';
+                overlay.classList.remove('active');
             }
+        }
+
+        function enlargeImage(img) {
+            var overlay = document.getElementById('overlay');
+            if (img.classList.contains('enlarged')) {
+                img.classList.remove('enlarged');
+                overlay.classList.remove('active');
+            } else {
+                img.classList.add('enlarged');
+                overlay.classList.add('active');
+            }
+        }
+
+        function closeImage() {
+            var enlargedImage = document.querySelector('.item-image.enlarged');
+            var overlay = document.getElementById('overlay');
+            if (enlargedImage) {
+                enlargedImage.classList.remove('enlarged');
+            }
+            overlay.classList.remove('active');
         }
     </script>
 </body>
+
 </html>

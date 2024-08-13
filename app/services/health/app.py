@@ -1,4 +1,4 @@
-from flask import request, render_template, Blueprint, session, jsonify
+from flask import render_template, Blueprint, session
 from flask_login import login_required
 from utils import db
 
@@ -125,7 +125,7 @@ def health_self():
         for symptom, count in sorted_symptom_counts
     ]
 
-    return render_template("/health/self_health.html", image_items=image_items)
+    return render_template("/health/health.html", title="個人推薦", items=image_items)
 
 
 @health_bp.route("/<category>")
