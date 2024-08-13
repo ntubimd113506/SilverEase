@@ -79,7 +79,8 @@
                                 <div class="value">
                                     <div class="input-icon">
                                         <input type="time" name="SecondTime" id="SecondTime" class="input-field">
-                                        <label for="SecondTime" id="secondTimePlaceholder" class="placeholder">選擇欲提醒的第二次用藥時間</label>
+                                        <label for="SecondTime" id="secondTimePlaceholder"
+                                            class="placeholder">選擇欲提醒的第二次用藥時間</label>
                                     </div>
                                 </div>
                             </div>
@@ -89,7 +90,8 @@
                                 <div class="value">
                                     <div class="input-icon">
                                         <input type="time" name="ThirdTime" id="ThirdTime" class="input-field">
-                                        <label for="ThirdTime" id="thirdTimePlaceholder" class="placeholder">選擇欲提醒的第三次用藥時間</label>
+                                        <label for="ThirdTime" id="thirdTimePlaceholder"
+                                            class="placeholder">選擇欲提醒的第三次用藥時間</label>
                                     </div>
                                 </div>
                             </div>
@@ -147,143 +149,101 @@
         document.addEventListener('DOMContentLoaded', function () {
             var datetimeInput = document.getElementById('MemoTime');
             var placeholder = document.getElementById('placeholder');
-            const secondTimeContainer = document.getElementById('secondTimeContainer');
-            const secondTimeValue = document.getElementById('secondTimeValue');
-            const secondTimeInput = document.getElementById('SecondTime');
-            const thirdTimeContainer = document.getElementById('thirdTimeContainer');
-            const thirdTimeValue = document.getElementById('thirdTimeValue');
-            const thirdTimeInput = document.getElementById('ThirdTime');
-
-            datetimeInput.addEventListener('input', function () {
-                if (this.value) {
-                    placeholder.style.display = 'none';
-                    secondTimeContainer.style.display = 'block';
-                    secondTimeValue.style.display = 'block';
-
-                    var selectedDate = this.value.split('T')[0];
-                    secondTimeInput.value = selectedDate + "T" + secondTimeInput.value.split('T')[1];
-                    thirdTimeInput.value = selectedDate + "T" + thirdTimeInput.value.split('T')[1];
-                } else {
-                    placeholder.style.display = 'block';
-                    secondTimeContainer.style.display = 'none';
-                    secondTimeValue.style.display = 'none';
-                    thirdTimeContainer.style.display = 'none';
-                    thirdTimeValue.style.display = 'none';
-                }
-            });
-
-            secondTimeInput.addEventListener('input', function () {
-                if (this.value) {
-                    thirdTimeContainer.style.display = 'block';
-                    thirdTimeValue.style.display = 'block';
-
-                    secondTimeValue.style.display = 'inline-block';
-                    thirdTimeValue.style.display = 'inline-block';
-
-                    secondTimeValue.parentElement.style.display = 'flex';
-                    secondTimeValue.parentElement.style.gap = '10px';
-                } else {
-                    thirdTimeContainer.style.display = 'none';
-                    thirdTimeValue.style.display = 'none';
-                }
-            });
-
-            datetimeInput.dispatchEvent(new Event('input'));
-        });
-
-        function fileSelected() {
-            const fileInput = document.getElementById('fileInput');
-            const removeSelectionBtn = document.getElementById('removeSelectionBtn');
-            const allowedExtensions = ['png', 'jpg', 'jpeg', 'gif'];
-            const file = fileInput.files[0];
-            const fileExtension = file ? file.name.split('.').pop().toLowerCase() : '';
-
-            if (file && !allowedExtensions.includes(fileExtension)) {
-                alert('圖檔只能是 "png", "jpg", "jpeg", "gif"，請重新選擇或移除所選圖片');
-                fileInput.value = '';
-                removeSelectionBtn.style.display = 'none';
-            } else if (file) {
-                removeSelectionBtn.style.display = 'inline-block';
-            } else {
-                removeSelectionBtn.style.display = 'none';
-            }
-        }
-
-        function removeSelection() {
-            const fileInput = document.getElementById('fileInput');
-            const removeSelectionBtn = document.getElementById('removeSelectionBtn');
-
-            fileInput.value = '';
-            removeSelectionBtn.style.display = 'none';
-        }
-
-        var titleSelect = document.getElementById('TitleSelect');
+            var secondTimeContainer = document.getElementById('secondTimeContainer');
+            var secondTimeValue = document.getElementById('secondTimeValue');
+            var secondTimeInput = document.getElementById('SecondTime');
+            var thirdTimeContainer = document.getElementById('thirdTimeContainer');
+            var thirdTimeValue = document.getElementById('thirdTimeValue');
+            var thirdTimeInput = document.getElementById('ThirdTime');
+            var EndDateInput = document.querySelector('input[name="EndDate"]');
+            var EndDatePlaceholder = document.getElementById('EndDatePlaceholder');
+            var form = document.querySelector('form');
+            var titleSelect = document.getElementById('TitleSelect');
             var otherTitleInput = document.getElementById('OtherTitle');
 
-            titleSelect.addEventListener('change', function() {
-                if (this.value === '其他') {
-                    otherTitleInput.style.display = 'block';
-                    otherTitleInput.required = true;
-                } else {
-                    otherTitleInput.style.display = 'none';
-                    otherTitleInput.required = false;
+            function updatePlaceholders() {
+                placeholder.style.display = datetimeInput.value ? 'none' : 'block';
+                secondTimeContainer.style.display = datetimeInput.value ? 'block' : 'none';
+                thirdTimeContainer.style.display = secondTimeInput.value ? 'block' : 'none';
+                EndDatePlaceholder.style.display = EndDateInput.value ? 'none' : 'block';
+            }
+
+            function syncTimes() {
+                var selectedDate = datetimeInput.value.split('T')[0];
+                if (datetimeInput.value) {
+                    secondTimeInput.value = `${selectedDate}T${secondTimeInput.value.split('T')[1]}`;
+                    thirdTimeInput.value = `${selectedDate}T${thirdTimeInput.value.split('T')[1]}`;
                 }
-            })
-            
+            }
 
-            document.addEventListener('DOMContentLoaded', function () {
-                var datetimeInput = document.getElementById('MemoTime');
-                var datetimePlaceholder = document.getElementById('placeholder');
-                var secondTimeInput = document.getElementById('SecondTime');
-                var secondTimePlaceholder = document.getElementById('secondTimePlaceholder');
-                var thirdTimeInput = document.getElementById('ThirdTime');
-                var thirdTimePlaceholder = document.getElementById('thirdTimePlaceholder');
-                var EndDateInput = document.querySelector('input[name="EndDate"]');
-                var EndDatePlaceholder = document.getElementById('EndDatePlaceholder');
+            function validateFile() {
+                const fileInput = document.getElementById('fileInput');
+                const removeSelectionBtn = document.getElementById('removeSelectionBtn');
+                const allowedExtensions = ['png', 'jpg', 'jpeg', 'gif'];
+                const file = fileInput.files[0];
+                const fileExtension = file ? file.name.split('.').pop().toLowerCase() : '';
 
-                // Handle MemoTime placeholder
-                datetimeInput.addEventListener('input', function () {
-                    if (this.value) {
-                        datetimePlaceholder.style.display = 'none';
-                    } else {
-                        datetimePlaceholder.style.display = 'block';
-                    }
-                });
+                if (file && !allowedExtensions.includes(fileExtension)) {
+                    alert('圖檔只能是 "png", "jpg", "jpeg", "gif"，請重新選擇或移除所選圖片');
+                    fileInput.value = '';
+                    removeSelectionBtn.style.display = 'none';
+                } else if (file) {
+                    removeSelectionBtn.style.display = 'inline-block';
+                } else {
+                    removeSelectionBtn.style.display = 'none';
+                }
+            }
 
-                // Handle SecondTime placeholder
-                secondTimeInput.addEventListener('input', function () {
-                    if (this.value) {
-                        secondTimePlaceholder.style.display = 'none';
-                    } else {
-                        secondTimePlaceholder.style.display = 'block';
-                    }
-                });
+            function removeFileSelection() {
+                const fileInput = document.getElementById('fileInput');
+                fileInput.value = '';
+                document.getElementById('removeSelectionBtn').style.display = 'none';
+            }
 
-                // Handle ThirdTime placeholder
-                thirdTimeInput.addEventListener('input', function () {
-                    if (this.value) {
-                        thirdTimePlaceholder.style.display = 'none';
-                    } else {
-                        thirdTimePlaceholder.style.display = 'block';
-                    }
-                });
+            function handleTitleChange() {
+                otherTitleInput.style.display = this.value === '其他' ? 'block' : 'none';
+                otherTitleInput.required = this.value === '其他';
+            }
 
-                // Handle EndDate placeholder
-                EndDateInput.addEventListener('input', function () {
-                    if (this.value) {
-                        EndDatePlaceholder.style.display = 'none';
-                    } else {
-                        EndDatePlaceholder.style.display = 'block';
-                    }
-                });
+            function combineDateAndTime(date, time) {
+                var combined = new Date(date);
+                var timeParts = time.split(':');
+                combined.setHours(timeParts[0], timeParts[1], 0, 0);
+                return combined;
+            }
 
-                // Initial trigger to set correct placeholder states on page load
-                datetimeInput.dispatchEvent(new Event('input'));
-                secondTimeInput.dispatchEvent(new Event('input'));
-                thirdTimeInput.dispatchEvent(new Event('input'));
-                EndDateInput.dispatchEvent(new Event('input'));
-            });
+            function validateForm(event) {
+                var startDateTime = new Date(datetimeInput.value);
+                var secondTime = secondTimeInput.value ? combineDateAndTime(datetimeInput.value, secondTimeInput.value) : null;
+                var thirdTime = thirdTimeInput.value ? combineDateAndTime(datetimeInput.value, thirdTimeInput.value) : null;
+                var endDateTime = new Date(EndDateInput.value);
 
+                var times = [startDateTime];
+                if (secondTime) times.push(secondTime);
+                if (thirdTime) times.push(thirdTime);
+
+                times.sort((a, b) => a - b);
+
+                if (EndDateInput.value && times[times.length - 1] >= endDateTime) {
+                    alert('結束日期時間不能小於等於最晚的用藥時間');
+                    event.preventDefault();
+                }
+            }
+
+            datetimeInput.addEventListener('input', syncTimes);
+            datetimeInput.addEventListener('input', updatePlaceholders);
+            secondTimeInput.addEventListener('input', updatePlaceholders);
+            thirdTimeInput.addEventListener('input', updatePlaceholders);
+            EndDateInput.addEventListener('input', updatePlaceholders);
+            titleSelect.addEventListener('change', handleTitleChange);
+            form.addEventListener('submit', validateForm);
+
+            document.getElementById('fileInput').addEventListener('change', validateFile);
+            document.getElementById('removeSelectionBtn').addEventListener('click', removeFileSelection);
+
+            updatePlaceholders();
+            syncTimes();
+        });
     </script>
 
 </body>

@@ -59,7 +59,7 @@
                             <div class="input-icon">
                                 <input type="datetime-local" name="MemoTime" value="{{ data.MemoTime }}"
                                     class="input-field" required>
-                                    <label for="MemoTime" id="placeholder" class="placeholder">選擇欲提醒的日期</label>
+                                <label for="MemoTime" id="placeholder" class="placeholder">選擇欲提醒的日期</label>
                                 <i class="fa-solid fa-calendar-days calendar-icon"></i>
                             </div>
                         </div>
@@ -72,7 +72,8 @@
                                         <div class="input-icon">
                                             <input type="time" name="SecondTime" id="secondTimeInput"
                                                 value="{{ data.SecondTime }}" class="input-field">
-                                                <label for="SecondTime" id="secondTimePlaceholder" class="placeholder">選擇欲提醒的第二次用藥時間</label>
+                                            <label for="SecondTime" id="secondTimePlaceholder"
+                                                class="placeholder">選擇欲提醒的第二次用藥時間</label>
                                         </div>
                                     </div>
                                 </div>
@@ -83,7 +84,8 @@
                                         <div class="input-icon">
                                             <input type="time" name="ThirdTime" id="thirdTimeInput"
                                                 value="{{ data.ThirdTime }}" class="input-field">
-                                                <label for="ThirdTime" id="thirdTimePlaceholder" class="placeholder">選擇欲提醒的第三次用藥時間</label>
+                                            <label for="ThirdTime" id="thirdTimePlaceholder"
+                                                class="placeholder">選擇欲提醒的第三次用藥時間</label>
                                         </div>
                                     </div>
                                 </div>
@@ -95,9 +97,9 @@
                             <div class="input-icon">
                                 <input type="datetime-local" name="EndDate" value="{{ data.EndDate }}"
                                     class="input-field">
-                                    <label for="EndDate" id="EndDatePlaceholder" class="placeholder">選擇欲結束提醒日期時間</label>
-                                    <i class="fa-solid fa-calendar-days calendar-icon"></i>   
-                                </div>
+                                <label for="EndDate" id="EndDatePlaceholder" class="placeholder">選擇欲結束提醒日期時間</label>
+                                <i class="fa-solid fa-calendar-days calendar-icon"></i>
+                            </div>
                         </div>
 
                         <div class="name">圖片</div>
@@ -149,44 +151,36 @@
     <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
     <script>
         var EditorID;
-        function initializeLiff(myLiffId) {
-            liff.init({
-                liffId: myLiffId
-            }).then(() => {
-                if (!liff.isLoggedIn()) {
-                    alert("用戶未登入");
-                    liff.login();
-                } else {
-                    liff.getProfile()
-                        .then(profile => {
-                            var EditorID = profile.userId;
-                            document.getElementById("EditorID").value = EditorID;
-                        })
-                        .catch((err) => {
-                            console.log('error', err);
-                        });
-                }
 
-            }).catch((err) => {
-                console.log('初始化失敗', err);
-            });
+        function initializeLiff(myLiffId) {
+            liff.init({ liffId: myLiffId })
+                .then(() => {
+                    if (!liff.isLoggedIn()) {
+                        alert("用戶未登入");
+                        liff.login();
+                    } else {
+                        liff.getProfile()
+                            .then(profile => {
+                                EditorID = profile.userId;
+                                document.getElementById("EditorID").value = EditorID;
+                            })
+                            .catch(err => console.log('error', err));
+                    }
+                })
+                .catch(err => console.log('初始化失敗', err));
         }
 
         function removeImage(memoID) {
             if (confirm("您確定要移除這張圖片嗎？")) {
                 fetch(`/med/delete/image/${memoID}`, {
                     method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
+                    headers: { 'Content-Type': 'application/json' }
                 })
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
                             const imageElement = document.querySelector(`#pic-${memoID} img`);
-                            if (imageElement) {
-                                imageElement.style.display = 'none';
-                            }
+                            if (imageElement) imageElement.style.display = 'none';
                             alert("圖片已成功移除");
                             location.reload();
                         } else {
@@ -198,50 +192,29 @@
                         alert("發生錯誤，無法移除圖片");
                     });
             }
-            }
+        }
 
-        document.addEventListener('DOMContentLoaded', function () {
-            var cycleValue = "{{ data.Cycle }}";
-            var cycleSelectElement = document.querySelector('select[name="Cycle"]');
-            for (var i = 0; i < cycleSelectElement.options.length; i++) {
-                if (cycleSelectElement.options[i].value === cycleValue) {
-                    cycleSelectElement.options[i].selected = true;
+        function setSelectOptionsValue(selectElementName, value) {
+            const selectElement = document.querySelector(`select[name="${selectElementName}"]`);
+            for (let i = 0; i < selectElement.options.length; i++) {
+                if (selectElement.options[i].value === value) {
+                    selectElement.options[i].selected = true;
                     break;
                 }
             }
+        }
 
-            var alertValue = "{{ data.Alert }}";
-            var alertSelectElement = document.querySelector('select[name="Alert"]');
-            for (var i = 0; i < alertSelectElement.options.length; i++) {
-                if (alertSelectElement.options[i].value === alertValue) {
-                    alertSelectElement.options[i].selected = true;
-                    break;
-                }
-            }
-
-            var titleSelectElement = document.querySelector('select[name="Title"]');
-            var otherTitleInput = document.getElementById('OtherTitle');
-
+        function handleTitleChange() {
+            const titleSelectElement = document.querySelector('select[name="Title"]');
+            const otherTitleInput = document.getElementById('OtherTitle');
             if (titleSelectElement.value === '其他') {
                 otherTitleInput.style.display = 'block';
                 otherTitleInput.required = true;
-                otherTitleInput.value = "{{ data.OtherTitle }}";
             } else {
                 otherTitleInput.style.display = 'none';
                 otherTitleInput.required = false;
             }
-        });
-
-        document.querySelector('select[name="Title"]').addEventListener('change', function () {
-            var otherTitleInput = document.getElementById('OtherTitle');
-            if (this.value === '其他') {
-                otherTitleInput.style.display = 'block';
-                otherTitleInput.required = true;
-            } else {
-                otherTitleInput.style.display = 'none';
-                otherTitleInput.required = false;
-            }
-        });
+        }
 
         function fileSelected() {
             const fileInput = document.getElementById('fileInput');
@@ -264,7 +237,6 @@
         function removeSelection() {
             const fileInput = document.getElementById('fileInput');
             const removeSelectionBtn = document.getElementById('removeSelectionBtn');
-
             fileInput.value = '';
             removeSelectionBtn.style.display = 'none';
         }
@@ -281,66 +253,69 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
-            toggleThirdTime();
-            document.getElementById('secondTimeInput').addEventListener('input', toggleThirdTime); // Check on change
-
-
-            document.addEventListener('DOMContentLoaded', function () {
-                var datetimeInput = document.getElementById('MemoTime');
-                var datetimePlaceholder = document.getElementById('placeholder');
-                var secondTimeInput = document.getElementById('SecondTime');
-                var secondTimePlaceholder = document.getElementById('secondTimePlaceholder');
-                var thirdTimeInput = document.getElementById('ThirdTime');
-                var thirdTimePlaceholder = document.getElementById('thirdTimePlaceholder');
-                var EndDateInput = document.querySelector('input[name="EndDate"]');
-                var EndDatePlaceholder = document.getElementById('EndDatePlaceholder');
-
-                // Handle MemoTime placeholder
-                datetimeInput.addEventListener('input', function () {
-                    if (this.value) {
-                        datetimePlaceholder.style.display = 'none';
-                    } else {
-                        datetimePlaceholder.style.display = 'block';
-                    }
-                });
-
-                // Handle SecondTime placeholder
-                secondTimeInput.addEventListener('input', function () {
-                    if (this.value) {
-                        secondTimePlaceholder.style.display = 'none';
-                    } else {
-                        secondTimePlaceholder.style.display = 'block';
-                    }
-                });
-
-                // Handle ThirdTime placeholder
-                thirdTimeInput.addEventListener('input', function () {
-                    if (this.value) {
-                        thirdTimePlaceholder.style.display = 'none';
-                    } else {
-                        thirdTimePlaceholder.style.display = 'block';
-                    }
-                });
-
-                // Handle EndDate placeholder
-                EndDateInput.addEventListener('input', function () {
-                    if (this.value) {
-                        EndDatePlaceholder.style.display = 'none';
-                    } else {
-                        EndDatePlaceholder.style.display = 'block';
-                    }
-                });
-
-                // Initial trigger to set correct placeholder states on page load
-                datetimeInput.dispatchEvent(new Event('input'));
-                secondTimeInput.dispatchEvent(new Event('input'));
-                thirdTimeInput.dispatchEvent(new Event('input'));
-                EndDateInput.dispatchEvent(new Event('input'));
+        function handlePlaceholder(inputElement, placeholderElement) {
+            inputElement.addEventListener('input', function () {
+                if (this.value) {
+                    placeholderElement.style.display = 'none';
+                } else {
+                    placeholderElement.style.display = 'block';
+                }
             });
+            inputElement.dispatchEvent(new Event('input'));
+        }
 
+        function validateDateTime(event) {
+            const memoTimeInput = document.querySelector('input[name="MemoTime"]');
+            const secondTimeInput = document.querySelector('input[name="SecondTime"]');
+            const thirdTimeInput = document.querySelector('input[name="ThirdTime"]');
+            const endDateInput = document.querySelector('input[name="EndDate"]');
+
+            const memoTime = new Date(memoTimeInput.value);
+            const secondTime = secondTimeInput.value ? combineDateAndTime(memoTimeInput.value, secondTimeInput.value) : null;
+            const thirdTime = thirdTimeInput.value ? combineDateAndTime(memoTimeInput.value, thirdTimeInput.value) : null;
+            const endDateTime = new Date(endDateInput.value);
+
+            const times = [memoTime];
+            if (secondTime) times.push(secondTime);
+            if (thirdTime) times.push(thirdTime);
+
+            times.sort((a, b) => a - b);
+
+            if (endDateInput.value && times[times.length - 1] >= endDateTime) {
+                alert('結束日期時間不能小於等於最晚的用藥時間');
+                event.preventDefault();
+            }
+        }
+
+        function combineDateAndTime(date, time) {
+            const combined = new Date(date);
+            const timeParts = time.split(':');
+            combined.setHours(timeParts[0], timeParts[1], 0, 0);
+            return combined;
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            setSelectOptionsValue("Cycle", "{{ data.Cycle }}");
+            setSelectOptionsValue("Alert", "{{ data.Alert }}");
+            validateDateTime();
+
+            var form = document.querySelector('form');
+            form.addEventListener('submit', validateDateTime);
+
+            const titleSelectElement = document.querySelector('select[name="Title"]');
+            titleSelectElement.addEventListener('change', handleTitleChange);
+            handleTitleChange();
+
+            toggleThirdTime();
+            document.getElementById('secondTimeInput').addEventListener('input', toggleThirdTime);
+
+            handlePlaceholder(document.getElementById('MemoTime'), document.getElementById('placeholder'));
+            handlePlaceholder(document.getElementById('SecondTime'), document.getElementById('secondTimePlaceholder'));
+            handlePlaceholder(document.getElementById('ThirdTime'), document.getElementById('thirdTimePlaceholder'));
+            handlePlaceholder(document.querySelector('input[name="EndDate"]'), document.getElementById('EndDatePlaceholder'));
         });
     </script>
+
 </body>
 
 </html>
