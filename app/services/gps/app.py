@@ -69,19 +69,23 @@ def check():
 
 @gps_bp.route('/foot', methods=['POST'])
 def foot():
-    MainUserID = request.form.get("MainUserID")
-    conn = db.get_connection()
-    cursor = conn.cursor()
+    try:
+        MainUserID = request.form.get("MainUserID")
+        conn = db.get_connection()
+        cursor = conn.cursor()
 
-    cursor.execute("SELECT FamilyID FROM `113-ntub113506`.Family WHERE MainUserID = %s", (MainUserID,))
-    FamID = cursor.fetchone()
+        # 查詢 FamilyID
+        cursor.execute("SELECT FamilyID FROM `113-ntub113506`.Family WHERE MainUserID = %s", (MainUserID,))
+        FamID = cursor.fetchone()
 
-    if FamID:
+        if not FamID:
+            return jsonify({"success": False, "message": "Invalid MainUserID"}), 400
+
+        # 查詢位置資料
         cursor.execute('SELECT Location FROM `113-ntub113506`.Location WHERE FamilyID = %s', (FamID[0],))
         rows = cursor.fetchall()
 
         pattern = r"query=(-?\d+\.\d+),(-?\d+\.\d+)"
-
         locations = []
 
         for row in rows:
@@ -92,30 +96,35 @@ def foot():
                 longitude = float(match.group(2))
                 locations.append({"latitude": latitude, "longitude": longitude})
 
-        # 初始化地圖（以第一個地點為中心）
-        if locations:
-            mymap = folium.Map(location=[locations[0]["latitude"], locations[0]["longitude"]], zoom_start=13)
+        if not locations:
+            return jsonify({"success": False, "message": "No locations found"}), 404
 
-            # 添加標記和路徑
-            for location in locations:
-                folium.Marker(
-                    location=[location["latitude"], location["longitude"]],
-                    popup=f"Lat: {location['latitude']}, Lon: {location['longitude']}"
-                ).add_to(mymap)
+        # 創建地圖
+        mymap = folium.Map(location=[locations[0]["latitude"], locations[0]["longitude"]], zoom_start=13)
 
-            # 添加路徑
-            folium.PolyLine([(loc["latitude"], loc["longitude"]) for loc in locations], color="blue").add_to(mymap)
+        for location in locations:
+            folium.Marker(
+                location=[location["latitude"], location["longitude"]],
+                popup=f"Lat: {location['latitude']}, Lon: {location['longitude']}"
+            ).add_to(mymap)
 
-            # 保存地圖為 HTML 文件
-            map_path = f"static/maps/{MainUserID}_footprint_map.html"
-            mymap.save(map_path)
+        folium.PolyLine([(loc["latitude"], loc["longitude"]) for loc in locations], color="blue").add_to(mymap)
 
-            # 返回包含地圖的 HTML 頁面
-            return render_template('my_map.html', map_path=map_path)
-        else:
-            return render_template('my_map.html', map_path=None, message='No locations found.')
-    else:
-        return render_template('my_map.html', map_path=None, message='Invalid MainUserID')
+        # 保存地圖
+        map_dir = os.path.join('static', 'maps')
+        if not os.path.exists(map_dir):
+            os.makedirs(map_dir)
+        
+        map_path = os.path.join(map_dir, f"{MainUserID}_footprint_map.html")
+        mymap.save(map_path)
 
+        return jsonify({"success": True, "map_url": url_for('static', filename=f"maps/{MainUserID}_footprint_map.html")})
 
+    except Exception as e:
+        print(f"Error occurred: {e}")
+        return jsonify({"success": False, "message": "An error occurred while processing your request."}), 500
+
+    finally:
+        cursor.close()
+        conn.close()
 

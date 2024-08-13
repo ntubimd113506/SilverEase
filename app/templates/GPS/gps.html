@@ -15,7 +15,7 @@
 </head>
 <body>
     <div class="form">
-        <form id="form">
+        <form id="form" method="POST" action="/gps/foot">
             <div class="form-group">
                 <label for="MainUserID">主要用戶</label>
                 <select id="MainUserID" name="MainUserID">
@@ -26,7 +26,9 @@
             </div>
         </form>
         <!-- 新增查看長輩足跡的按鈕 -->
-        <button id="viewFootprint" type="button">查看長輩足跡</button>
+        <div>
+            <input class="button" id="but" type="submit" value="查看長輩足跡">
+        </div>   
     </div>
     <div id="gps-url" style="margin-top: 20px;"></div>
     <div id="map"></div>
@@ -101,24 +103,6 @@
 
         // 註冊事件
         document.getElementById('MainUserID').addEventListener('change', fetchGPSData);
-
-        // 查看長輩足跡按鈕的事件
-        document.getElementById('viewFootprint').addEventListener('click', function() {
-            var formData = new FormData(document.getElementById('form'));
-            fetch('/foot', {
-                method: 'POST',
-                body: formData
-            }).then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('請求已發送');
-                } else {
-                    alert('請求失敗');
-                }
-            }).catch(error => {
-                console.error('Error:', error);
-            });
-        });
 
         // 自動觸發一次
         triggerChange();

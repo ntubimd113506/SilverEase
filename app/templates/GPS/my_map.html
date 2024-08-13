@@ -3,63 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>選擇長輩</title>
-    <style>
-        #map {
-            height: 400px;
-            width: 100%;
-            margin-top: 20px;
-        }
-    </style>
+    <title>長輩足跡地圖</title>
 </head>
 <body>
-    <div class="form">
-        <form id="form">
-            <div class="form-group">
-                <label for="MainUserID">主要用戶</label>
-                <select id="MainUserID" name="MainUserID">
-                    {% for user in MainUsers %}
-                    <option value="{{ user[0] }}">{{ user[1] }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-        </form>
-        <!-- 新增查看長輩足跡的按鈕 -->
-        <button id="viewFootprint" type="button">查看長輩足跡</button>
-    </div>
-    <div id="message" style="margin-top: 20px;"></div>
-
-    <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
-    <script>
-        // 初始化 LIFF
-        function initializeLiff(myLiffId) {
-            liff.init({
-                liffId: myLiffId
-            }).catch((err) => {
-                console.log('初始化失敗', err);
-            });
-        }
-
-        initializeLiff('{{ liffid }}');
-
-        // 查看長輩足跡按鈕的事件
-        document.getElementById('viewFootprint').addEventListener('click', function() {
-            var formData = new FormData(document.getElementById('form'));
-            fetch('/foot', {
-                method: 'POST',
-                body: formData
-            }).then(response => response.json())
-            .then(data => {
-                var messageElement = document.getElementById('message');
-                if (data.success) {
-                    messageElement.innerHTML = '請求已成功發送';
-                } else {
-                    messageElement.innerHTML = '請求失敗：' + data.message;
-                }
-            }).catch(error => {
-                console.error('Error:', error);
-            });
-        });
-    </script>
+    {% if map_path %}
+        <iframe src="{{ url_for('static', filename=map_path.split('static/')[1]) }}" width="100%" height="500px"></iframe>
+    {% else %}
+        <p>{{ message }}</p>
+    {% endif %}
 </body>
 </html>

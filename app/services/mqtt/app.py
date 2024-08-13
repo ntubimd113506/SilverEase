@@ -171,31 +171,19 @@ def sos_gps(Map):
         now = datetime.now()
 
         # 插入地理位置資料
-        cursor.execute(
-            'INSERT INTO `113-ntub113506`.Location (FamilyID, Location, LocationTime) VALUES (%s, %s, %s)', 
-            (FamID, Map, now)
-        )
+        cursor.execute('INSERT INTO `113-ntub113506`.Location (FamilyID, Location, LocationTime) VALUES (%s, %s, %s)', (FamID, Map, now))
         conn.commit()
 
         # 獲取最新的 LocatNo
-        cursor.execute(
-            "SELECT LocatNo FROM Location WHERE FamilyID=%s ORDER BY LocatNo DESC LIMIT 1", 
-            (FamID,)
-        )
+        cursor.execute("SELECT LocatNo FROM Location WHERE FamilyID=%s ORDER BY LocatNo DESC LIMIT 1", (FamID,))
         LocatNo = cursor.fetchone()[0]
 
         # 插入 SOS 記錄
-        cursor.execute(
-            'INSERT INTO `113-ntub113506`.SOS (LocatNo) VALUES (%s)', 
-            (LocatNo,)
-        )
+        cursor.execute('INSERT INTO `113-ntub113506`.SOS (LocatNo) VALUES (%s)',(LocatNo,))
         conn.commit()
 
         # 獲取所有的 SubUserID
-        cursor.execute(
-            'SELECT SubUserID FROM `113-ntub113506`.FamilyLink WHERE FamilyID = %s', 
-            (FamID,)
-        )
+        cursor.execute('SELECT SubUserID FROM `113-ntub113506`.FamilyLink WHERE FamilyID = %s', (FamID,))
         Sub = cursor.fetchall()
 
     except Exception as e:
