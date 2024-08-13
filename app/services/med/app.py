@@ -188,10 +188,18 @@ def send_line_message(MemoID, cnt=0, got=False):
         ).strftime("%Y-%m-%dT%H:%M:%S")
 
         msg = json.dumps({"MemoID": MemoID, "time": reminder_time, "got": True})
+
+        thumbnail_url = f"https://silverease.ntub.edu.tw/static/imgs/medicine.png"
+        for ext in ALLOWED_EXTENSIONS:
+            image_path = os.path.join(UPLOAD_FOLDER, f"{MemoID}.{ext}")
+            if os.path.exists(image_path):
+                thumbnail_url = f"https://silverease.ntub.edu.tw/static/imgs/med/{MemoID}.{ext}"
+                break
+
         body = TemplateSendMessage(
             alt_text="用藥通知",
             template=ButtonsTemplate(
-                thumbnail_image_url="https://silverease.ntub.edu.tw/static/imgs/medicine.png",
+                thumbnail_image_url=thumbnail_url,
                 image_aspect_ratio="rectangle",
                 image_size="contain",
                 image_background_color="#FFFFFF",
