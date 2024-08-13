@@ -164,87 +164,107 @@ def upgrade_gps(Map):
         conn.close()
     
 def sos_gps(Map):
-    conn = db.get_connection()
-    cursor = conn.cursor()
-    FamID = 54
-    now = datetime.now()
-    
-    # 插入地理位置資料
-    cursor.execute('INSERT INTO `113-ntub113506`.Location (FamilyID, Location, LocationTime) VALUES (%s, %s, %s)', (FamID, Map, now))
-    conn.commit()
+    try:
+        conn = db.get_connection()
+        cursor = conn.cursor()
+        FamID = 54
+        now = datetime.now()
 
-    # 獲取所有的 SubUserID
-    # cursor.execute('SELECT SubUserID FROM `113-ntub113506`.FamilyLink WHERE FamilyID = %s', (FamID,))
-    # Sub = cursor.fetchall()
+        # 插入地理位置資料
+        cursor.execute(
+            'INSERT INTO `113-ntub113506`.Location (FamilyID, Location, LocationTime) VALUES (%s, %s, %s)', 
+            (FamID, Map, now)
+        )
+        conn.commit()
 
-    # 獲取最新的 LocatNo
-    cursor.execute("SELECT LocatNo FROM Location WHERE FamilyID=%s ORDER BY LocatNo DESC LIMIT 1", (FamID,))
-    LocatNo = cursor.fetchone()[0]
+        # 獲取最新的 LocatNo
+        cursor.execute(
+            "SELECT LocatNo FROM Location WHERE FamilyID=%s ORDER BY LocatNo DESC LIMIT 1", 
+            (FamID,)
+        )
+        LocatNo = cursor.fetchone()[0]
 
-    # 插入 SOS 記錄
-    cursor.execute('INSERT INTO `113-ntub113506`.SOS (LocatNo) VALUES (%s)', (LocatNo,))
-    conn.commit()
+        # 插入 SOS 記錄
+        cursor.execute(
+            'INSERT INTO `113-ntub113506`.SOS (LocatNo) VALUES (%s)', 
+            (LocatNo,)
+        )
+        conn.commit()
 
-    # # 緊急通知訊息
-    # thumbnail_image_url = "https://silverease.ntub.edu.tw/static//imgs/help.png"
-    # resMsg = FlexSendMessage(
-    #     alt_text="緊急通知",
-    #     contents={
-    #         "type": "bubble",
-    #         "hero": {
-    #             "type": "image",
-    #             "url": thumbnail_image_url,
-    #             "size": "full",
-    #             "aspectRatio": "20:15",
-    #             "aspectMode": "cover",
-    #             "action": {"type": "uri", "uri": thumbnail_image_url},
-    #         },
-    #         "body": {
-    #             "type": "box",
-    #             "layout": "vertical",
-    #             "contents": [
-    #                 {
-    #                     "type": "text",
-    #                     "text": "緊急通知",
-    #                     "weight": "bold",
-    #                     "size": "xl",
-    #                     "align": "center",
-    #                 }
-    #             ],
-    #         },
-    #         "footer": {
-    #             "type": "box",
-    #             "layout": "vertical",
-    #             "spacing": "sm",
-    #             "contents": [
-    #                 {
-    #                     "type": "button",
-    #                     "style": "link",
-    #                     "height": "sm",
-    #                     "action": {
-    #                         "type": "postback",
-    #                         "label": "收到",
-    #                         "data": json.dumps({"action": "help"}),
-    #                         "text":"你按ㄌ"
-    #                     },
-    #                 },
-    #                 {
-    #                     "type": "button",
-    #                     "action": {
-    #                         "type": "uri",
-    #                         "label": "定位資訊",
-    #                         "uri": Map,
-    #                     },
-    #                 },
-    #             ],
-    #             "flex": 0,
-    #         },
-    #     },
-    # )
+        # 獲取所有的 SubUserID
+        cursor.execute(
+            'SELECT SubUserID FROM `113-ntub113506`.FamilyLink WHERE FamilyID = %s', 
+            (FamID,)
+        )
+        Sub = cursor.fetchall()
 
-    # # 推送訊息給所有 SubUserID
-    # for user in Sub:
-    #     line.line_bot_api.push_message(user[0], resMsg)
+    except Exception as e:
+        print(f"An error occurred: {e}")
+    finally:
+        cursor.close()
+        conn.close()
+
+    # 緊急通知訊息
+    thumbnail_image_url = "https://silverease.ntub.edu.tw/static//imgs/help.png"
+    resMsg = FlexSendMessage(
+        alt_text="緊急通知",
+        contents={
+            "type": "bubble",
+            "hero": {
+                "type": "image",
+                "url": thumbnail_image_url,
+                "size": "full",
+                "aspectRatio": "20:15",
+                "aspectMode": "cover",
+                "action": {"type": "uri", "uri": thumbnail_image_url},
+            },
+            "body": {
+                "type": "box",
+                "layout": "vertical",
+                "contents": [
+                    {
+                        "type": "text",
+                        "text": "緊急通知",
+                        "weight": "bold",
+                        "size": "xl",
+                        "align": "center",
+                    }
+                ],
+            },
+            "footer": {
+                "type": "box",
+                "layout": "vertical",
+                "spacing": "sm",
+                "contents": [
+                    {
+                        "type": "button",
+                        "style": "link",
+                        "height": "sm",
+                        "action": {
+                            "type": "postback",
+                            "label": "收到",
+                            "data": json.dumps({"action": "help"}),
+                            "text": "你按ㄌ",
+                        },
+                    },
+                    {
+                        "type": "button",
+                        "action": {
+                            "type": "uri",
+                            "label": "定位資訊",
+                            "uri": Map,
+                        },
+                    },
+                ],
+                "flex": 0,
+            },
+        },
+    )
+
+    # 推送訊息給所有 SubUserID
+    for user in Sub:
+        line.line_bot_api.push_message(user[0], resMsg)
+
 
 
 # def get_FamilyUser(FamilyID):
