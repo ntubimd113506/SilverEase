@@ -73,6 +73,21 @@
         if (clinicSelectElement.value === '其他') {
             document.getElementById('OtherClinic').style.display = 'block';
         }
+
+        var datetimeInput = document.getElementById('MemoTime');
+        var placeholder = document.getElementById('placeholder');
+    
+        datetimeInput.addEventListener('input', function() {
+            if (this.value) {
+                placeholder.style.display = 'none';
+            } else {
+                placeholder.style.display = 'block';
+            }
+        });
+    
+        datetimeInput.dispatchEvent(new Event('input'));
+    
+
     });
 
 </script>
@@ -101,7 +116,7 @@
                     <div class="form">
                         <div class="name">名稱</div>
                         <div class="value">
-                            <input type="text" name="Title" value="{{ data.Title }}" class="input-field" required>
+                            <input type="text" name="Title" value="{{ data.Title }}" class="input-field" placeholder="請輸入名稱"  required>
                         </div>
 
                         <div class="name">日期時間</div>
@@ -109,13 +124,14 @@
                             <div class="input-icon">
                                 <input type="datetime-local" name="MemoTime" value="{{ data.MemoTime }}"
                                     class="input-field" required>
+                                    <label for="MemoTime" id="placeholder" class="placeholder">選擇欲提醒的日期</label>
                                 <i class="fa-solid fa-calendar-days calendar-icon"></i>
                             </div>
                         </div>
 
                         <div class="name">醫院/診所地點</div>
                         <div class="value">
-                            <input type="text" name="Location" value="{{ data.Location }}" class="input-field">
+                            <input type="text" name="Location" value="{{ data.Location }}" class="input-field" placeholder="請輸入醫院/診所地點">
                         </div>
 
                         <div class="name">門診科別</div>
@@ -143,12 +159,12 @@
 
                         <div class="name">看診醫生</div>
                         <div class="value">
-                            <input type="text" name="Doctor" value="{{ data.Doctor }}" class="input-field">
+                            <input type="text" name="Doctor" value="{{ data.Doctor }}" class="input-field"  placeholder="請輸入看診醫生名稱">
                         </div>
 
                         <div class="name">號碼</div>
                         <div class="value">
-                            <input type="text" name="Num" value="{{ data.Num }}" class="input-field">
+                            <input type="text" name="Num" value="{{ data.Num }}" class="input-field" laceholder="請輸入掛號號碼">
                         </div>
 
                         <div class="name">多久重複</div>

@@ -59,6 +59,7 @@
                             <div class="input-icon">
                                 <input type="datetime-local" name="MemoTime" value="{{ data.MemoTime }}"
                                     class="input-field" required>
+                                    <label for="MemoTime" id="placeholder" class="placeholder">選擇欲提醒的日期</label>
                                 <i class="fa-solid fa-calendar-days calendar-icon"></i>
                             </div>
                         </div>
@@ -71,6 +72,7 @@
                                         <div class="input-icon">
                                             <input type="time" name="SecondTime" id="secondTimeInput"
                                                 value="{{ data.SecondTime }}" class="input-field">
+                                                <label for="SecondTime" id="secondTimePlaceholder" class="placeholder">選擇欲提醒的第二次用藥時間</label>
                                         </div>
                                     </div>
                                 </div>
@@ -81,6 +83,7 @@
                                         <div class="input-icon">
                                             <input type="time" name="ThirdTime" id="thirdTimeInput"
                                                 value="{{ data.ThirdTime }}" class="input-field">
+                                                <label for="ThirdTime" id="thirdTimePlaceholder" class="placeholder">選擇欲提醒的第三次用藥時間</label>
                                         </div>
                                     </div>
                                 </div>
@@ -92,8 +95,9 @@
                             <div class="input-icon">
                                 <input type="datetime-local" name="EndDate" value="{{ data.EndDate }}"
                                     class="input-field">
-                                <label for="EndDate" class="placeholder">選擇欲結束提醒日期時間</label>
-                            </div>
+                                    <label for="EndDate" id="EndDatePlaceholder" class="placeholder">選擇欲結束提醒日期時間</label>
+                                    <i class="fa-solid fa-calendar-days calendar-icon"></i>   
+                                </div>
                         </div>
 
                         <div class="name">圖片</div>
@@ -280,6 +284,61 @@
         document.addEventListener('DOMContentLoaded', function () {
             toggleThirdTime();
             document.getElementById('secondTimeInput').addEventListener('input', toggleThirdTime); // Check on change
+
+
+            document.addEventListener('DOMContentLoaded', function () {
+                var datetimeInput = document.getElementById('MemoTime');
+                var datetimePlaceholder = document.getElementById('placeholder');
+                var secondTimeInput = document.getElementById('SecondTime');
+                var secondTimePlaceholder = document.getElementById('secondTimePlaceholder');
+                var thirdTimeInput = document.getElementById('ThirdTime');
+                var thirdTimePlaceholder = document.getElementById('thirdTimePlaceholder');
+                var EndDateInput = document.querySelector('input[name="EndDate"]');
+                var EndDatePlaceholder = document.getElementById('EndDatePlaceholder');
+
+                // Handle MemoTime placeholder
+                datetimeInput.addEventListener('input', function () {
+                    if (this.value) {
+                        datetimePlaceholder.style.display = 'none';
+                    } else {
+                        datetimePlaceholder.style.display = 'block';
+                    }
+                });
+
+                // Handle SecondTime placeholder
+                secondTimeInput.addEventListener('input', function () {
+                    if (this.value) {
+                        secondTimePlaceholder.style.display = 'none';
+                    } else {
+                        secondTimePlaceholder.style.display = 'block';
+                    }
+                });
+
+                // Handle ThirdTime placeholder
+                thirdTimeInput.addEventListener('input', function () {
+                    if (this.value) {
+                        thirdTimePlaceholder.style.display = 'none';
+                    } else {
+                        thirdTimePlaceholder.style.display = 'block';
+                    }
+                });
+
+                // Handle EndDate placeholder
+                EndDateInput.addEventListener('input', function () {
+                    if (this.value) {
+                        EndDatePlaceholder.style.display = 'none';
+                    } else {
+                        EndDatePlaceholder.style.display = 'block';
+                    }
+                });
+
+                // Initial trigger to set correct placeholder states on page load
+                datetimeInput.dispatchEvent(new Event('input'));
+                secondTimeInput.dispatchEvent(new Event('input'));
+                thirdTimeInput.dispatchEvent(new Event('input'));
+                EndDateInput.dispatchEvent(new Event('input'));
+            });
+
         });
     </script>
 </body>

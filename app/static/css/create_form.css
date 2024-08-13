@@ -308,6 +308,10 @@ select:invalid {
     font-weight: 100;
 }
 
+/* #secondTimeContainer, #thirdTimeContainer{
+    width: 15%;
+} */
+
 .input-field:valid + .placeholder {
     display: none;
 }
