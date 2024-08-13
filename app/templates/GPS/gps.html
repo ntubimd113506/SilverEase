@@ -15,7 +15,7 @@
 </head>
 <body>
     <div class="form">
-        <form id="form" method="POST" action="/gps/foot">
+        <form id="form">
             <div class="form-group">
                 <label for="MainUserID">主要用戶</label>
                 <select id="MainUserID" name="MainUserID">
@@ -26,9 +26,7 @@
             </div>
         </form>
         <!-- 新增查看長輩足跡的按鈕 -->
-        <div>
-            <input class="button" id="but" type="submit" value="查看長輩足跡">
-        </div>   
+        <button id="viewFootprintsBtn">查看長輩足跡</button>
     </div>
     <div id="gps-url" style="margin-top: 20px;"></div>
     <div id="map"></div>
@@ -44,6 +42,24 @@
         }
 
         initializeLiff('{{ liffid }}');
+
+        // 當按下查看長輩足跡按鈕時觸發事件
+        document.getElementById('viewFootprintsBtn').addEventListener('click', function() {
+            var formData = new FormData(document.getElementById('form'));
+            fetch('/gps/foot', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(html => {
+                document.open();
+                document.write(html);
+                document.close();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
 
         // 自動觸發選單變更事件
         function triggerChange() {
@@ -110,3 +126,4 @@
     </script>
 </body>
 </html>
+

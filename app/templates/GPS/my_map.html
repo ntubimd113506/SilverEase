@@ -1,15 +1,49 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>長輩足跡地圖</title>
+    <title>My Map</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA4cVXQgyJq-DSWAA_CfAagMIA6xnW8PhU"></script>
 </head>
 <body>
-    {% if map_path %}
-        <iframe src="{{ url_for('static', filename=map_path.split('static/')[1]) }}" width="100%" height="500px"></iframe>
-    {% else %}
-        <p>{{ message }}</p>
-    {% endif %}
+    <h1>足跡</h1>
+    <div id="map" style="height: 500px; width: 100%;"></div>
+    
+    <script>
+        function initMap() {
+            // 创建地图对象
+            var map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 10,
+                center: {lat: 0, lng: 0}
+            });
+
+            var bounds = new google.maps.LatLngBounds();
+
+            {% for url in urls %}
+                var coords = "{{ url }}".match(/query=([-.\d]+),([-.\d]+)/);
+                if (coords) {
+                    var latLng = new google.maps.LatLng(parseFloat(coords[1]), parseFloat(coords[2]));
+                    
+                    // 在地图上添加标记
+                    var marker = new google.maps.Marker({
+                        position: latLng,
+                        map: map
+                    });
+                    
+                    // 扩展地图边界以包含该标记
+                    bounds.extend(latLng);
+                }
+            {% endfor %}
+
+            // 适应所有标记的位置
+            if (!bounds.isEmpty()) {
+                map.fitBounds(bounds);
+            }
+        }
+
+        // 初始化地图
+        window.onload = initMap;
+    </script>
 </body>
 </html>

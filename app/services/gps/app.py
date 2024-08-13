@@ -74,57 +74,28 @@ def foot():
         conn = db.get_connection()
         cursor = conn.cursor()
 
-        # 查詢 FamilyID
+        # 查询 FamilyID
         cursor.execute("SELECT FamilyID FROM `113-ntub113506`.Family WHERE MainUserID = %s", (MainUserID,))
         FamID = cursor.fetchone()
-
         if not FamID:
-            return jsonify({"success": False, "message": "Invalid MainUserID"}), 400
-
-        # 查詢位置資料
+            return "FamilyID not found for the given MainUserID", 404
+        
+        # 查询位置数据（URL）
         cursor.execute('SELECT Location FROM `113-ntub113506`.Location WHERE FamilyID = %s', (FamID[0],))
         rows = cursor.fetchall()
+        print("Fetched rows:", rows)  # 调试输出
 
-        pattern = r"query=(-?\d+\.\d+),(-?\d+\.\d+)"
-        locations = []
-
-        for row in rows:
-            url = row[0]
-            match = re.search(pattern, url)
-            if match:
-                latitude = float(match.group(1))
-                longitude = float(match.group(2))
-                locations.append({"latitude": latitude, "longitude": longitude})
-
-        if not locations:
-            return jsonify({"success": False, "message": "No locations found"}), 404
-
-        # 創建地圖
-        mymap = folium.Map(location=[locations[0]["latitude"], locations[0]["longitude"]], zoom_start=13)
-
-        for location in locations:
-            folium.Marker(
-                location=[location["latitude"], location["longitude"]],
-                popup=f"Lat: {location['latitude']}, Lon: {location['longitude']}"
-            ).add_to(mymap)
-
-        folium.PolyLine([(loc["latitude"], loc["longitude"]) for loc in locations], color="blue").add_to(mymap)
-
-        # 保存地圖
-        map_dir = os.path.join('static', 'maps')
-        if not os.path.exists(map_dir):
-            os.makedirs(map_dir)
-        
-        map_path = os.path.join(map_dir, f"{MainUserID}_footprint_map.html")
-        mymap.save(map_path)
-
-        return jsonify({"success": True, "map_url": url_for('static', filename=f"maps/{MainUserID}_footprint_map.html")})
-
-    except Exception as e:
-        print(f"Error occurred: {e}")
-        return jsonify({"success": False, "message": "An error occurred while processing your request."}), 500
-
-    finally:
         cursor.close()
         conn.close()
 
+        # 将查询结果中的URL提取出来
+        if rows:
+            urls = [loc[0] for loc in rows]  # rows 中的每一行是一个元组，loc[0] 是 Location 列的值
+        else:
+            urls = []
+
+        return render_template('/GPS/my_map.html', urls=urls)
+    
+    except Exception as e:
+        print("Error occurred:", str(e))  # 打印详细错误信息
+        return f"An error occurred: {str(e)}", 500
