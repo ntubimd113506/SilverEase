@@ -333,6 +333,22 @@ input[type="datetime-local"]::placeholder {
 input[type="datetime-local"]:valid::placeholder {
     color: transparent;
 }
+/* //// */
+input[type="datetime-local"],
+input[type="time"]::-webkit-datetime-edit { 
+    color: #111111; 
+}
+
+input[type="datetime-local"]:focus::-webkit-datetime-edit,
+input[type="datetime-local"]:valid::-webkit-datetime-edit { 
+    color: #111111; 
+}
+
+input[type="time"]:focus::-webkit-datetime-edit,
+input[type="time"]:valid::-webkit-datetime-edit { 
+    color: #111111; 
+}
+
 /* ------------------- */
 /* Media Queries       */
 /* ------------------- */

@@ -243,6 +243,20 @@
 
             updatePlaceholders();
             syncTimes();
+
+            function updatePlaceholders() {
+                placeholder.style.display = datetimeInput.value ? 'none' : 'block';
+                secondTimeContainer.style.display = datetimeInput.value ? 'block' : 'none';
+                thirdTimeContainer.style.display = secondTimeInput.value ? 'block' : 'none';
+
+                var secondTimePlaceholder = document.getElementById('secondTimePlaceholder');
+                var thirdTimePlaceholder = document.getElementById('thirdTimePlaceholder');
+                secondTimePlaceholder.style.display = secondTimeInput.value ? 'none' : 'block';
+                thirdTimePlaceholder.style.display = thirdTimeInput.value ? 'none' : 'block';
+
+                var EndDatePlaceholder = document.getElementById('EndDatePlaceholder');
+                EndDatePlaceholder.style.display = EndDateInput.value ? 'none' : 'block';
+            }
         });
     </script>
 
