@@ -3,9 +3,6 @@
 /* ------------------- */
 /* html, body          */
 /* ------------------- */
-html{
-    overflow-y: hidden;
-}
 
 html, body{
     font-family: 'Noto Sans TC', sans-serif;
@@ -90,7 +87,7 @@ div.card{
 
 b.t{
     color: #2B3125;
-    font-size: 25px;
+    font-size: 22px;
     letter-spacing: 5px;
     text-align: left;
     margin: 0%;
@@ -114,11 +111,7 @@ div.card:nth-child(2)
         font-weight: 800;
     }
 }
-@media (max-width: 768px) {
-    b.t{
-        font-size: 36px;
-    }
-}
+
 @media (min-width: 768px) {
     div.header {
         height: 50px;

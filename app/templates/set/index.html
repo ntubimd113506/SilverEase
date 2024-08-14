@@ -1,9 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+
     <title>Document</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Satisfy&display=swap" rel="stylesheet">
+    <link href="/static/css/smain.css" rel="stylesheet" />
 </head>
 <body>
     <div class="container">
@@ -19,27 +24,32 @@
                         {% if old%}
                         <b class="t">取得群組隨機碼</b>
                         <!-- <img src="/static/imgs/medicine.png" class="a"> -->
+                        <img src="/static/imgs/number.png" class="a">
                         {% else %}
                         <b class="t">建立家庭群組</b>
                         <!-- <img src="/static/imgs/medicine.png" class="a"> -->
+                        <img src="/static/imgs/group.png" class="a">
                         {% endif %}
                     </div>
                 </a>                
                 <a href="/set/join_family">
                     <div class="card">
                         <b class="t">加入家庭群組</b>
+                        <img src="/static/imgs/join.png" class="a">
                         <!-- <img src="/static/imgs/planner.png" class="a"> -->
                     </div>
                 </a>
                 <a href="/set/family_list">
                     <div class="card">
                         <b class="t">家庭清單</b>
+                        <img src="/static/imgs/list.png" class="a">
                         <!-- <img src="/static/imgs/treatment.png" class="a"> -->
                     </div>
                 </a>
                 <a href="/set/qrcode">
                     <div class="card">
                         <b class="t">掃描並新增裝置</b>
+                        <img src="/static/imgs/scanning.png" class="a">
                         <!-- <img src="/static/imgs/treatment.png" class="a"> -->
                     </div>
                 </a>
