@@ -349,6 +349,63 @@ input[type="time"]:valid::-webkit-datetime-edit {
     color: #111111; 
 }
 
+/* /////////圖片////////// */
+#customFileLabel {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #809f68; 
+    color: #fff; 
+    font-size: 16px; 
+    border-radius: 20px;
+    cursor: pointer;
+    text-align: center;
+    border: none;
+    width: 100%;
+    max-width: 200px;
+    box-sizing: border-box;
+    top: 10px;
+   
+}
+
+#customFileLabel:hover {
+    background-color: #9fb889;
+}
+
+#customFileLabel:active {
+    background-color: #9fb889; 
+}
+
+
+#customFileLabel {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+#removeSelectionBtn, #removeSelectionBtn-1 {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #d9d9d9; 
+    color: #000000; 
+    font-size: 16px; 
+    border-radius: 20px; 
+    cursor: pointer;
+    text-align: center;
+    border: none;
+    font-weight: 700;
+    margin-top: 8px;
+}
+
+#removeSelectionBtn,#removeSelectionBtn-1:hover {
+    background-color: #a7a7a7; 
+
+}
+
+#removeSelectionBtn,#removeSelectionBtn-1:active {
+    background-color: #a7a7a7;
+}
+
 /* ------------------- */
 /* Media Queries       */
 /* ------------------- */

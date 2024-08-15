@@ -110,8 +110,11 @@
                             <img src="{{ image_path }}" style="width: 100px; height: 100px;"
                                 onerror="this.style.display='none';" onload="image_found=true;">
                             {% endfor %}
-                            <input type="file" name="Pic" accept="image/*" id="fileInput" onchange="fileSelected()">
-                            <button type="button" onclick="removeImage('{{ data.MemoID }}')">移除圖片</button>
+                            <!-- <input type="file" name="Pic" accept="image/*" id="fileInput" onchange="fileSelected()"> -->
+                            <input type="file" name="Pic" accept="image/*" id="fileInput" onchange="fileSelected()" style="display:none;">
+                            <label for="fileInput" id="customFileLabel" class="btn">選擇檔案</label>
+
+                            <button type="button" id="removeSelectionBtn-1" onclick="removeImage('{{ data.MemoID }}')">移除圖片</button>
                             <button type="button" id="removeSelectionBtn" style="display:none;"
                                 onclick="removeSelection()">移除所選圖片</button>
                         </div>
@@ -313,6 +316,45 @@
             handlePlaceholder(document.getElementById('SecondTime'), document.getElementById('secondTimePlaceholder'));
             handlePlaceholder(document.getElementById('ThirdTime'), document.getElementById('thirdTimePlaceholder'));
             handlePlaceholder(document.querySelector('input[name="EndDate"]'), document.getElementById('EndDatePlaceholder'));
+        
+
+            //////////圖片按鈕
+            document.addEventListener('DOMContentLoaded', function() {
+                const fileInput = document.getElementById('fileInput');
+                const customFileLabel = document.getElementById('customFileLabel');
+                const removeSelectionBtn = document.getElementById('removeSelectionBtn');
+
+                function fileSelected() {
+                    console.log('File selected function called');
+                    console.log('Files:', fileInput.files);
+
+                    if (fileInput.files.length > 0) {
+                        const fileName = fileInput.files[0].name;
+                        console.log('File selected:', fileName);
+                        customFileLabel.textContent = fileName; 
+                        removeSelectionBtn.style.display = 'inline-block';
+                    } else {
+                        console.log('No file selected');
+                        customFileLabel.textContent = '選擇圖片';
+                        removeSelectionBtn.style.display = 'none';
+                    }
+                }
+
+                function removeSelection() {
+                    console.log('Remove selection function called');
+                    fileInput.value = '';
+                    customFileLabel.textContent = '選擇圖片';
+                    removeSelectionBtn.style.display = 'none';
+                }
+
+                fileInput.addEventListener('change', fileSelected);
+                removeSelectionBtn.addEventListener('click', removeSelection);
+
+                customFileLabel.textContent = '選擇圖片';
+                removeSelectionBtn.style.display = 'none';
+});
+        
+        
         });
     </script>
 

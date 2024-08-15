@@ -80,7 +80,7 @@
                                     <div class="input-icon">
                                         <input type="time" name="SecondTime" id="SecondTime" class="input-field">
                                         <label for="SecondTime" id="secondTimePlaceholder"
-                                            class="placeholder">選擇欲提醒的第二次用藥時間</label>
+                                            class="placeholder">選擇第二次提醒時間</label>
                                     </div>
                                 </div>
                             </div>
@@ -91,7 +91,7 @@
                                     <div class="input-icon">
                                         <input type="time" name="ThirdTime" id="ThirdTime" class="input-field">
                                         <label for="ThirdTime" id="thirdTimePlaceholder"
-                                            class="placeholder">選擇欲提醒的第三次用藥時間</label>
+                                            class="placeholder">選擇第三次提醒時間</label>
                                     </div>
                                 </div>
                             </div>
@@ -108,7 +108,10 @@
 
                         <div class="name">圖片</div>
                         <div>
-                            <input type="file" name="Pic" accept="image/*" id="fileInput" onchange="fileSelected()">
+                            <!-- <input type="file" name="Pic" accept="image/*" id="fileInput" onchange="fileSelected()"> -->
+                            <input type="file" name="Pic" accept="image/*" id="fileInput" onchange="fileSelected()" style="display:none;">
+                            <label for="fileInput" id="customFileLabel" class="btn">選擇圖片</label>
+
                             <button type="button" id="removeSelectionBtn" style="display:none;"
                                 onclick="removeSelection()">移除所選圖片</button>
                         </div>
@@ -256,6 +259,43 @@
 
                 var EndDatePlaceholder = document.getElementById('EndDatePlaceholder');
                 EndDatePlaceholder.style.display = EndDateInput.value ? 'none' : 'block';
+
+
+                //////////////圖片
+                document.addEventListener('DOMContentLoaded', function() {
+                    const fileInput = document.getElementById('fileInput');
+                    const customFileLabel = document.getElementById('customFileLabel');
+                    const removeSelectionBtn = document.getElementById('removeSelectionBtn');
+
+                    function fileSelected() {
+                        console.log('File selected function called');
+                        console.log('Files:', fileInput.files);
+
+                        if (fileInput.files.length > 0) {
+                            const fileName = fileInput.files[0].name;
+                            console.log('File selected:', fileName);
+                            customFileLabel.textContent = fileName; 
+                            removeSelectionBtn.style.display = 'inline-block';
+                        } else {
+                            console.log('No file selected');
+                            customFileLabel.textContent = '選擇圖片';
+                            removeSelectionBtn.style.display = 'none';
+                        }
+                    }
+
+                    function removeSelection() {
+                        console.log('Remove selection function called');
+                        fileInput.value = '';
+                        customFileLabel.textContent = '選擇圖片';
+                        removeSelectionBtn.style.display = 'none';
+                    }
+
+                    fileInput.addEventListener('change', fileSelected);
+                    removeSelectionBtn.addEventListener('click', removeSelection);
+
+                    customFileLabel.textContent = '選擇圖片';
+                    removeSelectionBtn.style.display = 'none';
+});
             }
         });
     </script>

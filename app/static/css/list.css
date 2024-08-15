@@ -259,7 +259,8 @@ div.navbar a{
     width: 30px;
 }
 
-.Memotime, .Cycle, .Alert ,.Location, .MainUserName, .EditorUserName, .Doctor, .Clinic, .Num, .MedFeature{
+.Memotime, .Cycle, .Alert ,.Location, .MainUserName, .EditorUserName,
+ .Doctor, .Clinic, .Num, .MedFeature, .SecondTime, .ThirdTime, .EndDate, .Pic{
     color: #666;
     margin-bottom: 0.5em;
     font-size: 16px;
