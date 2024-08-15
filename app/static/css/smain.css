@@ -52,6 +52,12 @@ div.content{
     padding: 60px 0 0 0;
 }
 
+div.content2{
+    background-color: #F2F0EE;
+    display: flex;
+    justify-content: center;
+    padding: 30px 0 0 0;
+}
 
 div.clear{
     height: 80px;

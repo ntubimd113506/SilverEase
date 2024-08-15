@@ -2,15 +2,39 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Document</title>
+    
+    <!-- 連結css檔 --> 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Satisfy&display=swap" rel="stylesheet">
+        
+    <link href="/static/css/l&f.css" rel="stylesheet" />
+    <script src="/static/js/touch-buttons.js" defer></script>
+    <script src="/static/js/img.js"></script>
+    <!--..........-->
+    
 </head>
 <body>
-    感謝您發現走失老人/遺失裝置，
-    請點擊以下按鈕協助通知家屬
-    <textarea name="" id="message" placeholder="希望您能留下聯繫方式"></textarea>
-    <button onclick=lostReport()>通報遺失/走失</button>
-    <img src="/static/imgs/thanks.png" alt="感謝圖" srcset="" id="thanksImg" hidden>
+    <div class="container">  
+        <div class="header">
+            <h1>SilverEase</h1>
+        </div>
+        <div class="form-container">
+            <h4>感謝您發現走失老人/遺失裝置，
+                請點擊以下按鈕協助通知家屬</h4>
+
+            <div class="cardrow">
+                <textarea class="message" name="" id="message" placeholder="希望您能留下聯繫方式"></textarea>
+            </div>
+            <div class="cardrow">
+                <button class="i" onclick=lostReport()>通報遺失/走失</button>
+            </div>
+            <img src="/static/imgs/thanks.png" alt="感謝圖" srcset="" id="thanksImg" hidden>
+        </div>
+    </div>
+
 </body>
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <script>
