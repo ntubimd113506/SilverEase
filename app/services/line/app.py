@@ -73,14 +73,13 @@ def handle_postback(event):
             cursor = conn.cursor()
             cursor.execute(
                 """
-                INSERT INTO Respond (MemoID, Times, RespondTime, TimeType)
-                VALUES (%s, %s, %s, %s)
+                INSERT INTO Respond (MemoID, Times, RespondTime)
+                VALUES (%s, %s, %s)
                 """,
                 (
                     data["MemoID"],
                     job.args[1],
                     datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
-                    data["time_type"],
                 ),
             )
             conn.commit()

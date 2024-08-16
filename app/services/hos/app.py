@@ -146,7 +146,7 @@ def hos_create():
 
 
 # 傳送通知
-def send_line_message(MemoID, cnt=0, got=False):
+def send_line_message(MemoID, cnt=0, got=False, time_type=""):
     try:
         data = db.get_memo_info(MemoID)
         Title = data["Title"]
@@ -166,7 +166,12 @@ def send_line_message(MemoID, cnt=0, got=False):
             + timedelta(seconds=random.uniform(-0.5, 0.5))
         ).strftime("%Y-%m-%dT%H:%M:%S")
 
-        msg = json.dumps({"MemoID": MemoID, "time": reminder_time, "got": True})
+        msg = json.dumps({
+            "MemoID": MemoID,
+            "time": reminder_time,
+            "got": True,
+            "time_type": time_type
+        })        
         body = TemplateSendMessage(
             alt_text="回診通知",
             template=ButtonsTemplate(
@@ -231,11 +236,11 @@ def send_line_message(MemoID, cnt=0, got=False):
             conn.close()
 
         scheduler.add_job(
-            id=f"{MemoID}",
+            id=f"{MemoID}_{time_type}",
             func=send_line_message,
             trigger="date",
             run_date=reminder_time,
-            args=[MemoID, cnt, got],
+            args=[MemoID, cnt, got, time_type],
         )
     except:
         pass
@@ -659,9 +664,9 @@ def hos_delete():
     try:
         MemoID = request.values.get("MemoID")
 
-        job = scheduler.get_job(MemoID)
+        job = scheduler.get_job(f"{MemoID}_{""}")
         if job:
-            scheduler.remove_job(MemoID)
+            scheduler.remove_job(f"{MemoID}_{""}")
 
         conn = db.get_connection()
         cursor = conn.cursor()
