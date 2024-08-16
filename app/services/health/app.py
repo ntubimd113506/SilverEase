@@ -95,7 +95,7 @@ def health_self():
         symptom_counts.items(), key=lambda x: x[1], reverse=True
     )
 
-    if len(sorted_symptom_counts) < 3:
+    if len(sorted_symptom_counts) < 5:
         sorted_symptom_counts.append(("手部清潔", 0))
         sorted_symptom_counts.append(("如何正確配戴口罩", 0))
 

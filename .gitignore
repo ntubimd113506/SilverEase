@@ -4,6 +4,7 @@ lineToken.py
 db.py
 scheduler.db
 /app/static/imgs/med
+/app/static/imgs/upload
 # __init__.py
 
 static/uploads/
