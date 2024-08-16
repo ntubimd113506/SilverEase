@@ -28,28 +28,31 @@
 
         <div class="content-wrapper">
             <div class="content">
-                <img src="/static/imgs/main.png" class="b">
+                <img src="imgs/main.png" class="b">
                 <h1>群組代碼</h1>
 
                 <div id="qrcode"></div>
 
-                <h4>代號:</h4>
+                <div class="form-container">
+                    <h4>代號:</h4>
 
-                <div class="cardrow">
-                    <span class="value">
-                        <input class="output" type="text" id='number' value="{{code_id}}" readonly>
-                        <button class="btn" type="button" onclick="copy()">
-                            <img class="btn" src="/static/imgs/copy.png" alt="copy"></button>
-                    </span>
-                    <br />
-                    <script>
-                        function copy() {
-                            const URL = document.getElementById('number');
-                            URL.select()
-                            navigator.clipboard.writeText(URL.value)
-                        }
-                    </script>
+                    <div class="cardrow">
+                        <span class="value">
+                            <input class="output" type="text" id='number' value="{{code_id}}" readonly>
+                            <button class="btn" type="button" onclick="copy()">
+                                <img class="btn" src="/static/imgs/copy.png" alt="copy"></button>
+                        </span>
+                        <br />
+                        <script>
+                            function copy() {
+                                const URL = document.getElementById('number');
+                                URL.select()
+                                navigator.clipboard.writeText(URL.value)
+                            }
+                        </script>
+                    </div>
                 </div>
+                
             </div>
         </div>
     </div>

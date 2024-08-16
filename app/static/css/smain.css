@@ -75,7 +75,7 @@ div.content h1{
 
 img.a{
     float: right;
-    padding: 10px 20px;
+    padding: 10px 20px 10px 0;
     width: 80px;
     height: 80px;
 } 
@@ -92,6 +92,15 @@ div.card{
 }
 
 b.t{
+    color: #2B3125;
+    font-size: 24px;
+    letter-spacing: 5px;
+    text-align: left;
+    margin: 0%;
+    padding: 30px 0px 30px 15px;
+}
+
+b.t1{
     color: #2B3125;
     font-size: 22px;
     letter-spacing: 5px;
