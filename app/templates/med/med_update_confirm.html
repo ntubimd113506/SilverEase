@@ -110,9 +110,7 @@
                             <img src="{{ image_path }}" style="width: 100px; height: 100px;"
                                 onerror="this.style.display='none';" onload="image_found=true;">
                             {% endfor %}
-                            <!-- <input type="file" name="Pic" accept="image/*" id="fileInput" onchange="fileSelected()"> -->
-                            <input type="file" name="Pic" accept="image/*" id="fileInput" onchange="fileSelected()" style="display:none;">
-                            <label for="fileInput" id="customFileLabel" class="btn">選擇檔案</label>
+                            <input type="file" name="Pic" accept="image/*" id="fileInput" onchange="fileSelected()">
 
                             <button type="button" id="removeSelectionBtn-1" onclick="removeImage('{{ data.MemoID }}')">移除圖片</button>
                             <button type="button" id="removeSelectionBtn" style="display:none;"
