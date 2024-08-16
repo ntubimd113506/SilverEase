@@ -124,15 +124,14 @@ def med_create():
             (FamilyID, TitleValue, MemoTime, MemID, Cycle, Alert, CreateTime),
         )
 
-        cursor.execute("Select MemoID from Memo order by MemoID Desc")
+        cursor.execute("SELECT MemoID FROM Memo ORDER BY MemoID DESC")
         MemoID = cursor.fetchone()[0]
 
         save_file(file, MemoID) if file else None
 
         cursor.execute(
             """
-            INSERT INTO 
-            Med (MemoID, SecondTime, ThirdTime, EndDate) 
+            INSERT INTO Med (MemoID, SecondTime, ThirdTime, EndDate)
             VALUES (%s, %s, %s, %s)
             """,
             (MemoID, SecondTime, ThirdTime, EndDate),
@@ -141,7 +140,7 @@ def med_create():
         conn.commit()
         conn.close()
 
-        job_id = f"{MemoID}"
+        job_id = f"{MemoID}_MemoTime"
         send_time = datetime.strptime(MemoTime, "%Y-%m-%dT%H:%M")
         reminder_time = send_time - timedelta(minutes=Alert)
 
@@ -152,6 +151,32 @@ def med_create():
             run_date=reminder_time,
             args=[MemoID],
         )
+
+        if SecondTime:
+            second_time_combined = datetime.strptime(
+                f"{send_time.strftime('%Y-%m-%d')}T{SecondTime}", "%Y-%m-%dT%H:%M"
+            )
+            second_reminder_time = second_time_combined - timedelta(minutes=Alert)
+            scheduler.add_job(
+                id=f"{MemoID}_SecondTime",
+                func=send_line_message,
+                trigger="date",
+                run_date=second_reminder_time,
+                args=[MemoID, 0, False, "SecondTime"],
+            )
+
+        if ThirdTime:
+            third_time_combined = datetime.strptime(
+                f"{send_time.strftime('%Y-%m-%d')}T{ThirdTime}", "%Y-%m-%dT%H:%M"
+            )
+            third_reminder_time = third_time_combined - timedelta(minutes=Alert)
+            scheduler.add_job(
+                id=f"{MemoID}_ThirdTime",
+                func=send_line_message,
+                trigger="date",
+                run_date=third_reminder_time,
+                args=[MemoID, 0, False, "ThirdTime"],
+            )
 
         return render_template(
             "/schedule/result.html",
@@ -171,7 +196,7 @@ def med_create():
 
 
 # 傳送通知
-def send_line_message(MemoID, cnt=0, got=False):
+def send_line_message(MemoID, cnt=0, got=False, time_type="MemoTime"):
     try:
         data = db.get_memo_info(MemoID)
         Title = data["Title"]
@@ -187,13 +212,22 @@ def send_line_message(MemoID, cnt=0, got=False):
             + timedelta(seconds=random.uniform(-0.5, 0.5))
         ).strftime("%Y-%m-%dT%H:%M:%S")
 
-        msg = json.dumps({"MemoID": MemoID, "time": reminder_time, "got": True})
+        msg = json.dumps(
+            {
+                "MemoID": MemoID,
+                "time": reminder_time,
+                "got": True,
+                "time_type": time_type,
+            }
+        )
 
         thumbnail_url = f"https://silverease.ntub.edu.tw/static/imgs/medicine.png"
         for ext in ALLOWED_EXTENSIONS:
             image_path = os.path.join(UPLOAD_FOLDER, f"{MemoID}.{ext}")
             if os.path.exists(image_path):
-                thumbnail_url = f"https://silverease.ntub.edu.tw/static/imgs/med/{MemoID}.{ext}"
+                thumbnail_url = (
+                    f"https://silverease.ntub.edu.tw/static/imgs/med/{MemoID}.{ext}"
+                )
                 break
 
         body = TemplateSendMessage(
@@ -252,11 +286,11 @@ def send_line_message(MemoID, cnt=0, got=False):
             conn.close()
 
         scheduler.add_job(
-            id=f"{MemoID}",
+            id=f"{MemoID}_{time_type}",
             func=send_line_message,
             trigger="date",
             run_date=reminder_time,
-            args=[MemoID, cnt, got],
+            args=[MemoID, cnt, got, time_type],
         )
     except:
         pass
@@ -554,9 +588,18 @@ def med_update_confirm():
 
     if data:
         department_list = [
-            "感冒藥", "頭痛藥", "止痛藥", "高血壓藥物", 
-            "糖尿病藥物", "心臟病藥物", "降膽固醇藥物", "抗凝劑", 
-            "抗血小板藥物", "癌症藥物", ""        ]
+            "感冒藥",
+            "頭痛藥",
+            "止痛藥",
+            "高血壓藥物",
+            "糖尿病藥物",
+            "心臟病藥物",
+            "降膽固醇藥物",
+            "抗凝劑",
+            "抗血小板藥物",
+            "癌症藥物",
+            "",
+        ]
 
         department = data[2] if data[2] in department_list else "其他"
 
@@ -629,25 +672,66 @@ def med_update():
         conn.commit()
         conn.close()
 
-        job_id = f"{MemoID}"
         send_time = datetime.strptime(MemoTime, "%Y-%m-%dT%H:%M")
         reminder_time = send_time - timedelta(minutes=Alert)
 
-        if scheduler.get_job(MemoID) != None:
+        if scheduler.get_job(f"{MemoID}_MemoTime"):
             scheduler.modify_job(
-                MemoID,
+                f"{MemoID}_MemoTime",
                 trigger="date",
                 run_date=reminder_time,
                 args=[MemoID],
             )
         else:
             scheduler.add_job(
-                id=job_id,
+                id=f"{MemoID}_MemoTime",
                 func=send_line_message,
                 trigger="date",
                 run_date=reminder_time,
                 args=[MemoID],
             )
+
+        if SecondTime:
+            second_time_combined = datetime.strptime(
+                f"{send_time.strftime('%Y-%m-%d')}T{SecondTime}", "%Y-%m-%dT%H:%M"
+            )
+            second_reminder_time = second_time_combined - timedelta(minutes=Alert)
+            if scheduler.get_job(f"{MemoID}_SecondTime"):
+                scheduler.modify_job(
+                    f"{MemoID}_SecondTime",
+                    trigger="date",
+                    run_date=second_reminder_time,
+                    args=[MemoID, 0, False, "SecondTime"],
+                )
+            else:
+                scheduler.add_job(
+                    id=f"{MemoID}_SecondTime",
+                    func=send_line_message,
+                    trigger="date",
+                    run_date=second_reminder_time,
+                    args=[MemoID, 0, False, "SecondTime"],
+                )
+
+        if ThirdTime:
+            third_time_combined = datetime.strptime(
+                f"{send_time.strftime('%Y-%m-%d')}T{ThirdTime}", "%Y-%m-%dT%H:%M"
+            )
+            third_reminder_time = third_time_combined - timedelta(minutes=Alert)
+            if scheduler.get_job(f"{MemoID}_ThirdTime"):
+                scheduler.modify_job(
+                    f"{MemoID}_ThirdTime",
+                    trigger="date",
+                    run_date=third_reminder_time,
+                    args=[MemoID, 0, False, "ThirdTime"],
+                )
+            else:
+                scheduler.add_job(
+                    id=f"{MemoID}_ThirdTime",
+                    func=send_line_message,
+                    trigger="date",
+                    run_date=third_reminder_time,
+                    args=[MemoID, 0, False, "ThirdTime"],
+                )
 
         return render_template(
             "/schedule/result.html",
@@ -699,9 +783,10 @@ def med_delete():
     try:
         MemoID = request.values.get("MemoID")
 
-        job = scheduler.get_job(MemoID)
-        if job:
-            scheduler.remove_job(MemoID)
+        for time_type in ["MemoTime", "SecondTime", "ThirdTime"]:
+            job = scheduler.get_job(f"{MemoID}_{time_type}")
+            if job:
+                scheduler.remove_job(f"{MemoID}_{time_type}")
 
         conn = db.get_connection()
         cursor = conn.cursor()
@@ -730,6 +815,6 @@ def med_delete():
             "/schedule/result.html",
             schedule="med",
             list="list",
-            Title="刪除用藥成功",
+            Title="刪除用藥失敗",
             img="F_delete",
         )

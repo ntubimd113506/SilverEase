@@ -14,6 +14,7 @@ linebot_bp = Blueprint("linebot_bp", __name__)
 
 mqtt = MQTT.mqtt
 
+
 @linebot_bp.route("/joblist")
 def joblist():
     return f"{scheduler.get_jobs()}"
@@ -55,31 +56,50 @@ def handle_postback(event):
     data = json.loads(event.postback.data)
 
     try:
-        job = scheduler.get_job(data["MemoID"])
-        if data["got"] and job.next_run_time.strftime("%Y-%m-%dT%H:%M:%S") == data["time"]:
+        job_id = f"{data['MemoID']}_{data['time_type']}"
+        job = scheduler.get_job(job_id)
+
+        if (
+            data["got"]
+            and job
+            and job.next_run_time.strftime("%Y-%m-%dT%H:%M:%S") == data["time"]
+        ):
             scheduler.modify_job(
-                data["MemoID"], args=[data["MemoID"], job.args[1], data["got"]]
+                job_id,
+                args=[data["MemoID"], job.args[1], data["got"], data["time_type"]],
             )
-            # line_bot_api.reply_message(event.reply_token,TextSendMessage(text=f"data={job.next_run_time.strftime("%Y-%m-%dT%H:%M:%S")==data["time"]:}"))
+
             conn = db.get_connection()
             cursor = conn.cursor()
             cursor.execute(
                 """
-                INSERT INTO Respond (MemoID, Times, RespondTime)
-                VALUES (%s, %s, %s)
+                INSERT INTO Respond (MemoID, Times, RespondTime, TimeType)
+                VALUES (%s, %s, %s, %s)
                 """,
-                (data["MemoID"], job.args[1],
-                 datetime.now().strftime("%Y-%m-%dT%H:%M:%S")),
+                (
+                    data["MemoID"],
+                    job.args[1],
+                    datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
+                    data["time_type"],
+                ),
             )
             conn.commit()
             conn.close()
-    except:
-        if data["action"] == "help":
-            mqtt.publish(f"ESP32/{data['DevID']}/gotHelp", "")
-            scheduler.add_job(id=data['DevID'], func=report_SOS, args=[data['DevID'],data['SOSNo'] ], trigger="date" , run_date=datetime.now() + timedelta(minutes=5))
 
-def report_SOS(DevID,SOSNo):
-    msg=FlexSendMessage(
+    except:
+        if data.get("action") == "help":
+            mqtt.publish(f"ESP32/{data['DevID']}/gotHelp", "")
+            scheduler.add_job(
+                id=data["DevID"],
+                func=report_SOS,
+                args=[data["DevID"], data["SOSNo"]],
+                trigger="date",
+                run_date=datetime.now() + timedelta(minutes=5),
+            )
+
+
+def report_SOS(DevID, SOSNo):
+    msg = FlexSendMessage(
         alt_text="求救事件追蹤",
         contents={
             "type": "bubble",
@@ -92,7 +112,7 @@ def report_SOS(DevID,SOSNo):
                         "text": "求救事件追蹤",
                         "weight": "bold",
                         "size": "xl",
-                        "align": "center"
+                        "align": "center",
                     },
                     {
                         "type": "box",
@@ -103,11 +123,11 @@ def report_SOS(DevID,SOSNo):
                             {
                                 "type": "text",
                                 "text": "為更了解居家危險因子，\n請協助填寫來打造更好的居家環境",
-                                "wrap": True
+                                "wrap": True,
                             }
-                        ]
-                    }
-                ]
+                        ],
+                    },
+                ],
             },
             "footer": {
                 "type": "box",
@@ -121,22 +141,22 @@ def report_SOS(DevID,SOSNo):
                         "action": {
                             "type": "uri",
                             "label": "填寫表單",
-                            "uri": f"https://liff.line.me/{db.LIFF_ID}/sos/sos_report/{SOSNo}"
-                        }
+                            "uri": f"https://liff.line.me/{db.LIFF_ID}/sos/sos_report/{SOSNo}",
+                        },
                     },
                     {
                         "type": "box",
                         "layout": "vertical",
                         "contents": [],
-                        "margin": "sm"
-                    }
+                        "margin": "sm",
+                    },
                 ],
-                "flex": 0
-            }
-        }
+                "flex": 0,
+            },
+        },
     )
-    
-    FamilyID=check_device(DevID)
+
+    FamilyID = check_device(DevID)
 
     if FamilyID:
         cursor = db.get_connection().cursor()
@@ -144,6 +164,7 @@ def report_SOS(DevID,SOSNo):
 
         for SubUserID in cursor.fetchall():
             line_bot_api.push_message(SubUserID[0], msg)
+
 
 def check_device(DevID):
     conn = db.get_connection()
