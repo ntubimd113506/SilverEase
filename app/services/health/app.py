@@ -36,7 +36,7 @@ def health_self():
             SELECT Title, COUNT(*) AS Count 
             FROM `113-ntub113506`.Memo 
             WHERE Title IN ('感冒藥', '頭痛藥', '止痛藥', '高血壓藥物', '糖尿病藥物', '心臟病藥物', '降膽固醇藥物', '抗凝劑', '抗血小板藥物', '癌症藥物') 
-            AND FamilyID = %s
+            AND FamilyID = %s AND YEAR(MemoTime) = YEAR(NOW())
             GROUP BY Title 
             ORDER BY Count DESC;
             """,
@@ -50,7 +50,7 @@ def health_self():
             FROM `113-ntub113506`.Memo m
             LEFT JOIN `113-ntub113506`.Hos h ON m.MemoID = h.MemoID
             WHERE Clinic IN ('耳鼻喉科', '一般內科', '心臟內科', '內分泌新陳代謝科', '腫瘤科', '胸腔內科', '神經內科', '腎臟內科', '外科', '骨科', '復健科', '呼吸內科', '精神科', '中醫') 
-            AND FamilyID = %s
+            AND FamilyID = %s AND YEAR(MemoTime) = YEAR(NOW())
             GROUP BY Clinic 
             ORDER BY Count DESC;
             """,
@@ -123,7 +123,7 @@ def health_self():
     image_items = [
         {"name": symptom, "image": image_data.get(symptom, "")}
         for symptom, count in sorted_symptom_counts
-    ]
+    ][:5]
 
     return render_template("/health/health.html", title="個人推薦", items=image_items)
 
