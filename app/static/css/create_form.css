@@ -350,62 +350,50 @@ input[type="time"]:valid::-webkit-datetime-edit {
 }
 
 /* /////////圖片////////// */
-#customFileLabel {
-    display: inline-block;
-    padding: 10px 20px;
-    background-color: #809f68; 
+#fileInput::file-selector-button{
+    padding: 5px 15px;
+    background-color: #809f68;
     color: #fff; 
+    font-weight: 600;
     font-size: 16px; 
+    border-radius: 20px;
+    cursor: pointer;
+    text-align: center; 
+    border: none;
+    width: 100%;
+    max-width: 100px;
+    box-sizing: border-box;
+    top: 10px;
+    height: 30px;
+    letter-spacing: 1px;
+    margin-top: 5px;
+}
+
+#removeSelectionBtn-1{
+    margin-top: 10px;
+}
+
+#removeSelectionBtn, #removeSelectionBtn-1 {
+    display: flex;
+    padding: 5px 15px;
+    background-color: #dadada; 
+    color: #000000; 
+    font-size: 16px;
     border-radius: 20px;
     cursor: pointer;
     text-align: center;
     border: none;
-    width: 100%;
-    max-width: 200px;
-    box-sizing: border-box;
-    top: 10px;
-   
-}
-
-#customFileLabel:hover {
-    background-color: #9fb889;
-}
-
-#customFileLabel:active {
-    background-color: #9fb889; 
-}
-
-
-#customFileLabel {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-
-#removeSelectionBtn, #removeSelectionBtn-1 {
-    display: inline-block;
-    padding: 10px 20px;
-    background-color: #d9d9d9; 
-    color: #000000; 
-    font-size: 16px; 
-    border-radius: 20px; 
-    cursor: pointer;
-    text-align: center;
-    border: none;
     font-weight: 700;
-    margin-top: 8px;
+    margin-bottom: 10px;
+    height: 30px;
+    justify-content: center; 
+    align-items: center; 
+    padding-bottom: 5px;
 }
 
-#removeSelectionBtn,#removeSelectionBtn-1:hover {
-    background-color: #a7a7a7; 
-
+#Cycleinput{
+    margin-top: 10px;
 }
-
-#removeSelectionBtn,#removeSelectionBtn-1:active {
-    background-color: #a7a7a7;
-}
-
 /* ------------------- */
 /* Media Queries       */
 /* ------------------- */
