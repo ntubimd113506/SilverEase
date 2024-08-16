@@ -379,14 +379,17 @@ def med_list():
         for id in FamilyID:
             query = """
                     SELECT m.*, e.*, 
-                    mu.MemName AS MainUserName, 
-                    eu.MemName AS EditorUserName
+                        mu.MemName AS MainUserName, 
+                        eu.MemName AS EditorUserName
                     FROM `113-ntub113506`.Memo m
                     JOIN `113-ntub113506`.Med e ON e.MemoID = m.MemoID
                     LEFT JOIN `113-ntub113506`.Family f ON f.FamilyID = m.FamilyID
                     LEFT JOIN `113-ntub113506`.Member mu ON mu.MemID = f.MainUserID
                     LEFT JOIN `113-ntub113506`.Member eu ON eu.MemID = m.EditorID
-                    WHERE m.FamilyID = %s AND m.Status = '1' AND `MemoTime` > NOW()
+                    WHERE m.FamilyID = %s
+                    AND m.Status = '1' 
+                    AND GREATEST(m.MemoTime, CONCAT(DATE(m.MemoTime), ' ', e.SecondTime), 
+                                CONCAT(DATE(m.MemoTime), ' ', e.ThirdTime)) > NOW();
                     """
 
             params = [id[0]]
@@ -506,14 +509,17 @@ def med_history():
         for id in FamilyID:
             query = """
                     SELECT m.*, e.*, 
-                    mu.MemName AS MainUserName, 
-                    eu.MemName AS EditorUserName
+                        mu.MemName AS MainUserName, 
+                        eu.MemName AS EditorUserName
                     FROM `113-ntub113506`.Memo m
                     JOIN `113-ntub113506`.Med e ON e.MemoID = m.MemoID
                     LEFT JOIN `113-ntub113506`.Family f ON f.FamilyID = m.FamilyID
                     LEFT JOIN `113-ntub113506`.Member mu ON mu.MemID = f.MainUserID
                     LEFT JOIN `113-ntub113506`.Member eu ON eu.MemID = m.EditorID
-                    WHERE m.FamilyID = %s AND m.Status = '1' AND MemoTime <= NOW()
+                    WHERE m.FamilyID = %s
+                    AND m.Status = '1' 
+                    AND GREATEST(m.MemoTime, CONCAT(DATE(m.MemoTime), ' ', e.SecondTime), 
+                                CONCAT(DATE(m.MemoTime), ' ', e.ThirdTime)) <= NOW();
                     """
 
             params = [id[0]]
