@@ -205,17 +205,6 @@ def send_line_message(MemoID, cnt=0, got=False, time_type="MemoTime"):
         Alert = data["Alert"]
         cnt += 1
 
-        if time_type == "MemoTime":
-            next_send_time = data["MemoTime"]
-        elif time_type == "SecondTime":
-            next_send_time = datetime.strptime(
-                f"{data['MemoTime'].strftime('%Y-%m-%d')}T{data['SecondTime']}", "%Y-%m-%dT%H:%M"
-            )
-        elif time_type == "ThirdTime":
-            next_send_time = datetime.strptime(
-                f"{data['MemoTime'].strftime('%Y-%m-%d')}T{data['ThirdTime']}", "%Y-%m-%dT%H:%M"
-            )
-
         reminder_time = (
             datetime.now()
             + timedelta(seconds=20)
@@ -276,25 +265,29 @@ def send_line_message(MemoID, cnt=0, got=False, time_type="MemoTime"):
                 )
                 conn.commit()
 
+            next_time = datetime.now() + timedelta(days=1)
+
+            if data["EndDate"] and data["EndDate"] < next_time:
+                return
+
+            next_time_format = next_time.strftime("%Y-%m-%dT%H:%M:%S")
+            reminder_time = (next_time - timedelta(minutes=Alert)).strftime(
+                "%Y-%m-%dT%H:%M:%S"
+            )
             cnt = 0
             got = False
 
-            next_send_time += timedelta(days=1)
-            next_time_format = next_send_time.strftime("%Y-%m-%dT%H:%M:%S")
-            reminder_time = (next_send_time - timedelta(minutes=Alert)).strftime(
-                "%Y-%m-%dT%H:%M:%S"
-            )
-
-            cursor.execute(
-                """
-                UPDATE Memo
-                SET {} = %s
-                WHERE MemoID = %s
-                """.format(time_type),
-                (next_time_format, MemoID),
-            )
-            conn.commit()
-            conn.close()
+            if time_type == "MemoTime":
+                cursor.execute(
+                    """
+                    UPDATE Memo
+                    SET MemoTime = %s
+                    WHERE MemoID = %s
+                    """,
+                    (next_time_format, MemoID),
+                )
+                conn.commit()
+                conn.close()
 
         scheduler.add_job(
             id=f"{MemoID}_{time_type}",
@@ -303,7 +296,8 @@ def send_line_message(MemoID, cnt=0, got=False, time_type="MemoTime"):
             run_date=reminder_time,
             args=[MemoID, cnt, got, time_type],
         )
-    except:
+    except Exception as e:
+        print(f"發生錯誤: {e}")
         pass
 
 # 查詢
