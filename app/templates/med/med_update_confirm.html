@@ -117,16 +117,6 @@
                                 onclick="removeSelection()">移除所選圖片</button>
                         </div>
 
-                        <div class="name">多久重複</div>
-                        <select name="Cycle" value="{{ data.Cycle }}">
-                            <option value="不重複">不重複</option>
-                            <option value="一小時">一小時</option>
-                            <option value="一天">一天</option>
-                            <option value="一週">一週</option>
-                            <option value="一個月">一個月</option>
-                            <option value="一年">一年</option>
-                        </select>
-
                         <div class="name">幾分鐘前提醒</div>
                         <select name="Alert" value="{{ data.Alert }}">
                             <option value="0">當下</option>
@@ -296,7 +286,6 @@
         }
 
         document.addEventListener('DOMContentLoaded', function () {
-            setSelectOptionsValue("Cycle", "{{ data.Cycle }}");
             setSelectOptionsValue("Alert", "{{ data.Alert }}");
             validateDateTime();
 
@@ -316,7 +305,6 @@
             handlePlaceholder(document.querySelector('input[name="EndDate"]'), document.getElementById('EndDatePlaceholder'));
         
 
-            //////////圖片按鈕
             document.addEventListener('DOMContentLoaded', function() {
                 const fileInput = document.getElementById('fileInput');
                 const customFileLabel = document.getElementById('customFileLabel');

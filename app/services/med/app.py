@@ -94,7 +94,6 @@ def med_create():
         SecondTime = request.form.get("SecondTime")
         ThirdTime = request.form.get("ThirdTime")
         EndDate = request.form.get("EndDate")
-        Cycle = request.form.get("Cycle")
         Alert = int(request.form.get("Alert", 0))
         CreateTime = datetime.now()
         file = request.files.get("Pic")
@@ -118,10 +117,10 @@ def med_create():
 
         cursor.execute(
             """
-            INSERT INTO Memo (FamilyID, Title, MemoTime, MemoType, EditorID, Cycle, Alert, Status, CreateTime)
-            VALUES(%s, %s, %s, '1', %s, %s, %s, '1', %s)
+            INSERT INTO Memo (FamilyID, Title, MemoTime, MemoType, EditorID, Alert, Status, CreateTime)
+            VALUES(%s, %s, %s, '1', %s, %s, '1', %s)
             """,
-            (FamilyID, TitleValue, MemoTime, MemID, Cycle, Alert, CreateTime),
+            (FamilyID, TitleValue, MemoTime, MemID, Alert, CreateTime),
         )
 
         cursor.execute("SELECT MemoID FROM Memo ORDER BY MemoID DESC")
@@ -203,9 +202,20 @@ def send_line_message(MemoID, cnt=0, got=False, time_type="MemoTime"):
         MainUserID = data["MainUser"]
         MainUserName = data["MainUserName"]
         SubUserIDs = data["SubUser"]
-        Cycle = data["Cycle"]
         Alert = data["Alert"]
         cnt += 1
+
+        if time_type == "MemoTime":
+            next_send_time = data["MemoTime"]
+        elif time_type == "SecondTime":
+            next_send_time = datetime.strptime(
+                f"{data['MemoTime'].strftime('%Y-%m-%d')}T{data['SecondTime']}", "%Y-%m-%dT%H:%M"
+            )
+        elif time_type == "ThirdTime":
+            next_send_time = datetime.strptime(
+                f"{data['MemoTime'].strftime('%Y-%m-%d')}T{data['ThirdTime']}", "%Y-%m-%dT%H:%M"
+            )
+
         reminder_time = (
             datetime.now()
             + timedelta(seconds=20)
@@ -266,20 +276,21 @@ def send_line_message(MemoID, cnt=0, got=False, time_type="MemoTime"):
                 )
                 conn.commit()
 
-            next_time = next_send_time(Cycle, data["MemoTime"])
-            next_time_format = next_time.strftime("%Y-%m-%dT%H:%M:%S")
-            reminder_time = (next_time - timedelta(minutes=Alert)).strftime(
-                "%Y-%m-%dT%H:%M:%S"
-            )
             cnt = 0
             got = False
+
+            next_send_time += timedelta(days=1)
+            next_time_format = next_send_time.strftime("%Y-%m-%dT%H:%M:%S")
+            reminder_time = (next_send_time - timedelta(minutes=Alert)).strftime(
+                "%Y-%m-%dT%H:%M:%S"
+            )
 
             cursor.execute(
                 """
                 UPDATE Memo
-                SET MemoTime = %s
+                SET {} = %s
                 WHERE MemoID = %s
-                """,
+                """.format(time_type),
                 (next_time_format, MemoID),
             )
             conn.commit()
@@ -294,22 +305,6 @@ def send_line_message(MemoID, cnt=0, got=False, time_type="MemoTime"):
         )
     except:
         pass
-
-
-def next_send_time(Cycle, now=datetime.now()):
-    if Cycle == "一小時":
-        return now + timedelta(hours=1)
-    elif Cycle == "一天":
-        return now + timedelta(days=1)
-    elif Cycle == "一週":
-        return now + timedelta(weeks=1)
-    elif Cycle == "一個月":
-        return now + timedelta(days=30)
-    elif Cycle == "一年":
-        return now + timedelta(days=365)
-    else:
-        return now
-
 
 # 查詢
 @med_bp.route("/list")
@@ -379,17 +374,16 @@ def med_list():
         for id in FamilyID:
             query = """
                     SELECT m.*, e.*, 
-                        mu.MemName AS MainUserName, 
-                        eu.MemName AS EditorUserName
+                    mu.MemName AS MainUserName, 
+                    eu.MemName AS EditorUserName
                     FROM `113-ntub113506`.Memo m
                     JOIN `113-ntub113506`.Med e ON e.MemoID = m.MemoID
                     LEFT JOIN `113-ntub113506`.Family f ON f.FamilyID = m.FamilyID
                     LEFT JOIN `113-ntub113506`.Member mu ON mu.MemID = f.MainUserID
                     LEFT JOIN `113-ntub113506`.Member eu ON eu.MemID = m.EditorID
-                    WHERE m.FamilyID = %s
-                    AND m.Status = '1' 
-                    AND GREATEST(m.MemoTime, CONCAT(DATE(m.MemoTime), ' ', e.SecondTime), 
-                                CONCAT(DATE(m.MemoTime), ' ', e.ThirdTime)) > NOW();
+                    WHERE m.FamilyID = %s AND m.Status = '1' AND GREATEST(m.MemoTime, 
+                    COALESCE(CONCAT(DATE(m.MemoTime), ' ', e.SecondTime), '0000-00-00 00:00:00'), 
+                    COALESCE(CONCAT(DATE(m.MemoTime), ' ', e.ThirdTime), '0000-00-00 00:00:00')) > NOW()
                     """
 
             params = [id[0]]
@@ -420,7 +414,6 @@ def med_list():
                     "MemoID": d[0],
                     "Title": d[2],
                     "MemoTime": d[3],
-                    "Cycle": d[6],
                     "Alert": d[7],
                     "SecondTime": d[11],
                     "ThirdTime": d[12],
@@ -509,17 +502,16 @@ def med_history():
         for id in FamilyID:
             query = """
                     SELECT m.*, e.*, 
-                        mu.MemName AS MainUserName, 
-                        eu.MemName AS EditorUserName
+                    mu.MemName AS MainUserName, 
+                    eu.MemName AS EditorUserName
                     FROM `113-ntub113506`.Memo m
                     JOIN `113-ntub113506`.Med e ON e.MemoID = m.MemoID
                     LEFT JOIN `113-ntub113506`.Family f ON f.FamilyID = m.FamilyID
                     LEFT JOIN `113-ntub113506`.Member mu ON mu.MemID = f.MainUserID
                     LEFT JOIN `113-ntub113506`.Member eu ON eu.MemID = m.EditorID
-                    WHERE m.FamilyID = %s
-                    AND m.Status = '1' 
-                    AND GREATEST(m.MemoTime, CONCAT(DATE(m.MemoTime), ' ', e.SecondTime), 
-                                CONCAT(DATE(m.MemoTime), ' ', e.ThirdTime)) <= NOW();
+                    WHERE m.FamilyID = %s AND m.Status = '1' AND GREATEST(m.MemoTime, 
+                    COALESCE(CONCAT(DATE(m.MemoTime), ' ', e.SecondTime), '0000-00-00 00:00:00'), 
+                    COALESCE(CONCAT(DATE(m.MemoTime), ' ', e.ThirdTime), '0000-00-00 00:00:00')) <= NOW()
                     """
 
             params = [id[0]]
@@ -549,7 +541,6 @@ def med_history():
                     "MemoID": d[0],
                     "Title": d[2],
                     "MemoTime": d[3],
-                    "Cycle": d[6],
                     "Alert": d[7],
                     "SecondTime": d[11],
                     "ThirdTime": d[12],
@@ -614,7 +605,6 @@ def med_update_confirm():
         "Title": department,
         "OtherTitle": data[2],
         "MemoTime": data[3],
-        "Cycle": data[6],
         "Alert": data[7],
         "SecondTime": data[11],
         "ThirdTime": data[12],
@@ -636,7 +626,6 @@ def med_update():
         SecondTime = request.form.get("SecondTime")
         ThirdTime = request.form.get("ThirdTime")
         EndDate = request.form.get("EndDate")
-        Cycle = request.form.get("Cycle")
         Alert = int(request.form.get("Alert"))
         file = request.files.get("Pic")
 
@@ -657,10 +646,10 @@ def med_update():
         cursor.execute(
             """
             UPDATE Memo 
-            SET Title = %s, MemoTime = %s, EditorID = %s, Cycle = %s, Alert = %s 
+            SET Title = %s, MemoTime = %s, EditorID = %s, Alert = %s 
             WHERE MemoID = %s
             """,
-            (TitleValue, MemoTime, EditorID, Cycle, Alert, MemoID),
+            (TitleValue, MemoTime, EditorID, Alert, MemoID),
         )
 
         if file:
