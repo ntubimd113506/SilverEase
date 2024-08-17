@@ -4,14 +4,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Satisfy&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
     <title>{{ title }}</title>
     <link href="/static/css/health.css" rel="stylesheet" />
 </head>
 
 <body>
-    <h2>{{ title }}</h2>
-    <a href="{{ url_for('health_bp.health') }}">返回主頁</a>
+    <div class="header">
+        <h1>SilverEase</h1>
+    </div>
+
+
+    <!-- <h2>{{ title }}</h2> -->
+
+    <!-- <a href="{{ url_for('health_bp.health') }}">返回主頁</a> -->
+    <i id="menu-bar" class="fa-solid fa-house"></i>
+    <div class="navbar">
+        <ul id="navigation" class="nav">
+            <li><a href="{{ url_for('health_bp.health') }}">返回主頁</a></li>
+        </ul>
+    </div>
+
+
     <div class="content">
+        
+        <div class="title-container">
+            <h1 class="content-header">{{ title }}</h1>
+        </div>
+
         {% for item in items %}
         <h3 class="item-title" onclick="toggleImage('{{ loop.index0 }}')">{{ item.name }}</h3>
         <img id="image-{{ loop.index0 }}" class="item-image"
