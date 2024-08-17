@@ -177,6 +177,11 @@ select {
     margin-bottom: 24px; 
 }
 
+.input-field {
+    width: 100%; 
+    margin-bottom: 10px; 
+}
+
 .name {
     font-size: 18px;
     margin-bottom: 5px; 
@@ -367,13 +372,10 @@ input[type="time"]:valid::-webkit-datetime-edit {
     height: 30px;
     letter-spacing: 1px;
     margin-top: 5px;
+    margin-bottom: 3px;
 }
 
-#removeSelectionBtn-1{
-    margin-top: 10px;
-}
-
-#removeSelectionBtn, #removeSelectionBtn-1 {
+#removeSelectionBtn-1 {
     display: flex;
     padding: 5px 15px;
     background-color: #dadada; 
@@ -389,11 +391,33 @@ input[type="time"]:valid::-webkit-datetime-edit {
     justify-content: center; 
     align-items: center; 
     padding-bottom: 5px;
+    margin-top: 10px;
+    margin-bottom: 4px;
+}
+
+#removeSelectionBtn{
+    display: flex;
+    padding: 5px 15px;
+    background-color: #dadada; 
+    color: #000000; 
+    font-size: 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    text-align: center;
+    border: none;
+    font-weight: 700;
+    margin-bottom: 10px;
+    height: 30px;
+    justify-content: center; 
+    align-items: center; 
+    padding-bottom: 5px;
+    margin-top: 10px;
 }
 
 #Cycleinput{
     margin-top: 10px;
 }
+
 /* ------------------- */
 /* Media Queries       */
 /* ------------------- */
