@@ -166,7 +166,7 @@ select {
     position: absolute;
     right: 10px;
     top: 50%; 
-    transform: translateY(-50%); 
+    transform: translateY(-70%); 
     color: #809f68;
     font-size: 19px;
     pointer-events: none;
@@ -306,7 +306,7 @@ select:invalid {
     position: absolute;
     top: 50%;
     left: 10px;
-    transform: translateY(-50%);
+    transform: translateY(-70%);
     color: #878787;
     pointer-events: none;
     font-size: 19px;
@@ -416,6 +416,10 @@ input[type="time"]:valid::-webkit-datetime-edit {
 
 #Cycleinput{
     margin-top: 10px;
+}
+
+#space{
+    margin-top: 26px;
 }
 
 /* ------------------- */
