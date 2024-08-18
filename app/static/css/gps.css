@@ -1,0 +1,290 @@
+@charset "utf-8";
+
+/* ------------------- */
+/* html, body          */
+/* ------------------- */
+html{
+    overflow-y: hidden;
+}
+
+html, body{
+    font-family: 'Noto Sans TC', sans-serif;
+    background-color: #F2F0EE;
+    padding: 0%;
+    margin: 0%;
+    height: 100%;  /* 確保內容填滿視窗高度 */
+    width: 100%;   /* 確保內容填滿視窗寬度 */
+    padding-bottom: constant(safe-area-inset-bottom);
+}
+
+
+/* ------------------- */
+/* container           */
+/* ------------------- */
+div.container{
+     width: 100%;   /*確保容器寬度為100% */
+    /* height: 1000px; */
+    margin-left: auto;
+    margin-right: auto;
+    text-align: justify;
+    line-height: 26px;
+    overflow: hidden;  /* 確保內容不會溢出 */
+}
+
+
+/* ------------------- */
+/* header              */
+/* ------------------- */
+div.header{
+    display: flex;
+    /* 水平置中 */
+    justify-content: center;  
+    align-items: center;
+    padding: 10px;
+    height: 40px;
+    width: auto;
+    background-color: #9FB889;
+}
+
+div.header h1{
+    font-size: 30px;
+    width: 200px;
+    padding: 5px;
+    text-align:center;
+    letter-spacing: 3px;
+    margin: 0%;
+}
+
+/* ------------------- */
+/* content-wrapper     */
+/* ------------------- */
+div.content-wrapper {
+    display: flex;
+    justify-content: center;  /* 水平置中 */
+    height: calc(100vh - 60px);  /* 減去 header 高度 */
+    width: 100%;  /* 設置容器高度為視窗高度 */
+}
+
+/* ------------------- */
+/* content             */
+/* ------------------- */
+div.content{
+    position: relative; 
+    padding-top: 20px;
+    justify-content: center;
+    margin: auto;
+}
+
+.title-container {
+    width: fit-content;
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    margin: auto;
+}
+.title-container .content-header {
+    color: #000000;
+    font-size: 30px;
+    letter-spacing: 5px;
+    width: 100%;
+    text-align: left;
+    margin-top: 30px; 
+    margin-bottom: 35px;
+}
+
+.form-container {
+    position: relative;
+    transform: translate(0 ,-90%);
+    z-index: 2;
+}
+
+.flex-container {
+    display: flex;
+    align-items: center;
+    width: 100%; /* 確保容器寬度充足 */
+}
+
+.flex-container label.h4 {
+    margin-right: 10px; /* 與下拉選單之間的間距 */
+}
+
+.form{
+    position: relative; /* 確保內容有定位 */
+    z-index: 2;
+}
+
+div.content h1{
+    font-size: 30px;
+    letter-spacing:8px;
+    color: #2e2e2e;
+    margin-bottom: 180px;
+    position: relative; /* 確保內容有定位 */
+    z-index: 2;
+}
+
+div.content h4{
+    width: 110px;
+    font-weight: bold;
+    color: #2e2e2e;
+    font-size: 22px;
+    letter-spacing:3px;
+    margin-right: 5%;
+    margin-top: 0;
+}
+
+a{
+    color: #000;
+}
+
+.input-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+
+
+/* 下拉選單箭頭 */
+select {
+    width: 90px;
+    height: 20px;
+    border-radius: 3px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right;
+    margin-bottom: 24px;
+    transform: translate(0 ,-20%);
+}
+
+
+/* 實際內容 */
+.input-with-dot {
+    width: 300px;
+    height: 40px;
+    border-radius: 6px;
+    border-style:solid;
+    padding-left: 10px;
+    font-size: 24px;
+    text-align: center;
+    letter-spacing: 8px;
+    font-family: monospace;
+    background-color: #fff; /* 背景透明以便顯示佔位符 */
+    color: transparent; /* 文字透明以便使用佔位符 */
+    caret-color: rgba(255, 255, 255, 0); /* 設置光標顏色 */
+}
+.input-with-dot::placeholder {
+    color: #A8A8A8; /* 佔位符顏色 */
+}
+
+.placeholder-dots {
+    position: absolute;
+    top: 0;
+    pointer-events: none;
+    font-size: 24px;
+    color: #A8A8A8;
+    letter-spacing: 8px;
+    font-family: monospace;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+button.i{
+    position: relative;
+    background-color: #809f68;
+    width: 180px;
+    height: 30px;
+    border-style:none;
+    border-radius: 50px;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: bolder;
+    letter-spacing:5px;
+    margin: 30px 0px;
+    cursor: pointer;    
+    transition: background-color 0.1s;
+}
+
+button.i:active {
+    background-color: #9fb889;
+}
+
+span.value{
+    display: flex;
+    align-items: center;
+}
+input.output{
+    position: relative;
+    width: 265px;
+    height: 30px;
+    border-radius: 6px;
+    font-size: 18px;  
+    border-style:solid;
+    border-color: #A8A8A8;
+    margin-right: 12px;
+}
+
+@media only screen and (max-width: 360px) {
+    body h1{
+        font-weight: 600;
+        }
+
+        img.b {
+            width: 420px;
+            height: 420px;
+        }
+}
+
+@media only screen and (max-width: 480px) {
+    body h1{
+        font-weight: 800;
+    }
+
+    img.b {
+        width: 440px;
+        height: 440px;
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    div.content{
+        width: 380px;
+    }
+    div.content h1 {
+        font-size: 36px;
+    }
+
+    img.b {
+        width: 460px;
+        height: 460px;
+    }
+
+    div.button {
+        width: 100px;
+        font-size: 18px;
+    }
+
+    #myButton {
+        width: 100%;
+        font-size: 18px;
+    }
+
+    input[type="submit" i]:hover,
+    input[type="submit" i]:active {
+        background-color: #9fb889;
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    div.header {
+        height: 50px;
+    }
+    
+    div.header h1 {
+        padding: 12px;
+    }
+}
