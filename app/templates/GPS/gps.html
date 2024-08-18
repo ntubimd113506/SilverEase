@@ -2,8 +2,16 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>選擇長輩</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Satisfy&display=swap" rel="stylesheet">
+        
+    <link href="css/gps.css" rel="stylesheet" />
+    <script src="/static/js/touch-buttons.js" defer></script>
+    <script src="/static/js/img.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA4cVXQgyJq-DSWAA_CfAagMIA6xnW8PhU"></script>
     <style>
         #map {
@@ -14,22 +22,35 @@
     </style>
 </head>
 <body>
-    <div class="form">
-        <form id="form">
-            <div class="form-group">
-                <label for="MainUserID">主要用戶</label>
-                <select id="MainUserID" name="MainUserID">
-                    {% for user in MainUsers %}
-                    <option value="{{ user[0] }}">{{ user[1] }}</option>
-                    {% endfor %}
-                </select>
+    <div class="container">
+
+        <div class="header">
+            <h1>SilverEase</h1>
+        </div>
+
+        <div class="content">
+            <div class="form">
+                <form id="form">
+                    <div class="form-group">
+                        <div class="title-container">
+                            <label for="MainUserID"><h4>主要用戶</h4></label>
+                            <select id="MainUserID" name="MainUserID">
+                                {% for user in MainUsers %}
+                                <option value="{{ user[0] }}">{{ user[1] }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </form>
+                <!-- 新增查看長輩足跡的按鈕 -->
+                <button class="i" id="viewFootprintsBtn">查看長輩足跡</button>
             </div>
-        </form>
-        <!-- 新增查看長輩足跡的按鈕 -->
-        <button id="viewFootprintsBtn">查看長輩足跡</button>
+        </div>
+
+        <div id="gps-url" style="margin-top: 20px;"></div>
+        <div id="map"></div>
+    
     </div>
-    <div id="gps-url" style="margin-top: 20px;"></div>
-    <div id="map"></div>
 
     <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
     <script>
