@@ -74,33 +74,46 @@ def check():
 
 @gps_bp.route('/foot', methods=['POST'])
 def foot():
+    MainUserID = request.form.get("MainUserID")
+
+    return render_template('/GPS/my_map.html', MainUserID = MainUserID)
+    
+@gps_bp.route('/road', methods=['GET'])
+def road():
     try:
-        MainUserID = request.form.get("MainUserID")
+        MainUserID = request.args.get("MainUserID")
+        timePeriod = request.args.get("time")  # 獲取時間範圍參數
         conn = db.get_connection()
         cursor = conn.cursor()
 
-        # 查询 FamilyID
+        # 查詢 FamilyID
         cursor.execute("SELECT FamilyID FROM `113-ntub113506`.Family WHERE MainUserID = %s", (MainUserID,))
         FamID = cursor.fetchone()
         if not FamID:
-            return "FamilyID not found for the given MainUserID", 404
+            return jsonify({"urls": []}), 404
         
-        # 查询位置数据（URL）
-        cursor.execute('SELECT Location FROM `113-ntub113506`.Location WHERE FamilyID = %s', (FamID[0],))
-        rows = cursor.fetchall()
-        print("Fetched rows:", rows)  # 调试输出
+        # 根據時間範圍查詢位置數據
+        if timePeriod == 'all':
+            query = "SELECT Location FROM `113-ntub113506`.Location WHERE FamilyID = %s"
+            cursor.execute(query, (FamID[0],))
+        else:
+            days = int(timePeriod)  # 將 timePeriod 轉換為整數天數
+            query = """
+                SELECT Location FROM `113-ntub113506`.Location 
+                WHERE FamilyID = %s AND LocationTime >= NOW() - INTERVAL %s DAY
+            """
+            cursor.execute(query, (FamID[0], days))
 
+        rows = cursor.fetchall()
         cursor.close()
         conn.close()
 
-        # 将查询结果中的URL提取出来
-        if rows:
-            urls = [loc[0] for loc in rows]  # rows 中的每一行是一个元组，loc[0] 是 Location 列的值
-        else:
-            urls = []
-
-        return render_template('/GPS/my_map.html', urls=urls)
+        # 提取 Location 列的數據
+        urls = [loc[0] for loc in rows] if rows else []
+        return jsonify({"urls": urls})
     
     except Exception as e:
-        print("Error occurred:", str(e))  # 打印详细错误信息
-        return f"An error occurred: {str(e)}", 500
+        print("Error occurred:", str(e))  # 打印詳細錯誤信息
+        return jsonify({"error": str(e)}), 500
+
+
