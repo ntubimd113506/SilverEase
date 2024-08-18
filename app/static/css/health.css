@@ -1,6 +1,7 @@
 @charset "utf-8";
 
-html, body {
+html,
+body {
     touch-action: manipulation;
     font-family: 'Noto Sans TC', sans-serif;
     padding-bottom: 20px;
@@ -12,27 +13,27 @@ html, body {
 
 }
 
-div.header{
+div.header {
     display: flex;
-    justify-content: center;  
+    justify-content: center;
     align-items: center;
     padding: 10px;
     height: 40px;
     background-color: #9FB889;
 }
 
-div.header h1{
+div.header h1 {
     font-size: 30px;
     width: 200px;
     padding: 0px;
-    text-align:center;
+    text-align: center;
     letter-spacing: 3px;
     margin: 0%;
 }
 
 
 /* 回主頁 */
-#menu-bar{
+#menu-bar {
     z-index: 1;
     float: left;
     padding-top: 12px;
@@ -41,37 +42,42 @@ div.header h1{
     color: #809f68;
 }
 
-div.navbar{
+div.navbar {
     height: 35px;
 }
-ul{
+
+ul {
     margin: 0;
     padding: 0;
     list-style-type: none;
     font-weight: 600;
 }
-ul li{
+
+ul li {
     line-height: 40px;
-    float: left;  /* 字變水平*/
-    width:75px; /* 字之間的距離區塊*/
+    float: left;
+    /* 字變水平*/
+    width: 75px;
+    /* 字之間的距離區塊*/
     text-align: center;
-    
+
 }
 
-div.navbar a{
-    text-decoration: none; /* 連結底線拿掉*/
-    color: #000000; 
+div.navbar a {
+    text-decoration: none;
+    /* 連結底線拿掉*/
+    color: #000000;
 }
 
 
 /* ///////////////////////////////////////////////////////////// */
-div.content{
+div.content {
     background-color: #F2F0EE;
     padding: 0px 23px;
 }
 
 .title-container {
-    width: 100%; 
+    width: 100%;
     margin: 0 auto;
 }
 
@@ -81,13 +87,13 @@ div.content{
     letter-spacing: 5px;
     width: 100%;
     text-align: left;
-    margin-top: 30px; 
+    margin-top: 30px;
     margin-bottom: 35px;
 }
 
-div.content h1{
+div.content h1 {
     font-size: 30px;
-    letter-spacing:8px;
+    letter-spacing: 8px;
 }
 
 /* ///////////////////////////////////////////////////////////// */
@@ -118,7 +124,10 @@ div.content h1{
 .item-image {
     display: none;
     cursor: pointer;
-    max-width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 100%;
+    height: auto;
     transition: transform 0.2s;
 }
 
@@ -128,8 +137,8 @@ div.content h1{
     left: 50%;
     transform: translate(-50%, -50%);
     width: 100%;
-    height: auto; 
-    max-width: 100%; 
+    height: auto;
+    max-width: 100%;
     z-index: 1000;
 }
 
@@ -148,13 +157,6 @@ div.content h1{
     display: block;
 }
 
-.item-image {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    max-width: 100%;
-    height: auto;
-}
 
 @media (min-width: 576px) {
     /* For devices >= 576px */
@@ -164,9 +166,9 @@ div.content h1{
     div.header {
         height: 50px;
     }
-    
+
     div.header h1 {
-        padding: 3px;    
+        padding: 3px;
     }
 
     #menu-bar {
@@ -174,10 +176,10 @@ div.content h1{
         padding-left: 13px;
         font-size: 22px;
     }
-    
+
     ul li {
         line-height: 50px;
-        width: 85px; 
+        width: 85px;
     }
 
     div.navbar a {
@@ -191,28 +193,26 @@ div.content h1{
         padding-left: 15px;
         font-size: 25px;
     }
-    
+
     ul li {
         line-height: 56px;
     }
 }
 
-@media (min-width: 1200px) {
-
-}
+@media (min-width: 1200px) {}
 
 @media (min-width: 1400px) {
     #menu-bar {
         padding-top: 20px;
         padding-left: 20px;
     }
-    
+
     ul li {
         line-height: 65px;
     }
 
-    .item-title{
+    .item-title {
         padding-left: 110px;
     }
-    
+
 }
