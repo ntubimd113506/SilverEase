@@ -265,7 +265,16 @@ def send_line_message(MemoID, cnt=0, got=False, time_type="MemoTime"):
                 )
                 conn.commit()
 
-            next_time = datetime.now() + timedelta(days=1)
+            if time_type== "MemoTime":
+                next_time = data["MemoTime"] + timedelta(days=1)
+            elif time_type== "SecondTime":
+                next_time = datetime.strptime(
+                    f"{data['MemoTime'].strftime('%Y-%m-%d')} {data['SecondTime']}", "%Y-%m-%d %H:%M:%S"
+                )
+            elif time_type== "ThirdTime":
+                next_time = datetime.strptime(
+                    f"{data['MemoTime'].strftime('%Y-%m-%d')} {data['ThirdTime']}", "%Y-%m-%d %H:%M:%S"
+                )
 
             if data["EndDate"] and data["EndDate"] < next_time:
                 return
