@@ -97,37 +97,47 @@ def handle_mqtt_message(client, userdata, message):
 
 #-----------------------------------------------------------
     if message.topic == 'ESP32/gps':
-            try:
-                data = message.payload.decode()
-                Map1 = str(data)
-                Map = Map1.replace(" ","","https://www.google.com/maps/search/?api=1&query=")
-                print(f"Received GPS data - GoogleMap:{Map}")
-                save_gps(Map)
+        try:
+            data = message.payload.decode()
+            Map1 = str(data)
+        
+            # 找到 'query=' 字串的位置並提取其後的座標部分
+            Map = Map1.split("query=")[-1]
 
-            except :
-                print("OK！")
+            print(f"Received GPS coordinates: {Map}")
+            upgrade_gps(Map)
+
+        except Exception as e:
+            print("Error:", str(e))
 
     if message.topic == '/upGPS':
-            try:
-                data = message.payload.decode()
-                Map1 = str(data)
-                Map = Map1.replace(" ","","https://www.google.com/maps/search/?api=1&query=")
-                print(f"Received GPS data - GoogleMap:{Map}")
-                upgrade_gps(Map)
+        try:
+            data = message.payload.decode()
+            Map1 = str(data)
+            
+            # 找到 'query=' 字串的位置並提取其後的座標部分
+            Map = Map1.split("query=")[-1]
 
-            except :
-                print("OK！")
+            print(f"Received GPS coordinates: {Map}")
+            upgrade_gps(Map)
+
+        except Exception as e:
+            print("Error:", str(e))
+
     
     if message.topic == '/SOSgps':
-            try:
-                data = message.payload.decode()
-                Map1 = str(data)
-                Map = Map1.replace(" ","","https://www.google.com/maps/search/?api=1&query=")
-                print(f"Received GPS data - GoogleMap:{Map}")
-                sos_gps(Map)
+        try:
+            data = message.payload.decode()
+            Map1 = str(data)
+        
+            # 找到 'query=' 字串的位置並提取其後的座標部分
+            Map = Map1.split("query=")[-1]
 
-            except :
-                print("OK！")
+            print(f"Received GPS coordinates: {Map}")
+            upgrade_gps(Map)
+
+        except Exception as e:
+            print("Error:", str(e))
 
 
 def save_gps(Map):

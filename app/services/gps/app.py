@@ -69,7 +69,8 @@ def check():
     cursor.close()
     conn.close()
 
-    url = latest_location[0] if latest_location else "no_data"
+    base_url = "https://www.google.com/maps/search/?api=1&query="
+    url = base_url+latest_location[0] if latest_location else "no_data"
     return jsonify({'url': url})
 
 @gps_bp.route('/foot', methods=['POST'])
@@ -109,7 +110,8 @@ def road():
         conn.close()
 
         # 提取 Location 列的數據
-        urls = [loc[0] for loc in rows] if rows else []
+        base_url = "https://www.google.com/maps/search/?api=1&query="
+        urls = [base_url + loc[0] for loc in rows] if rows else []
         return jsonify({"urls": urls})
     
     except Exception as e:
