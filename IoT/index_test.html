@@ -20,12 +20,15 @@
                 <form action="/wifiInfo" method="POST">
 
                     <h4>WiFi 名稱</h4>
-                    <div class="cardrow"><input type="text" name="ssid"></div>
+                    <div class="cardrow"><input type="text" name="ssid" placeholder="輸入網路名稱" class="input"></div>
                     <h4>WiFi 密碼</h4>
-                    <div class="cardrow"><input type="text" name="password"></div>
-                    <div><input class="b1" type="submit" value="儲存設定"></div>
+                    <div class="cardrow"><input type="password" name="password" class="input"></div>
+                    <!-- <div><input class="b1" type="submit" value="儲存設定"></div> -->
+                    <div class="cardrow"><button class="b1" type="button"><h3>儲存設定</h3></button></div></br>
+                    <div class="cardrow"><button class="b2" type="button"><h3>重新啟動</h3></button></div>
                 </form>
             </div>
         </div>
-    </body>
+    </div>
+</body>
 </html>

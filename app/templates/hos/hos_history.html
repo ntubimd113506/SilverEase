@@ -1,0 +1,126 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8" name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>回診資料紀錄</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Satisfy&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link href="/static/css/list.css" rel="stylesheet" />
+    <script src="/static/js/touch-buttons.js" defer></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('MainUserID').value = localStorage.getItem('selectedMainUserID') || 'all';
+            document.getElementById('year').value = localStorage.getItem('selectedYear') || 'all';
+            document.getElementById('month').value = localStorage.getItem('selectedMonth') || 'all';
+
+            document.getElementById('MainUserID').onchange = function () {
+                localStorage.setItem('selectedMainUserID', this.value);
+            }
+            document.getElementById('year').onchange = function () {
+                localStorage.setItem('selectedYear', this.value);
+            }
+            document.getElementById('month').onchange = function () {
+                localStorage.setItem('selectedMonth', this.value);
+            }
+        });
+    </script>
+</head>
+
+<body onload="initializeLiff('2004699458-OR9pkZjP')">
+    <div class="container">
+
+        <div class="header">
+            <h1>SilverEase</h1>
+        </div>
+
+        <i id="menu-bar" class="fa-solid fa-plus"></i>
+
+        <div class="navbar">
+            <ul id="navigation" class="nav">
+                <li><a href="/hos/">新增排程</a></li>
+            </ul>
+        </div>
+
+        <div class="content">
+            <div class="header-container">
+                <h1 class="content-header">回診資料紀錄</h1>
+            </div>
+
+            <form method="GET" action="/hos/history" class="query-form">
+                <div class="form-group">
+                    <label for="MainUserID">主要用戶</label>
+                    <select id="MainUserID" name="MainUserID">
+                        <option value="all">所有長者</option>
+                        {% for user in MainUsers %}
+                        <option value="{{ user[0] }}">{{ user[1] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="year">年份</label>
+                    <select id="year" name="year">
+                        <option value="all">全部年份</option>
+                        <option value="2024">2024</option>
+                        <option value="2025">2025</option>
+                        <option value="2026">2026</option>
+                        <option value="2027">2027</option>
+                        <option value="2028">2028</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="month">月份</label>
+                    <select id="month" name="month">
+                        <option value="all">全部月份</option>
+                        <option value="01">1月</option>
+                        <option value="02">2月</option>
+                        <option value="03">3月</option>
+                        <option value="04">4月</option>
+                        <option value="05">5月</option>
+                        <option value="06">6月</option>
+                        <option value="07">7月</option>
+                        <option value="08">8月</option>
+                        <option value="09">9月</option>
+                        <option value="10">10月</option>
+                        <option value="11">11月</option>
+                        <option value="12">12月</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="submit-button"><i class="fa-solid fa-magnifying-glass"
+                        id="search"></i></button>
+            </form>
+
+            {% if data %}
+            {% for item in data %}
+            <div class="data-item">
+                <div class="Title">標題：{{ item.Title }}</div>
+                <div class="Memotime">日期時間：{{ item.MemoTime }}</div>
+                <div class="Cycle">多久重複：{{ item.Cycle }}</div>
+                <div class="Alert">幾分鐘前提醒：{{ item.Alert }}分鐘</div>
+                <div class="Location">醫院/診所地點：{{ item.Location }}</div>
+                <div class="Clinic">門診科別：{{ item.Clinic if item.Clinic else '' }}</div>
+                <div class="Doctor">看診醫生：{{ item.Doctor }}</div>
+                <div class="Num">號碼：{{ item.Num }}</div>
+                <div class="MainUserName">長者：{{ item.MainUserName }}</div>
+                <div class="EditorUserName">修改者：{{ item.EditorUserName }}</div>
+                <div class="edit-link">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    <a href="/hos/update/confirm?MemoID={{ item.MemoID }}">編輯</a>
+                </div>
+            </div>
+            {% endfor %}
+            {% endif %}
+        </div>
+
+        <input type="hidden" id="MemID" name="MemID">
+
+    </div>
+</body>
+
+</html>

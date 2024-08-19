@@ -1,0 +1,206 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8" name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>編輯回診資料</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Satisfy&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link href="/static/css/create_form.css" rel="stylesheet" />
+    <script src="/static/js/touch-buttons.js" defer></script>
+</head>
+
+<script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+<script>
+    var EditorID;
+    function initializeLiff(myLiffId) {
+        liff.init({
+            liffId: myLiffId
+        }).then(() => {
+            if (!liff.isLoggedIn()) {
+                alert("用戶未登入");
+                liff.login();
+            } else {
+                liff.getProfile()
+                    .then(profile => {
+                        var EditorID = profile.userId;
+                        document.getElementById("EditorID").value = EditorID;
+                    })
+                    .catch((err) => {
+                        console.log('error', err);
+                    });
+            }
+
+        }).catch((err) => {
+            console.log('初始化失敗', err);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var cycleValue = "{{ data.Cycle }}";
+        var cycleSelectElement = document.querySelector('select[name="Cycle"]');
+        for (var i = 0; i < cycleSelectElement.options.length; i++) {
+            if (cycleSelectElement.options[i].value === cycleValue) {
+                cycleSelectElement.options[i].selected = true;
+                break;
+            }
+        }
+
+        var alertValue = "{{ data.Alert }}";
+        var alertSelectElement = document.querySelector('select[name="Alert"]');
+        for (var i = 0; i < alertSelectElement.options.length; i++) {
+            if (alertSelectElement.options[i].value === alertValue) {
+                alertSelectElement.options[i].selected = true;
+                break;
+            }
+        }
+
+        var clinicSelectElement = document.querySelector('select[name="Clinic"]');
+        clinicSelectElement.addEventListener('change', function () {
+            var otherClinicInput = document.getElementById('OtherClinic');
+            if (clinicSelectElement.value === '其他') {
+                otherClinicInput.style.display = 'block';
+                otherClinicInput.required = true;
+            } else {
+                otherClinicInput.style.display = 'none';
+                otherClinicInput.required = false;
+            }
+        });
+
+        if (clinicSelectElement.value === '其他') {
+            document.getElementById('OtherClinic').style.display = 'block';
+        }
+
+        var datetimeInput = document.getElementById('MemoTime');
+        var placeholder = document.getElementById('placeholder');
+    
+        datetimeInput.addEventListener('input', function() {
+            if (this.value) {
+                placeholder.style.display = 'none';
+            } else {
+                placeholder.style.display = 'block';
+            }
+        });
+    
+        datetimeInput.dispatchEvent(new Event('input'));
+    
+
+    });
+
+</script>
+
+<body onload="initializeLiff('2004699458-OR9pkZjP')">
+    <div class="container">
+
+        <div class="header">
+            <h1>SilverEase</h1>
+        </div>
+
+        <i id="menu-bar" class="fa-solid fa-house"></i>
+        <div class="navbar">
+            <ul id="navigation">
+                <li><a href="/hos/list">返回主頁</a></li>
+            </ul>
+        </div>
+
+        <div class="content">
+            <div class="title-container">
+                <h1 class="content-header">編輯回診資料</h1>
+            </div>
+
+            <div class="form-container">
+                <form action="/hos/update" method="post" enctype="multipart/form-data">
+                    <div class="form">
+                        <div class="name">名稱</div>
+                        <div class="value">
+                            <input type="text" name="Title" value="{{ data.Title }}" class="input-field" placeholder="請輸入名稱"  required>
+                        </div>
+
+                        <div class="name">日期時間</div>
+                        <div class="value">
+                            <div class="input-icon">
+                                <input type="datetime-local" name="MemoTime" value="{{ data.MemoTime }}"
+                                    class="input-field" required>
+                                    <label for="MemoTime" id="placeholder" class="placeholder">選擇欲提醒的日期</label>
+                                <i class="fa-solid fa-calendar-days calendar-icon"></i>
+                            </div>
+                        </div>
+
+                        <div class="name">醫院/診所地點</div>
+                        <div class="value">
+                            <input type="text" name="Location" value="{{ data.Location }}" class="input-field" placeholder="請輸入醫院/診所地點">
+                        </div>
+
+                        <div class="name">門診科別</div>
+                        <select name="Clinic">
+                            <option value="耳鼻喉科" {% if data.Clinic=="耳鼻喉科" %}selected{% endif %}>耳鼻喉科</option>
+                            <option value="一般內科" {% if data.Clinic=="一般內科" %}selected{% endif %}>一般內科</option>
+                            <option value="心臟內科" {% if data.Clinic=="心臟內科" %}selected{% endif %}>心臟內科</option>
+                            <option value="內分泌新陳代謝科" {% if data.Clinic=="內分泌新陳代謝科" %}selected{% endif %}>內分泌新陳代謝科
+                            </option>
+                            <option value="腫瘤科" {% if data.Clinic=="腫瘤科" %}selected{% endif %}>腫瘤科</option>
+                            <option value="胸腔內科" {% if data.Clinic=="胸腔內科" %}selected{% endif %}>胸腔內科</option>
+                            <option value="神經內科" {% if data.Clinic=="神經內科" %}selected{% endif %}>神經內科</option>
+                            <option value="腎臟內科" {% if data.Clinic=="腎臟內科" %}selected{% endif %}>腎臟內科</option>
+                            <option value="外科" {% if data.Clinic=="外科" %}selected{% endif %}>外科</option>
+                            <option value="骨科" {% if data.Clinic=="骨科" %}selected{% endif %}>骨科</option>
+                            <option value="復健科" {% if data.Clinic=="復健科" %}selected{% endif %}>復健科</option>
+                            <option value="呼吸內科" {% if data.Clinic=="呼吸內科" %}selected{% endif %}>呼吸內科</option>
+                            <option value="精神科" {% if data.Clinic=="精神科" %}selected{% endif %}>精神科</option>
+                            <option value="中醫" {% if data.Clinic=="中醫" %}selected{% endif %}>中醫</option>
+                            <option value="其他" {% if data.Clinic=="其他" %}selected{% endif %}>其他</option>
+                        </select>
+                        <input type="text" name="OtherClinic" id="OtherClinic" class="input-field"
+                            value="{{ data.OtherClinic if data.OtherClinic else '' }}" placeholder="請輸入其他門診科別"
+                            style="display:none;">
+
+                        <div class="name">看診醫生</div>
+                        <div class="value">
+                            <input type="text" name="Doctor" value="{{ data.Doctor }}" class="input-field"  placeholder="請輸入看診醫生名稱">
+                        </div>
+
+                        <div class="name">號碼</div>
+                        <div class="value">
+                            <input type="text" name="Num" value="{{ data.Num }}" class="input-field" laceholder="請輸入掛號號碼">
+                        </div>
+
+                        <div class="name">多久重複</div>
+                        <select name="Cycle" value="{{ data.Cycle }}">
+                            <option value="不重複">不重複</option>
+                            <option value="一小時">一小時</option>
+                            <option value="一天">一天</option>
+                            <option value="一週">一週</option>
+                            <option value="一個月">一個月</option>
+                            <option value="一年">一年</option>
+                        </select>
+
+                        <div class="name">幾分鐘前提醒</div>
+                        <select name="Alert" value="{{ data.Alert }}">
+                            <option value="0">當下</option>
+                            <option value="1">1分鐘</option>
+                            <option value="5">5分鐘</option>
+                            <option value="10">10分鐘</option>
+                            <option value="30">30分鐘</option>
+                            <option value="60">1小時</option>
+                        </select>
+
+                    </div>
+                    <a href="/hos/delete/confirm?MemoID={{ data.MemoID }}" class="delete-btn">刪除</a>
+
+                    <input type="hidden" name="MemoID" value="{{ data.MemoID }}">
+                    <input type="hidden" id="EditorID" name="EditorID">
+                    <div class="name"></div>
+                    <div class="value"><input type="submit" value="更改"></div>
+            </div>
+
+            </form>
+
+        </div>
+
+    </div>
+</body>
+
+</html>

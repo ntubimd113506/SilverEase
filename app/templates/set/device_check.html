@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+
+    <title>Document</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Satisfy&display=swap" rel="stylesheet">
+    <link href="/static/css/return.css" rel="stylesheet" />
+    <script src="/static/js/touch-buttons.js" defer></script>
+    <script src="/static/js/img.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>SilverEase</h1>
+        </div>
+        <div class="content-wrapper">
+            <div class="content">
+                <div class="cardrow">
+                    <img src="/static/imgs/update.png" class="b">
+                </div>
+                
+                <p>裝置響後請長按3秒...</p>
+            </div>
+        </div>
+    </div>    
+</body>
+<script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+<script>
+    liff.init({
+        liffId: '{{liffid}}'
+    }).catch((err) => {
+        console.log('初始化失敗', err);
+    });
+
+    liff.ready.then(() => {
+        setTimeout(() => {
+            liff.closeWindow();
+        }, 5000);
+    });
+</script>
+
+</html>

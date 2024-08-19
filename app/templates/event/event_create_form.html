@@ -1,0 +1,128 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>新增紀念日</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Satisfy&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link href="/static/css/create_form.css" rel="stylesheet" />
+    <script src="/static/js/touch-buttons.js" defer></script>
+</head>
+
+<body onload="initializeLiff('2004699458-OR9pkZjP')">
+    <div class="container">
+
+        <div class="header">
+            <h1>SilverEase</h1>
+        </div>
+
+        <i id="menu-bar" class="fa-solid fa-house"></i>
+
+        <div class="navbar">
+            <ul id="navigation" class="nav">
+                <li><a href="/event/">返回主頁</a></li>
+            </ul>
+        </div>
+
+        <div class="content">
+            <div class="title-container">
+                <h1 class="content-header">新增紀念日</h1>
+            </div>
+
+            <div class="form-container">
+                <form action="/event/create" method="post" enctype="multipart/form-data">
+                    <div class="form">
+                        <div class="name">選擇長者</div>
+                        <select id="MainUserID" name="MainUserID">
+                            {% for user in MainUsers %}
+                            <option value="{{ user[0] }}">{{ user[1] }}</option>
+                            {% endfor %}
+                        </select>
+
+                        <div class="name">名稱</div>
+                        <div class="value">
+                            <input type="text" name="Title" class="input-field"  placeholder="請輸入名稱" required>
+                        </div>
+
+
+                        <!-- <div class="name">日期</div>
+                        <div class="value">
+                            <div class="input-icon">
+                                <input type="datetime-local" name="MemoTime" class="input-field" required>
+                                <i class="fa-solid fa-calendar-days calendar-icon"></i>
+                            </div>
+                        </div> -->
+
+                        <div class="name">日期時間</div>
+                        <div class="value">
+                            <div class="input-icon">
+                                <input type="datetime-local" name="MemoTime" id="MemoTime" class="input-field" required>
+                                <label for="MemoTime" id="placeholder" class="placeholder">選擇欲提醒的日期</label>
+                                <i class="fa-solid fa-calendar-days calendar-icon"></i>
+                            </div>
+                        </div>
+
+
+                        <div class="name">地點</div>
+                        <div class="value">
+                            <input type="text" name="Location" class="input-field" placeholder="請輸入活動地點">
+                        </div>
+
+
+                        <div class="name">多久重複</div>
+                        <select name="Cycle" required>
+                            <option value="" disabled selected>請選擇重複頻率</option>
+                            <option value="不重複">不重複</option>
+                            <option value="一小時">一小時</option>
+                            <option value="一天">一天</option>
+                            <option value="一週">一週</option>
+                            <option value="一個月">一個月</option>
+                            <option value="一年">一年</option>
+                        </select>
+
+
+                        <div class="name">幾分鐘前提醒</div>
+                        <select name="Alert" required>
+                            <option value="" disabled selected>請選擇提醒時間</option>
+                            <option value="0">當下</option>
+                            <option value="1">1分鐘</option>
+                            <option value="5">5分鐘</option>
+                            <option value="10">10分鐘</option>
+                            <option value="30">30分鐘</option>
+                            <option value="60">1小時</option>
+                        </select>
+
+                    </div>
+                    <div>
+                        <button class="btn" type="submit">新 增</button>
+                    </div>
+            </div>
+            <input type="hidden" id="MemID" name="MemID">
+            </form>
+
+        </div>
+
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var datetimeInput = document.getElementById('MemoTime');
+            var placeholder = document.getElementById('placeholder');
+        
+            datetimeInput.addEventListener('input', function() {
+                if (this.value) {
+                    placeholder.style.display = 'none';
+                } else {
+                    placeholder.style.display = 'block';
+                }
+            });
+        
+            datetimeInput.dispatchEvent(new Event('input'));
+        });
+        
+        </script>
+</body>
+
+</html>

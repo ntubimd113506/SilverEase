@@ -1,13 +1,16 @@
 wfastcgi.py
+web.config
 lineToken.py
 db.py
-__init__.py
+scheduler.db
+/app/static/imgs/med
+/app/static/imgs/upload
+# __init__.py
 
 static/uploads/
 
 .pio
 .vscode
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

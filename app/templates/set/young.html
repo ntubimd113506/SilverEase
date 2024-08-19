@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+
+    <title>輸入長輩編號</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Satisfy&display=swap" rel="stylesheet">
+
+    <link href="/static/css/code.css" rel="stylesheet" />
+    <script src="/static/js/touch-buttons.js" defer></script>
+</head>
+<script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+<script>
+    var MemID;
+    function initializeLiff(myLiffId) {
+        liff.init({
+            liffId: myLiffId
+        }).then().catch((err) => {
+            console.log('初始化失敗', err);
+        });
+    }
+</script>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>SilverEase</h1>
+        </div>
+        <div class="content-wrapper">
+            <div class="content">
+                <a href="http://liff.line.me/2004699458-OR9pkZjP/set/qrcode"><div>點我掃描QRCode</div></a>
+                <img src="/static/imgs/main.png" class="b">
+                <h1>群組代碼</h1>
+                <form action="/set/CodeID" method="post" enctype="multipart/form-data">
+                    <div class="form">
+                        <h4>請輸入群組代碼</h4>
+
+                        <div class="cardrow">
+                            <span class="value">
+                                <div class="input-wrapper">
+                                    <input class="input-with-dot" type="text" id="input-with-dot" name="CodeID"
+                                        maxlength="6" required oninput="updateDots()">
+                                    <div id="placeholder-dots" class="placeholder-dots">••••••</div>
+                                </div>
+                                <input type="hidden" id="MemID" name="MemID">
+                            </span>
+                        </div>
+                        <div class="cardrow">
+                            <span class="value"><input type="submit" value="確認"></span>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        const input = document.getElementById('input-with-dot');
+        const placeholderDots = document.getElementById('placeholder-dots');
+        input.value="{{code}}"
+        
+        if ("{{code}}" != "") {
+            updateDots();
+        }
+
+        function updateDots() {
+            const value = input.value;
+            const dots = '••••••';
+
+            // 將輸入的值和剩下的圓點結合起來
+            const newPlaceholder = value.split('').join('') + dots.slice(value.length);
+
+            // 更新佔位符的內容
+            placeholderDots.textContent = newPlaceholder;
+        }
+    </script>
+</body>
+
+</html>

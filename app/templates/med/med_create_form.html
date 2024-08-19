@@ -1,0 +1,292 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8" name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>新增用藥</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Satisfy&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link href="/static/css/create_form.css" rel="stylesheet" />
+    <script src="/static/js/touch-buttons.js" defer></script>
+</head>
+
+<body onload="initializeLiff('2004699458-OR9pkZjP')">
+    <div class="container">
+
+        <div class="header">
+            <h1>SilverEase</h1>
+        </div>
+
+        <i id="menu-bar" class="fa-solid fa-house"></i>
+
+        <div class="navbar">
+            <ul id="navigation" class="nav">
+                <li><a href="/med/">返回主頁</a></li>
+            </ul>
+        </div>
+
+        <div class="content">
+            <div class="title-container">
+                <h1 class="content-header">新增用藥</h1>
+            </div>
+
+            <div class="form-container">
+                <form action="/med/create" method="post" enctype="multipart/form-data">
+                    <div class="form">
+                        <div class="name">選擇長者</div>
+                        <select id="MainUserID" name="MainUserID">
+                            {% for user in MainUsers %}
+                            <option value="{{ user[0] }}">{{ user[1] }}</option>
+                            {% endfor %}
+                        </select>
+
+                        <div class="name">藥物名稱</div>
+                        <div class="value">
+                            <select name="Title" id="TitleSelect" class="input-field" required>
+                                <option value="" disabled selected>請選擇藥物名稱</option>
+                                <option value="感冒藥">感冒藥</option>
+                                <option value="頭痛藥">頭痛藥</option>
+                                <option value="止痛藥">止痛藥</option>
+                                <option value="高血壓藥物">高血壓藥物</option>
+                                <option value="糖尿病藥物">糖尿病藥物</option>
+                                <option value="心臟病藥物">心臟病藥物</option>
+                                <option value="降膽固醇藥物">降膽固醇藥物</option>
+                                <option value="腎臟內科">腎臟內科</option>
+                                <option value="抗凝劑">抗凝劑</option>
+                                <option value="抗血小板藥物">抗血小板藥物</option>
+                                <option value="癌症藥物">癌症藥物</option>
+                                <option value="其他">其他</option>
+                            </select>
+                            <input type="text" name="OtherTitle" id="OtherTitle" class="input-field"
+                                placeholder="請輸入其他藥物名稱" style="display:none;">
+                        </div>
+
+                        <div class="name">日期時間</div>
+                        <div class="value">
+                            <div class="input-icon">
+                                <input type="datetime-local" name="MemoTime" id="MemoTime" class="input-field" required>
+                                <label for="MemoTime" id="placeholder" class="placeholder">選擇欲提醒的日期和時間</label>
+                                <i class="fa-solid fa-calendar-days calendar-icon"></i>
+                            </div>
+                        </div>
+
+                        <div id="timesContainer" style="display: flex; gap: 10px;">
+                            <div id="secondTimeContainer" style="flex: 1; display: none;">
+                                <div class="name">第二次用藥時間</div>
+                                <div class="value">
+                                    <div class="input-icon">
+                                        <input type="time" name="SecondTime" id="SecondTime" class="input-field">
+                                        <label for="SecondTime" id="secondTimePlaceholder"
+                                            class="placeholder">選擇提醒時間</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="thirdTimeContainer" style="flex: 1; display: none;">
+                                <div class="name">第三次用藥時間</div>
+                                <div class="value">
+                                    <div class="input-icon">
+                                        <input type="time" name="ThirdTime" id="ThirdTime" class="input-field">
+                                        <label for="ThirdTime" id="thirdTimePlaceholder"
+                                            class="placeholder">選擇提醒時間</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="name">結束日期時間</div>
+                        <div class="value">
+                            <div class="input-icon">
+                                <input type="datetime-local" name="EndDate" class="input-field">
+                                <label for="EndDate" id="EndDatePlaceholder" class="placeholder">選擇欲結束提醒日期時間</label>
+                                <i class="fa-solid fa-calendar-days calendar-icon"></i>
+                            </div>
+                        </div>
+
+                        <div class="name">圖片</div>
+                        <div>
+                            <input type="file" name="Pic" accept="image/*" id="fileInput" onchange="fileSelected()">
+                            <button type="button" id="removeSelectionBtn" style="display:none;"
+                                onclick="removeSelection()">移除所選圖片</button>
+                        </div>
+                        <br>
+
+                        <div class="name" id="space">幾分鐘前提醒</div>
+                        <select name="Alert" required>
+                            <option value="" disabled selected>請選擇提醒時間</option>
+                            <option value="0">當下</option>
+                            <option value="1">1分鐘</option>
+                            <option value="5">5分鐘</option>
+                            <option value="10">10分鐘</option>
+                            <option value="30">30分鐘</option>
+                            <option value="60">1小時</option>
+                        </select>
+
+                    </div>
+                    <div>
+                        <button class="btn" type="submit">新 增</button>
+                    </div>
+            </div>
+            <input type="hidden" id="MemID" name="MemID">
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var datetimeInput = document.getElementById('MemoTime');
+            var placeholder = document.getElementById('placeholder');
+            var secondTimeContainer = document.getElementById('secondTimeContainer');
+            var secondTimeValue = document.getElementById('secondTimeValue');
+            var secondTimeInput = document.getElementById('SecondTime');
+            var thirdTimeContainer = document.getElementById('thirdTimeContainer');
+            var thirdTimeValue = document.getElementById('thirdTimeValue');
+            var thirdTimeInput = document.getElementById('ThirdTime');
+            var EndDateInput = document.querySelector('input[name="EndDate"]');
+            var EndDatePlaceholder = document.getElementById('EndDatePlaceholder');
+            var form = document.querySelector('form');
+            var titleSelect = document.getElementById('TitleSelect');
+            var otherTitleInput = document.getElementById('OtherTitle');
+
+            function updatePlaceholders() {
+                placeholder.style.display = datetimeInput.value ? 'none' : 'block';
+                secondTimeContainer.style.display = datetimeInput.value ? 'block' : 'none';
+                thirdTimeContainer.style.display = secondTimeInput.value ? 'block' : 'none';
+                EndDatePlaceholder.style.display = EndDateInput.value ? 'none' : 'block';
+            }
+
+            function syncTimes() {
+                var selectedDate = datetimeInput.value.split('T')[0];
+                if (datetimeInput.value) {
+                    secondTimeInput.value = `${selectedDate}T${secondTimeInput.value.split('T')[1]}`;
+                    thirdTimeInput.value = `${selectedDate}T${thirdTimeInput.value.split('T')[1]}`;
+                }
+            }
+
+            function validateFile() {
+                const fileInput = document.getElementById('fileInput');
+                const removeSelectionBtn = document.getElementById('removeSelectionBtn');
+                const allowedExtensions = ['png', 'jpg', 'jpeg', 'gif'];
+                const file = fileInput.files[0];
+                const fileExtension = file ? file.name.split('.').pop().toLowerCase() : '';
+
+                if (file && !allowedExtensions.includes(fileExtension)) {
+                    alert('圖檔只能是 "png", "jpg", "jpeg", "gif"，請重新選擇或移除所選圖片');
+                    fileInput.value = '';
+                    removeSelectionBtn.style.display = 'none';
+                } else if (file) {
+                    removeSelectionBtn.style.display = 'inline-block';
+                } else {
+                    removeSelectionBtn.style.display = 'none';
+                }
+            }
+
+            function removeFileSelection() {
+                const fileInput = document.getElementById('fileInput');
+                fileInput.value = '';
+                document.getElementById('removeSelectionBtn').style.display = 'none';
+            }
+
+            function handleTitleChange() {
+                otherTitleInput.style.display = this.value === '其他' ? 'block' : 'none';
+                otherTitleInput.required = this.value === '其他';
+            }
+
+            function combineDateAndTime(date, time) {
+                var combined = new Date(date);
+                var timeParts = time.split(':');
+                combined.setHours(timeParts[0], timeParts[1], 0, 0);
+                return combined;
+            }
+
+            function validateForm(event) {
+                var startDateTime = new Date(datetimeInput.value);
+                var secondTime = secondTimeInput.value ? combineDateAndTime(datetimeInput.value, secondTimeInput.value) : null;
+                var thirdTime = thirdTimeInput.value ? combineDateAndTime(datetimeInput.value, thirdTimeInput.value) : null;
+                var endDateTime = new Date(EndDateInput.value);
+
+                var times = [startDateTime];
+                if (secondTime) times.push(secondTime);
+                if (thirdTime) times.push(thirdTime);
+
+                times.sort((a, b) => a - b);
+
+                if (EndDateInput.value && times[times.length - 1] >= endDateTime) {
+                    alert('結束日期時間不能小於等於最晚的用藥時間');
+                    event.preventDefault();
+                }
+            }
+
+            datetimeInput.addEventListener('input', syncTimes);
+            datetimeInput.addEventListener('input', updatePlaceholders);
+            secondTimeInput.addEventListener('input', updatePlaceholders);
+            thirdTimeInput.addEventListener('input', updatePlaceholders);
+            EndDateInput.addEventListener('input', updatePlaceholders);
+            titleSelect.addEventListener('change', handleTitleChange);
+            form.addEventListener('submit', validateForm);
+
+            document.getElementById('fileInput').addEventListener('change', validateFile);
+            document.getElementById('removeSelectionBtn').addEventListener('click', removeFileSelection);
+
+            updatePlaceholders();
+            syncTimes();
+
+            function updatePlaceholders() {
+                placeholder.style.display = datetimeInput.value ? 'none' : 'block';
+                secondTimeContainer.style.display = datetimeInput.value ? 'block' : 'none';
+                thirdTimeContainer.style.display = secondTimeInput.value ? 'block' : 'none';
+
+                var secondTimePlaceholder = document.getElementById('secondTimePlaceholder');
+                var thirdTimePlaceholder = document.getElementById('thirdTimePlaceholder');
+                secondTimePlaceholder.style.display = secondTimeInput.value ? 'none' : 'block';
+                thirdTimePlaceholder.style.display = thirdTimeInput.value ? 'none' : 'block';
+
+                var EndDatePlaceholder = document.getElementById('EndDatePlaceholder');
+                EndDatePlaceholder.style.display = EndDateInput.value ? 'none' : 'block';
+
+
+                //////////////圖片
+                document.addEventListener('DOMContentLoaded', function() {
+                    const fileInput = document.getElementById('fileInput');
+                    const customFileLabel = document.getElementById('customFileLabel');
+                    const removeSelectionBtn = document.getElementById('removeSelectionBtn');
+
+                    function fileSelected() {
+                        console.log('File selected function called');
+                        console.log('Files:', fileInput.files);
+
+                        if (fileInput.files.length > 0) {
+                            const fileName = fileInput.files[0].name;
+                            console.log('File selected:', fileName);
+                            customFileLabel.textContent = fileName; 
+                            removeSelectionBtn.style.display = 'inline-block';
+                        } else {
+                            console.log('No file selected');
+                            customFileLabel.textContent = '選擇圖片';
+                            removeSelectionBtn.style.display = 'none';
+                        }
+                    }
+
+                    function removeSelection() {
+                        console.log('Remove selection function called');
+                        fileInput.value = '';
+                        customFileLabel.textContent = '選擇圖片';
+                        removeSelectionBtn.style.display = 'none';
+                    }
+
+                    fileInput.addEventListener('change', fileSelected);
+                    removeSelectionBtn.addEventListener('click', removeSelection);
+
+                    customFileLabel.textContent = '選擇圖片';
+                    removeSelectionBtn.style.display = 'none';
+});
+            }
+        });
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,223 @@
+@charset "utf-8";
+
+/* ------------------- */
+/* html, body          */
+/* ------------------- */
+html{
+    overflow-y: hidden;
+}
+
+html,
+body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background-color: #F2F0EE;
+    padding: 0%;
+    margin: 0%;
+    height: 100%;
+    width: 100%; 
+    padding-bottom: constant(safe-area-inset-bottom);
+}
+/* ------------------- */
+/* container           */
+/* ------------------- */
+div.container {
+    width: 100%; 
+    margin-left: auto;
+    margin-right: auto;
+    text-align: justify;
+    line-height: 26px;
+    overflow: hidden;
+}
+
+/* ------------------- */
+/* header              */
+/* ------------------- */
+div.header {
+    display: flex;
+    /* 水平置中 */
+    justify-content: center;
+    padding: 10px;
+    height: 40px;
+    width: auto;
+    background-color: #9FB889;
+}
+
+div.header h1 {
+    font-size: 30px;
+    width: 200px;
+    padding: 5px;
+    text-align: center;
+    letter-spacing: 3px;
+    margin: 0%;
+}
+
+/* ------------------- */
+/* content-wrapper     */
+/* ------------------- */
+div.content-wrapper {
+    display: flex;
+    justify-content: center;  /* 水平置中 */
+    height: calc(100vh - 60px);  /* 減去 header 高度 */
+    width: 100%;             /* 設置容器高度為視窗高度 */
+}
+
+/* ------------------- */
+/* content             */
+/* ------------------- */
+div.content {
+    position: relative; 
+    padding: 0px 23px;
+}
+
+div.cardrow {
+    display: flex;
+    /* 水平置中 */
+    justify-content: center;
+    margin: auto;
+    z-index: 2;
+}
+
+div.row{
+    height: 80px;
+    margin: 30px;
+}
+
+div.form{
+    position: relative;
+    margin-top: 160px;
+    z-index: 2;
+}
+
+div.content h1 {
+    position: relative;
+    font-size: 45px;
+    text-align: center;
+    letter-spacing: 5px;
+    margin: 0%;
+    z-index: 2;
+}
+
+div.card h4 {
+    position: relative;
+    color: #000000;
+    font-size: 22px;
+    letter-spacing: 7px;
+    padding: 3px 0px 15px 6px;
+    text-align: center;
+    margin: 0%;
+}
+
+img.p {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 530px;
+    height: 500px;
+    z-index: 0;
+    opacity: 0.3;
+}
+
+div button {
+    background-color: #ffffff;
+    float: left;
+    width: 140px;
+    height: 40px;
+    box-sizing: border-box;
+    border-radius: 50px;
+    border-style: solid;
+    border-width: 3px;
+    border-color: #809f68;
+    color: #000000;
+    font-size: 22px;
+    font-weight: bolder;
+    letter-spacing: 7px;
+    padding: 3px 0px 15px 6px;
+    text-align: center;
+    margin: 0px 0px 30px;
+}
+
+div button.onclick {
+    background-color: #809f68;
+    color: #ffffff;
+}
+
+div button:first-child {
+    margin-right: 60px;
+}
+
+#myButton {
+    background-color: #809f68;
+    width: 340px;
+    height: 40px;
+    border-style: none;
+    border-radius: 50px;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 20px;
+    letter-spacing: 5px;
+    cursor: pointer;    
+    transition: background-color 0.1s;
+}
+
+#myButton:active {
+    background-color: #9fb889;
+}
+
+button h4 {
+    color: #000000;
+    font-size: 22px;
+    letter-spacing: 5px;
+    margin: 0%;
+}
+@media only screen and (max-width: 360px) {
+    body h1{
+        font-weight: 600;
+        }
+}
+
+@media only screen and (max-width: 480px) {
+    body h1{
+        font-weight: 800;
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    div.content{
+        width: 400px;
+        height: 100%;
+    }
+    div.content h1 {
+        font-size: 36px;
+    }
+
+    img.p {
+        width: 460px;
+        height: 460px;
+    }
+
+    div.button {
+        width: 100px;
+        font-size: 18px;
+    }
+
+    #myButton {
+        width: 340px;
+        font-size: 18px;
+    }
+
+    #myButton:hover,
+    #myButton:active {
+        background-color: #9fb889;
+    }
+}
+
+@media only screen and (min-width: 768px) {
+    div.header {
+        height: 50px;
+    }
+    
+    div.header h1 {
+        padding: 12px;
+    }
+}
