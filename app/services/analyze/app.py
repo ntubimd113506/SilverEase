@@ -22,13 +22,19 @@ def render_analyze_template(title, analyze, is_all=True):
         cursor.execute(
             """
             SELECT m.MemID, m.MemName, IFNULL(a.DataAnalyze, 0)
+            FROM `113-ntub113506`.Family f
+            JOIN `113-ntub113506`.Member m ON f.MainUserID = m.MemID
+            LEFT JOIN `113-ntub113506`.Access a ON f.FamilyID = a.FamilyID
+            WHERE f.MainUserID = %s
+            UNION
+            SELECT m.MemID, m.MemName, IFNULL(a.DataAnalyze, 0)
             FROM `113-ntub113506`.FamilyLink fl
             JOIN `113-ntub113506`.Family f ON fl.FamilyID = f.FamilyID
             JOIN `113-ntub113506`.Member m ON f.MainUserID = m.MemID
             LEFT JOIN `113-ntub113506`.Access a ON f.FamilyID = a.FamilyID
             WHERE fl.SubUserID = %s
             """,
-            (MemID,),
+            (MemID, MemID),
         )
         MainUsers = cursor.fetchall()
 
@@ -37,6 +43,7 @@ def render_analyze_template(title, analyze, is_all=True):
                 """
                 SELECT m.MemID, m.MemName, IFNULL(a.DataAnalyze, 0) 
                 FROM `113-ntub113506`.Member m
+                LEFT JOIN `113-ntub113506`.Family f ON f.MainUserID = m.MemID
                 LEFT JOIN `113-ntub113506`.Access a ON f.FamilyID = a.FamilyID
                 WHERE m.MemID = %s
                 """,
