@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Satisfy&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <title>{{ title }}</title>
+    <link href="/static/css/health.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div class="header">
+        <h1>SilverEase</h1>
+    </div>
+
+
+    <!-- <h2>{{ title }}</h2> -->
+
+    <!-- <a href="{{ url_for('health_bp.health') }}">返回主頁</a> -->
+    <i id="menu-bar" class="fa-solid fa-house"></i>
+    <div class="navbar">
+        <ul id="navigation" class="nav">
+            <li><a href="{{ url_for('health_bp.health') }}">返回主頁</a></li>
+        </ul>
+    </div>
+
+
+    <div class="content">
+        
+        <div class="title-container">
+            <h1 class="content-header">{{ title }}</h1>
+        </div>
+
+        {% for item in items %}
+        <h3 class="item-title" onclick="toggleImage('{{ loop.index0 }}')">{{ item.name }}</h3>
+        <img id="image-{{ loop.index0 }}" class="item-image"
+            src="{{ url_for('static', filename='imgs/health/' + item.image) }}" alt="{{ item.name }}"
+            onclick="enlargeImage(this)">
+        {% endfor %}
+    </div>
+    <div id="overlay" class="overlay" onclick="closeImage()"></div>
+
+    <script>
+        function toggleImage(index) {
+            var image = document.getElementById('image-' + index);
+            var overlay = document.getElementById('overlay');
+            if (image.style.display === 'none' || image.style.display === '') {
+                image.style.display = 'block';
+            } else {
+                image.style.display = 'none';
+                overlay.classList.remove('active');
+            }
+        }
+
+        function enlargeImage(img) {
+            var overlay = document.getElementById('overlay');
+            if (img.classList.contains('enlarged')) {
+                img.classList.remove('enlarged');
+                overlay.classList.remove('active');
+            } else {
+                img.classList.add('enlarged');
+                overlay.classList.add('active');
+            }
+        }
+
+        function closeImage() {
+            var enlargedImage = document.querySelector('.item-image.enlarged');
+            var overlay = document.getElementById('overlay');
+            if (enlargedImage) {
+                enlargedImage.classList.remove('enlarged');
+            }
+            overlay.classList.remove('active');
+        }
+    </script>
+</body>
+
+</html>

@@ -1,53 +1,28 @@
 document.addEventListener('DOMContentLoaded', function () {
     var chartContainer = document.getElementById('chartContainer');
+    var buttonContainer = document.getElementById('buttonContainer');
+    var dateRangeContainer = document.createElement('div');
+    dateRangeContainer.className = 'date-range-container';
+    document.body.insertBefore(dateRangeContainer, chartContainer);
 
-    function createChartBox(id, title, dateRange, periodType) {
+    function createChartBox(id, title) {
         var div = document.createElement('div');
         div.className = 'chart-box';
-        div.style.border = '1px solid #000';
-        div.style.padding = '10px';
-        div.style.margin = '10px 0';
 
         var h2 = document.createElement('h2');
         h2.textContent = title;
         div.appendChild(h2);
-
-        var dateDiv = document.createElement('div');
-        dateDiv.textContent = dateRange;
-        dateDiv.style.fontSize = '12px';
-        dateDiv.style.color = '#555';
-        div.appendChild(dateDiv);
-
-        var prevButton = document.createElement('button');
-        prevButton.textContent = periodType === 'weekly' ? '上一週' :
-                                 periodType === 'monthly' ? '上個月' :
-                                 '上一年';
-        prevButton.style.marginRight = '10px';
-        prevButton.addEventListener('click', function () {
-            if (periodType === 'weekly') {
-                currentDate.setDate(currentDate.getDate() - 7);
-            } else if (periodType === 'monthly') {
-                currentDate.setMonth(currentDate.getMonth() - 1);
-            } else if (periodType === 'yearly') {
-                currentDate.setFullYear(currentDate.getFullYear() - 1);
-            }
-            chartContainer.innerHTML = ''; 
-            fetchData(apiEndpoints[currentPath + '_prev'], title, periodType, currentDate);
-        });
-        div.appendChild(prevButton);
 
         var select = document.createElement('select');
         select.innerHTML = `
             <option value="bar">長條圖</option>
             <option value="line">折線圖</option>
         `;
+        select.className = 'chart-select';
         div.appendChild(select);
-        select.style.fontSize = '14px';
 
         var canvas = document.createElement('canvas');
         canvas.id = id;
-        canvas.width = 100;
-        canvas.height = 50;
         div.appendChild(canvas);
 
         chartContainer.appendChild(div);
@@ -100,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var startDate = new Date(date);
         startDate.setDate(diff);
         var endDate = new Date(startDate);
-        endDate.setDate(startDate.getDate() + 6); 
+        endDate.setDate(startDate.getDate() + 6);
 
         return {
             start: startDate,
@@ -135,6 +110,8 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch(url)
             .then(response => response.json())
             .then(data => {
+                chartContainer.innerHTML = '';
+
                 var dateRange;
                 if (type === 'weekly') {
                     dateRange = getWeekRange(date);
@@ -145,16 +122,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 var formattedDateRange = formatDateRange(dateRange.start, dateRange.end, type);
 
+                dateRangeContainer.textContent = formattedDateRange;
+
                 var sosData = data.SOSdata.map(item => item[1]);
                 var sosLabels = data.SOSdata.map(item => item[0]);
 
                 if (sosData.length === 0 || sosData.every(item => item === 0)) {
                     var noDataMessage = document.createElement('div');
                     noDataMessage.textContent = chartTitle + '：目前無資料';
-                    noDataMessage.style.color = 'red';
+                    noDataMessage.className = 'no-data-message';
                     chartContainer.appendChild(noDataMessage);
                 } else {
-                    var sosChartInfo = createChartBox('sosChart', chartTitle, formattedDateRange, type);
+                    var sosChartInfo = createChartBox('sosChart', chartTitle);
                     var SOS = setupChart(sosChartInfo, '求救次數', { labels: sosLabels, values: sosData }, 'rgba(255, 38, 38, 0.5)', 'rgba(255, 38, 38, 0.5)');
                     var sosChart = createChart(sosChartInfo, 'bar', SOS, {
                         scales: {
@@ -182,10 +161,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (typeData.length === 0 || typeData.every(item => item === 0)) {
                     var noDataMessage = document.createElement('div');
                     noDataMessage.textContent = '求救類型分布：目前無資料';
-                    noDataMessage.style.color = 'red';
+                    noDataMessage.className = 'no-data-message';
                     chartContainer.appendChild(noDataMessage);
                 } else {
-                    var typeChartInfo = createChartBox('sosTypeChart', '求救類型分布', formattedDateRange, type);
+                    var typeChartInfo = createChartBox('sosTypeChart', '求救類型分布');
                     typeChartInfo.select.style.display = 'none';
 
                     var SOSType = {
@@ -207,10 +186,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (placeData.length === 0 || placeData.every(item => item === 0)) {
                     var noDataMessage = document.createElement('div');
                     noDataMessage.textContent = '求救家中地點分布：目前無資料';
-                    noDataMessage.style.color = 'red';
+                    noDataMessage.className = 'no-data-message';
                     chartContainer.appendChild(noDataMessage);
                 } else {
-                    var placeChartInfo = createChartBox('sosPlaceChart', '求救家中地點分布', formattedDateRange, type);
+                    var placeChartInfo = createChartBox('sosPlaceChart', '求救家中地點分布');
                     placeChartInfo.select.style.display = 'none';
 
                     var SOSPlace = {
@@ -230,9 +209,26 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.error('Error fetching data:', error);
                 var errorMessage = document.createElement('div');
                 errorMessage.textContent = '資料加載失敗：' + error.message;
-                errorMessage.style.color = 'red';
+                errorMessage.className = 'error-message';
                 chartContainer.appendChild(errorMessage);
             });
+    }
+
+    function createNavButton(periodType, link, isCurrent) {
+        var button = document.createElement('button');
+        button.textContent = isCurrent ? 
+                            (periodType === 'weekly' ? '查看當週' :
+                             periodType === 'monthly' ? '查看當月' :
+                             '查看當年') :
+                            (periodType === 'weekly' ? '查看上一週' :
+                             periodType === 'monthly' ? '查看上個月' :
+                             '查看上一年');
+        button.className = 'nav-button';
+        button.addEventListener('click', function () {
+            var newLink = isCurrent ? link.replace('_prev', '') : link;
+            window.location.href = newLink;
+        });
+        return button;
     }
 
     const apiEndpoints = {
@@ -256,14 +252,33 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (endpoint) {
         let type = 'weekly';
+        let linkType = '/analyze/all_weekly_prev';
         if (currentPath.includes('monthly')) {
             type = 'monthly';
+            linkType = currentPath.includes('all') ? '/analyze/all_monthly_prev' : '/analyze/mem_monthly_prev';
         } else if (currentPath.includes('yearly')) {
             type = 'yearly';
+            linkType = currentPath.includes('all') ? '/analyze/all_yearly_prev' : '/analyze/mem_yearly_prev';
+        } else {
+            linkType = currentPath.includes('all') ? '/analyze/all_weekly_prev' : '/analyze/mem_weekly_prev';
         }
-        
+
+        var isCurrent = currentPath.includes('_prev');
         var currentDate = new Date();
-        
+
+        if (isCurrent) {
+            if (type === 'weekly') {
+                currentDate.setDate(currentDate.getDate() - 7);
+            } else if (type === 'monthly') {
+                currentDate.setMonth(currentDate.getMonth() - 1);
+            } else if (type === 'yearly') {
+                currentDate.setFullYear(currentDate.getFullYear() - 1);
+            }
+        }
+
+        var navButton = createNavButton(type, linkType, isCurrent);
+        buttonContainer.appendChild(navButton);
+
         fetchData(endpoint, title, type, currentDate);
     }
 });

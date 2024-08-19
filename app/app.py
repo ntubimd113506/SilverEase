@@ -4,7 +4,7 @@ from flask import Flask, render_template, session, request, jsonify, redirect, u
 from flask_login import login_required
 from linebot.models import FlexSendMessage
 from utils import db
-from services import cam_bp, event_bp, hos_bp, analyze_bp, linebot_bp, med_bp, set_bp, user_bp, scheduler, mqtt, login_manager, gps_bp, line_bot_api, sos_bp
+from services import cam_bp, event_bp, hos_bp, analyze_bp, health_bp, linebot_bp, med_bp, set_bp, user_bp, scheduler, mqtt, login_manager, gps_bp, line_bot_api, sos_bp
 from config import Config
 
 app = Flask(__name__)
@@ -14,6 +14,7 @@ app.register_blueprint(med_bp, url_prefix="/med")
 app.register_blueprint(hos_bp, url_prefix="/hos")
 app.register_blueprint(event_bp, url_prefix="/event")
 app.register_blueprint(analyze_bp, url_prefix="/analyze")
+app.register_blueprint(health_bp, url_prefix="/health")
 app.register_blueprint(cam_bp, url_prefix="/cam")
 app.register_blueprint(set_bp, url_prefix="/set")
 app.register_blueprint(linebot_bp, url_prefix="/")
