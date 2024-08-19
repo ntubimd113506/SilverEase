@@ -28,7 +28,7 @@
 
         <div class="content-wrapper">
             <div class="content">
-                <img src="imgs/main.png" class="b">
+                <img src="/static/imgs/main.png" class="b">
                 <h1>群組代碼</h1>
 
                 <div id="qrcode"></div>
@@ -40,7 +40,7 @@
                         <span class="value">
                             <input class="output" type="text" id='number' value="{{code_id}}" readonly>
                             <button class="btn" type="button" onclick="copy()">
-                                <img class="btn" src="/static/imgs/copy.png" alt="copy"></button>
+                                <img class="btn" src="/static/imgs/copy.png" alt="copy" id="share" onclick="shareCode()"></button>
                         </span>
                         <br />
                         <script>
@@ -52,19 +52,35 @@
                         </script>
                     </div>
                 </div>
-                
+
             </div>
         </div>
     </div>
 </body>
-<!-- <script src="jquery-3.7.1.min.js"></script> -->
+<script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
 <script>
     $('#qrcode').qrcode({
         width: 120,
         height: 120,
-          
+
         text: 'https://liff.line.me/2004699458-OR9pkZjP/set/join_family/{{code_id}}'
     });
+
+    liff.init({ liffId: '{{liffid}}' })
+    
+    function shareCode(){
+        liff.shareTargetPicker(
+            [
+                {
+                    type: "text",
+                    text: "您的長輩邀請您加入照顧他的行列!\n點擊連結加入：https://liff.line.me/2004699458-OR9pkZjP/set/join_family/{{code_id}}",
+                },
+            ],
+            {
+                isMultiple: true,
+            })
+    }
+
 </script>
 
 </html>

@@ -30,7 +30,7 @@ def get_code_id():
         return redirect("/set/access_index")
 
     code_id = db.get_codeID(session.get("FamilyID"))
-    return render_template('/set/old.html', code_id=code_id)
+    return render_template('/set/old.html', liffid=db.LIFF_ID,code_id=code_id)
 
 
 @set_bp.route('/join_family')
