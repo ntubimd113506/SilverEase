@@ -100,7 +100,7 @@ def handle_mqtt_message(client, userdata, message):
             try:
                 data = message.payload.decode()
                 Map1 = str(data)
-                Map = Map1.replace(" ","")
+                Map = Map1.replace(" ","","https://www.google.com/maps/search/?api=1&query=")
                 print(f"Received GPS data - GoogleMap:{Map}")
                 save_gps(Map)
 
@@ -111,7 +111,7 @@ def handle_mqtt_message(client, userdata, message):
             try:
                 data = message.payload.decode()
                 Map1 = str(data)
-                Map = Map1.replace(" ","")
+                Map = Map1.replace(" ","","https://www.google.com/maps/search/?api=1&query=")
                 print(f"Received GPS data - GoogleMap:{Map}")
                 upgrade_gps(Map)
 
@@ -122,7 +122,7 @@ def handle_mqtt_message(client, userdata, message):
             try:
                 data = message.payload.decode()
                 Map1 = str(data)
-                Map = Map1.replace(" ","")
+                Map = Map1.replace(" ","","https://www.google.com/maps/search/?api=1&query=")
                 print(f"Received GPS data - GoogleMap:{Map}")
                 sos_gps(Map)
 
