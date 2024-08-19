@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Satisfy&display=swap" rel="stylesheet">
+        
+    <link href="/static/css/device_setting.css" rel="stylesheet" />
+    <script src="/static/js/touch-buttons.js" defer></script>
+    <script src="/static/js/img.js"></script>
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="header">
+            <h1>SilverEase</h1>
+        </div>
+
+        <div class="content">
+            <div class="title-container">
+                <h1>初次設定裝置步驟</h1>
+            </div>
+            
+            <div class="form-container">
+            <h4>網路設定：</h4>
+                <ol>
+                    <li>開啟WiFi設定</li>
+                    <li>連接熱點 名稱：{{DevID}}</li>
+                    <li><a href="http://192.168.4.1">點我進入設定頁面</a></li>
+                </ol>
+            <div>
+                <h4>連線後進行綁定：</h4>
+            </div>
+            
+            <form action="/set/device/submit" method="post">
+                <div class="cardrow">
+                    家庭隨機碼<input type="text" name="FamilyCode">
+                    <input type="hidden" name="DevID" value="{{DevID}}">
+                </div>
+                <div class="cardrow">
+                    <button class="b1" type="submit">裝置綁定</button>
+                </div>
+            </form>
+            </div>
+            
+        </div>
+            
+    </div>
+</body>
+<script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+<script>
+    liff.init({
+        liffId: '{{liffid}}'
+    }).catch((err) => {
+        console.log('初始化失敗', err);
+    });
+</script>
+</html>

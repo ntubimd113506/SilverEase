@@ -1,0 +1,239 @@
+/* ------------------- */
+/* html, body          */
+/* ------------------- */
+html, body {
+    touch-action: manipulation;
+    font-family: 'Noto Sans TC', sans-serif;
+    background-color: #F2F0EE;
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+    padding-bottom: calc(30px + env(safe-area-inset-bottom));
+}
+
+/* ------------------- */
+/* container           */
+/* ------------------- */
+.container {
+    touch-action: manipulation;
+    -ms-content-zooming: none;
+    margin: 0 auto;
+    text-align: justify;
+    line-height: 26px;
+    background-color: #F2F0EE;
+    min-height: calc(100vh - env(safe-area-inset-bottom));
+    padding-bottom: 30px;
+    overflow: hidden; 
+    width: 100%; 
+    box-sizing: border-box; 
+}
+
+/* ------------------- */
+/* header              */
+/* ------------------- */
+div.header {
+    display: flex;
+    justify-content: center; 
+    padding: 10px;
+    height: 40px;
+    background-color: #9FB889;
+}
+
+div.header h1 {
+    font-size: 30px;
+    width: 200px;
+    padding: 5px;
+    text-align: center;
+    letter-spacing: 3px;
+    margin: 0;
+}
+
+#menu-bar {
+    z-index: 1;
+    float: left;
+    padding-top: 11px;
+    padding-left: 10px;
+    font-size: 17px;
+    color: #809f68;
+}
+
+div.navbar {
+    height: 35px;
+}
+
+ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    font-weight: 600;
+}
+
+ul li {
+    line-height: 40px;
+    float: left; 
+    width: 75px; 
+    text-align: center;
+}
+
+div.navbar a {
+    text-decoration: none; 
+    color: #000000;
+}
+
+/* ------------------- */
+/* content             */
+/* ------------------- */
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 30px;
+    width: 100%; 
+    box-sizing: border-box; 
+}
+
+.content img {
+    width: 100%;
+    max-width: 250px;
+    height: auto;
+}
+
+.content h2 {
+    text-align: center;
+    font-size: 27px;
+    letter-spacing: 5px;
+    margin: 0;
+}
+
+.history {
+    position: relative;
+    top: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #809f68;
+    width: 32%;
+    height: 40px;
+    border-radius: 20px;
+    font-weight: bolder;
+    letter-spacing: 5px;
+    text-align: center;
+    margin-bottom: 50px;
+    text-decoration: none;
+    color: #ffffff;
+    font-size: 19px;
+    box-sizing: border-box;
+    padding-bottom: 2px;
+    cursor: pointer;
+    transition: background-color 0.1s;
+}
+
+.history:active {
+    background-color: #9fb889;
+}
+
+.history .fa-solid {
+    color: #ffffff;
+    font-size: 17px;
+    margin-right: 5px;
+    line-height: 40px;
+    vertical-align: middle;
+}
+
+
+/* ------------------- */
+/* Media Queries       */
+/* ------------------- */
+
+@media (min-width: 576px) {
+    /* For devices >= 576px */
+}
+
+@media (min-width: 768px) {
+    div.header {
+        height: 50px;
+    }
+    
+    div.header h1 {
+        padding: 12px;
+    }
+
+    .content img {
+        margin-top: 50px;
+        max-width: 310px;
+    }
+
+    .content h2 {
+        font-size: 28px;
+        padding-bottom: 10px;
+    }
+
+    .history {
+        width: 22%;
+        height: 50px;
+        border-radius: 30px;
+    }
+
+    .history:hover,
+    .history:active {
+    background-color: #9fb889;
+    } 
+
+    #menu-bar {
+        padding-top: 13px;
+        padding-left: 13px;
+        font-size: 22px;
+    }
+    
+    ul li {
+        line-height: 50px;
+        width: 85px; 
+    }
+
+    div.navbar a {
+        font-size: 18px;
+    }
+}
+
+@media (min-width: 992px) {
+    .history {
+        width: 18%;
+        font-size: 20px;
+    }
+
+    #menu-bar {
+        padding-top: 15px;
+        padding-left: 15px;
+        font-size: 25px;
+    }
+    
+    ul li {
+        line-height: 56px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .history {
+        width: 15%;
+    }
+}
+
+@media (min-width: 1400px) {
+    .history {
+        width: 14%;
+    }
+
+    #menu-bar {
+        padding-top: 20px;
+        padding-left: 20px;
+    }
+    
+    ul li {
+        line-height: 65px;
+    }
+
+    .content img {
+        max-width: 320px;
+    }
+}
