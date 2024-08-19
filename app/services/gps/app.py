@@ -111,7 +111,14 @@ def road():
 
         # 提取 Location 列的數據
         base_url = "https://www.google.com/maps/search/?api=1&query="
-        urls = [base_url + loc[0] for loc in rows] if rows else []
+        urls = []
+        for loc in rows:
+            location = loc[0]
+            if location.startswith("http://") or location.startswith("https://"):
+                urls.append(location)  # 若為網址，直接使用
+            else:
+                urls.append(base_url + location)  # 若為座標，組合成Google Maps URL
+
         return jsonify({"urls": urls})
     
     except Exception as e:
