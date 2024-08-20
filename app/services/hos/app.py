@@ -68,8 +68,8 @@ def hos_create_form():
         ) AND Location != ""
         GROUP BY Location
         ORDER BY COUNT(Location) DESC
-        """, 
-        (tuple(MainUserIDs),)
+        """,
+        (tuple(MainUserIDs),),
     )
     Locations = [row[0] for row in cursor.fetchall()]
 
@@ -85,15 +85,20 @@ def hos_create_form():
         ) AND Doctor != ""
         GROUP BY Doctor
         ORDER BY COUNT(Doctor) DESC
-        """, 
-        (tuple(MainUserIDs),)
+        """,
+        (tuple(MainUserIDs),),
     )
     Doctors = [row[0] for row in cursor.fetchall()]
 
     conn.commit()
     conn.close()
 
-    return render_template("/hos/hos_create_form.html", MainUsers=MainUsers, Locations=Locations, Doctors=Doctors)
+    return render_template(
+        "/hos/hos_create_form.html",
+        MainUsers=MainUsers,
+        Locations=Locations,
+        Doctors=Doctors,
+    )
 
 
 # 新增
@@ -185,7 +190,7 @@ def hos_create():
 
 
 # 傳送通知
-def send_line_message(MemoID, cnt=0, got=False, time_type=""):
+def send_line_message(MemoID, cnt=0, got=False, time_type="hos"):
     try:
         data = db.get_memo_info(MemoID)
         Title = data["Title"]
@@ -205,12 +210,14 @@ def send_line_message(MemoID, cnt=0, got=False, time_type=""):
             + timedelta(seconds=random.uniform(-0.5, 0.5))
         ).strftime("%Y-%m-%dT%H:%M:%S")
 
-        msg = json.dumps({
-            "MemoID": MemoID,
-            "time": reminder_time,
-            "got": True,
-            "time_type": time_type
-        })        
+        msg = json.dumps(
+            {
+                "MemoID": MemoID,
+                "time": reminder_time,
+                "got": True,
+                "time_type": time_type,
+            }
+        )
         body = TemplateSendMessage(
             alt_text="回診通知",
             template=ButtonsTemplate(
@@ -230,7 +237,7 @@ def send_line_message(MemoID, cnt=0, got=False, time_type=""):
 
         body2 = TextSendMessage(
             text=f"{MainUserName}長者回診通知\n\n📌標題: {Title}\n🏥醫院地點: {Location}\n👨‍⚕️看診醫生: {Doctor}\n🗓️門診: {Clinic}\n🔢號碼: {Num}",
-        )    
+        )
 
         conn = db.get_connection()
         cursor = conn.cursor()
@@ -245,7 +252,7 @@ def send_line_message(MemoID, cnt=0, got=False, time_type=""):
             if not got:
                 for sub_id in SubUserIDs:
                     line_bot_api.push_message(sub_id, body1)
-                
+
                 cursor.execute(
                     """
                     INSERT INTO Respond (MemoID, Times, RespondTime)
@@ -262,7 +269,7 @@ def send_line_message(MemoID, cnt=0, got=False, time_type=""):
             )
             cnt = 0
             got = False
-            
+
             cursor.execute(
                 """
                 UPDATE Memo
@@ -575,13 +582,22 @@ def hos_update_confirm():
     )
     data = cursor.fetchone()
 
-
-
     if data:
         department_list = [
-            "心臟內科", "內分泌新陳代謝科", "腫瘤科", "胸腔內科", 
-            "神經內科", "腎臟內科", "外科", "骨科", 
-            "復健科", "呼吸內科", "耳鼻喉科", "一般內科", "精神科", ""
+            "心臟內科",
+            "內分泌新陳代謝科",
+            "腫瘤科",
+            "胸腔內科",
+            "神經內科",
+            "腎臟內科",
+            "外科",
+            "骨科",
+            "復健科",
+            "呼吸內科",
+            "耳鼻喉科",
+            "一般內科",
+            "精神科",
+            "",
         ]
 
         cursor.execute(
@@ -628,8 +644,8 @@ def hos_update_confirm():
             ) AND Location != ""
             GROUP BY Location
             ORDER BY COUNT(Location) DESC
-            """, 
-            (tuple(MainUserIDs),)
+            """,
+            (tuple(MainUserIDs),),
         )
         Locations = [row[0] for row in cursor.fetchall()]
 
@@ -645,8 +661,8 @@ def hos_update_confirm():
             ) AND Doctor != ""
             GROUP BY Doctor
             ORDER BY COUNT(Doctor) DESC
-            """, 
-            (tuple(MainUserIDs),)
+            """,
+            (tuple(MainUserIDs),),
         )
         Doctors = [row[0] for row in cursor.fetchall()]
 
@@ -667,7 +683,12 @@ def hos_update_confirm():
             "Num": data[14],
         }
 
-    return render_template("/hos/hos_update_confirm.html", data=values, Locations=Locations, Doctors=Doctors)
+    return render_template(
+        "/hos/hos_update_confirm.html",
+        data=values,
+        Locations=Locations,
+        Doctors=Doctors,
+    )
 
 
 # 更改
@@ -715,20 +736,19 @@ def hos_update():
         conn.commit()
         conn.close()
 
-        job_id = f"{MemoID}"
         send_time = datetime.strptime(MemoTime, "%Y-%m-%dT%H:%M")
         reminder_time = send_time - timedelta(minutes=Alert)
 
-        if scheduler.get_job(MemoID) is not None:
+        if scheduler.get_job(f"{MemoID}_hos"):
             scheduler.modify_job(
-                MemoID,
+                f"{MemoID}_hos",
                 trigger="date",
                 run_date=reminder_time,
                 args=[MemoID],
             )
         else:
             scheduler.add_job(
-                id=job_id,
+                id=f"{MemoID}_hos",
                 func=send_line_message,
                 trigger="date",
                 run_date=reminder_time,
@@ -774,9 +794,10 @@ def hos_delete():
     try:
         MemoID = request.values.get("MemoID")
 
-        job = scheduler.get_job(f"{MemoID}_{""}")
-        if job:
-            scheduler.remove_job(f"{MemoID}_{""}")
+        for time_type in ["hos"]:
+            job = scheduler.get_job(f"{MemoID}_{time_type}")
+            if job:
+                scheduler.remove_job(f"{MemoID}_{time_type}")
 
         conn = db.get_connection()
         cursor = conn.cursor()

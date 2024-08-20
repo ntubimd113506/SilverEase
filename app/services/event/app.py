@@ -139,7 +139,7 @@ def event_create():
 
 
 # 傳送通知
-def send_line_message(MemoID, cnt=0, got=False, time_type=""):
+def send_line_message(MemoID, cnt=0, got=False, time_type="event"):
     try:
         data = db.get_memo_info(MemoID)
         Title = data["Title"]
@@ -156,12 +156,14 @@ def send_line_message(MemoID, cnt=0, got=False, time_type=""):
             + timedelta(seconds=random.uniform(-0.5, 0.5))
         ).strftime("%Y-%m-%dT%H:%M:%S")
 
-        msg = json.dumps({
-            "MemoID": MemoID,
-            "time": reminder_time,
-            "got": True,
-            "time_type": time_type
-        })
+        msg = json.dumps(
+            {
+                "MemoID": MemoID,
+                "time": reminder_time,
+                "got": True,
+                "time_type": time_type,
+            }
+        )
         body = TemplateSendMessage(
             alt_text="紀念日通知",
             template=ButtonsTemplate(
@@ -566,20 +568,19 @@ def event_update():
         conn.commit()
         conn.close()
 
-        job_id = f"{MemoID}"
         send_time = datetime.strptime(MemoTime, "%Y-%m-%dT%H:%M")
         reminder_time = send_time - timedelta(minutes=Alert)
 
-        if scheduler.get_job(MemoID) != None:
+        if scheduler.get_job(f"{MemoID}_event"):
             scheduler.modify_job(
-                MemoID,
+                f"{MemoID}_event",
                 trigger="date",
                 run_date=reminder_time,
                 args=[MemoID],
             )
         else:
             scheduler.add_job(
-                id=job_id,
+                id=f"{MemoID}_event",
                 func=send_line_message,
                 trigger="date",
                 run_date=reminder_time,
@@ -625,9 +626,10 @@ def event_delete():
     try:
         MemoID = request.form.get("MemoID")
 
-        job = scheduler.get_job(f"{MemoID}_{""}")
-        if job:
-            scheduler.remove_job(f"{MemoID}_{""}")
+        for time_type in ["event"]:
+            job = scheduler.get_job(f"{MemoID}_{time_type}")
+            if job:
+                scheduler.remove_job(f"{MemoID}_{time_type}")
 
         conn = db.get_connection()
         cursor = conn.cursor()
