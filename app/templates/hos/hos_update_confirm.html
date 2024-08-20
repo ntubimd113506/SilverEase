@@ -58,6 +58,32 @@
             }
         }
 
+        var locationSelect = document.getElementById('LocationSelect');
+        var otherLocationInput = document.getElementById('OtherLocation');
+
+        locationSelect.addEventListener('change', function () {
+            if (this.value === '其他') {
+                otherLocationInput.style.display = 'block';
+                otherLocationInput.required = true;
+            } else {
+                otherLocationInput.style.display = 'none';
+                otherLocationInput.required = false;
+            }
+        });
+
+        var doctorSelect = document.getElementById('DoctorSelect');
+        var otherDoctorInput = document.getElementById('OtherDoctor');
+
+        doctorSelect.addEventListener('change', function () {
+            if (this.value === '其他') {
+                otherDoctorInput.style.display = 'block';
+                otherDoctorInput.required = true;
+            } else {
+                otherDoctorInput.style.display = 'none';
+                otherDoctorInput.required = false;
+            }
+        });
+
         var clinicSelectElement = document.querySelector('select[name="Clinic"]');
         clinicSelectElement.addEventListener('change', function () {
             var otherClinicInput = document.getElementById('OtherClinic');
@@ -76,17 +102,17 @@
 
         var datetimeInput = document.getElementById('MemoTime');
         var placeholder = document.getElementById('placeholder');
-    
-        datetimeInput.addEventListener('input', function() {
+
+        datetimeInput.addEventListener('input', function () {
             if (this.value) {
                 placeholder.style.display = 'none';
             } else {
                 placeholder.style.display = 'block';
             }
         });
-    
+
         datetimeInput.dispatchEvent(new Event('input'));
-    
+
 
     });
 
@@ -116,7 +142,8 @@
                     <div class="form">
                         <div class="name">名稱</div>
                         <div class="value">
-                            <input type="text" name="Title" value="{{ data.Title }}" class="input-field" placeholder="請輸入名稱"  required>
+                            <input type="text" name="Title" value="{{ data.Title }}" class="input-field"
+                                placeholder="請輸入名稱" required>
                         </div>
 
                         <div class="name">日期時間</div>
@@ -124,14 +151,27 @@
                             <div class="input-icon">
                                 <input type="datetime-local" name="MemoTime" value="{{ data.MemoTime }}"
                                     class="input-field" required>
-                                    <label for="MemoTime" id="placeholder" class="placeholder">選擇欲提醒的日期</label>
+                                <label for="MemoTime" id="placeholder" class="placeholder">選擇欲提醒的日期</label>
                                 <i class="fa-solid fa-calendar-days calendar-icon"></i>
                             </div>
                         </div>
 
                         <div class="name">醫院/診所地點</div>
                         <div class="value">
-                            <input type="text" name="Location" value="{{ data.Location }}" class="input-field" placeholder="請輸入醫院/診所地點">
+                            {% if Locations %}
+                            <select name="Location" id="LocationSelect" class="input-field">
+                                <option value="" disabled selected>請選擇醫院/診所地點</option>
+                                {% for location in Locations %}
+                                <option value="{{ location }}" {% if data.Location==location %}selected{% endif %}>{{
+                                    location }}</option>
+                                {% endfor %}
+                                <option value="其他">其他</option>
+                            </select>
+                            <input type="text" name="OtherLocation" id="OtherLocation" class="input-field"
+                                placeholder="請輸入其他醫院/診所地點" style="display:none;">
+                            {% else %}
+                            <input type="text" name="Location" class="input-field" placeholder="請輸入醫院/診所地點">
+                            {% endif %}
                         </div>
 
                         <div class="name">門診科別</div>
@@ -159,12 +199,25 @@
 
                         <div class="name">看診醫生</div>
                         <div class="value">
-                            <input type="text" name="Doctor" value="{{ data.Doctor }}" class="input-field"  placeholder="請輸入看診醫生名稱">
+                            {% if Doctors %}
+                            <select name="Doctor" id="DoctorSelect" class="input-field">
+                                <option value="" disabled selected>請選擇看診醫生</option>
+                                {% for doctor in Doctors %}
+                                <option value="{{ doctor }}" {% if data.Doctor==doctor %}selected{% endif %}>{{ doctor
+                                    }}</option> {% endfor %}
+                                <option value="其他">其他</option>
+                            </select>
+                            <input type="text" name="OtherDoctor" id="OtherDoctor" class="input-field"
+                                placeholder="請輸入其他看診醫生" style="display:none;">
+                            {% else %}
+                            <input type="text" name="Doctor" class="input-field" placeholder="請輸入看診醫生">
+                            {% endif %}
                         </div>
 
                         <div class="name">號碼</div>
                         <div class="value">
-                            <input type="text" name="Num" value="{{ data.Num }}" class="input-field" laceholder="請輸入掛號號碼">
+                            <input type="text" name="Num" value="{{ data.Num }}" class="input-field"
+                                laceholder="請輸入掛號號碼">
                         </div>
 
                         <div class="name">多久重複</div>

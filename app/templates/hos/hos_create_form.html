@@ -60,7 +60,19 @@
 
                         <div class="name">醫院/診所地點</div>
                         <div class="value">
+                            {% if Locations %}
+                            <select name="Location" id="LocationSelect" class="input-field">
+                                <option value="" disabled selected>請選擇醫院/診所地點</option>
+                                {% for location in Locations %}
+                                <option value="{{ location }}">{{ location }}</option>
+                                {% endfor %}
+                                <option value="其他">其他</option>
+                            </select>
+                            <input type="text" name="OtherLocation" id="OtherLocation" class="input-field"
+                                placeholder="請輸入其他醫院/診所地點" style="display:none;">
+                            {% else %}
                             <input type="text" name="Location" class="input-field" placeholder="請輸入醫院/診所地點">
+                            {% endif %}
                         </div>
 
                         <div class="name">門診科別</div>
@@ -89,9 +101,21 @@
 
                         <div class="name">看診醫生</div>
                         <div class="value">
-                            <input type="text" name="Doctor" class="input-field" placeholder="請輸入看診醫生名稱">
+                            {% if Doctors %}
+                            <select name="Doctor" id="DoctorSelect" class="input-field">
+                                <option value="" disabled selected>請選擇看診醫生</option>
+                                {% for doctor in Doctors %}
+                                <option value="{{ doctor }}">{{ doctor }}</option>
+                                {% endfor %}
+                                <option value="其他">其他</option>
+                            </select>
+                            <input type="text" name="OtherDoctor" id="OtherDoctor" class="input-field"
+                                placeholder="請輸入其他看診醫生" style="display:none;">
+                            {% else %}
+                            <input type="text" name="Doctor" class="input-field" placeholder="請輸入看診醫生">
+                            {% endif %}
                         </div>
-                                                
+
                         <div class="name">號碼</div>
                         <div class="value">
                             <input type="text" name="Num" class="input-field" placeholder="請輸入掛號號碼">
@@ -132,11 +156,11 @@
         </div>
     </div>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             var datetimeInput = document.getElementById('MemoTime');
             var placeholder = document.getElementById('placeholder');
 
-            datetimeInput.addEventListener('input', function() {
+            datetimeInput.addEventListener('input', function () {
                 if (this.value) {
                     placeholder.style.display = 'none';
                 } else {
@@ -149,7 +173,7 @@
             var clinicSelect = document.getElementById('ClinicSelect');
             var otherClinicInput = document.getElementById('OtherClinic');
 
-            clinicSelect.addEventListener('change', function() {
+            clinicSelect.addEventListener('change', function () {
                 if (this.value === '其他') {
                     otherClinicInput.style.display = 'block';
                     otherClinicInput.required = true;
@@ -158,8 +182,34 @@
                     otherClinicInput.required = false;
                 }
             });
+
+            var locationSelect = document.getElementById('LocationSelect');
+            var otherLocationInput = document.getElementById('OtherLocation');
+
+            locationSelect.addEventListener('change', function () {
+                if (this.value === '其他') {
+                    otherLocationInput.style.display = 'block';
+                    otherLocationInput.required = true;
+                } else {
+                    otherLocationInput.style.display = 'none';
+                    otherLocationInput.required = false;
+                }
+            });
+
+            var doctorSelect = document.getElementById('DoctorSelect');
+            var otherDoctorInput = document.getElementById('OtherDoctor');
+
+            doctorSelect.addEventListener('change', function () {
+                if (this.value === '其他') {
+                    otherDoctorInput.style.display = 'block';
+                    otherDoctorInput.required = true;
+                } else {
+                    otherDoctorInput.style.display = 'none';
+                    otherDoctorInput.required = false;
+                }
+            });
         });
     </script>
-    </body>
+</body>
 
 </html>

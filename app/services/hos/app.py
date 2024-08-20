@@ -54,10 +54,46 @@ def hos_create_form():
 
     MainUsers.extend(additional_users)
 
+    MainUserIDs = [user[0] for user in MainUsers]
+
+    cursor.execute(
+        """
+        SELECT DISTINCT Location 
+        FROM `113-ntub113506`.Hos h 
+        JOIN `113-ntub113506`.Memo m ON h.MemoID = m.MemoID 
+        WHERE m.FamilyID IN (
+            SELECT FamilyID 
+            FROM `113-ntub113506`.Family 
+            WHERE MainUserID IN %s
+        ) AND Location != ""
+        GROUP BY Location
+        ORDER BY COUNT(Location) DESC
+        """, 
+        (tuple(MainUserIDs),)
+    )
+    Locations = [row[0] for row in cursor.fetchall()]
+
+    cursor.execute(
+        """
+        SELECT DISTINCT Doctor 
+        FROM `113-ntub113506`.Hos h 
+        JOIN `113-ntub113506`.Memo m ON h.MemoID = m.MemoID 
+        WHERE m.FamilyID IN (
+            SELECT FamilyID 
+            FROM `113-ntub113506`.Family 
+            WHERE MainUserID IN %s
+        ) AND Doctor != ""
+        GROUP BY Doctor
+        ORDER BY COUNT(Doctor) DESC
+        """, 
+        (tuple(MainUserIDs),)
+    )
+    Doctors = [row[0] for row in cursor.fetchall()]
+
     conn.commit()
     conn.close()
 
-    return render_template("/hos/hos_create_form.html", MainUsers=MainUsers)
+    return render_template("/hos/hos_create_form.html", MainUsers=MainUsers, Locations=Locations, Doctors=Doctors)
 
 
 # 新增
@@ -70,9 +106,14 @@ def hos_create():
         Title = request.form.get("Title")
         MemoTime = request.form.get("MemoTime")
         Location = request.form.get("Location")
+        OtherLocation = request.form.get("OtherLocation")
+        LocationValue = OtherLocation if Location == "其他" else Location
         Doctor = request.form.get("Doctor")
+        OtherDoctor = request.form.get("OtherDoctor")
+        DoctorValue = OtherDoctor if Doctor == "其他" else Doctor
         Clinic = request.form.get("Clinic")
         OtherClinic = request.form.get("OtherClinic")
+        ClinicValue = OtherClinic if Clinic == "其他" else Clinic
         Num = request.form.get("Num")
         Cycle = request.form.get("Cycle")
         Alert = int(request.form.get("Alert", 0))
@@ -102,15 +143,13 @@ def hos_create():
         cursor.execute("SELECT MemoID FROM Memo ORDER BY MemoID DESC")
         MemoID = cursor.fetchone()[0]
 
-        ClinicValue = OtherClinic if Clinic == "其他" else Clinic
-
         cursor.execute(
             """
             INSERT INTO 
             Hos (MemoID, Location, Doctor, Clinic, Num) 
             VALUES (%s, %s, %s, %s, %s)
             """,
-            (MemoID, Location, Doctor, ClinicValue, Num),
+            (MemoID, LocationValue, DoctorValue, ClinicValue, Num),
         )
 
         conn.commit()
@@ -518,6 +557,7 @@ def hos_history():
 # 更改確認
 @hos_bp.route("/update/confirm")
 def hos_update_confirm():
+    MemID = session.get("MemID")
     MemoID = request.values.get("MemoID")
 
     connection = db.get_connection()
@@ -526,16 +566,16 @@ def hos_update_confirm():
     cursor.execute(
         """
         SELECT * FROM 
-        (select * from`113-ntub113506`.Memo Where MemoID = %s) m 
-        join 
-        (select * from `113-ntub113506`.`Hos`) e 
-        on e.MemoID = m.MemoID
+        (SELECT * FROM `113-ntub113506`.Memo WHERE MemoID = %s) m 
+        JOIN 
+        (SELECT * FROM `113-ntub113506`.`Hos`) e 
+        ON e.MemoID = m.MemoID
         """,
-        (MemoID),
+        (MemoID,),
     )
     data = cursor.fetchone()
 
-    connection.close()
+
 
     if data:
         department_list = [
@@ -544,7 +584,74 @@ def hos_update_confirm():
             "復健科", "呼吸內科", "耳鼻喉科", "一般內科", "精神科", ""
         ]
 
+        cursor.execute(
+            """
+            SELECT f.MainUserID, m.MemName
+            FROM `113-ntub113506`.Family f
+            JOIN `113-ntub113506`.Member m ON f.MainUserID = m.MemID
+            WHERE f.MainUserID = %s
+            """,
+            (MemID,),
+        )
+        MainUserInfo = cursor.fetchone()
+
+        MainUsers = []
+
+        if MainUserInfo:
+            MainUsers.append((MainUserInfo[0], MainUserInfo[1]))
+
+        cursor.execute(
+            """
+            SELECT m.MemID, m.MemName
+            FROM `113-ntub113506`.FamilyLink fl
+            JOIN `113-ntub113506`.Family f ON fl.FamilyID = f.FamilyID
+            JOIN `113-ntub113506`.Member m ON f.MainUserID = m.MemID
+            WHERE fl.SubUserID = %s
+            """,
+            (MemID,),
+        )
+        additional_users = cursor.fetchall()
+
+        MainUsers.extend(additional_users)
+
+        MainUserIDs = [user[0] for user in MainUsers]
+
+        cursor.execute(
+            """
+            SELECT DISTINCT Location 
+            FROM `113-ntub113506`.Hos h 
+            JOIN `113-ntub113506`.Memo m ON h.MemoID = m.MemoID 
+            WHERE m.FamilyID IN (
+                SELECT FamilyID 
+                FROM `113-ntub113506`.Family 
+                WHERE MainUserID IN %s
+            ) AND Location != ""
+            GROUP BY Location
+            ORDER BY COUNT(Location) DESC
+            """, 
+            (tuple(MainUserIDs),)
+        )
+        Locations = [row[0] for row in cursor.fetchall()]
+
+        cursor.execute(
+            """
+            SELECT DISTINCT Doctor 
+            FROM `113-ntub113506`.Hos h 
+            JOIN `113-ntub113506`.Memo m ON h.MemoID = m.MemoID 
+            WHERE m.FamilyID IN (
+                SELECT FamilyID 
+                FROM `113-ntub113506`.Family 
+                WHERE MainUserID IN %s
+            ) AND Doctor != ""
+            GROUP BY Doctor
+            ORDER BY COUNT(Doctor) DESC
+            """, 
+            (tuple(MainUserIDs),)
+        )
+        Doctors = [row[0] for row in cursor.fetchall()]
+
         department = data[13] if data[13] in department_list else "其他"
+    connection.close()
 
     if data:
         values = {
@@ -560,7 +667,7 @@ def hos_update_confirm():
             "Num": data[14],
         }
 
-    return render_template("/hos/hos_update_confirm.html", data=values)
+    return render_template("/hos/hos_update_confirm.html", data=values, Locations=Locations, Doctors=Doctors)
 
 
 # 更改
@@ -572,9 +679,14 @@ def hos_update():
         Title = request.form.get("Title")
         MemoTime = request.form.get("MemoTime")
         Location = request.form.get("Location")
+        OtherLocation = request.form.get("OtherLocation")
+        LocationValue = OtherLocation if Location == "其他" else Location
         Doctor = request.form.get("Doctor")
+        OtherDoctor = request.form.get("OtherDoctor")
+        DoctorValue = OtherDoctor if Doctor == "其他" else Doctor
         Clinic = request.form.get("Clinic")
         OtherClinic = request.form.get("OtherClinic")
+        ClinicValue = OtherClinic if Clinic == "其他" else Clinic
         Num = request.form.get("Num")
         Cycle = request.form.get("Cycle")
         Alert = int(request.form.get("Alert"))
@@ -591,15 +703,13 @@ def hos_update():
             (Title, MemoTime, EditorID, Cycle, Alert, MemoID),
         )
 
-        ClinicValue = OtherClinic if Clinic == "其他" else Clinic
-
         cursor.execute(
             """
             UPDATE Hos 
             SET Location = %s, Doctor = %s, Clinic = %s, Num = %s 
             WHERE MemoID = %s
             """,
-            (Location, Doctor, ClinicValue, Num, MemoID),
+            (LocationValue, DoctorValue, ClinicValue, Num, MemoID),
         )
 
         conn.commit()
@@ -609,7 +719,7 @@ def hos_update():
         send_time = datetime.strptime(MemoTime, "%Y-%m-%dT%H:%M")
         reminder_time = send_time - timedelta(minutes=Alert)
 
-        if scheduler.get_job(MemoID) != None:
+        if scheduler.get_job(MemoID) is not None:
             scheduler.modify_job(
                 MemoID,
                 trigger="date",
@@ -637,7 +747,7 @@ def hos_update():
             "/schedule/result.html",
             schedule="hos",
             list="list",
-            Title="編輯回診資料成功",
+            Title="編輯回診資料失敗",
             img="F_update",
         )
 
