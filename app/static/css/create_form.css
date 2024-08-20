@@ -422,6 +422,16 @@ input[type="time"]:valid::-webkit-datetime-edit {
     margin-top: 26px;
 }
 
+select {
+    color: gray;
+}
+select option {
+    color: gray;
+}
+select option:first-child {
+    color: gray;
+}
+
 /* ------------------- */
 /* Media Queries       */
 /* ------------------- */

@@ -2,8 +2,10 @@
 <html lang="zh-Hant">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8" name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <!-- <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Satisfy&display=swap" rel="stylesheet">
@@ -31,12 +33,16 @@
         </div>
 
         {% for item in items %}
-        <h3 class="item-title" onclick="toggleImage('{{ loop.index0 }}')">{{ item.name }}</h3>
-        <button id="share-btn-{{ loop.index0 }}" class="share-btn"
-            onclick="shareImage('{{ url_for('static', filename='imgs/health/' + item.image) }}')">分享圖片</button>
+        <h3 class="item-title" onclick="toggleImage('{{ loop.index0 }}')">
+            {{ item.name }}
+            <i id="caret-{{ loop.index0 }}" class="fa-solid fa-caret-down"></i>
+        </h3>
+        <div class="title-underline"></div>
         <img id="image-{{ loop.index0 }}" class="item-image"
             src="{{ url_for('static', filename='imgs/health/' + item.image) }}" alt="{{ item.name }}"
             onclick="enlargeImage(this)">
+        <button id="share-btn-{{ loop.index0 }}" class="share-btn"
+            onclick="shareImage('{{ url_for('static', filename='imgs/health/' + item.image) }}')">分享圖片</button>
         {% endfor %}
     </div>
     <div id="overlay" class="overlay" onclick="closeImage()"></div>
@@ -103,6 +109,25 @@
                     console.log('圖片下載失敗', error);
                 });
         }
+
+        function toggleImage(index) {
+            var image = document.getElementById('image-' + index);
+            var caret = document.getElementById('caret-' + index);
+            var shareButton = document.getElementById('share-btn-' + index);
+            
+            if (image.style.display === 'none' || image.style.display === '') {
+                image.style.display = 'block';
+                shareButton.style.display = 'inline-block';
+                caret.classList.remove('fa-caret-down');
+                caret.classList.add('fa-caret-up');
+            } else {
+                image.style.display = 'none';
+                shareButton.style.display = 'none';
+                caret.classList.remove('fa-caret-up');
+                caret.classList.add('fa-caret-down');
+            }
+        }
+
     </script>
 </body>
 
