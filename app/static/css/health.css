@@ -157,6 +157,10 @@ div.content h1 {
     display: block;
 }
 
+.share-btn {
+    display: none;
+    margin-top: 10px;
+}
 
 @media (min-width: 576px) {
     /* For devices >= 576px */

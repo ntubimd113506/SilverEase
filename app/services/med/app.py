@@ -243,7 +243,7 @@ def send_line_message(MemoID, cnt=0, got=False, time_type="MemoTime"):
         )
 
         body1 = TextSendMessage(
-            text=f"{MainUserName}長者尚未收到此用藥通知\n請儘速與長者聯繫\n\n📌標題: {Title}\n💊",
+            text=f"{MainUserName}長者尚未收到此用藥通知\n請儘速與長者聯繫\n\n💊標題: {Title}\n",
         )
 
         conn = db.get_connection()

@@ -17,10 +17,6 @@
         <h1>SilverEase</h1>
     </div>
 
-
-    <!-- <h2>{{ title }}</h2> -->
-
-    <!-- <a href="{{ url_for('health_bp.health') }}">返回主頁</a> -->
     <i id="menu-bar" class="fa-solid fa-house"></i>
     <div class="navbar">
         <ul id="navigation" class="nav">
@@ -28,15 +24,16 @@
         </ul>
     </div>
 
-
     <div class="content">
-        
+
         <div class="title-container">
             <h1 class="content-header">{{ title }}</h1>
         </div>
 
         {% for item in items %}
         <h3 class="item-title" onclick="toggleImage('{{ loop.index0 }}')">{{ item.name }}</h3>
+        <button id="share-btn-{{ loop.index0 }}" class="share-btn"
+            onclick="shareImage('{{ url_for('static', filename='imgs/health/' + item.image) }}')">分享圖片</button>
         <img id="image-{{ loop.index0 }}" class="item-image"
             src="{{ url_for('static', filename='imgs/health/' + item.image) }}" alt="{{ item.name }}"
             onclick="enlargeImage(this)">
@@ -47,11 +44,18 @@
     <script>
         function toggleImage(index) {
             var image = document.getElementById('image-' + index);
+            var shareButton = document.getElementById('share-btn-' + index);
+            var saveButton = document.getElementById('save-btn-' + index);
             var overlay = document.getElementById('overlay');
+
             if (image.style.display === 'none' || image.style.display === '') {
                 image.style.display = 'block';
+                shareButton.style.display = 'inline-block';
+                saveButton.style.display = 'inline-block';
             } else {
                 image.style.display = 'none';
+                shareButton.style.display = 'none';
+                saveButton.style.display = 'none';
                 overlay.classList.remove('active');
             }
         }
@@ -74,6 +78,30 @@
                 enlargedImage.classList.remove('enlarged');
             }
             overlay.classList.remove('active');
+        }
+
+        function shareImage(imageUrl) {
+            fetch(imageUrl)
+                .then(res => res.blob())
+                .then(blob => {
+                    const file = new File([blob], 'image.jpg', { type: blob.type });
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        navigator.share({
+                            files: [file],
+                            title: '{{ title }}',
+                            text: '快來看看這張圖片：'
+                        }).then(() => {
+                            console.log('圖片已分享');
+                        }).catch((error) => {
+                            console.log('分享失敗', error);
+                        });
+                    } else {
+                        alert('您的設備不支援分享圖片。');
+                    }
+                })
+                .catch(error => {
+                    console.log('圖片下載失敗', error);
+                });
         }
     </script>
 </body>
