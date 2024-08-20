@@ -159,7 +159,7 @@ div.content h1 {
 .share-btn {
     display: none;
     margin-top: 10px;
-    background-color: #9FB889;
+    background-color: #809f68;
     color: #ffffff; 
     font-size: 16px;
     border-radius: 20px;
@@ -174,9 +174,8 @@ div.content h1 {
     align-items: center; 
 }
 
-
 .title-underline {
-    border-bottom: 1px solid #000 !important;
+    border-bottom: 1px solid #9a9a9a !important;
     margin-top: 5px !important;
     margin-bottom: 15px;
 }
@@ -190,7 +189,28 @@ div.content h1 {
 
 .item-title i {
     margin-left: 10px; 
-    font-size: 20px; 
+    font-size: 18px; 
+    color: #494949;
+}
+
+.form{
+    background-color: #f7f7f7;
+    border-radius: 8px; 
+    padding-left: 6px;
+    padding-right: 6px;
+    padding-top: 8px;
+    padding-bottom: 5px;
+}
+
+.form h3{
+    color: #313131;
+    font-weight: 600;
+    margin-right: 5px;
+    font-size: 1.17em;
+    margin-block-start: 10px;
+    margin-block-end: 10px;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
 }
 
 @media (min-width: 576px) {

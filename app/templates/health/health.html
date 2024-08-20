@@ -31,19 +31,20 @@
         <div class="title-container">
             <h1 class="content-header">{{ title }}</h1>
         </div>
-
-        {% for item in items %}
-        <h3 class="item-title" onclick="toggleImage('{{ loop.index0 }}')">
-            {{ item.name }}
-            <i id="caret-{{ loop.index0 }}" class="fa-solid fa-caret-down"></i>
-        </h3>
-        <div class="title-underline"></div>
-        <img id="image-{{ loop.index0 }}" class="item-image"
-            src="{{ url_for('static', filename='imgs/health/' + item.image) }}" alt="{{ item.name }}"
-            onclick="enlargeImage(this)">
-        <button id="share-btn-{{ loop.index0 }}" class="share-btn"
-            onclick="shareImage('{{ url_for('static', filename='imgs/health/' + item.image) }}')">分享圖片</button>
-        {% endfor %}
+        <div class="form">
+            {% for item in items %}
+            <h3 class="item-title" onclick="toggleImage('{{ loop.index0 }}')">
+                {{ item.name }}
+                <i id="caret-{{ loop.index0 }}" class="fa-solid fa-caret-down"></i>
+            </h3>
+            <div class="title-underline"></div>
+            <img id="image-{{ loop.index0 }}" class="item-image"
+                src="{{ url_for('static', filename='imgs/health/' + item.image) }}" alt="{{ item.name }}"
+                onclick="enlargeImage(this)">
+            <button id="share-btn-{{ loop.index0 }}" class="share-btn"
+                onclick="shareImage('{{ url_for('static', filename='imgs/health/' + item.image) }}')">分享圖片</button>
+            {% endfor %}
+        </div>
     </div>
     <div id="overlay" class="overlay" onclick="closeImage()"></div>
 
