@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
-    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta charset="utf-8" name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>{{ data.Title }}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
     <link href="/static/css/graph.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
@@ -18,45 +21,56 @@
                 {% if not is_all %}
                 <select id="MainUserID" name="MainUserID" class="MainUserID" onchange="updateMainUserID()">
                     {% for user in MainUsers %}
-                        {% if Whose == user[0] %}
-                            <option value="{{ user[0] }}" selected>{{ user[1] }}</option>
-                        {% else %} 
-                            <option value="{{ user[0] }}">{{ user[1] }}</option>
-                        {% endif %}
+                    {% if Whose == user[0] %}
+                    <option value="{{ user[0] }}" selected>{{ user[1] }}</option>
+                    {% else %}
+                    <option value="{{ user[0] }}">{{ user[1] }}</option>
+                    {% endif %}
                     {% endfor %}
                 </select>
                 {% endif %}
-                
+
                 {{ data.analyze }}
             </h1>
         </div>
     </div>
-    
+
     {% if not is_all and not data.DataAnalyze %}
-        <div class="no-access">
-            <div class="no-access-content">
-                <i class="fa-solid fa-triangle-exclamation"></i>
-                <span>目前無權限</span>
-            </div>
-            <a href="/set/access/check">點此設定</a>
+    {% if data.show_full_no_access %}
+    <div class="no-access">
+        <div class="no-access-content">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span>目前無權限</span>
         </div>
+        <a href="/set/access_index">點此設定</a>
+    </div>
     {% else %}
-        <div class="button-group">
-            {% for key, value in data.items() %}
-                {% if key != 'Title' and key != 'DataAnalyze' %}
-                    {% if value.url %}
-                        <a class="period-link {{ 'main-page-link' if value.name == '主頁' else 'weekly-link' if value.name == '當週' else 'other-link' }}" href="/analyze/{{ value.url }}">{{ value.name }}</a>
-                    {% endif %}
-                {% endif %}
-            {% endfor %}
+    <div class="no-access">
+        <div class="no-access-content">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span>目前無權限<br></span><br>
         </div>
-        <div id="buttonContainer"></div>
-        <div id="dateContainer"></div>
-        <div id="chartContainer"></div>
-        <script src="/static/js/Chart.bundle.js"></script>
-        <script src="/static/js/analyze.js"></script>
+        <p>如要查看分析請至長者本人裝置設定中開啟權限</p>
+    </div>
     {% endif %}
-    
+    {% else %}
+    <div class="button-group">
+        {% for key, value in data.items() %}
+        {% if key != 'Title' and key != 'DataAnalyze' %}
+        {% if value.url %}
+        <a class="period-link {{ 'main-page-link' if value.name == '主頁' else 'weekly-link' if value.name == '當週' else 'other-link' }}"
+            href="/analyze/{{ value.url }}">{{ value.name }}</a>
+        {% endif %}
+        {% endif %}
+        {% endfor %}
+    </div>
+    <div id="buttonContainer"></div>
+    <div id="dateContainer"></div>
+    <div id="chartContainer"></div>
+    <script src="/static/js/Chart.bundle.js"></script>
+    <script src="/static/js/analyze.js"></script>
+    {% endif %}
+
     <script>
         function updateMainUserID() {
             var mainUserID = document.getElementById('MainUserID').value;
@@ -67,10 +81,11 @@
                 },
                 body: JSON.stringify({ mainUserID: mainUserID })
             })
-            .then(response => {
-                location.reload();
-            });
+                .then(response => {
+                    location.reload();
+                });
         }
     </script>
 </body>
+
 </html>

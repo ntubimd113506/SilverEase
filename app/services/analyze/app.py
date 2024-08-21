@@ -4,16 +4,19 @@ from utils import db
 
 analyze_bp = Blueprint("analyze_bp", __name__)
 
-@analyze_bp.route('/update_main_user_id', methods=['POST'])
+
+@analyze_bp.route("/update_main_user_id", methods=["POST"])
 def update_main_user_id():
-    main_user_id = request.json.get('mainUserID')
-    session['MainUserID'] = main_user_id
-    return jsonify({'status': 'success'})
+    main_user_id = request.json.get("mainUserID")
+    session["MainUserID"] = main_user_id
+    return jsonify({"status": "success"})
+
 
 def render_analyze_template(title, analyze, is_all=True):
     MemID = session.get("MemID")
     MainUser = session.get("MainUserID")
     DataAnalyze = True
+    show_full_no_access = False
 
     conn = db.get_connection()
     cursor = conn.cursor()
@@ -22,13 +25,19 @@ def render_analyze_template(title, analyze, is_all=True):
         cursor.execute(
             """
             SELECT m.MemID, m.MemName, IFNULL(a.DataAnalyze, 0)
+            FROM `113-ntub113506`.Family f
+            JOIN `113-ntub113506`.Member m ON f.MainUserID = m.MemID
+            LEFT JOIN `113-ntub113506`.Access a ON f.FamilyID = a.FamilyID
+            WHERE f.MainUserID = %s
+            UNION
+            SELECT m.MemID, m.MemName, IFNULL(a.DataAnalyze, 0)
             FROM `113-ntub113506`.FamilyLink fl
             JOIN `113-ntub113506`.Family f ON fl.FamilyID = f.FamilyID
             JOIN `113-ntub113506`.Member m ON f.MainUserID = m.MemID
             LEFT JOIN `113-ntub113506`.Access a ON f.FamilyID = a.FamilyID
             WHERE fl.SubUserID = %s
             """,
-            (MemID,),
+            (MemID, MemID),
         )
         MainUsers = cursor.fetchall()
 
@@ -37,6 +46,7 @@ def render_analyze_template(title, analyze, is_all=True):
                 """
                 SELECT m.MemID, m.MemName, IFNULL(a.DataAnalyze, 0) 
                 FROM `113-ntub113506`.Member m
+                LEFT JOIN `113-ntub113506`.Family f ON f.MainUserID = m.MemID
                 LEFT JOIN `113-ntub113506`.Access a ON f.FamilyID = a.FamilyID
                 WHERE m.MemID = %s
                 """,
@@ -50,81 +60,119 @@ def render_analyze_template(title, analyze, is_all=True):
                     DataAnalyze = user[2]
                     break
 
-    data_url = "all" if is_all else "mem"
+        if MainUser == MemID and not DataAnalyze:
+            show_full_no_access = True
+
     data = {
         "Title": title,
         "analyze": analyze,
-        "All": {"url": "all_weekly", "name": "週報"} if not is_all else {"url": "mem_weekly", "name": "主頁"},
-        "weekly": {"url": f"{data_url}_weekly", "name": "週"},
-        "monthly": {"url": f"{data_url}_monthly", "name": "月"},
-        "yearly": {"url": f"{data_url}_yearly", "name": "年"},
+        "All": (
+            {"url": "all_weekly", "name": "週報"}
+            if not is_all
+            else {"url": "mem_weekly", "name": "主頁"}
+        ),
+        "weekly": {"url": f"{'all' if is_all else 'mem'}_weekly", "name": "週"},
+        "monthly": {"url": f"{'all' if is_all else 'mem'}_monthly", "name": "月"},
+        "yearly": {"url": f"{'all' if is_all else 'mem'}_yearly", "name": "年"},
         "DataAnalyze": DataAnalyze,
+        "show_full_no_access": show_full_no_access,
     }
-    return render_template("/analyze/analyze.html", data=data, MainUsers=MainUsers, Whose=MainUser, is_all=is_all)
+    return render_template(
+        "/analyze/analyze.html",
+        data=data,
+        MainUsers=MainUsers,
+        Whose=MainUser,
+        is_all=is_all,
+    )
+
 
 def register_routes():
     analysis_routes = [
-        ('all_weekly', '全體資料彙整', '當週全體分析', True),
-        ('all_monthly', '全體資料彙整', '當月全體分析', True),
-        ('all_yearly', '全體資料彙整', '當年全體分析', True),
-        ('mem_weekly', '個人資料彙整', '當週個人分析', False),
-        ('mem_monthly', '個人資料彙整', '當月個人分析', False),
-        ('mem_yearly', '個人資料彙整', '當年個人分析', False),
-        ('all_weekly_prev', '全體資料彙整', '上週全體分析', True),
-        ('all_monthly_prev', '全體資料彙整', '上個月全體分析', True),
-        ('all_yearly_prev', '全體資料彙整', '去年全體分析', True),
-        ('mem_weekly_prev', '個人資料彙整', '上週個人分析', False),
-        ('mem_monthly_prev', '個人資料彙整', '上個月個人分析', False),
-        ('mem_yearly_prev', '個人資料彙整', '去年個人分析', False),
+        ("all_weekly", "全體資料彙整", "當週全體分析", True),
+        ("all_monthly", "全體資料彙整", "當月全體分析", True),
+        ("all_yearly", "全體資料彙整", "當年全體分析", True),
+        ("mem_weekly", "個人資料彙整", "當週個人分析", False),
+        ("mem_monthly", "個人資料彙整", "當月個人分析", False),
+        ("mem_yearly", "個人資料彙整", "當年個人分析", False),
+        ("all_weekly_prev", "全體資料彙整", "上週全體分析", True),
+        ("all_monthly_prev", "全體資料彙整", "上個月全體分析", True),
+        ("all_yearly_prev", "全體資料彙整", "去年全體分析", True),
+        ("mem_weekly_prev", "個人資料彙整", "上週個人分析", False),
+        ("mem_monthly_prev", "個人資料彙整", "上個月個人分析", False),
+        ("mem_yearly_prev", "個人資料彙整", "去年個人分析", False),
     ]
 
     data_routes = [
-        ('all_weekly_data', 'weekly', True, False),
-        ('all_monthly_data', 'monthly', True, False),
-        ('all_yearly_data', 'yearly', True, False),
-        ('mem_weekly_data', 'weekly', False, False),
-        ('mem_monthly_data', 'monthly', False, False),
-        ('mem_yearly_data', 'yearly', False, False),
-        ('all_prev_weekly_data', 'weekly', True, True),
-        ('all_prev_monthly_data', 'monthly', True, True),
-        ('all_prev_yearly_data', 'yearly', True, True),
-        ('mem_prev_weekly_data', 'weekly', False, True),
-        ('mem_prev_monthly_data', 'monthly', False, True),
-        ('mem_prev_yearly_data', 'yearly', False, True),
+        ("all_weekly_data", "weekly", True, False),
+        ("all_monthly_data", "monthly", True, False),
+        ("all_yearly_data", "yearly", True, False),
+        ("mem_weekly_data", "weekly", False, False),
+        ("mem_monthly_data", "monthly", False, False),
+        ("mem_yearly_data", "yearly", False, False),
+        ("all_prev_weekly_data", "weekly", True, True),
+        ("all_prev_monthly_data", "monthly", True, True),
+        ("all_prev_yearly_data", "yearly", True, True),
+        ("mem_prev_weekly_data", "weekly", False, True),
+        ("mem_prev_monthly_data", "monthly", False, True),
+        ("mem_prev_yearly_data", "yearly", False, True),
     ]
 
     for route, title, analyze, is_all in analysis_routes:
         view_func = (
-            lambda title=title, analyze=analyze, is_all=is_all: render_analyze_template(title, analyze, is_all)
+            lambda title=title, analyze=analyze, is_all=is_all: render_analyze_template(
+                title, analyze, is_all
+            )
         )
         view_func.__name__ = route
-        analyze_bp.route(f"/{route}")(login_required(view_func) if not is_all else view_func)
+        analyze_bp.route(f"/{route}")(
+            login_required(view_func) if not is_all else view_func
+        )
 
     for route, period, is_all, prev_period in data_routes:
-        view_func = (
-            lambda period=period, is_all=is_all, prev_period=prev_period: (
-                jsonify(fetch_period_data(period, None, prev_period) if is_all else fetch_member_data(period, prev_period))
+        view_func = lambda period=period, is_all=is_all, prev_period=prev_period: (
+            jsonify(
+                fetch_period_data(period, None, prev_period)
+                if is_all
+                else fetch_member_data(period, prev_period)
             )
         )
         view_func.__name__ = route
         analyze_bp.route(f"/{route}")(login_required(view_func))
 
+
 register_routes()
 
-def fetch_data(cursor, period='weekly', FamilyID=None, prev_period=False):
+
+def fetch_data(cursor, period="weekly", FamilyID=None, prev_period=False):
     family_condition = "AND l.FamilyID = %s" if FamilyID else ""
     family_param = (FamilyID,) if FamilyID else ()
 
     period_condition = {
-        'weekly': 'WEEK(l.LocationTime, 1) = WEEK(CURRENT_DATE, 1) - 1' if prev_period else 'WEEK(l.LocationTime, 1) = WEEK(CURRENT_DATE, 1)',
-        'monthly': 'MONTH(l.LocationTime) = MONTH(CURRENT_DATE) - 1' if prev_period else 'MONTH(l.LocationTime) = MONTH(CURRENT_DATE)',
-        'yearly': 'YEAR(l.LocationTime) = YEAR(CURRENT_DATE) - 1' if prev_period else 'YEAR(l.LocationTime) = YEAR(CURRENT_DATE)',
+        "weekly": (
+            "WEEK(l.LocationTime, 1) = WEEK(CURRENT_DATE, 1) - 1"
+            if prev_period
+            else "WEEK(l.LocationTime, 1) = WEEK(CURRENT_DATE, 1)"
+        ),
+        "monthly": (
+            "MONTH(l.LocationTime) = MONTH(CURRENT_DATE) - 1"
+            if prev_period
+            else "MONTH(l.LocationTime) = MONTH(CURRENT_DATE)"
+        ),
+        "yearly": (
+            "YEAR(l.LocationTime) = YEAR(CURRENT_DATE) - 1"
+            if prev_period
+            else "YEAR(l.LocationTime) = YEAR(CURRENT_DATE)"
+        ),
     }[period]
 
-    day_last_day = 'DAY(LAST_DAY(DATE_SUB(NOW(), INTERVAL 1 MONTH)))' if prev_period else 'DAY(LAST_DAY(NOW()))'
+    day_last_day = (
+        "DAY(LAST_DAY(DATE_SUB(NOW(), INTERVAL 1 MONTH)))"
+        if prev_period
+        else "DAY(LAST_DAY(NOW()))"
+    )
 
     query_templates = {
-        'weekly': """
+        "weekly": """
             WITH RECURSIVE Days AS (
                 SELECT 1 AS n
                 UNION ALL
@@ -147,7 +195,7 @@ def fetch_data(cursor, period='weekly', FamilyID=None, prev_period=False):
                 GROUP BY n
             ) Weekly ON Days.n = Weekly.n;
         """,
-        'monthly': f"""
+        "monthly": f"""
             WITH RECURSIVE Days AS (
                 SELECT 1 AS n
                 UNION ALL
@@ -184,7 +232,7 @@ def fetch_data(cursor, period='weekly', FamilyID=None, prev_period=False):
             GROUP BY Periods.period, Periods.start_day, Periods.end_day
             ORDER BY Periods.period;
         """,
-        'yearly': """
+        "yearly": """
             WITH RECURSIVE Months AS (
                 SELECT 1 AS n
                 UNION ALL
@@ -206,10 +254,15 @@ def fetch_data(cursor, period='weekly', FamilyID=None, prev_period=False):
                 GROUP BY n
             ) Yearly ON Months.n = Yearly.n
             ORDER BY Months.n;
-        """
+        """,
     }
 
-    cursor.execute(query_templates[period].format(family_condition=family_condition, period_condition=period_condition), family_param)
+    cursor.execute(
+        query_templates[period].format(
+            family_condition=family_condition, period_condition=period_condition
+        ),
+        family_param,
+    )
     SOSdata = cursor.fetchall()
 
     cursor.execute(
@@ -262,14 +315,20 @@ def fetch_data(cursor, period='weekly', FamilyID=None, prev_period=False):
     )
     SOSPlacedata = cursor.fetchall()
 
-    return {"SOSdata": SOSdata, "SOSTypedata": SOSTypedata, "SOSPlacedata": SOSPlacedata}
+    return {
+        "SOSdata": SOSdata,
+        "SOSTypedata": SOSTypedata,
+        "SOSPlacedata": SOSPlacedata,
+    }
+
 
 def fetch_period_data(period, FamilyID=None, prev_period=False):
     with db.get_connection() as conn:
         cursor = conn.cursor()
         return fetch_data(cursor, period, FamilyID, prev_period)
 
-def fetch_member_data(period='weekly', prev_period=False):
+
+def fetch_member_data(period="weekly", prev_period=False):
     MainUserID = session.get("MainUserID")
 
     if MainUserID:

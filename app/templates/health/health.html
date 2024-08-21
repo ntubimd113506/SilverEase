@@ -2,8 +2,10 @@
 <html lang="zh-Hant">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8" name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <!-- <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Satisfy&display=swap" rel="stylesheet">
@@ -17,10 +19,6 @@
         <h1>SilverEase</h1>
     </div>
 
-
-    <!-- <h2>{{ title }}</h2> -->
-
-    <!-- <a href="{{ url_for('health_bp.health') }}">返回主頁</a> -->
     <i id="menu-bar" class="fa-solid fa-house"></i>
     <div class="navbar">
         <ul id="navigation" class="nav">
@@ -28,30 +26,43 @@
         </ul>
     </div>
 
-
     <div class="content">
-        
+
         <div class="title-container">
             <h1 class="content-header">{{ title }}</h1>
         </div>
-
-        {% for item in items %}
-        <h3 class="item-title" onclick="toggleImage('{{ loop.index0 }}')">{{ item.name }}</h3>
-        <img id="image-{{ loop.index0 }}" class="item-image"
-            src="{{ url_for('static', filename='imgs/health/' + item.image) }}" alt="{{ item.name }}"
-            onclick="enlargeImage(this)">
-        {% endfor %}
+        <div class="form">
+            {% for item in items %}
+            <h3 class="item-title" onclick="toggleImage('{{ loop.index0 }}')">
+                {{ item.name }}
+                <i id="caret-{{ loop.index0 }}" class="fa-solid fa-caret-down"></i>
+            </h3>
+            <div class="title-underline"></div>
+            <img id="image-{{ loop.index0 }}" class="item-image"
+                src="{{ url_for('static', filename='imgs/health/' + item.image) }}" alt="{{ item.name }}"
+                onclick="enlargeImage(this)">
+            <button id="share-btn-{{ loop.index0 }}" class="share-btn"
+                onclick="shareImage('{{ url_for('static', filename='imgs/health/' + item.image) }}')">分享圖片</button>
+            {% endfor %}
+        </div>
     </div>
     <div id="overlay" class="overlay" onclick="closeImage()"></div>
 
     <script>
         function toggleImage(index) {
             var image = document.getElementById('image-' + index);
+            var shareButton = document.getElementById('share-btn-' + index);
+            var saveButton = document.getElementById('save-btn-' + index);
             var overlay = document.getElementById('overlay');
+
             if (image.style.display === 'none' || image.style.display === '') {
                 image.style.display = 'block';
+                shareButton.style.display = 'inline-block';
+                saveButton.style.display = 'inline-block';
             } else {
                 image.style.display = 'none';
+                shareButton.style.display = 'none';
+                saveButton.style.display = 'none';
                 overlay.classList.remove('active');
             }
         }
@@ -75,6 +86,49 @@
             }
             overlay.classList.remove('active');
         }
+
+        function shareImage(imageUrl) {
+            fetch(imageUrl)
+                .then(res => res.blob())
+                .then(blob => {
+                    const file = new File([blob], 'image.jpg', { type: blob.type });
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        navigator.share({
+                            files: [file],
+                            title: '{{ title }}',
+                            text: '快來看看這張圖片：'
+                        }).then(() => {
+                            console.log('圖片已分享');
+                        }).catch((error) => {
+                            console.log('分享失敗', error);
+                        });
+                    } else {
+                        alert('您的設備不支援分享圖片。');
+                    }
+                })
+                .catch(error => {
+                    console.log('圖片下載失敗', error);
+                });
+        }
+
+        function toggleImage(index) {
+            var image = document.getElementById('image-' + index);
+            var caret = document.getElementById('caret-' + index);
+            var shareButton = document.getElementById('share-btn-' + index);
+            
+            if (image.style.display === 'none' || image.style.display === '') {
+                image.style.display = 'block';
+                shareButton.style.display = 'inline-block';
+                caret.classList.remove('fa-caret-down');
+                caret.classList.add('fa-caret-up');
+            } else {
+                image.style.display = 'none';
+                shareButton.style.display = 'none';
+                caret.classList.remove('fa-caret-up');
+                caret.classList.add('fa-caret-down');
+            }
+        }
+
     </script>
 </body>
 

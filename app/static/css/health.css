@@ -5,12 +5,15 @@ body {
     touch-action: manipulation;
     font-family: 'Noto Sans TC', sans-serif;
     padding-bottom: 20px;
-    padding-bottom: env(safe-area-inset-bottom);
-    padding-bottom: constant(safe-area-inset-bottom);
     margin: 0;
     padding: 0;
     background-color: #F2F0EE;
-
+    overflow-x: hidden;
+    padding-bottom: 20px;
+    overflow-x: hidden;
+    padding-bottom: constant(safe-area-inset-bottom);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-bottom: calc(30px + env(safe-area-inset-bottom));
 }
 
 div.header {
@@ -56,16 +59,12 @@ ul {
 ul li {
     line-height: 40px;
     float: left;
-    /* 字變水平*/
     width: 75px;
-    /* 字之間的距離區塊*/
     text-align: center;
-
 }
 
 div.navbar a {
     text-decoration: none;
-    /* 連結底線拿掉*/
     color: #000000;
 }
 
@@ -157,6 +156,62 @@ div.content h1 {
     display: block;
 }
 
+.share-btn {
+    display: none;
+    margin-top: 10px;
+    background-color: #809f68;
+    color: #ffffff; 
+    font-size: 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    text-align: center;
+    border: none;
+    font-weight: 700;
+    margin-bottom: 10px;
+    height: 33px;
+    width: 100px;
+    justify-content: center; 
+    align-items: center; 
+}
+
+.title-underline {
+    border-bottom: 1px solid #9a9a9a !important;
+    margin-top: 5px !important;
+    margin-bottom: 15px;
+}
+
+.item-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+.item-title i {
+    margin-left: 10px; 
+    font-size: 18px; 
+    color: #494949;
+}
+
+.form{
+    background-color: #f7f7f7;
+    border-radius: 8px; 
+    padding-left: 6px;
+    padding-right: 6px;
+    padding-top: 8px;
+    padding-bottom: 5px;
+}
+
+.form h3{
+    color: #313131;
+    font-weight: 600;
+    margin-right: 5px;
+    font-size: 1.17em;
+    margin-block-start: 10px;
+    margin-block-end: 10px;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+}
 
 @media (min-width: 576px) {
     /* For devices >= 576px */

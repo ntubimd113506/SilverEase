@@ -243,7 +243,7 @@ def send_line_message(MemoID, cnt=0, got=False, time_type="MemoTime"):
         )
 
         body1 = TextSendMessage(
-            text=f"{MainUserName}長者尚未收到此用藥通知\n請儘速與長者聯繫\n\n📌標題: {Title}\n💊",
+            text=f"{MainUserName}長者尚未收到此用藥通知\n請儘速與長者聯繫\n\n💊標題: {Title}\n",
         )
 
         conn = db.get_connection()
@@ -265,15 +265,17 @@ def send_line_message(MemoID, cnt=0, got=False, time_type="MemoTime"):
                 )
                 conn.commit()
 
-            if time_type== "MemoTime":
+            if time_type == "MemoTime":
                 next_time = data["MemoTime"] + timedelta(days=1)
-            elif time_type== "SecondTime":
+            elif time_type == "SecondTime":
                 next_time = datetime.strptime(
-                    f"{data['MemoTime'].strftime('%Y-%m-%d')} {data['SecondTime']}", "%Y-%m-%d %H:%M:%S"
+                    f"{data['MemoTime'].strftime('%Y-%m-%d')} {data['SecondTime']}",
+                    "%Y-%m-%d %H:%M:%S",
                 )
-            elif time_type== "ThirdTime":
+            elif time_type == "ThirdTime":
                 next_time = datetime.strptime(
-                    f"{data['MemoTime'].strftime('%Y-%m-%d')} {data['ThirdTime']}", "%Y-%m-%d %H:%M:%S"
+                    f"{data['MemoTime'].strftime('%Y-%m-%d')} {data['ThirdTime']}",
+                    "%Y-%m-%d %H:%M:%S",
                 )
 
             if data["EndDate"] and data["EndDate"] < next_time:
@@ -305,9 +307,9 @@ def send_line_message(MemoID, cnt=0, got=False, time_type="MemoTime"):
             run_date=reminder_time,
             args=[MemoID, cnt, got, time_type],
         )
-    except Exception as e:
-        print(f"發生錯誤: {e}")
+    except:
         pass
+
 
 # 查詢
 @med_bp.route("/list")
