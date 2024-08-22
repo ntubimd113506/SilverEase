@@ -1,6 +1,10 @@
 /* ------------------- */
 /* html, body          */
 /* ------------------- */
+html{
+    overflow-x: hidden;
+}
+
 html, body{
     touch-action: manipulation;
     font-family: 'Noto Sans TC', sans-serif;
