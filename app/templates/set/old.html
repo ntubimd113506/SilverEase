@@ -40,7 +40,8 @@
                         <span class="value">
                             <input class="output" type="text" id='number' value="{{code_id}}" readonly>
                             <button class="btn" type="button" onclick="copy()">
-                                <img class="btn" src="/static/imgs/copy.png" alt="copy" id="share" onclick="shareCode()"></button>
+                                <img class="btn" src="/static/imgs/copy.png" alt="copy" id="share"
+                                    onclick="shareCode()"></button>
                         </span>
                         <br />
                         <script>
@@ -67,19 +68,42 @@
     });
 
     liff.init({ liffId: '{{liffid}}' })
-    
-    function shareCode(){
+
+    function shareCode() {
         liff.shareTargetPicker(
             [
                 {
-                    type: "text",
-                    text: "您的長輩邀請您加入照顧他的行列!\n點擊連結加入：https://liff.line.me/2004699458-OR9pkZjP/set/join_family/{{code_id}}",
-                },
+                    "type": "template",
+                    "altText": "加入家庭群組邀請",
+                    "template": {
+                        "type": "buttons",
+                        "thumbnailImageUrl": "https://silverease.ntub.edu.tw/static/imgs/family.png",
+                        "imageAspectRatio": "square",
+                        "imageSize": "cover",
+                        "imageBackgroundColor": "#FFFFFF",
+                        "title": "加入家庭群組",
+                        "text": "點擊下方按鈕加入家庭群組",
+                        "defaultAction": {
+                            "type": "uri",
+                            "label": "查看詳情",
+                            "uri": "https://liff.line.me/2004699458-OR9pkZjP/set/join_family/{{code_id}}"
+                        },
+                        "actions": [
+                            {
+                                "type": "uri",
+                                "label": "立即加入",
+                                "uri": "https://liff.line.me/2004699458-OR9pkZjP/set/join_family/{{code_id}}"
+                            }
+                        ]
+                    }
+                }
             ],
             {
                 isMultiple: true,
-            })
+            }
+        )
     }
+
 
 </script>
 
