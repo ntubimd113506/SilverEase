@@ -65,7 +65,7 @@ def check():
         latest_location = cursor.fetchone()
     else:
         latest_location = None
-    
+
     cursor.close()
     conn.close()
 
@@ -76,9 +76,22 @@ def check():
 @gps_bp.route('/foot', methods=['POST'])
 def foot():
     MainUserID = request.form.get("MainUserID")
+    conn = db.get_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT MemName FROM `113-ntub113506`.Member WHERE MemID = %s', (MainUserID,))
+    result = cursor.fetchone()
 
-    return render_template('/GPS/my_map.html', MainUserID = MainUserID)
+    if result:
+        name = result[0]
+    else:
+        name = "未知用戶"
     
+    cursor.close()
+    conn.close()
+    
+    return render_template('GPS/my_map.html', MainUserID=MainUserID, name=name)
+
+
 @gps_bp.route('/road', methods=['GET'])
 def road():
     try:
