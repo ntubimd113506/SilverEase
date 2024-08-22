@@ -78,17 +78,17 @@ div.content {
 .title-container {
     width: 100%;
     margin: 0 auto;
+    text-align: center;
 }
 
-.title-container .content-header {
-    color: #000000;
-    font-size: 30px;
-    letter-spacing: 5px;
-    width: 100%;
-    text-align: left;
-    margin-top: 30px;
-    margin-bottom: 35px;
+.content-header-image {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    display: inline-block;
+    margin-bottom: 20px;
 }
+
 
 div.content h1 {
     font-size: 30px;
@@ -160,7 +160,7 @@ div.content h1 {
     display: none;
     margin-top: 10px;
     background-color: #809f68;
-    color: #ffffff; 
+    color: #ffffff;
     font-size: 16px;
     border-radius: 20px;
     cursor: pointer;
@@ -170,8 +170,8 @@ div.content h1 {
     margin-bottom: 10px;
     height: 33px;
     width: 100px;
-    justify-content: center; 
-    align-items: center; 
+    justify-content: center;
+    align-items: center;
 }
 
 .title-underline {
@@ -188,29 +188,33 @@ div.content h1 {
 }
 
 .item-title i {
-    margin-left: 10px; 
-    font-size: 18px; 
+    margin-left: 10px;
+    font-size: 18px;
     color: #494949;
 }
 
-.form{
+.form {
     background-color: #f7f7f7;
-    border-radius: 8px; 
-    padding-left: 6px;
-    padding-right: 6px;
-    padding-top: 8px;
-    padding-bottom: 5px;
+    border-radius: 8px;
+    padding: 1px 6px 5px;
 }
 
-.form h3{
+.form h3 {
     color: #313131;
     font-weight: 600;
     margin-right: 5px;
     font-size: 1.17em;
-    margin-block-start: 10px;
-    margin-block-end: 10px;
+    margin-block-start: 0px;
+    margin-block-end: 0px;
     margin-inline-start: 0px;
-    margin-inline-end: 0px;
+    margin-top: 21px;
+}
+
+.content-header-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    margin-bottom: 20px;
 }
 
 @media (min-width: 576px) {
@@ -254,7 +258,29 @@ div.content h1 {
     }
 }
 
-@media (min-width: 1200px) {}
+@media (min-width: 1200px) {
+    .title-underline {
+        border-bottom: 1px solid #000 !important;
+        margin-top: 5px !important;
+        margin-bottom: 15px;
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+
+    .item-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .item-title i {
+        margin-left: 10px;
+        font-size: 20px;
+    }
+}
 
 @media (min-width: 1400px) {
     #menu-bar {
@@ -270,4 +296,27 @@ div.content h1 {
         padding-left: 110px;
     }
 
+    .title-container,
+    .form {
+        margin-left: 0px;
+        padding-left: 0px;
+        width: 100%;
+        padding-right: 0px;
+    }
+
+    .title-underline {
+        margin-left: 0px !important;
+    }
+
+    .item-title {
+        padding-left: 5px;
+    }
+
+    .form {
+        background-color: #f7f7f7;
+        border-radius: 8px;
+        padding: 1px 6px 5px;
+        max-width: 1180px;
+        margin: 0 auto;
+    }
 }

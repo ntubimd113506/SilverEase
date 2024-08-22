@@ -125,7 +125,7 @@ def health_self():
         for symptom, count in sorted_symptom_counts
     ][:5]
 
-    return render_template("/health/health.html", title="個人推薦", items=image_items)
+    return render_template("/health/health.html", title="個人推薦", num = "A1", items=image_items)
 
 
 @health_bp.route("/<category>")
@@ -133,6 +133,7 @@ def health_category(category):
     data = {
         "death": {
             "title": "十大死因",
+            "num": "A2",
             "items": [
                 {"name": "惡性腫瘤(癌症)", "image": "D1.png"},
                 {"name": "心臟疾病", "image": "D2.png"},
@@ -148,6 +149,7 @@ def health_category(category):
         },
         "chronic": {
             "title": "十大慢性病",
+            "num": "A3",
             "items": [
                 {"name": "高血壓", "image": "C1.png"},
                 {"name": "糖尿病", "image": "C2.png"},
@@ -163,6 +165,7 @@ def health_category(category):
         },
         "precaution": {
             "title": "防疫專區",
+            "num": "A4",
             "items": [
                 {"name": "手部清潔", "image": "P1.png"},
                 {"name": "如何正確配戴口罩", "image": "P2.png"},
@@ -173,5 +176,6 @@ def health_category(category):
     return render_template(
         "/health/health.html",
         title=data[category]["title"],
+        num=data[category]["num"],
         items=data[category]["items"],
     )
