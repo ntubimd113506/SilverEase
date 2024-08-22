@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#include <ArduinoJson.h>
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
 #include <PubSubClient.h>
@@ -8,7 +7,7 @@
 #include <freertos/task.h>
 #include "esp_camera.h"
 #include "my-ca.h"
-#include "Base64.h"
+#include <TinyGPS++.h>
 
 #define SERVER "silverease.ntub.edu.tw"
 #define MQTT_PORT 8883
@@ -18,10 +17,17 @@
 
 WiFiClientSecure client;
 PubSubClient mqtt(client);
+TinyGPSPlus gps;
 
 bool dev_link = false;
 bool btn_flag = false;
 bool cam_flag = false;
+
+String latitude = "";
+String longitude = "";
+unsigned long lastGetTime = 0;
+unsigned long lastSendTime = 0;
+bool gpsLocat = false;
 
 uint64_t macAddress = ESP.getEfuseMac();
 uint64_t macAddressTrunc = macAddress << 40;
@@ -107,7 +113,7 @@ void reconnect()
   while (!mqtt.connected())
   {
     Serial.print("MQTT 連接...");
-    if (mqtt.connect(DevID.c_str()))
+    if (mqtt.connect(DevID.c_str(), String(TOPIC + "/offline").c_str(), 0, 0, "offline"))
     {
       Serial.println("已連接");
       mqtt.subscribe(String(TOPIC + "/#").c_str());
@@ -180,52 +186,28 @@ bool initCamera()
 
 void SendImageMQTT()
 {
-  camera_fb_t *fb= esp_camera_fb_get();;
-  String base64Image = "";
-  base64Image = base64::encode(fb->buf, fb->len);
-  uint8_t *fbBuf = fb->buf;
-
-  JsonDocument doc;
-  doc["gps"] = "gpsInfo";
-  doc["image"] = fbBuf;
-
-  String jsonString;
-  serializeJson(doc, jsonString);
-
-  // 發送JSON（包含圖片和訊息）
-  mqtt.beginPublish(String(TOPIC + "/help").c_str(), jsonString.length(), false);
-  mqtt.print(jsonString);
-  mqtt.endPublish();
-  if (cam_flag)
-  {
-    esp_camera_fb_return(fb);
-  }
-
-  camera_fb_t * fb =  esp_camera_fb_get();
+  camera_fb_t *fb = esp_camera_fb_get();
   size_t fbLen = fb->len;
   int ps = 512;
-  //開始傳遞影像檔
+  // 開始傳遞影像檔
   mqtt.beginPublish(String(TOPIC + "/help").c_str(), fbLen, false);
   uint8_t *fbBuf = fb->buf;
-  for (size_t n = 0; n < fbLen; n = n + 2048) {
-    if (n + 2048 < fbLen) {
+  for (size_t n = 0; n < fbLen; n = n + 2048)
+  {
+    if (n + 2048 < fbLen)
+    {
       mqtt.write(fbBuf, 2048);
       fbBuf += 2048;
-    } else if (fbLen % 2048 > 0) {
+    }
+    else if (fbLen % 2048 > 0)
+    {
       size_t remainder = fbLen % 2048;
       mqtt.write(fbBuf, remainder);
     }
   }
   boolean isPublished = mqtt.endPublish();
-  esp_camera_fb_return(fb);//清除緩衝區
-  if (isPublished) {
-    // return "MQTT傳輸成功";
-  }
-  else {
-    // return "MQTT傳輸失敗，請檢查網路設定";
-  }
+  esp_camera_fb_return(fb); // 清除緩衝區
 }
-
 
 void mainTask(void *parameter)
 {
@@ -233,9 +215,9 @@ void mainTask(void *parameter)
   {
     if (WiFi.status() == WL_CONNECTED)
     {
-      Serial.print("FLAG: ");
+      // Serial.print("FLAG: ");
       bool flag = digitalRead(BTN) && !btn_flag;
-      Serial.println(flag);
+      // Serial.println(flag);
       if (flag)
       {
         btn_flag = true;
@@ -256,37 +238,25 @@ void mainTask(void *parameter)
   }
 }
 
-void devInitTask(void *parameter)
+void sendGPSData(String lat, String lon)
 {
+  String locat = lat + "," + lon;
+  mqtt.publish(String(TOPIC + "/gps").c_str(), locat.c_str());
+  Serial.println("GPS data sent: " + locat);
+}
+
+void setup()
+{
+  Serial.begin(9600);
+  Serial.println("ESP32CAM Setup…");
+  pinMode(BTN, INPUT);
+  pinMode(BUZZ, OUTPUT);
   cam_flag = initCamera();
   client.setCACert(root_ca);
   mqtt.setServer(SERVER, MQTT_PORT);
   mqtt.setCallback(callback);
   WiFiConfig.connectWiFi();
-  while (!dev_link)
-  {
-    Serial.println("check");
-    mqtt.publish(String(TOPIC + "/checkLink").c_str(), "");
-    vTaskDelay(5000 / portTICK_PERIOD_MS);
-  }
-  xTaskCreate(mainTask, "Main_Task", 8192, NULL, 1, NULL);
-  vTaskDelete(NULL);
-}
 
-void setup()
-{
-  Serial.begin(115200);
-  Serial.println("ESP32CAM Setup…");
-  pinMode(BTN, INPUT);
-  pinMode(BUZZ, OUTPUT);
-  xTaskCreate(
-      devInitTask,    // 任務函數
-      "devInit_Task", // 任務名稱
-      8192,           // 堆棧大小
-      NULL,           // 任務參數
-      1,              // 任務優先級
-      NULL            // 任務句柄
-  );
   xTaskCreatePinnedToCore(
       mqttTask,    // 任務函數
       "MQTT_Task", // 任務名稱
@@ -296,8 +266,42 @@ void setup()
       NULL,        // 任務句柄
       0            // 任務核心
   );
+  while (!dev_link)
+  {
+    Serial.println("check");
+    mqtt.publish(String(TOPIC + "/checkLink").c_str(), "");
+    vTaskDelay(5000 / portTICK_PERIOD_MS);
+  }
+
+  xTaskCreate(mainTask, "Main_Task", 8192, NULL, 1, NULL);
 }
 
 void loop()
 {
+  unsigned long currentTime = millis();
+
+  if (Serial.available() > 0)
+  {
+    Serial.println("Serial available");
+    gps.encode(Serial.read());
+    if (gps.location.isValid())
+    {
+      gpsLocat = true;
+      latitude = String(gps.location.lat(), 6);
+      longitude = String(gps.location.lng(), 6);
+      Serial.println("lat: " + latitude + " lon: " + longitude);
+    }
+
+    if (gps.date.isValid() && gps.time.isValid())
+    {
+      Serial.println("Now is" + String(gps.date.year()) + "." + String(gps.date.month()) + "." + String(gps.date.day()) + " " + String(gps.time.hour()) + ":" + String(gps.time.minute()) + ":" + String(gps.time.second()));
+    }
+  }
+
+  if (currentTime - lastSendTime >= 60000 && gpsLocat)
+  { // 60000 毫秒 = 1分鐘/
+    lastSendTime = currentTime;
+    Serial.println("1min");
+    sendGPSData(latitude, longitude);
+  }
 }

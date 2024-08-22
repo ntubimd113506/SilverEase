@@ -20,31 +20,30 @@ def handle_connect(client, userdata, flags, rc):
 
 @mqtt.on_message()
 def handle_mqtt_message(client, userdata, message):
-    
+    topic = str(message.topic).split("/")
+    DevID = topic[1]
+    action = topic[2]
     try:
-        topic = str(message.topic).split("/")
-        DevID = topic[1]
-        action = topic[2]
         msg = message.payload.decode()
-        data = json.loads(msg)
-    except:
-        pass
-
-    print(f"Received message on topic {message.topic}: {message.payload.decode()}")
-
-    if action == "help":
         try:
             data = json.loads(msg)
-            img = data["image"]
-            # gps=data["gps"]
-            sent_mess(DevID, img)
+        except:
+            pass
+        print(f"Received message on topic {message.topic}: {msg}")
+    except:
+        msg = message.payload    
 
-        except json.JSONDecodeError:
-            print("Invalid JSON")
+    if action == "help":
+        sent_mess(DevID,msg)
 
     if action == "checkLink":
         if check_device(DevID):
             mqtt.publish(f"ESP32/{DevID}/isLink")
+        else:
+            mqtt.publish(f"ESP32/{DevID}/noLink")
+
+    if action=="offline":
+        sent_dev_offline(DevID)
 
     if action == "link":
         FamilyID = decode_FamilyCode(msg)
@@ -96,7 +95,7 @@ def handle_mqtt_message(client, userdata, message):
             line.line_bot_api.push_message(user, reMsg)
 
 #-----------------------------------------------------------
-    if message.topic == 'ESP32/gps':
+    if action == 'gps':
         try:
             data = message.payload.decode()
             Map1 = str(data)
@@ -138,6 +137,17 @@ def handle_mqtt_message(client, userdata, message):
 
         except Exception as e:
             print("Error:", str(e))
+
+def sent_dev_offline(DevID):
+    conn = db.get_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT FamilyID FROM Family WHERE DevID=%s", DevID)
+    FamilyID = cur.fetchone()[0]
+    user = get_FamilyUser(FamilyID)
+
+    msg=FlexSendMessage()
+        
+    UserIDs = [row for row in user["SubUser"]]
 
 
 def save_gps(Map):
@@ -300,10 +310,9 @@ def check_device(DevID):
 def sent_mess(DevID, img):
     filename = f"{DevID}_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.jpg"
     if not img == "":
-        imgdata = base64.b64decode(img)
         filepath = os.path.join("app", "static", "imgs", "upload", filename)
         with open(filepath, "wb") as f:
-            f.write(imgdata)
+            f.write(img)
 
     FamilyID=check_device(DevID)
     users = get_FamilyUser(FamilyID)
