@@ -20,12 +20,12 @@ def handle_connect(client, userdata, flags, rc):
 
 @mqtt.on_message()
 def handle_mqtt_message(client, userdata, message):
-    
+    topic = str(message.topic).split("/")
+    DevID = topic[1]
+    action = topic[2]
+    msg = message.payload.decode()
+
     try:
-        topic = str(message.topic).split("/")
-        DevID = topic[1]
-        action = topic[2]
-        msg = message.payload.decode()
         data = json.loads(msg)
     except:
         pass
@@ -45,6 +45,8 @@ def handle_mqtt_message(client, userdata, message):
     if action == "checkLink":
         if check_device(DevID):
             mqtt.publish(f"ESP32/{DevID}/isLink")
+        else:
+            mqtt.publish(f"ESP32/{DevID}/noLink")
 
     if action == "link":
         FamilyID = decode_FamilyCode(msg)
