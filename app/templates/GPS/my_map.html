@@ -18,9 +18,18 @@
             padding: 5px 10px;
             cursor: pointer;
         }
+        .back-button {
+            margin: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            z-index: 1000;
+            position: relative;
+        }
     </style>
 </head>
 <body>
+    <button class="back-button" onclick="goBack()">回前頁</button>
     <h1>足跡</h1>
     <div class="time-filters">
         <button onclick="filterLocations('1')">今日</button>
@@ -70,7 +79,7 @@
             }
         });
 
-        // 繪製路線，不添加箭頭
+        // 繪製路線
         if (pathCoords.length > 1) {
             var polyline = new google.maps.Polyline({
                 path: pathCoords,
@@ -110,8 +119,12 @@
             });
     }
 
+    function goBack() {
+        window.location.href = '/gps/'; // 直接導航到特定頁面
+    }
+
     // 預設顯示全部足跡
-    filterLocations('all');
+    filterLocations('1');
 </script>
 </body>
 </html>
