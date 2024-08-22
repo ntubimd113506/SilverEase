@@ -81,14 +81,24 @@
 
         // 繪製路線
         if (pathCoords.length > 1) {
+            var whiteOutline = new google.maps.Polyline({
+                path: pathCoords,
+                geodesic: true,
+                strokeColor: '#162AD0',  // 白色邊框
+                strokeOpacity: 1.0,
+                strokeWeight: 8,         // 更粗的邊框
+                map: map
+            });
+
             var polyline = new google.maps.Polyline({
                 path: pathCoords,
                 geodesic: true,
-                strokeColor: '#FF0000',
+                strokeColor: '#2750F1',
                 strokeOpacity: 1.0,
-                strokeWeight: 2,
+                strokeWeight: 6,
                 map: map
             });
+
         }
 
         // 確保地圖的中心和縮放適應所有標記
