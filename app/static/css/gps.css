@@ -145,8 +145,8 @@ a{
 
 /* 下拉選單箭頭 */
 select {
-    width: 90px;
-    height: 20px;
+    width: 120px;
+    height: 25px;
     border-radius: 3px;
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -155,7 +155,7 @@ select {
     background-repeat: no-repeat;
     background-position: right;
     margin-bottom: 24px;
-    transform: translate(0 ,-20%);
+    transform: translate(0 ,-10%);
 }
 
 

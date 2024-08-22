@@ -34,7 +34,7 @@
         </div>
         <div class="content-wrapper">
             <div class="content">
-                <a href="http://liff.line.me/2004699458-OR9pkZjP/set/qrcode"><div>點我掃描QRCode</div></a>
+                <a href="http://liff.line.me/2004699458-OR9pkZjP/set/qrcode">點我掃描QRCode</a>
                 <img src="/static/imgs/main.png" class="b">
                 <h1>群組代碼</h1>
                 <form action="/set/CodeID" method="post" enctype="multipart/form-data">
@@ -44,9 +44,8 @@
                         <div class="cardrow">
                             <span class="value">
                                 <div class="input-wrapper">
-                                    <input class="input-with-dot" type="text" id="input-with-dot" name="CodeID"
-                                        maxlength="6" required oninput="updateDots()">
-                                    <div id="placeholder-dots" class="placeholder-dots">••••••</div>
+                                    <input class="input-with-dot" type="text" id="input-with-dot" name="CodeID" maxlength="6" required oninput="updateDotsAndColor()">
+                                    <div class="display-text" id="display-text"></div>
                                 </div>
                                 <input type="hidden" id="MemID" name="MemID">
                             </span>
@@ -61,24 +60,22 @@
         </div>
     </div>
     <script>
-        const input = document.getElementById('input-with-dot');
-        const placeholderDots = document.getElementById('placeholder-dots');
-        input.value="{{code}}"
-        
-        if ("{{code}}" != "") {
-            updateDots();
-        }
-
-        function updateDots() {
+        function updateDotsAndColor() {
+            const input = document.getElementById('input-with-dot');
+            const displayText = document.getElementById('display-text');
             const value = input.value;
-            const dots = '••••••';
+            const maxLength = input.maxLength;
 
-            // 將輸入的值和剩下的圓點結合起來
-            const newPlaceholder = value.split('').join('') + dots.slice(value.length);
+            // 分割已輸入數字和剩餘佔位符號
+            const digits = value;
+            const dots = '•'.repeat(maxLength - value.length);
 
-            // 更新佔位符的內容
-            placeholderDots.textContent = newPlaceholder;
+            // 更新顯示文字
+            displayText.innerHTML = `<span class="digits">${digits}</span><span class="dots">${dots}</span>`;
         }
+
+        // 初始化時顯示預設的佔位符號
+        updateDotsAndColor();
     </script>
 </body>
 
