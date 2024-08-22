@@ -23,11 +23,10 @@
 <body>
     <h1>足跡</h1>
     <div class="time-filters">
-        <button onclick="filterLocations('all')">全部</button>
-        <button onclick="filterLocations('30')">30天</button>
-        <button onclick="filterLocations('15')">15天</button>
-        <button onclick="filterLocations('7')">7天</button>
         <button onclick="filterLocations('1')">今日</button>
+        <button onclick="filterLocations('7')">當周</button>
+        <button onclick="filterLocations('30')">當月</button>
+        <button onclick="filterLocations('all')">全部</button>
     </div>
 
     <div id="map"></div>    
@@ -41,18 +40,39 @@
         });
 
         var bounds = new google.maps.LatLngBounds();
+        var pathCoordinates = [];
 
         locations.forEach(function(location) {
             var coords = location.match(/query=([-.\d]+),([-.\d]+)/);
             if (coords) {
-            var latLng = new google.maps.LatLng(parseFloat(coords[1]), parseFloat(coords[2]));
+                var latLng = new google.maps.LatLng(parseFloat(coords[1]), parseFloat(coords[2]));
+                
+                // 添加標記
                 var marker = new google.maps.Marker({
                     position: latLng,
                     map: map
                 });
+
+                // 擴展邊界以適應所有標記
                 bounds.extend(latLng);
+
+                // 將位置添加到路徑坐標中
+                pathCoordinates.push(latLng);
             }
         });
+
+        if (pathCoordinates.length > 0) {
+            // 創建並添加折線到地圖
+            var flightPath = new google.maps.Polyline({
+                path: pathCoordinates,
+                geodesic: true,
+                strokeColor: '#FF0000',
+                strokeOpacity: 1.0,
+                strokeWeight: 2
+            });
+
+            flightPath.setMap(map);
+        }
 
         if (!bounds.isEmpty()) {
             map.fitBounds(bounds);
