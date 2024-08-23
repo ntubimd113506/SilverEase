@@ -16,7 +16,7 @@
     <script src="/static/js/img.js"></script>
 </head>
 
-<body>
+<body onload="basic_policy()">
     <div class="container">
         <div class="header">
             <h1>SilverEase</h1>
@@ -131,21 +131,22 @@
     </div>
 </body>
 <script>
-    // let Usage_Policy = document.getElementById('Usage_Policy');
-    // let Privacy_Policy = document.getElementById('Privacy_Policy');
-    // let Allow_GPS = document.getElementById('Allow_GPS');
-    // let Allow_DataAnalyze = document.getElementById('Allow_DataAnalyze');
+    let Usage_Policy = document.getElementById('Usage_Policy');
+    let Privacy_Policy = document.getElementById('Privacy_Policy');
+    let Allow_GPS = document.getElementById('Allow_GPS');
+    let Allow_DataAnalyze = document.getElementById('Allow_DataAnalyze');
 
     
     
-    // if ("{{res}}"){
-    //     document.querySelector('input[type="submit"]').disabled = false;
-    //     Usage_Policy.checked = true;
-    //     Privacy_Policy.checked = true;
-    //     res={{res|tojson}};
-    //     Allow_GPS.checked = res['GPS'];
-    //     Allow_DataAnalyze.checked = res['DataAnalyze'];
-    // }
+    if ("{{res}}"){
+        document.querySelector('input[type="submit"]').disabled = false;
+        Usage_Policy.checked = true;
+        Privacy_Policy.checked = true;
+        res={{res|tojson}};
+        Allow_GPS.checked = res['GPS'];
+        Allow_DataAnalyze.checked = res['DataAnalyze'];
+    
+    }
 
     // function basic_policy(){
     //     if(Usage_Policy.checked && Privacy_Policy.checked){
@@ -154,26 +155,20 @@
     //         document.querySelector('input[type="submit"]').disabled = true;
     //     }
     // }
+    function basic_policy() {
+        const submitButton = document.querySelector('input[type="submit"]');
+        if (Usage_Policy.checked && Privacy_Policy.checked) {
+            submitButton.disabled = false;
+            submitButton.style.backgroundColor = '#809f68';  // 啟用時的背景色
+        } else {
+            submitButton.disabled = true;
+            submitButton.style.backgroundColor = '#969695';    // 禁用時的背景色
+        }
+    }
     
     document.addEventListener('DOMContentLoaded', function() {
-            let Usage_Policy = document.getElementById('Usage_Policy');
-            let Privacy_Policy = document.getElementById('Privacy_Policy');
-            let Allow_GPS = document.getElementById('Allow_GPS');
-            let Allow_DataAnalyze = document.getElementById('Allow_DataAnalyze');
-
-            function basic_policy() {
-                const submitButton = document.querySelector('input[type="submit"]');
-                if (Usage_Policy.checked && Privacy_Policy.checked) {
-                    submitButton.disabled = false;
-                    submitButton.style.backgroundColor = '#809f68';  // 啟用時的背景色
-                } else {
-                    submitButton.disabled = true;
-                    submitButton.style.backgroundColor = '#969695';    // 禁用時的背景色
-                }
-            }
-
-            Usage_Policy.onclick = basic_policy;
-            Privacy_Policy.onclick = basic_policy;
+        Usage_Policy.onclick = basic_policy;
+        Privacy_Policy.onclick = basic_policy;
         });
 </script>
 
