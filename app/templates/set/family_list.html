@@ -26,39 +26,44 @@
 
         <div class="form-container">
             {% if MainFamily %}
-            <div class="main_box">
-                <div>
-                    您的家庭
-                </div>
-                <div class="cardrow">
-                    <img src="{{MainFamily['Picture']}}" alt="">
-                </div>
-                <div class="name">{{MainFamily["Name"]}}</div>
-                <button class="btn" onclick=deleteFamily()>刪除家庭</button>
-                <a href="/set/access_index">查看同意政策</a>
+        <div class="main_box">
+            <div class="h4">您的家庭</div>
+            <div class="cardrow">
+                <img src="{{MainFamily['Picture']}}" alt="">
             </div>
-            {% endif %}
-            {% if SubFamilys %}
-            您所加入的家庭
-            <div class="sub_box">
-                {% for family in SubFamilys %}
-                <div id="sub{{family['FamilyID']}}">
-                    <div class="cardrow">
-                        <img src="{{family['Picture']}}" alt="">
-                    </div>
-
-                    <div class="name">{{family["Name"]}}</div>
+            <div class="name">{{MainFamily["Name"]}}</div>
+            <div class="cardrow">
+                <button class="btn" onclick=deleteFamily()>刪除家庭</button>
+            </div>
+            
+            <a href="/set/access_index" class="align-left">查看同意政策</a>
+        </div>
+        {% endif %}
+        {% if SubFamilys %}
+        <div class="h4">您所加入的家庭</div>
+        
+        <div class="sub_box">
+            {% for family in SubFamilys %}
+            <div id="sub{{family['FamilyID']}}">
+                <div class="cardrow">
+                    <img src="{{family['Picture']}}" alt="">
+                </div>
+                
+                <div class="name">{{family["Name"]}}</div>
+                <div class="cardrow">
                     <button class="btn" onclick=leaveFamily() value="{{family['FamilyID']}}">退出家庭</button>
                 </div>
-                {% endfor %}
+                
             </div>
-            {% endif %}
-            {% if not MainFamily and not SubFamilys%}
-            暫無任何家庭資料
-            <a href="/set/join_family">加入家庭</a>
-            {% endif %}
+            {% endfor %}
         </div>
-
+        {% endif %}
+        {% if not MainFamily and not SubFamilys%}
+        <div class="h4">暫無任何家庭資料</div>
+        <a href="/set/join_family" class="align-left">加入家庭</a>
+        {% endif %}
+        </div>
+        
     </div>
 </body>
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
