@@ -284,6 +284,24 @@
                 });
             }
         });
+
+            document.addEventListener('DOMContentLoaded', function() {
+                var selects = document.querySelectorAll('select');
+                
+                selects.forEach(function(select) {
+                    if (select.value && select.value !== "") {
+                        select.classList.add('has-value');
+                    }
+
+                    select.addEventListener('change', function() {
+                        if (this.value && this.value !== "") {
+                            this.classList.add('has-value');
+                        } else {
+                            this.classList.remove('has-value');
+                        }
+                    });
+                });
+            });
     </script>
 
 </body>

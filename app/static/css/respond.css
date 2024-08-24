@@ -1,6 +1,3 @@
-/* ------------------- */
-/* html, body          */
-/* ------------------- */
 html,
 body {
     touch-action: manipulation;
@@ -13,9 +10,6 @@ body {
     padding-bottom: calc(30px + env(safe-area-inset-bottom));
 }
 
-/* ------------------- */
-/* container           */
-/* ------------------- */
 .container {
     touch-action: manipulation;
     -ms-content-zooming: none;
@@ -30,9 +24,6 @@ body {
     box-sizing: border-box;
 }
 
-/* ------------------- */
-/* header              */
-/* ------------------- */
 div.header {
     display: flex;
     justify-content: center;
@@ -82,9 +73,6 @@ div.navbar a {
     color: #000000;
 }
 
-/* ------------------- */
-/* content             */
-/* ------------------- */
 .content {
     display: flex;
     flex-direction: column;
@@ -142,13 +130,7 @@ div.navbar a {
     vertical-align: middle;
 }
 
-
-/* ------------------- */
-/* Media Queries       */
-/* ------------------- */
-
 @media (min-width: 576px) {
-    /* For devices >= 576px */
 }
 
 @media (min-width: 768px) {

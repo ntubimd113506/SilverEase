@@ -34,8 +34,6 @@ div.header h1 {
     margin: 0%;
 }
 
-
-/* 回主頁 */
 #menu-bar {
     z-index: 1;
     float: left;
@@ -68,8 +66,6 @@ div.navbar a {
     color: #000000;
 }
 
-
-/* ///////////////////////////////////////////////////////////// */
 div.content {
     background-color: #F2F0EE;
     padding: 0px 23px;
@@ -94,8 +90,6 @@ div.content h1 {
     font-size: 30px;
     letter-spacing: 8px;
 }
-
-/* ///////////////////////////////////////////////////////////// */
 
 .container {
     touch-action: manipulation;
@@ -218,7 +212,6 @@ div.content h1 {
 }
 
 @media (min-width: 576px) {
-    /* For devices >= 576px */
 }
 
 @media (min-width: 768px) {
