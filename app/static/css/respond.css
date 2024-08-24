@@ -1,7 +1,8 @@
 /* ------------------- */
 /* html, body          */
 /* ------------------- */
-html, body {
+html,
+body {
     touch-action: manipulation;
     font-family: 'Noto Sans TC', sans-serif;
     background-color: #F2F0EE;
@@ -24,9 +25,9 @@ html, body {
     background-color: #F2F0EE;
     min-height: calc(100vh - env(safe-area-inset-bottom));
     padding-bottom: 30px;
-    overflow: hidden; 
-    width: 100%; 
-    box-sizing: border-box; 
+    overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* ------------------- */
@@ -34,7 +35,7 @@ html, body {
 /* ------------------- */
 div.header {
     display: flex;
-    justify-content: center; 
+    justify-content: center;
     padding: 10px;
     height: 40px;
     background-color: #9FB889;
@@ -71,13 +72,13 @@ ul {
 
 ul li {
     line-height: 40px;
-    float: left; 
-    width: 75px; 
+    float: left;
+    width: 75px;
     text-align: center;
 }
 
 div.navbar a {
-    text-decoration: none; 
+    text-decoration: none;
     color: #000000;
 }
 
@@ -89,8 +90,8 @@ div.navbar a {
     flex-direction: column;
     align-items: center;
     margin-top: 30px;
-    width: 100%; 
-    box-sizing: border-box; 
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .content img {
@@ -154,7 +155,7 @@ div.navbar a {
     div.header {
         height: 50px;
     }
-    
+
     div.header h1 {
         padding: 12px;
     }
@@ -177,18 +178,18 @@ div.navbar a {
 
     .history:hover,
     .history:active {
-    background-color: #9fb889;
-    } 
+        background-color: #9fb889;
+    }
 
     #menu-bar {
         padding-top: 13px;
         padding-left: 13px;
         font-size: 22px;
     }
-    
+
     ul li {
         line-height: 50px;
-        width: 85px; 
+        width: 85px;
     }
 
     div.navbar a {
@@ -207,7 +208,7 @@ div.navbar a {
         padding-left: 15px;
         font-size: 25px;
     }
-    
+
     ul li {
         line-height: 56px;
     }
@@ -228,7 +229,7 @@ div.navbar a {
         padding-top: 20px;
         padding-left: 20px;
     }
-    
+
     ul li {
         line-height: 65px;
     }

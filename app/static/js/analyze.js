@@ -216,13 +216,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function createNavButton(periodType, link, isCurrent) {
         var button = document.createElement('button');
-        button.textContent = isCurrent ? 
-                            (periodType === 'weekly' ? '查看當週' :
-                             periodType === 'monthly' ? '查看當月' :
-                             '查看當年') :
-                            (periodType === 'weekly' ? '查看上一週' :
-                             periodType === 'monthly' ? '查看上個月' :
-                             '查看上一年');
+        button.textContent = isCurrent ?
+            (periodType === 'weekly' ? '查看當週' :
+                periodType === 'monthly' ? '查看當月' :
+                    '查看當年') :
+            (periodType === 'weekly' ? '查看上一週' :
+                periodType === 'monthly' ? '查看上個月' :
+                    '查看上一年');
         button.className = 'nav-button';
         button.addEventListener('click', function () {
             var newLink = isCurrent ? link.replace('_prev', '') : link;

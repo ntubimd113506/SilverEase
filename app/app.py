@@ -4,7 +4,23 @@ from flask import Flask, render_template, session, request, jsonify, redirect, u
 from flask_login import login_required
 from linebot.models import FlexSendMessage
 from utils import db
-from services import cam_bp, event_bp, hos_bp, analyze_bp, health_bp, linebot_bp, med_bp, set_bp, user_bp, scheduler, mqtt, login_manager, gps_bp, line_bot_api, sos_bp
+from services import (
+    cam_bp,
+    event_bp,
+    hos_bp,
+    analyze_bp,
+    health_bp,
+    linebot_bp,
+    med_bp,
+    set_bp,
+    user_bp,
+    scheduler,
+    mqtt,
+    login_manager,
+    gps_bp,
+    line_bot_api,
+    sos_bp,
+)
 from config import Config
 
 app = Flask(__name__)
@@ -37,76 +53,71 @@ def lostAndFound():
     return render_template("lostAndFound.html")
 
 
-@app.route("/lost_report", methods=['POST'])
+@app.route("/lost_report", methods=["POST"])
 def lost_report():
-    DevID=session.get("DevID")
-    conn=db.get_connection()
-    cur=conn.cursor()
-    cur.execute("select SubUserID from FamilyLink Where FamilyID = (select FamilyID from Family where DevID=%s)",(DevID))
-    SubUserID=cur.fetchall()
+    DevID = session.get("DevID")
+    conn = db.get_connection()
+    cur = conn.cursor()
+    cur.execute(
+        "select SubUserID from FamilyLink Where FamilyID = (select FamilyID from Family where DevID=%s)",
+        (DevID),
+    )
+    SubUserID = cur.fetchall()
     message = request.json["message"]
-    msg=FlexSendMessage(
+    msg = FlexSendMessage(
         alt_text="遺失/走失通報",
         contents={
-                "type": "bubble",
-                "hero": {
-                    "type": "image",
-                    "url": "https://developers-resource.landpress.line.me/fx/img/01_1_cafe.png",
-                    "size": "full",
-                    "aspectRatio": "20:13",
-                    "aspectMode": "cover",
-                    "action": {
-                        "type": "uri",
-                        "uri": "https://line.me/"
-                    }
-                },
-                "body": {
-                    "type": "box",
-                    "layout": "vertical",
-                    "contents": [
-                        {
-                            "type": "text",
-                            "text": "已有人通報遺失/走失",
-                            "weight": "bold",
-                            "size": "xl"
+            "type": "bubble",
+            "hero": {
+                "type": "image",
+                "url": "https://developers-resource.landpress.line.me/fx/img/01_1_cafe.png",
+                "size": "full",
+                "aspectRatio": "20:13",
+                "aspectMode": "cover",
+                "action": {"type": "uri", "uri": "https://line.me/"},
+            },
+            "body": {
+                "type": "box",
+                "layout": "vertical",
+                "contents": [
+                    {
+                        "type": "text",
+                        "text": "已有人通報遺失/走失",
+                        "weight": "bold",
+                        "size": "xl",
+                    },
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [{"type": "text", "text": message}],
+                    },
+                ],
+            },
+            "footer": {
+                "type": "box",
+                "layout": "vertical",
+                "spacing": "sm",
+                "contents": [
+                    {
+                        "type": "button",
+                        "style": "link",
+                        "height": "sm",
+                        "action": {
+                            "type": "uri",
+                            "label": "查看最後位置",
+                            "uri": f"https://liff.line.me/{db.LIFF_ID}/gps",
                         },
-                        {
-                            "type": "box",
-                            "layout": "vertical",
-                            "contents": [
-                                {
-                                    "type": "text",
-                                    "text": message
-                                }
-                            ]
-                        }
-                    ]
-                },
-                "footer": {
-                    "type": "box",
-                    "layout": "vertical",
-                    "spacing": "sm",
-                    "contents": [
-                        {
-                            "type": "button",
-                            "style": "link",
-                            "height": "sm",
-                            "action": {
-                                "type": "uri",
-                                "label": "查看最後位置",
-                                "uri": f"https://liff.line.me/{db.LIFF_ID}/gps"
-                            }
-                        },
-                        {
-                            "type": "box",
-                            "layout": "vertical",
-                            "contents": [],
-                            "margin": "sm"
-                        }
-                    ],
-                    "flex": 0
-                }
-            }
+                    },
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [],
+                        "margin": "sm",
+                    },
+                ],
+                "flex": 0,
+            },
+        },
     )
 
     for user in SubUserID:
@@ -114,14 +125,14 @@ def lost_report():
     return jsonify({"status": "success"})
 
 
-@app.route('/img/<img>')
+@app.route("/img/<img>")
 def display_image(img):
     try:
         with Image.open(os.path.join("app", "static", "imgs", "upload", img)) as file:
             file.load()
-        return redirect(url_for('static', filename=f'imgs/upload/{img}'))
+        return redirect(url_for("static", filename=f"imgs/upload/{img}"))
     except:
-        return redirect(url_for('static', filename='/imgs/help.png'))
+        return redirect(url_for("static", filename="/imgs/help.png"))
 
 
 if __name__ == "__main__":

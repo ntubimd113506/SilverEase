@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>選擇長輩</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Satisfy&display=swap" rel="stylesheet">
-        
+
     <link href="/static/css/gps.css" rel="stylesheet" />
     <script src="/static/js/touch-buttons.js" defer></script>
     <script src="/static/js/img.js"></script>
@@ -21,6 +23,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
 
@@ -33,7 +36,9 @@
                 <form id="form">
                     <div class="form-group">
                         <div class="title-container">
-                            <label for="MainUserID"><h4>主要用戶</h4></label>
+                            <label for="MainUserID">
+                                <h4>主要用戶</h4>
+                            </label>
                             <select id="MainUserID" name="MainUserID">
                                 {% for user in MainUsers %}
                                 <option value="{{ user[0] }}">{{ user[1] }}</option>
@@ -49,7 +54,7 @@
 
         <div id="gps-url" style="margin-top: 20px;"></div>
         <div id="map"></div>
-    
+
     </div>
 
     <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
@@ -65,25 +70,25 @@
         initializeLiff('{{ liffid }}');
 
         // 當按下查看長輩足跡按鈕時觸發事件
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             triggerChange(); // 頁面載入後自動執行
-            });
+        });
 
-        document.getElementById('viewFootprintsBtn').addEventListener('click', function() {
+        document.getElementById('viewFootprintsBtn').addEventListener('click', function () {
             var formData = new FormData(document.getElementById('form'));
             fetch('/gps/foot', {
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.text())
-            .then(html => {
-                document.open();
-                document.write(html);
-                document.close();
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
+                .then(response => response.text())
+                .then(html => {
+                    document.open();
+                    document.write(html);
+                    document.close();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
         });
 
         function triggerChange() {
@@ -97,7 +102,7 @@
             }
         }
 
-        document.getElementById('MainUserID').addEventListener('change', function() {
+        document.getElementById('MainUserID').addEventListener('change', function () {
             fetchGPSData(); // 當選單改變時自動載入對應的地圖
         });
 
@@ -107,18 +112,18 @@
                 method: 'POST',
                 body: formData
             }).then(response => response.json())
-            .then(data => {
-                var gpsUrlElement = document.getElementById('gps-url');
-                if (data.url === 'no_data') {
-                    gpsUrlElement.innerHTML = '沒有資料';
-                    document.getElementById('map').style.display = 'none';
-                } else {
-                    gpsUrlElement.innerHTML = `<a href="${data.url}" target="_blank" rel="noopener noreferrer">點擊查看地圖</a>`;
-                    showMap(data.url);
-                }
-            }).catch(error => {
-                console.error('Error:', error);
-            });
+                .then(data => {
+                    var gpsUrlElement = document.getElementById('gps-url');
+                    if (data.url === 'no_data') {
+                        gpsUrlElement.innerHTML = '沒有資料';
+                        document.getElementById('map').style.display = 'none';
+                    } else {
+                        gpsUrlElement.innerHTML = `<a href="${data.url}" target="_blank" rel="noopener noreferrer">點擊查看地圖</a>`;
+                        showMap(data.url);
+                    }
+                }).catch(error => {
+                    console.error('Error:', error);
+                });
         }
 
 
@@ -158,5 +163,5 @@
 
     </script>
 </body>
-</html>
 
+</html>

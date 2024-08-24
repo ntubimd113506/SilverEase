@@ -4,7 +4,8 @@
 /* html, body          */
 /* ------------------- */
 
-html, body{
+html,
+body {
     font-family: 'Noto Sans TC', sans-serif;
     background-color: #F2F0EE;
     padding: 0;
@@ -15,7 +16,7 @@ html, body{
 /* ------------------- */
 /* container           */
 /* ------------------- */
-div.container{
+div.container {
     text-align: justify;
     line-height: 26px;
     background-color: #F2F0EE;
@@ -25,62 +26,63 @@ div.container{
 /* ------------------- */
 /* header              */
 /* ------------------- */
-div.header{
+div.header {
     display: flex;
     /* 水平置中 */
-    justify-content: center;  
+    justify-content: center;
     padding: 10px;
     height: 40px;
     background-color: #9FB889;
 }
 
-div.header h1{
+div.header h1 {
     font-size: 30px;
     width: 200px;
     padding: 5px;
-    text-align:center;
+    text-align: center;
     letter-spacing: 3px;
     margin: 0%;
 }
+
 /* ------------------- */
 /* content             */
 /* ------------------- */
-div.content{
+div.content {
     background-color: #F2F0EE;
     display: flex;
     justify-content: center;
     padding: 60px 0 0 0;
 }
 
-div.content2{
+div.content2 {
     background-color: #F2F0EE;
     display: flex;
     justify-content: center;
     padding: 30px 0 0 0;
 }
 
-div.clear{
+div.clear {
     height: 80px;
 }
 
-a{
+a {
     width: 330px;
     text-decoration-line: none;
 }
 
-div.content h1{
+div.content h1 {
     font-size: 45px;
     letter-spacing: 5px;
 }
 
-img.a{
+img.a {
     float: right;
     padding: 10px 20px 10px 0;
     width: 80px;
     height: 80px;
-} 
+}
 
-div.card{
+div.card {
     background-color: #ffffff;
     width: 330px;
     height: 100px;
@@ -91,7 +93,7 @@ div.card{
     justify-content: space-between;
 }
 
-b.t{
+b.t {
     color: #2B3125;
     font-size: 24px;
     letter-spacing: 5px;
@@ -100,7 +102,7 @@ b.t{
     padding: 30px 0px 30px 15px;
 }
 
-b.t1{
+b.t1 {
     color: #2B3125;
     font-size: 22px;
     letter-spacing: 5px;
@@ -110,19 +112,18 @@ b.t1{
 }
 
 div.card:nth-child(1),
-div.card:nth-child(2)
-{
+div.card:nth-child(2) {
     margin-bottom: 50px;
 }
 
 @media only screen and (max-width: 360px) {
-    body h1{
+    body h1 {
         font-weight: 600;
-        }
+    }
 }
 
 @media only screen and (max-width: 480px) {
-    body h1{
+    body h1 {
         font-weight: 800;
     }
 }
@@ -131,7 +132,7 @@ div.card:nth-child(2)
     div.header {
         height: 50px;
     }
-    
+
     div.header h1 {
         padding: 12px;
     }

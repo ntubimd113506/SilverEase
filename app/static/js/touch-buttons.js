@@ -9,13 +9,13 @@ document.addEventListener('DOMContentLoaded', function () {
         button.addEventListener('touchend', function () {
             setTimeout(function () {
                 button.classList.remove('active');
-            }, 100);  
+            }, 100);
         });
 
         button.addEventListener('click', function () {
             setTimeout(function () {
                 button.classList.remove('active');
-            }, 100); 
+            }, 100);
         });
     });
 });

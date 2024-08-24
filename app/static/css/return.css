@@ -3,11 +3,12 @@
 /* ------------------- */
 /* html, body          */
 /* ------------------- */
-html{
+html {
     overflow-y: hidden;
 }
 
-html, body{
+html,
+body {
     font-family: 'Noto Sans TC', sans-serif;
     background-color: #F2F0EE;
     padding: 0%;
@@ -19,7 +20,7 @@ html, body{
 /* ------------------- */
 /* container           */
 /* ------------------- */
-div.container{
+div.container {
     margin-left: auto;
     margin-right: auto;
     text-align: justify;
@@ -31,20 +32,20 @@ div.container{
 /* ------------------- */
 /* header              */
 /* ------------------- */
-div.header{
+div.header {
     display: flex;
     /* 水平置中 */
-    justify-content: center;  
+    justify-content: center;
     padding: 10px;
     height: 40px;
     background-color: #9FB889;
 }
 
-div.header h1{
+div.header h1 {
     font-size: 30px;
     width: 200px;
     padding: 5px;
-    text-align:center;
+    text-align: center;
     letter-spacing: 3px;
     margin: 0%;
 }
@@ -54,70 +55,75 @@ div.header h1{
 /* ------------------- */
 div.content-wrapper {
     display: flex;
-    justify-content: center;  /* 水平置中 */
-    height: 100%;            /* 設置容器高度為視窗高度 */
+    justify-content: center;
+    /* 水平置中 */
+    height: 100%;
+    /* 設置容器高度為視窗高度 */
 }
 
 /* ------------------- */
 /* content             */
 /* ------------------- */
-div.content{
+div.content {
     background-color: #F2F0EE;
     padding: 20px 30px;
 }
 
-div.clear{
+div.clear {
     height: 80px;
 }
 
-div.cardrow{
+div.cardrow {
     display: flex;
     /* 水平置中 */
-    justify-content: center;  
+    justify-content: center;
     margin: auto;
 }
-div.content h1{
+
+div.content h1 {
     font-size: 30px;
-    letter-spacing:8px;
+    letter-spacing: 8px;
 }
 
-div.content h4{
+div.content h4 {
     text-align: center;
     font-size: 20px;
-    letter-spacing:5px;
+    letter-spacing: 5px;
     margin: 0%;
     padding: 0px 0px 20px;
 }
 
-div.content p{
+div.content p {
     color: #535353;
     text-align: center;
     font-size: 20px;
-    letter-spacing:5px;
+    letter-spacing: 5px;
     margin: 0%;
     padding: 0px 0px 20px;
 }
 
-img.b{
+img.b {
     width: 340px;
     height: 340px;
 }
+
 @media only screen and (max-width: 360px) {
-    body h1{
+    body h1 {
         font-weight: 600;
-        }
+    }
 }
 
 @media only screen and (max-width: 480px) {
-    body h1{
+    body h1 {
         font-weight: 800;
     }
 }
 
 @media only screen and (max-width: 768px) {
-    div.content{
+    div.content {
         width: 400px;
     }
+
     div.content h1 {
         font-size: 36px;
     }
@@ -132,7 +138,7 @@ img.b{
     div.header {
         height: 50px;
     }
-    
+
     div.header h1 {
         padding: 12px;
     }

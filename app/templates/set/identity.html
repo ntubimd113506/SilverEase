@@ -1,18 +1,14 @@
 <!DOCTYPE html>
 <html>
-<!-- <html lang="en"> -->
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>身分設定</title>
-
-    <!-- 連結css檔 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Satisfy&display=swap" rel="stylesheet">
-
     <link href="/static/css/main.css" rel="stylesheet" />
     <script src="/static/js/touch-buttons.js" defer></script>
 </head>
@@ -34,7 +30,6 @@
                 <div class="form">
                     <form id="form" action="/set/oy" method="post">
                         <div class="cardrow">
-                            <!-- 這裡也要看看 -->
                             <button type="button" class="card" id="old" onclick="selectButton('old')">長輩</button>
                             <button type="button" class="card" id="young" onclick="selectButton('young')">照護者</button>
                         </div>
@@ -66,7 +61,6 @@
                 alert("用戶未登入");
                 liff.login();
             } else {
-                // alert("用戶已登入");
                 liff.getProfile()
                     .then(profile => {
                         MemName = profile.displayName;
@@ -88,14 +82,6 @@
     }
 
     function checkMember(profile) {
-        /**
-         * 
-         * https://ithelp.ithome.com.tw/articles/10252941
-         * v學會JSON 
-         * 變數要用對
-         * F12可以看console.log訊息還有很多資訊
-         * 
-         */
         fetch('/set/checkid', {
             method: 'POST',
             headers: {
@@ -111,10 +97,10 @@
             }
 
             console.log(response);
-            return response.json(); //回應轉為JSON處理
+            return response.json();
         }).then(jsondata => {
             console.log(jsondata);
-            if (jsondata["result"]) {  //轉為JSON後處理的事情
+            if (jsondata["result"]) {
                 document.getElementById("option").value = jsondata["option"]
                 form = document.getElementById("form").submit();
             }
@@ -126,14 +112,8 @@
     }
 
     $(document).ready(function () {
-        initializeLiff('{{ liffid }}');  //接收傳遞的 liffid 參數
+        initializeLiff('{{ liffid }}');
     });
-
-    
-    /**
-     * 這是一個選擇按鈕的函數
-     * @param {string} btnId 
-     */
 
     function selectButton(btnId) {
         document.getElementById('old').classList.remove('onclick');
@@ -142,4 +122,5 @@
         document.getElementById('option').value = btnId;
     }
 </script>
+
 </html>

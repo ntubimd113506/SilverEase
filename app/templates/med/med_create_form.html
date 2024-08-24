@@ -248,7 +248,7 @@
 
 
                 //////////////圖片
-                document.addEventListener('DOMContentLoaded', function() {
+                document.addEventListener('DOMContentLoaded', function () {
                     const fileInput = document.getElementById('fileInput');
                     const customFileLabel = document.getElementById('customFileLabel');
                     const removeSelectionBtn = document.getElementById('removeSelectionBtn');
@@ -260,7 +260,7 @@
                         if (fileInput.files.length > 0) {
                             const fileName = fileInput.files[0].name;
                             console.log('File selected:', fileName);
-                            customFileLabel.textContent = fileName; 
+                            customFileLabel.textContent = fileName;
                             removeSelectionBtn.style.display = 'inline-block';
                         } else {
                             console.log('No file selected');
@@ -281,7 +281,7 @@
 
                     customFileLabel.textContent = '選擇圖片';
                     removeSelectionBtn.style.display = 'none';
-});
+                });
             }
         });
     </script>

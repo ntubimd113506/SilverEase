@@ -44,7 +44,8 @@
                         <div class="cardrow">
                             <span class="value">
                                 <div class="input-wrapper">
-                                    <input class="input-with-dot" type="text" id="input-with-dot" name="CodeID" maxlength="6" required oninput="updateDotsAndColor()">
+                                    <input class="input-with-dot" type="text" id="input-with-dot" name="CodeID"
+                                        maxlength="6" required oninput="updateDotsAndColor()">
                                     <div class="display-text" id="display-text"></div>
                                 </div>
                                 <input type="hidden" id="MemID" name="MemID">
@@ -65,16 +66,10 @@
             const displayText = document.getElementById('display-text');
             const value = input.value;
             const maxLength = input.maxLength;
-
-            // 分割已輸入數字和剩餘佔位符號
             const digits = value;
             const dots = '•'.repeat(maxLength - value.length);
-
-            // 更新顯示文字
             displayText.innerHTML = `<span class="digits">${digits}</span><span class="dots">${dots}</span>`;
         }
-
-        // 初始化時顯示預設的佔位符號
         updateDotsAndColor();
     </script>
 </body>

@@ -1,9 +1,7 @@
 @charset "utf-8";
 
-/* ------------------- */
-/* html, body          */
-/* ------------------- */
-html, body{
+html,
+body {
     touch-action: manipulation;
     font-family: 'Noto Sans TC', sans-serif;
     background-color: #F2F0EE;
@@ -18,10 +16,7 @@ html, body{
     padding-bottom: constant(safe-area-inset-bottom);
 }
 
-/* ------------------- */
-/* container           */
-/* ------------------- */
-div.container{
+div.container {
     touch-action: manipulation;
     -ms-content-zooming: none;
     margin-left: auto;
@@ -34,75 +29,62 @@ div.container{
     min-height: calc(100vh - constant(safe-area-inset-bottom));
 }
 
-/* ------------------- */
-/* header              */
-/* ------------------- */
-div.header{
+div.header {
     display: flex;
-    /* 水平置中 */
-    justify-content: center;  
+    justify-content: center;
     padding: 10px;
     height: 40px;
     background-color: #9FB889;
 }
 
-div.header h1{
+div.header h1 {
     font-size: 30px;
     width: 200px;
     padding: 5px;
-    text-align:center;
+    text-align: center;
     letter-spacing: 3px;
     margin: 0%;
 }
 
-/* ------------------- */
-/* content             */
-/* ------------------- */
-
-div.content{
+div.content {
     background-color: #F2F0EE;
     padding: 0px 23px;
 }
 
-div.cardrow{
+div.cardrow {
     display: flex;
-    /* 水平置中 */
-    justify-content: center;  
+    justify-content: center;
     margin: auto;
 }
 
-/* 所有輸入欄位 */
 .form-container {
     width: 400px;
     margin: 20px auto;
 }
 
-div.content h1{
+div.content h1 {
     font-size: 30px;
-    letter-spacing:8px;
+    letter-spacing: 8px;
 }
 
-.check{
+.check {
     margin-left: 2%;
 }
 
 .policy {
     display: flex;
-    /* 水平置中 */
-    justify-content: center;  
+    justify-content: center;
     margin: auto;
     background-color: #ffffff8f;
     width: 400px;
     height: 300px;
     border: 1px solid #ccc;
     overflow-y: scroll;
-    /* 垂直滾動 */
     padding: 10px;
 }
 
 input[type="submit" i] {
     position: relative;
-    /* top: -70px; */
     align-items: center;
     background-color: #969695;
     width: 340px;
@@ -114,7 +96,7 @@ input[type="submit" i] {
     font-weight: bolder;
     letter-spacing: 5px;
     margin: 10px 0%;
-    cursor: pointer;    
+    cursor: pointer;
     transition: background-color 0.1s;
 }
 
@@ -122,7 +104,6 @@ input[type="submit" i]:active {
     background-color: #9fb889;
 }
 
-/* .delete_confirm 的設定 */
 input[type="submit" i].delete_confirm {
     position: relative;
     top: -13px;
@@ -137,54 +118,45 @@ input[type="submit" i].delete_confirm {
     font-weight: bolder;
     letter-spacing: 5px;
     margin: 0%;
-    cursor: pointer;    
+    cursor: pointer;
     transition: background-color 0.1s;
 }
 
 input[type="submit" i].delete_confirm:active {
-    background-color: #9fb889; 
+    background-color: #9fb889;
 }
 
-/* ------------------- */
-/* Media Queries       */
-/* ------------------- */
-/* 針對較小的手機屏幕（如 iPhone 12 mini） */
 @media screen and (max-width: 374px) {
     .title-container {
-        width: 90%; 
-    }
-
-    /* 所有輸入欄位 */
-    /* .form-container {
         width: 90%;
-    } */
+    }
 }
 
-/* 中等大小的手機屏幕 */
 @media screen and (min-width: 375px) and (max-width: 413px) {
-    body h1{
+    body h1 {
         font-weight: 600;
-        }
+    }
 }
-
 
 @media (min-width: 768px) {
-    html, body{
+
+    html,
+    body {
         padding-bottom: calc(30px + env(safe-area-inset-bottom));
-    
+
     }
 
     div.header {
         height: 50px;
     }
-    
+
     div.header h1 {
         padding: 12px;
     }
-    
+
     ul li {
         line-height: 50px;
-        width: 85px; 
+        width: 85px;
     }
 
     div.navbar a {
@@ -194,7 +166,7 @@ input[type="submit" i].delete_confirm:active {
     .btn:hover,
     .btn:active {
         background-color: #9fb889;
-    } 
+    }
 
     input[type="submit" i]:hover,
     input[type="submit" i]:active {
@@ -211,22 +183,22 @@ input[type="submit" i].delete_confirm:active {
     input[type="submit" i].delete_confirm:hover,
     input[type="submit" i].delete_confirm:active {
         background-color: #9fb889;
-    } 
+    }
 
     .value {
-        margin-bottom: 30px; 
+        margin-bottom: 30px;
     }
-    
+
     select {
         margin-bottom: 32px;
     }
 
     input[type="datetime-local"]::-webkit-calendar-picker-indicator {
         position: absolute;
-        right: 10px; 
-        margin-left: 0; 
-        z-index: 2; 
-        opacity: 0; 
+        right: 10px;
+        margin-left: 0;
+        z-index: 2;
+        opacity: 0;
         width: 20px;
         height: 20px;
         cursor: pointer;
@@ -234,24 +206,21 @@ input[type="submit" i].delete_confirm:active {
 
     .delete-btn {
         top: 95px;
-    } 
+    }
 }
-
-
-
 
 @media (min-width: 1400px) {
     #menu-bar {
         padding-top: 20px;
         padding-left: 20px;
     }
-    
+
     ul li {
         line-height: 65px;
     }
-    
+
     .title-container {
-        width: 38%; 
+        width: 38%;
     }
 
 }

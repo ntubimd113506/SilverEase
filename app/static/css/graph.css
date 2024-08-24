@@ -1,39 +1,41 @@
 @charset "utf-8";
-html, body{
+
+html,
+body {
     touch-action: manipulation;
     font-family: 'Noto Sans TC', sans-serif;
     background-color: #F2F0EE;
     padding: 0%;
     margin: 0%;
-    height: 100%; 
+    height: 100%;
     padding-bottom: constant(safe-area-inset-bottom);
     padding-bottom: calc(30px + env(safe-area-inset-bottom));
 }
 
-div.header{
+div.header {
     display: flex;
-    justify-content: center;  
+    justify-content: center;
     padding: 10px;
     height: 40px;
     background-color: #9FB889;
 }
 
-div.header h1{
+div.header h1 {
     font-size: 30px;
     width: 200px;
     padding: 5px;
-    text-align:center;
+    text-align: center;
     letter-spacing: 3px;
     margin: 0%;
 }
 
-div.content{
+div.content {
     background-color: #F2F0EE;
     padding: 0px 23px;
 }
 
 .title-container {
-    width: 88%; 
+    width: 88%;
     margin: 0 auto;
 }
 
@@ -43,13 +45,13 @@ div.content{
     letter-spacing: 5px;
     width: 100%;
     text-align: left;
-    margin-top: 30px; 
+    margin-top: 30px;
     margin-bottom: 35px;
 }
 
-div.title-container h1{
+div.title-container h1 {
     font-size: 30px;
-    letter-spacing:8px;
+    letter-spacing: 8px;
 }
 
 
@@ -65,13 +67,13 @@ div.title-container h1{
 .no-access-content {
     display: flex;
     align-items: center;
-    gap: 8px; 
+    gap: 8px;
     font-size: 20px;
     margin-top: 30px;
 
 }
 
-.fa-solid{
+.fa-solid {
     color: #E8933D;
 }
 
@@ -95,27 +97,27 @@ div.title-container h1{
 }
 
 .set-btn:active {
-    background-color: #9fb889; 
+    background-color: #9fb889;
 }
 
 
 #MainUserID {
-  width: auto; 
-  padding: 5px 10px; 
-  border-radius: 10px; 
-  background-color: #d3d3d3; 
-  border: 1px solid #ffffff;  
-  font-size: 18px;
-  font-weight: bold;
-  position: relative; 
-  top: -5px; 
-  color: #000;
+    width: auto;
+    padding: 5px 10px;
+    border-radius: 10px;
+    background-color: #d3d3d3;
+    border: 1px solid #ffffff;
+    font-size: 18px;
+    font-weight: bold;
+    position: relative;
+    top: -5px;
+    color: #000;
 }
 
 
 #MainUserID:focus {
-  outline: none;
-  box-shadow: 0 0 5px #666; 
+    outline: none;
+    box-shadow: 0 0 5px #666;
 }
 
 .chart-box {
@@ -136,10 +138,10 @@ div.title-container h1{
 
 #dateContainer {
     padding: 0px 23px;
-    display: flex; 
+    display: flex;
     justify-content: center;
     margin-top: 50px;
-    text-align: center; 
+    text-align: center;
     align-items: center;
 }
 
@@ -193,18 +195,18 @@ div.title-container h1{
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #ffffff; 
-    border-radius: 10px; 
-    padding: 10px 20px; 
-    font-size: 17px; 
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-size: 17px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     font-weight: bold;
     color: #333;
-    width: 72%; 
+    width: 72%;
     max-width: 600px;
     height: 40px;
     margin: 0 auto;
-    text-align: center; 
+    text-align: center;
 }
 
 .date-range-container span {
@@ -212,7 +214,7 @@ div.title-container h1{
     margin: 0 5px;
 }
 
-div.button-group{
+div.button-group {
     display: flex;
     justify-content: center;
     margin: 0 auto;
@@ -235,7 +237,7 @@ div.button-group{
     font-size: 17px;
     font-weight: bolder;
     letter-spacing: 3px;
-    text-align: center; 
+    text-align: center;
     align-items: center;
 }
 
@@ -243,7 +245,8 @@ div.button-group{
     background-color: #9fb889;
 }
 
-.no-data-message, .error-message {
+.no-data-message,
+.error-message {
     color: #000000;
     border: 3px solid #E8933D;
     border-radius: 8px;
@@ -262,7 +265,7 @@ div.button-group{
 .period-link {
     display: inline-block;
     margin: 0px 15px;
-    padding: 10px ;
+    padding: 10px;
     width: 12%;
     background-color: #5D7B48;
     color: white;
@@ -274,7 +277,7 @@ div.button-group{
     letter-spacing: 3px;
     text-align: center;
     align-items: center;
- 
+
 }
 
 .period-link:active {
@@ -282,7 +285,7 @@ div.button-group{
 }
 
 @media screen and (min-width: 375px) and (max-width: 413px) {
-    .nav-button{
+    .nav-button {
         width: 89%;
     }
 
@@ -293,7 +296,7 @@ div.button-group{
 
 
 @media screen and (min-width: 414px) {
-    .nav-button{
+    .nav-button {
         width: 89%;
     }
 }
@@ -306,7 +309,7 @@ div.button-group{
     div.header {
         height: 50px;
     }
-    
+
     div.header h1 {
         padding: 12px;
     }
@@ -315,7 +318,8 @@ div.button-group{
         margin: 10px 0;
         width: 60%;
         display: flex;
-        justify-content: center; /* 水平居中 */
+        justify-content: center;
+        /* 水平居中 */
         align-items: center;
     }
 
@@ -324,10 +328,10 @@ div.button-group{
     }
 
     .title-container {
-        width: 67%; 
+        width: 67%;
     }
 
-    .nav-button{
+    .nav-button {
         width: 66%;
     }
 
@@ -348,10 +352,10 @@ div.button-group{
 
 @media (min-width: 992px) {
     .title-container {
-        width: 54%; 
+        width: 54%;
     }
 
-    .nav-button{
+    .nav-button {
         width: 55%;
     }
 
@@ -362,24 +366,25 @@ div.button-group{
 
 @media (min-width: 1200px) {
     .title-container {
-        width: 48%; 
+        width: 48%;
     }
 
-    .nav-button{
+    .nav-button {
         width: 47%;
     }
+
     .period-link {
         width: 8.5%;
     }
-    
+
 }
 
 @media (min-width: 1400px) {
     .title-container {
-        width: 44%; 
+        width: 44%;
     }
 
-    .nav-button{
+    .nav-button {
         width: 44.5%;
     }
 

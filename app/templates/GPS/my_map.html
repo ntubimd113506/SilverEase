@@ -1,23 +1,28 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>我的地圖</title>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA4cVXQgyJq-DSWAA_CfAagMIA6xnW8PhU&libraries=geometry"></script>
+    <script
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA4cVXQgyJq-DSWAA_CfAagMIA6xnW8PhU&libraries=geometry"></script>
     <style>
         #map {
             height: 500px;
             width: 100%;
         }
+
         .time-filters {
             margin-bottom: 20px;
         }
+
         .time-filters button {
             margin-right: 10px;
             padding: 5px 10px;
             cursor: pointer;
         }
+
         .back-button {
             margin: 20px;
             padding: 10px 20px;
@@ -28,6 +33,7 @@
         }
     </style>
 </head>
+
 <body>
     <button class="back-button" onclick="goBack()">回前頁</button>
     <h1>{{name}}的足跡</h1>
@@ -38,103 +44,104 @@
         <button onclick="filterLocations('all')">全部</button>
     </div>
 
-    <div id="map"></div>    
-<script>
-    var MainUserID = "{{ MainUserID }}"; // 從後端獲取的 MainUserID
+    <div id="map"></div>
+    <script>
+        var MainUserID = "{{ MainUserID }}"; // 從後端獲取的 MainUserID
 
-    function initMap(locations) {
-        var map = new google.maps.Map(document.getElementById('map'), {
-            zoom: 7, // 默認放大級別
-            center: {lat: 23.6978, lng: 120.9605} // 台灣的中心位置
-        });
+        function initMap(locations) {
+            var map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 7, // 默認放大級別
+                center: { lat: 23.6978, lng: 120.9605 } // 台灣的中心位置
+            });
 
-        var bounds = new google.maps.LatLngBounds();
-        var distinctMarkers = [];
-        var pathCoords = [];
+            var bounds = new google.maps.LatLngBounds();
+            var distinctMarkers = [];
+            var pathCoords = [];
 
-        locations.forEach(function(location) {
-            var coords = location.match(/query=([-.\d]+),([-.\d]+)/);
-            if (coords) {
-                var latLng = new google.maps.LatLng(parseFloat(coords[1]), parseFloat(coords[2]));
+            locations.forEach(function (location) {
+                var coords = location.match(/query=([-.\d]+),([-.\d]+)/);
+                if (coords) {
+                    var latLng = new google.maps.LatLng(parseFloat(coords[1]), parseFloat(coords[2]));
 
-                // 檢查500米範圍內是否已有地標
-                var isDuplicate = distinctMarkers.some(function(existingMarker) {
-                    return google.maps.geometry.spherical.computeDistanceBetween(latLng, existingMarker) < 500;
-                });
-
-                // 如果沒有重複，添加地標
-                if (!isDuplicate) {
-                    distinctMarkers.push(latLng);
-                    pathCoords.push(latLng);
-
-                    // 添加標記
-                    var marker = new google.maps.Marker({
-                        position: latLng,
-                        map: map
+                    // 檢查500米範圍內是否已有地標
+                    var isDuplicate = distinctMarkers.some(function (existingMarker) {
+                        return google.maps.geometry.spherical.computeDistanceBetween(latLng, existingMarker) < 500;
                     });
 
-                    // 擴展邊界以適應所有標記
-                    bounds.extend(latLng);
+                    // 如果沒有重複，添加地標
+                    if (!isDuplicate) {
+                        distinctMarkers.push(latLng);
+                        pathCoords.push(latLng);
+
+                        // 添加標記
+                        var marker = new google.maps.Marker({
+                            position: latLng,
+                            map: map
+                        });
+
+                        // 擴展邊界以適應所有標記
+                        bounds.extend(latLng);
+                    }
                 }
+            });
+
+            // 繪製路線
+            if (pathCoords.length > 1) {
+                var whiteOutline = new google.maps.Polyline({
+                    path: pathCoords,
+                    geodesic: true,
+                    strokeColor: '#162AD0',  // 白色邊框
+                    strokeOpacity: 1.0,
+                    strokeWeight: 8,         // 更粗的邊框
+                    map: map
+                });
+
+                var polyline = new google.maps.Polyline({
+                    path: pathCoords,
+                    geodesic: true,
+                    strokeColor: '#2750F1',
+                    strokeOpacity: 1.0,
+                    strokeWeight: 6,
+                    map: map
+                });
+
             }
-        });
 
-        // 繪製路線
-        if (pathCoords.length > 1) {
-            var whiteOutline = new google.maps.Polyline({
-                path: pathCoords,
-                geodesic: true,
-                strokeColor: '#162AD0',  // 白色邊框
-                strokeOpacity: 1.0,
-                strokeWeight: 8,         // 更粗的邊框
-                map: map
-            });
-
-            var polyline = new google.maps.Polyline({
-                path: pathCoords,
-                geodesic: true,
-                strokeColor: '#2750F1',
-                strokeOpacity: 1.0,
-                strokeWeight: 6,
-                map: map
-            });
-
+            // 確保地圖的中心和縮放適應所有標記
+            if (distinctMarkers.length === 1) {
+                // 只有一個地標時，縮小地圖的放大級別
+                map.setZoom(14);
+                map.setCenter(distinctMarkers[0]);
+            } else if (!bounds.isEmpty()) {
+                // 有多個地標時，調整地圖邊界
+                map.fitBounds(bounds);
+            } else {
+                // 沒有地標時，顯示台灣全景
+                map.setCenter({ lat: 23.6978, lng: 120.9605 });
+                map.setZoom(7);
+            }
         }
 
-        // 確保地圖的中心和縮放適應所有標記
-        if (distinctMarkers.length === 1) {
-            // 只有一個地標時，縮小地圖的放大級別
-            map.setZoom(14);
-            map.setCenter(distinctMarkers[0]);
-        } else if (!bounds.isEmpty()) {
-            // 有多個地標時，調整地圖邊界
-            map.fitBounds(bounds);
-        } else {
-            // 沒有地標時，顯示台灣全景
-            map.setCenter({lat: 23.6978, lng: 120.9605});
-            map.setZoom(7);
+        function filterLocations(timePeriod) {
+            // 發送 GET 請求到後端的 /road 路由，附帶 MainUserID 和時間範圍
+            fetch(`/gps/road?MainUserID=${MainUserID}&time=${timePeriod}`)
+                .then(response => response.json())
+                .then(data => {
+                    // 使用返回的數據初始化地圖
+                    initMap(data.urls);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
         }
-    }
 
-    function filterLocations(timePeriod) {
-        // 發送 GET 請求到後端的 /road 路由，附帶 MainUserID 和時間範圍
-        fetch(`/gps/road?MainUserID=${MainUserID}&time=${timePeriod}`)
-            .then(response => response.json())
-            .then(data => {
-                // 使用返回的數據初始化地圖
-                initMap(data.urls);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-    }
+        function goBack() {
+            window.location.href = '/gps/'; // 直接導航到特定頁面
+        }
 
-    function goBack() {
-        window.location.href = '/gps/'; // 直接導航到特定頁面
-    }
-
-    // 預設顯示全部足跡
-    filterLocations('1');
-</script>
+        // 預設顯示全部足跡
+        filterLocations('1');
+    </script>
 </body>
+
 </html>

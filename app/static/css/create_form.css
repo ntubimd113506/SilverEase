@@ -3,7 +3,8 @@
 /* ------------------- */
 /* html, body          */
 /* ------------------- */
-html, body{
+html,
+body {
     touch-action: manipulation;
     font-family: 'Noto Sans TC', sans-serif;
     background-color: #F2F0EE;
@@ -21,7 +22,7 @@ html, body{
 /* ------------------- */
 /* container           */
 /* ------------------- */
-div.container{
+div.container {
     touch-action: manipulation;
     -ms-content-zooming: none;
     margin-left: auto;
@@ -37,26 +38,26 @@ div.container{
 /* ------------------- */
 /* header              */
 /* ------------------- */
-div.header{
+div.header {
     display: flex;
     /* 水平置中 */
-    justify-content: center;  
+    justify-content: center;
     padding: 10px;
     height: 40px;
     background-color: #9FB889;
 }
 
-div.header h1{
+div.header h1 {
     font-size: 30px;
     width: 200px;
     padding: 5px;
-    text-align:center;
+    text-align: center;
     letter-spacing: 3px;
     margin: 0%;
 }
 
 /* 返回主頁 */
-#menu-bar{
+#menu-bar {
     z-index: 1;
     float: left;
     padding-top: 12px;
@@ -65,38 +66,43 @@ div.header h1{
     color: #809f68;
 }
 
-div.navbar{
+div.navbar {
     height: 35px;
 }
-ul{
+
+ul {
     margin: 0;
     padding: 0;
     list-style-type: none;
     font-weight: 600;
 }
-ul li{
+
+ul li {
     line-height: 40px;
-    float: left;  /* 字變水平*/
-    width:75px; /* 字之間的距離區塊*/
+    float: left;
+    /* 字變水平*/
+    width: 75px;
+    /* 字之間的距離區塊*/
     text-align: center;
 }
 
-div.navbar a{
-    text-decoration: none; /* 連結底線拿掉*/
-    color: #000000; 
+div.navbar a {
+    text-decoration: none;
+    /* 連結底線拿掉*/
+    color: #000000;
 }
 
 /* ------------------- */
 /* content             */
 /* ------------------- */
 
-div.content{
+div.content {
     background-color: #F2F0EE;
     padding: 0px 23px;
 }
 
 .title-container {
-    width: 88%; 
+    width: 88%;
     margin: 0 auto;
 }
 
@@ -112,16 +118,16 @@ div.content{
     letter-spacing: 5px;
     width: 100%;
     text-align: left;
-    margin-top: 30px; 
+    margin-top: 30px;
     margin-bottom: 35px;
 }
 
-div.content h1{
+div.content h1 {
     font-size: 30px;
-    letter-spacing:8px;
+    letter-spacing: 8px;
 }
 
-input.input-field, 
+input.input-field,
 input[type="datetime-local"],
 select {
     width: 100%;
@@ -142,7 +148,7 @@ select {
     padding: 0 40px 0 8px; 
     text-align: left;
 } */
- 
+
 input[type="datetime-local"] {
     padding: 0 40px 0 8px;
     text-align: left;
@@ -165,8 +171,8 @@ select {
 .fa-calendar-days {
     position: absolute;
     right: 10px;
-    top: 50%; 
-    transform: translateY(-70%); 
+    top: 50%;
+    transform: translateY(-70%);
     color: #809f68;
     font-size: 19px;
     pointer-events: none;
@@ -174,18 +180,18 @@ select {
 
 /* 輸入框間距 */
 .value {
-    margin-bottom: 24px; 
+    margin-bottom: 24px;
 }
 
 .input-field {
-    width: 100%; 
-    margin-bottom: 10px; 
+    width: 100%;
+    margin-bottom: 10px;
 }
 
 .name {
     font-size: 18px;
-    margin-bottom: 5px; 
-}  
+    margin-bottom: 5px;
+}
 
 
 
@@ -195,7 +201,7 @@ select {
     top: 25px;
     align-items: center;
     background-color: #809f68;
-    width: 100%; 
+    width: 100%;
     height: 40px;
     border-style: none;
     border-radius: 20px;
@@ -205,7 +211,7 @@ select {
     letter-spacing: 5px;
     margin: 0%;
     margin-bottom: 30px;
-    cursor: pointer;    
+    cursor: pointer;
     transition: background-color 0.1s;
 }
 
@@ -228,7 +234,7 @@ input[type="submit" i] {
     font-weight: bolder;
     letter-spacing: 5px;
     margin: 0%;
-    cursor: pointer;    
+    cursor: pointer;
     transition: background-color 0.1s;
 }
 
@@ -239,10 +245,10 @@ input[type="submit" i]:active {
 /* 編輯資料的刪除 */
 .delete-btn {
     position: relative;
-    top: 90px; 
+    top: 90px;
     display: flex;
-    justify-content: center; 
-    align-items: center; 
+    justify-content: center;
+    align-items: center;
     background-color: #ffffff;
     border: 4px solid #809f68;
     width: 100%;
@@ -258,12 +264,12 @@ input[type="submit" i]:active {
     text-decoration: none;
     color: #000000;
     font-size: 19px;
-    box-sizing: border-box; 
+    box-sizing: border-box;
 }
 
 
 .delete-btn:active {
-    background-color: #eaeaea; 
+    background-color: #eaeaea;
     border: 4px solid #9fb889;
     color: #3a3a3a;
 }
@@ -283,12 +289,12 @@ input[type="submit" i].delete_confirm {
     font-weight: bolder;
     letter-spacing: 5px;
     margin: 0%;
-    cursor: pointer;    
+    cursor: pointer;
     transition: background-color 0.1s;
 }
 
 input[type="submit" i].delete_confirm:active {
-    background-color: #9fb889; 
+    background-color: #9fb889;
 }
 
 select option[disabled] {
@@ -298,6 +304,7 @@ select option[disabled] {
 select:invalid {
     color: #878787;
 }
+
 .input-icon {
     position: relative;
 }
@@ -317,17 +324,17 @@ select:invalid {
     width: 15%;
 } */
 
-.input-field:valid + .placeholder {
+.input-field:valid+.placeholder {
     display: none;
 }
 
-input[type="datetime-local"]::-webkit-datetime-edit { 
-    color: transparent; 
+input[type="datetime-local"]::-webkit-datetime-edit {
+    color: transparent;
 }
 
 input[type="datetime-local"]:focus::-webkit-datetime-edit,
-input[type="datetime-local"]:valid::-webkit-datetime-edit { 
-    color: #111111; 
+input[type="datetime-local"]:valid::-webkit-datetime-edit {
+    color: #111111;
 }
 
 input[type="datetime-local"]::placeholder {
@@ -338,32 +345,33 @@ input[type="datetime-local"]::placeholder {
 input[type="datetime-local"]:valid::placeholder {
     color: transparent;
 }
+
 /* //// */
 input[type="datetime-local"],
-input[type="time"]::-webkit-datetime-edit { 
-    color: #111111; 
+input[type="time"]::-webkit-datetime-edit {
+    color: #111111;
 }
 
 input[type="datetime-local"]:focus::-webkit-datetime-edit,
-input[type="datetime-local"]:valid::-webkit-datetime-edit { 
-    color: #111111; 
+input[type="datetime-local"]:valid::-webkit-datetime-edit {
+    color: #111111;
 }
 
 input[type="time"]:focus::-webkit-datetime-edit,
-input[type="time"]:valid::-webkit-datetime-edit { 
-    color: #111111; 
+input[type="time"]:valid::-webkit-datetime-edit {
+    color: #111111;
 }
 
 /* /////////圖片////////// */
-#fileInput::file-selector-button{
+#fileInput::file-selector-button {
     padding: 5px 15px;
     background-color: #809f68;
-    color: #fff; 
+    color: #fff;
     font-weight: 600;
-    font-size: 16px; 
+    font-size: 16px;
     border-radius: 20px;
     cursor: pointer;
-    text-align: center; 
+    text-align: center;
     border: none;
     width: 100%;
     max-width: 100px;
@@ -378,8 +386,8 @@ input[type="time"]:valid::-webkit-datetime-edit {
 #removeSelectionBtn-1 {
     display: flex;
     padding: 5px 15px;
-    background-color: #dadada; 
-    color: #000000; 
+    background-color: #dadada;
+    color: #000000;
     font-size: 16px;
     border-radius: 20px;
     cursor: pointer;
@@ -388,18 +396,18 @@ input[type="time"]:valid::-webkit-datetime-edit {
     font-weight: 700;
     margin-bottom: 10px;
     height: 30px;
-    justify-content: center; 
-    align-items: center; 
+    justify-content: center;
+    align-items: center;
     padding-bottom: 5px;
     margin-top: 10px;
     margin-bottom: 4px;
 }
 
-#removeSelectionBtn{
+#removeSelectionBtn {
     display: flex;
     padding: 5px 15px;
-    background-color: #dadada; 
-    color: #000000; 
+    background-color: #dadada;
+    color: #000000;
     font-size: 16px;
     border-radius: 20px;
     cursor: pointer;
@@ -408,26 +416,28 @@ input[type="time"]:valid::-webkit-datetime-edit {
     font-weight: 700;
     margin-bottom: 10px;
     height: 30px;
-    justify-content: center; 
-    align-items: center; 
+    justify-content: center;
+    align-items: center;
     padding-bottom: 5px;
     margin-top: 10px;
 }
 
-#Cycleinput{
+#Cycleinput {
     margin-top: 10px;
 }
 
-#space{
+#space {
     margin-top: 26px;
 }
 
 select {
     color: gray;
 }
+
 select option {
     color: gray;
 }
+
 select option:first-child {
     color: gray;
 }
@@ -438,7 +448,7 @@ select option:first-child {
 /* 針對較小的手機屏幕（如 iPhone 12 mini） */
 @media screen and (max-width: 374px) {
     .title-container {
-        width: 90%; 
+        width: 90%;
     }
 
     /* 所有輸入欄位 */
@@ -449,21 +459,21 @@ select option:first-child {
 
 /* 中等大小的手機屏幕 */
 @media screen and (min-width: 375px) and (max-width: 413px) {
-    body h1{
+    body h1 {
         font-weight: 600;
-        }
+    }
 }
 
 /* 針對較大的手機屏幕（如 iPhone 14 Pro Max） */
 @media screen and (min-width: 414px) {
 
     .delete-btn {
-        top: 90px; 
+        top: 90px;
 
     }
 
     .title-container {
-        width: 90%; 
+        width: 90%;
     }
 
     /* 所有輸入欄位 */
@@ -479,15 +489,17 @@ select option:first-child {
 }
 
 @media (min-width: 768px) {
-    html, body{
+
+    html,
+    body {
         padding-bottom: calc(30px + env(safe-area-inset-bottom));
-    
+
     }
 
     div.header {
         height: 50px;
     }
-    
+
     div.header h1 {
         padding: 12px;
     }
@@ -497,10 +509,10 @@ select option:first-child {
         padding-left: 13px;
         font-size: 22px;
     }
-    
+
     ul li {
         line-height: 50px;
-        width: 85px; 
+        width: 85px;
     }
 
     div.navbar a {
@@ -510,7 +522,7 @@ select option:first-child {
     .btn:hover,
     .btn:active {
         background-color: #9fb889;
-    } 
+    }
 
     input[type="submit" i]:hover,
     input[type="submit" i]:active {
@@ -527,30 +539,30 @@ select option:first-child {
     input[type="submit" i].delete_confirm:hover,
     input[type="submit" i].delete_confirm:active {
         background-color: #9fb889;
-    } 
+    }
 
     .title-container {
-        width: 55%; 
+        width: 55%;
     }
-    
+
     .form-container {
         width: 55%;
     }
 
     .value {
-        margin-bottom: 30px; 
+        margin-bottom: 30px;
     }
-    
+
     select {
         margin-bottom: 32px;
     }
 
     input[type="datetime-local"]::-webkit-calendar-picker-indicator {
         position: absolute;
-        right: 10px; 
-        margin-left: 0; 
-        z-index: 2; 
-        opacity: 0; 
+        right: 10px;
+        margin-left: 0;
+        z-index: 2;
+        opacity: 0;
         width: 20px;
         height: 20px;
         cursor: pointer;
@@ -558,7 +570,7 @@ select option:first-child {
 
     .delete-btn {
         top: 95px;
-    } 
+    }
 }
 
 @media (min-width: 992px) {
@@ -567,15 +579,15 @@ select option:first-child {
         padding-left: 15px;
         font-size: 25px;
     }
-    
+
     ul li {
         line-height: 56px;
     }
 
     .title-container {
-        width: 47%; 
+        width: 47%;
     }
-    
+
     .form-container {
         width: 47%;
     }
@@ -585,9 +597,9 @@ select option:first-child {
 
 @media (min-width: 1200px) {
     .title-container {
-        width: 42%; 
+        width: 42%;
     }
-    
+
     .form-container {
         width: 42%;
     }
@@ -598,7 +610,7 @@ select option:first-child {
         padding-top: 20px;
         padding-left: 20px;
     }
-    
+
     ul li {
         line-height: 65px;
     }
@@ -609,11 +621,11 @@ select option:first-child {
         padding: 40px;
         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     } */
-    
+
     .title-container {
-        width: 38%; 
+        width: 38%;
     }
-    
+
     .form-container {
         width: 38%;
     }

@@ -2,7 +2,8 @@
 <html>
 
 <head>
-    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta charset="utf-8" name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>編輯紀念日</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -56,21 +57,21 @@
                 break;
             }
         }
-       
+
     })
-    
-    document.addEventListener('DOMContentLoaded', function() {
+
+    document.addEventListener('DOMContentLoaded', function () {
         var datetimeInput = document.getElementById('MemoTime');
         var placeholder = document.getElementById('placeholder');
-    
-        datetimeInput.addEventListener('input', function() {
+
+        datetimeInput.addEventListener('input', function () {
             if (this.value) {
                 placeholder.style.display = 'none';
             } else {
                 placeholder.style.display = 'block';
             }
         });
-    
+
         datetimeInput.dispatchEvent(new Event('input'));
     });
 
@@ -101,22 +102,24 @@
                     <div class="form">
                         <div class="name">名稱</div>
                         <div class="value">
-                            <input type="text" name="Title" value="{{ data.Title }}" class="input-field" placeholder="請輸入名稱"  required>
+                            <input type="text" name="Title" value="{{ data.Title }}" class="input-field"
+                                placeholder="請輸入名稱" required>
                         </div>
 
                         <div class="name">日期時間</div>
                         <div class="value">
                             <div class="input-icon">
-                                <input type="datetime-local" name="MemoTime" value="{{ data.MemoTime }}" class="input-field"
-                                    required>
-                                    <label for="MemoTime" id="placeholder" class="placeholder">選擇欲提醒的日期</label>
+                                <input type="datetime-local" name="MemoTime" value="{{ data.MemoTime }}"
+                                    class="input-field" required>
+                                <label for="MemoTime" id="placeholder" class="placeholder">選擇欲提醒的日期</label>
                                 <i class="fa-solid fa-calendar-days calendar-icon"></i>
                             </div>
                         </div>
 
                         <div class="name">地點</div>
                         <div class="value">
-                            <input type="text" name="Location" value="{{ data.Location }}" class="input-field"  placeholder="請輸入活動地點">
+                            <input type="text" name="Location" value="{{ data.Location }}" class="input-field"
+                                placeholder="請輸入活動地點">
                         </div>
 
                         <div class="name">多久重複</div>
@@ -141,7 +144,7 @@
 
                     </div>
                     <a href="/event/delete/confirm?MemoID={{ data.MemoID }}" class="delete-btn">刪除</a>
-                    
+
                     <input type="hidden" name="MemoID" value="{{ data.MemoID }}">
                     <input type="hidden" id="EditorID" name="EditorID">
                     <div class="name"></div>

@@ -125,7 +125,9 @@ def health_self():
         for symptom, count in sorted_symptom_counts
     ][:5]
 
-    return render_template("/health/health.html", title="個人推薦", num = "A1", items=image_items)
+    return render_template(
+        "/health/health.html", title="個人推薦", num="A1", items=image_items
+    )
 
 
 @health_bp.route("/<category>")
