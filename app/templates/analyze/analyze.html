@@ -20,6 +20,7 @@
             <h1 class="content-header">
                 {% if not is_all %}
                 <select id="MainUserID" name="MainUserID" class="MainUserID" onchange="updateMainUserID()">
+                    <option value="" disabled selected>請選擇</option>
                     {% for user in MainUsers %}
                     {% if Whose == user[0] %}
                     <option value="{{ user[0] }}" selected>{{ user[1] }}</option>
@@ -35,7 +36,14 @@
         </div>
     </div>
 
-    {% if not is_all and not data.DataAnalyze %}
+    {% if data.First %}
+    <div class="no-access">
+        <div class="no-access-content">
+            <span>請選擇長者<br></span><br>
+        </div>
+        <p>如要查看分析請選擇長者</p>
+    </div>
+    {% elif not is_all and not data.DataAnalyze %}
     {% if data.show_full_no_access %}
     <div class="no-access">
         <div class="no-access-content">
@@ -81,8 +89,11 @@
                 },
                 body: JSON.stringify({ mainUserID: mainUserID })
             })
-                .then(response => {
-                    location.reload();
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === "success") {
+                        location.reload();
+                    }
                 });
         }
     </script>

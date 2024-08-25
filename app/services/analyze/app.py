@@ -15,6 +15,7 @@ def update_main_user_id():
 def render_analyze_template(title, analyze, is_all=True):
     MemID = session.get("MemID")
     MainUser = session.get("MainUserID")
+    First = not bool(MainUser)
     DataAnalyze = True
     show_full_no_access = False
 
@@ -75,6 +76,7 @@ def render_analyze_template(title, analyze, is_all=True):
         "monthly": {"url": f"{'all' if is_all else 'mem'}_monthly", "name": "月"},
         "yearly": {"url": f"{'all' if is_all else 'mem'}_yearly", "name": "年"},
         "DataAnalyze": DataAnalyze,
+        "First": First,
         "show_full_no_access": show_full_no_access,
     }
     return render_template(
