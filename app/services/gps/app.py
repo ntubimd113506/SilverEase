@@ -21,48 +21,16 @@ def gps():
     conn = db.get_connection()
     cursor = conn.cursor()
 
-    MainUsers = []
-
     if MemID:
-        # 查詢當前用戶的 MainUserID 和 MemName
         cursor.execute(
             """
-            SELECT f.MainUserID, m.MemName
-            FROM `113-ntub113506`.Family f
-            JOIN `113-ntub113506`.Member m ON f.MainUserID = m.MemID
-            WHERE f.MainUserID = %s
-            """,
-            (MemID,),
-        )
-        MainUserInfo = cursor.fetchone()
-
-        if MainUserInfo:
-            MainUsers.append((MainUserInfo[0], MainUserInfo[1]))
-
-        # 查詢家庭連接的其他主用戶
-        cursor.execute(
-            """
-            SELECT m.MemID, m.MemName
-            FROM `113-ntub113506`.FamilyLink fl
-            JOIN `113-ntub113506`.Family f ON fl.FamilyID = f.FamilyID
-            JOIN `113-ntub113506`.Member m ON f.MainUserID = m.MemID
-            WHERE fl.SubUserID = %s
-            """,
-            (MemID,),
-        )
-        additional_users = cursor.fetchall()
-        MainUsers.extend(additional_users)
-
-        # 檢查數據分析權限
-        cursor.execute(
-            """
-            SELECT m.MemID, m.MemName, IFNULL(a.GPS, 0)
+            SELECT m.MemID, m.MemName, IFNULL(a.DataAnalyze, 0)
             FROM `113-ntub113506`.Family f
             JOIN `113-ntub113506`.Member m ON f.MainUserID = m.MemID
             LEFT JOIN `113-ntub113506`.Access a ON f.FamilyID = a.FamilyID
             WHERE f.MainUserID = %s
             UNION
-            SELECT m.MemID, m.MemName, IFNULL(a.GPS, 0)
+            SELECT m.MemID, m.MemName, IFNULL(a.DataAnalyze, 0)
             FROM `113-ntub113506`.FamilyLink fl
             JOIN `113-ntub113506`.Family f ON fl.FamilyID = f.FamilyID
             JOIN `113-ntub113506`.Member m ON f.MainUserID = m.MemID
@@ -71,12 +39,12 @@ def gps():
             """,
             (MemID, MemID),
         )
-        MainUsersData = cursor.fetchall()
+        MainUsers = cursor.fetchall()
 
-        if not MainUsersData:
+        if not MainUsers:
             cursor.execute(
                 """
-                SELECT m.MemID, m.MemName, IFNULL(a.GPS, 0)
+                SELECT m.MemID, m.MemName, IFNULL(a.DataAnalyze, 0) 
                 FROM `113-ntub113506`.Member m
                 LEFT JOIN `113-ntub113506`.Family f ON f.MainUserID = m.MemID
                 LEFT JOIN `113-ntub113506`.Access a ON f.FamilyID = a.FamilyID
@@ -84,16 +52,17 @@ def gps():
                 """,
                 (MemID,),
             )
-            MainUsersData = cursor.fetchall()
-            GPS = 0
+            MainUsers = cursor.fetchall()
+            DataAnalyze = 0
         else:
-            for user in MainUsersData:
+            for user in MainUsers:
                 if user[0] == MainUser:
-                    GPS = user[2]
+                    DataAnalyze = user[2]
                     break
 
-        if MainUser == MemID and not GPS:
+        if MainUser == MemID and not DataAnalyze:
             show_full_no_access = True
+
 
     cursor.close()
     conn.close()
@@ -109,7 +78,6 @@ def gps():
         Whose=MainUser,
         data=data
     )
-
 
 #即時定位
 @gps_bp.route('/check', methods=['POST'])

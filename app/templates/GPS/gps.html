@@ -39,9 +39,13 @@
                             <label for="MainUserID">
                                 <h4>主要用戶</h4>
                             </label>
-                            <select id="MainUserID" name="MainUserID">
+                            <select id="MainUserID" name="MainUserID" class="MainUserID" onchange="updateMainUserID()">
                                 {% for user in MainUsers %}
+                                {% if Whose == user[0] %}
+                                <option value="{{ user[0] }}" selected>{{ user[1] }}</option>
+                                {% else %}
                                 <option value="{{ user[0] }}">{{ user[1] }}</option>
+                                {% endif %}
                                 {% endfor %}
                             </select>
                         </div>
