@@ -47,7 +47,6 @@
                         </div>
                     </div>
                 </form>
-                <!-- 新增查看長輩足跡的按鈕 -->
                 <button class="i" id="viewFootprintsBtn">查看長輩足跡</button>
             </div>
         </div>
@@ -69,9 +68,9 @@
 
         initializeLiff('{{ liffid }}');
 
-        // 當按下查看長輩足跡按鈕時觸發事件
+        //查看長輩足跡按鈕
         document.addEventListener('DOMContentLoaded', function () {
-            triggerChange(); // 頁面載入後自動執行
+            triggerChange(); 
         });
 
         document.getElementById('viewFootprintsBtn').addEventListener('click', function () {
@@ -94,18 +93,19 @@
         function triggerChange() {
             var selectElement = document.getElementById('MainUserID');
             if (selectElement.options.length > 0) {
-                selectElement.selectedIndex = 0; // 設定預設為第一個選項
-                fetchGPSData(); // 預設為第一個選項時自動載入地圖
+                selectElement.selectedIndex = 0; 
+                fetchGPSData(); 
             }
             if (selectElement.options.length === 1) {
-                fetchGPSData(); // 只有一個選項時自動載入地圖
+                fetchGPSData();
             }
         }
 
         document.getElementById('MainUserID').addEventListener('change', function () {
-            fetchGPSData(); // 當選單改變時自動載入對應的地圖
+            fetchGPSData();
         });
 
+        //處理/check路由
         function fetchGPSData() {
             var formData = new FormData(document.getElementById('form'));
             fetch('/gps/check', {
@@ -125,7 +125,6 @@
                     console.error('Error:', error);
                 });
         }
-
 
         function showMap(url) {
             var coords = parseUrl(url);
@@ -155,10 +154,8 @@
             return {};
         }
 
-        // 註冊事件
         document.getElementById('MainUserID').addEventListener('change', fetchGPSData);
 
-        // 自動觸發一次
         triggerChange();
 
     </script>

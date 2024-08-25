@@ -31,6 +31,23 @@
             z-index: 1000;
             position: relative;
         }
+
+        .top-locations {
+            margin-top: 20px;
+        }
+
+        .top-locations h2 {
+            margin-bottom: 10px;
+        }
+
+        .top-locations ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .top-locations li {
+            padding: 5px 0;
+        }
     </style>
 </head>
 
@@ -43,15 +60,21 @@
         <button onclick="filterLocations('30')">當月</button>
         <button onclick="filterLocations('all')">全部</button>
     </div>
+    <div class="top-locations">
+        <h2>最常去的地點</h2>
+        <select id="top-locations-list"></select>
+    </div>
 
     <div id="map"></div>
-    <script>
-        var MainUserID = "{{ MainUserID }}"; // 從後端獲取的 MainUserID
 
+    <script>
+        var MainUserID = "{{ MainUserID }}";
+
+        // 默認顯示
         function initMap(locations) {
             var map = new google.maps.Map(document.getElementById('map'), {
-                zoom: 7, // 默認放大級別
-                center: { lat: 23.6978, lng: 120.9605 } // 台灣的中心位置
+                zoom: 7,
+                center: { lat: 23.6978, lng: 120.9605 }
             });
 
             var bounds = new google.maps.LatLngBounds();
@@ -63,23 +86,19 @@
                 if (coords) {
                     var latLng = new google.maps.LatLng(parseFloat(coords[1]), parseFloat(coords[2]));
 
-                    // 檢查500米範圍內是否已有地標
                     var isDuplicate = distinctMarkers.some(function (existingMarker) {
                         return google.maps.geometry.spherical.computeDistanceBetween(latLng, existingMarker) < 500;
                     });
 
-                    // 如果沒有重複，添加地標
                     if (!isDuplicate) {
                         distinctMarkers.push(latLng);
                         pathCoords.push(latLng);
 
-                        // 添加標記
                         var marker = new google.maps.Marker({
                             position: latLng,
                             map: map
                         });
 
-                        // 擴展邊界以適應所有標記
                         bounds.extend(latLng);
                     }
                 }
@@ -90,9 +109,9 @@
                 var whiteOutline = new google.maps.Polyline({
                     path: pathCoords,
                     geodesic: true,
-                    strokeColor: '#162AD0',  // 白色邊框
+                    strokeColor: '#162AD0',
                     strokeOpacity: 1.0,
-                    strokeWeight: 8,         // 更粗的邊框
+                    strokeWeight: 8,
                     map: map
                 });
 
@@ -107,40 +126,83 @@
 
             }
 
-            // 確保地圖的中心和縮放適應所有標記
             if (distinctMarkers.length === 1) {
-                // 只有一個地標時，縮小地圖的放大級別
                 map.setZoom(14);
                 map.setCenter(distinctMarkers[0]);
             } else if (!bounds.isEmpty()) {
-                // 有多個地標時，調整地圖邊界
                 map.fitBounds(bounds);
             } else {
-                // 沒有地標時，顯示台灣全景
-                map.setCenter({ lat: 23.6978, lng: 120.9605 });
+                map.setCenter({ lat: 23.6978, lng: 120.9605 });//台灣全景
                 map.setZoom(7);
             }
         }
 
+        // 路由/road
         function filterLocations(timePeriod) {
-            // 發送 GET 請求到後端的 /road 路由，附帶 MainUserID 和時間範圍
             fetch(`/gps/road?MainUserID=${MainUserID}&time=${timePeriod}`)
                 .then(response => response.json())
                 .then(data => {
-                    // 使用返回的數據初始化地圖
                     initMap(data.urls);
+                    updateTopLocations(data.top_list);
                 })
                 .catch(error => {
                     console.error('Error:', error);
                 });
         }
 
-        function goBack() {
-            window.location.href = '/gps/'; // 直接導航到特定頁面
+        //顯示清單
+        function updateTopLocations(topLocations) {
+            var topLocationsList = document.getElementById('top-locations-list');
+            topLocationsList.innerHTML = '';  // 清空現有的選項
+
+            var geocoder = new google.maps.Geocoder();
+            var displayedAddresses = new Set();  // 用來存儲已顯示過的地址
+
+            topLocations.forEach(function (location) {
+                var coords = location.Location.match(/([-.\d]+),([-.\d]+)/); // 提取經緯度
+                if (coords) {
+                    var latLng = { lat: parseFloat(coords[1]), lng: parseFloat(coords[2]) };
+
+                    geocoder.geocode({ 'location': latLng }, function (results, status) {
+                        if (status === 'OK' && results[0]) {
+                            var address = results[0].formatted_address;
+
+                            // 檢查地址是否已經顯示過
+                            if (!displayedAddresses.has(address)) {
+                                displayedAddresses.add(address);  // 添加到已顯示的地址集合中
+
+                                var option = document.createElement('option');
+                                option.value = `https://www.google.com/maps/search/?api=1&query=${latLng.lat},${latLng.lng}`;
+                                option.textContent = address; // 使用Geocoding API返回的地址
+
+                                topLocationsList.appendChild(option);
+                            } else {
+                                console.log(`Skipping duplicate address: ${address}`);
+                            }
+                        } else {
+                            console.error('Geocode was not successful for the following reason: ' + status);
+                        }
+                    });
+                } else {
+                    console.error('Invalid coordinates: ' + location.Location);
+                }
+            });
+
+            // 當選擇改變時跳轉到選定的地址
+            topLocationsList.addEventListener('change', function () {
+                var selectedValue = topLocationsList.value;
+                if (selectedValue) {
+                    window.open(selectedValue, '_blank');
+                }
+            });
         }
 
-        // 預設顯示全部足跡
-        filterLocations('1');
+
+        function goBack() {
+            window.location.href = '/gps/';
+        }
+
+        filterLocations('1'); // 預設顯示
     </script>
 </body>
 
