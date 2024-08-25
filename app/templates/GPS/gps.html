@@ -47,6 +47,27 @@
                         </div>
                     </div>
                 </form>
+
+                {% if not data.GPS %}
+                {% if data.show_full_no_access %}
+                <div class="no-access">
+                    <div class="no-access-content">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <span>目前無權限</span>
+                    </div>
+                    <a href="/set/access_index">點此設定</a>
+                </div>
+                {% else %}
+                <div class="no-access">
+                    <div class="no-access-content">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <span>目前無權限<br></span><br>
+                    </div>
+                    <p>如要查看分析請至長者本人裝置設定中開啟權限</p>
+                </div>
+                {% endif %}
+                {% else %}
+
                 <button class="i" id="viewFootprintsBtn">查看長輩足跡</button>
             </div>
         </div>
@@ -55,9 +76,12 @@
         <div id="map"></div>
 
     </div>
+    {% endif %}
+
 
     <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
     <script>
+
         function initializeLiff(myLiffId) {
             liff.init({
                 liffId: myLiffId
@@ -70,7 +94,7 @@
 
         //查看長輩足跡按鈕
         document.addEventListener('DOMContentLoaded', function () {
-            triggerChange(); 
+            triggerChange();
         });
 
         document.getElementById('viewFootprintsBtn').addEventListener('click', function () {
@@ -93,8 +117,8 @@
         function triggerChange() {
             var selectElement = document.getElementById('MainUserID');
             if (selectElement.options.length > 0) {
-                selectElement.selectedIndex = 0; 
-                fetchGPSData(); 
+                selectElement.selectedIndex = 0;
+                fetchGPSData();
             }
             if (selectElement.options.length === 1) {
                 fetchGPSData();
@@ -115,8 +139,7 @@
                 .then(data => {
                     var gpsUrlElement = document.getElementById('gps-url');
                     if (data.url === 'no_data') {
-                        gpsUrlElement.innerHTML = '沒有資料';
-                        document.getElementById('map').style.display = 'none';
+                        showTaiwanMap();  // 沒有資料時顯示台灣全景
                     } else {
                         gpsUrlElement.innerHTML = `<a href="${data.url}" target="_blank" rel="noopener noreferrer">點擊查看地圖</a>`;
                         showMap(data.url);
@@ -124,6 +147,16 @@
                 }).catch(error => {
                     console.error('Error:', error);
                 });
+        }
+
+        // 當沒有資料時顯示台灣全景
+        function showTaiwanMap() {
+            var taiwanCenter = { lat: 23.6978, lng: 120.9605 }; // 台灣地理中心點
+            var map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 7,  // 調整縮放級別以顯示整個台灣
+                center: taiwanCenter
+            });
+            document.getElementById('map').style.display = 'block';
         }
 
         function showMap(url) {
@@ -140,7 +173,7 @@
                 document.getElementById('map').style.display = 'block';
             } else {
                 console.error('無法解析坐標', coords);
-                document.getElementById('map').style.display = 'none';
+                showTaiwanMap();  // 無法解析坐標時顯示台灣全景
             }
         }
 
@@ -154,9 +187,8 @@
             return {};
         }
 
-        document.getElementById('MainUserID').addEventListener('change', fetchGPSData);
-
         triggerChange();
+
 
     </script>
 </body>

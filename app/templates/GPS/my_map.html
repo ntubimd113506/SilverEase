@@ -153,10 +153,30 @@
         //顯示清單
         function updateTopLocations(topLocations) {
             var topLocationsList = document.getElementById('top-locations-list');
-            topLocationsList.innerHTML = '';  // 清空現有的選項
+            var topLocationsSection = document.querySelector('.top-locations');
+
+            // 清空現有的選項
+            topLocationsList.innerHTML = '';
+
+            if (topLocations.length === 0) {
+                // 如果沒有資料，隱藏整個「最常去的地點」區塊
+                topLocationsSection.style.display = 'none';
+                return;
+            }
+
+            // 如果有資料，顯示「最常去的地點」區塊
+            topLocationsSection.style.display = 'block';
 
             var geocoder = new google.maps.Geocoder();
-            var displayedAddresses = new Set();  // 用來存儲已顯示過的地址
+            var displayedAddresses = new Set(); // 用來存儲已顯示過的地址
+
+            // 添加不可選的提示選項
+            var defaultOption = document.createElement('option');
+            defaultOption.textContent = '請選擇地點';
+            defaultOption.value = '';
+            defaultOption.disabled = true;
+            defaultOption.selected = true;
+            topLocationsList.appendChild(defaultOption);
 
             topLocations.forEach(function (location) {
                 var coords = location.Location.match(/([-.\d]+),([-.\d]+)/); // 提取經緯度
@@ -196,7 +216,6 @@
                 }
             });
         }
-
 
         function goBack() {
             window.location.href = '/gps/';

@@ -13,11 +13,18 @@ gps_bp = Blueprint('gps_bp', __name__)
 @login_required
 def gps():
     MemID = session.get("MemID")
+    MainUser = session.get("MainUserID")
+    GPS = True
+    show_full_no_access = False
+
     mqtt.publish("/nowGPS", "Request GPS Data")
     conn = db.get_connection()
     cursor = conn.cursor()
 
+    MainUsers = []
+
     if MemID:
+        # 查詢當前用戶的 MainUserID 和 MemName
         cursor.execute(
             """
             SELECT f.MainUserID, m.MemName
@@ -29,11 +36,10 @@ def gps():
         )
         MainUserInfo = cursor.fetchone()
 
-        MainUsers = []
-
         if MainUserInfo:
             MainUsers.append((MainUserInfo[0], MainUserInfo[1]))
 
+        # 查詢家庭連接的其他主用戶
         cursor.execute(
             """
             SELECT m.MemID, m.MemName
@@ -45,12 +51,65 @@ def gps():
             (MemID,),
         )
         additional_users = cursor.fetchall()
-
         MainUsers.extend(additional_users)
+
+        # 檢查數據分析權限
+        cursor.execute(
+            """
+            SELECT m.MemID, m.MemName, IFNULL(a.GPS, 0)
+            FROM `113-ntub113506`.Family f
+            JOIN `113-ntub113506`.Member m ON f.MainUserID = m.MemID
+            LEFT JOIN `113-ntub113506`.Access a ON f.FamilyID = a.FamilyID
+            WHERE f.MainUserID = %s
+            UNION
+            SELECT m.MemID, m.MemName, IFNULL(a.GPS, 0)
+            FROM `113-ntub113506`.FamilyLink fl
+            JOIN `113-ntub113506`.Family f ON fl.FamilyID = f.FamilyID
+            JOIN `113-ntub113506`.Member m ON f.MainUserID = m.MemID
+            LEFT JOIN `113-ntub113506`.Access a ON f.FamilyID = a.FamilyID
+            WHERE fl.SubUserID = %s
+            """,
+            (MemID, MemID),
+        )
+        MainUsersData = cursor.fetchall()
+
+        if not MainUsersData:
+            cursor.execute(
+                """
+                SELECT m.MemID, m.MemName, IFNULL(a.GPS, 0)
+                FROM `113-ntub113506`.Member m
+                LEFT JOIN `113-ntub113506`.Family f ON f.MainUserID = m.MemID
+                LEFT JOIN `113-ntub113506`.Access a ON f.FamilyID = a.FamilyID
+                WHERE m.MemID = %s
+                """,
+                (MemID,),
+            )
+            MainUsersData = cursor.fetchall()
+            GPS = 0
+        else:
+            for user in MainUsersData:
+                if user[0] == MainUser:
+                    GPS = user[2]
+                    break
+
+        if MainUser == MemID and not GPS:
+            show_full_no_access = True
 
     cursor.close()
     conn.close()
-    return render_template('/GPS/gps.html', liffid=db.LIFF_ID, MainUsers=MainUsers)
+
+    data = {
+        "show_full_no_access": show_full_no_access,
+        "GPS": GPS,
+    }
+
+    return render_template(
+        "/GPS/gps.html",
+        MainUsers=MainUsers,
+        Whose=MainUser,
+        data=data
+    )
+
 
 #即時定位
 @gps_bp.route('/check', methods=['POST'])
