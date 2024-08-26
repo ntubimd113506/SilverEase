@@ -47,6 +47,26 @@
                         </div>
                     </div>
                 </form>
+
+                {% if not data.GPS %}
+                {% if data.show_full_no_access %}
+                <div class="no-access">
+                    <div class="no-access-content">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <span>目前無權限</span>
+                    </div>
+                    <a href="/set/access_index">點此設定</a>
+                </div>
+                {% else %}
+                <div class="no-access">
+                    <div class="no-access-content">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <span>目前無權限<br></span><br>
+                    </div>
+                    <p>如要查看分析請至長者本人裝置設定中開啟權限</p>
+                </div>
+                {% endif %}
+                {% else %}
                 <button class="i" id="viewFootprintsBtn">查看長輩足跡</button>
             </div>
         </div>
@@ -55,8 +75,9 @@
         <div id="map"></div>
 
     </div>
-
     <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+    {% endif %}
+
     <script>
         function initializeLiff(myLiffId) {
             liff.init({
@@ -70,7 +91,7 @@
 
         //查看長輩足跡按鈕
         document.addEventListener('DOMContentLoaded', function () {
-            triggerChange(); 
+            triggerChange();
         });
 
         document.getElementById('viewFootprintsBtn').addEventListener('click', function () {
@@ -93,8 +114,8 @@
         function triggerChange() {
             var selectElement = document.getElementById('MainUserID');
             if (selectElement.options.length > 0) {
-                selectElement.selectedIndex = 0; 
-                fetchGPSData(); 
+                selectElement.selectedIndex = 0;
+                fetchGPSData();
             }
             if (selectElement.options.length === 1) {
                 fetchGPSData();
@@ -106,6 +127,7 @@
         });
 
         //處理/check路由
+        // Fetch GPS data and handle access
         function fetchGPSData() {
             var formData = new FormData(document.getElementById('form'));
             fetch('/gps/check', {
@@ -114,7 +136,10 @@
             }).then(response => response.json())
                 .then(data => {
                     var gpsUrlElement = document.getElementById('gps-url');
-                    if (data.url === 'no_data') {
+                    if (data.data.GPS === 0) {  // 判斷是否有GPS權限
+                        gpsUrlElement.innerHTML = '沒有權限';
+                        document.getElementById('map').style.display = 'none';
+                    } else if (data.url === 'no_data') {
                         gpsUrlElement.innerHTML = '沒有資料';
                         document.getElementById('map').style.display = 'none';
                     } else {
@@ -125,6 +150,7 @@
                     console.error('Error:', error);
                 });
         }
+
 
         function showMap(url) {
             var coords = parseUrl(url);

@@ -52,17 +52,66 @@ def gps():
     conn.close()
     return render_template('/GPS/gps.html', liffid=db.LIFF_ID, MainUsers=MainUsers)
 
-
-
-
 #即時定位
 @gps_bp.route('/check', methods=['POST'])
 def check():
-    MainUserID = request.form.get("MainUserID")
+    MemID = session.get("MemID")
+    MainUser = request.form.get("MainUserID")
     conn = db.get_connection()
     cursor = conn.cursor()
-    
-    cursor.execute('SELECT FamilyID FROM `113-ntub113506`.Family WHERE MainUserID = %s', (MainUserID,))
+
+    GPS = 0
+    show_full_no_access = False
+    MainUsers = []
+
+    if MemID:
+        cursor.execute(
+            """
+            SELECT m.MemID, m.MemName, IFNULL(a.GPS, 0) as GPS
+            FROM `113-ntub113506`.Family f
+            JOIN `113-ntub113506`.Member m ON f.MainUserID = m.MemID
+            LEFT JOIN `113-ntub113506`.Access a ON f.FamilyID = a.FamilyID
+            WHERE f.MainUserID = %s
+            UNION
+            SELECT m.MemID, m.MemName, IFNULL(a.GPS, 0) as GPS
+            FROM `113-ntub113506`.FamilyLink fl
+            JOIN `113-ntub113506`.Family f ON fl.FamilyID = f.FamilyID
+            JOIN `113-ntub113506`.Member m ON f.MainUserID = m.MemID
+            LEFT JOIN `113-ntub113506`.Access a ON f.FamilyID = a.FamilyID
+            WHERE fl.SubUserID = %s
+            """,
+            (MemID, MemID),
+        )
+        MainUsers = cursor.fetchall()
+
+        if not MainUsers:
+            cursor.execute(
+                """
+                SELECT m.MemID, m.MemName, IFNULL(a.GPS, 0) 
+                FROM `113-ntub113506`.Member m
+                LEFT JOIN `113-ntub113506`.Family f ON f.MainUserID = m.MemID
+                LEFT JOIN `113-ntub113506`.Access a ON f.FamilyID = a.FamilyID
+                WHERE m.MemID = %s
+                """,
+                (MemID,),
+            )
+            MainUsers = cursor.fetchall()
+            show_full_no_access = False
+
+        for user in MainUsers:
+            if user[0] == MainUser:
+                GPS = user[2]
+                break
+
+        if GPS == 0:
+            show_full_no_access = True
+            data = {
+                "GPS": 0,
+                "show_full_no_access": show_full_no_access,
+            }
+            return jsonify({'url': 'no_data', 'data': data, 'MainUsers': MainUsers, 'Whose': MainUser})
+
+    cursor.execute('SELECT FamilyID FROM `113-ntub113506`.Family WHERE MainUserID = %s', (MainUser,))
     famID = cursor.fetchone()
 
     if famID:
@@ -75,8 +124,13 @@ def check():
     conn.close()
 
     base_url = "https://www.google.com/maps/search/?api=1&query="
-    url = base_url+latest_location[0] if latest_location else "no_data"
-    return jsonify({'url': url})
+    url = base_url + latest_location[0] if latest_location else "no_data"
+    data = {
+        "GPS": GPS,
+        "show_full_no_access": show_full_no_access,
+    }
+
+    return jsonify({'url': url, 'data': data, 'MainUsers': MainUsers, 'Whose': MainUser})
 
 #查看長輩足跡
 @gps_bp.route('/foot', methods=['POST'])
