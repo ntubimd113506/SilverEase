@@ -20,6 +20,8 @@
             height: 400px;
             width: 100%;
             margin-top: 20px;
+            display: none;
+            /* 預設隱藏地圖，根據需要顯示 */
         }
     </style>
 </head>
@@ -47,26 +49,6 @@
                         </div>
                     </div>
                 </form>
-
-                {% if not data.GPS %}
-                {% if data.show_full_no_access %}
-                <div class="no-access">
-                    <div class="no-access-content">
-                        <i class="fa-solid fa-triangle-exclamation"></i>
-                        <span>目前無權限</span>
-                    </div>
-                    <a href="/set/access_index">點此設定</a>
-                </div>
-                {% else %}
-                <div class="no-access">
-                    <div class="no-access-content">
-                        <i class="fa-solid fa-triangle-exclamation"></i>
-                        <span>目前無權限<br></span><br>
-                    </div>
-                    <p>如要查看分析請至長者本人裝置設定中開啟權限</p>
-                </div>
-                {% endif %}
-                {% else %}
                 <button class="i" id="viewFootprintsBtn">查看長輩足跡</button>
             </div>
         </div>
@@ -75,9 +57,8 @@
         <div id="map"></div>
 
     </div>
-    <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
-    {% endif %}
 
+    <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
     <script>
         function initializeLiff(myLiffId) {
             liff.init({
@@ -126,8 +107,7 @@
             fetchGPSData();
         });
 
-        //處理/check路由
-        // Fetch GPS data and handle access
+        //處理 /gps/check 路由並顯示 GPS 位置
         function fetchGPSData() {
             var formData = new FormData(document.getElementById('form'));
             fetch('/gps/check', {
@@ -136,21 +116,30 @@
             }).then(response => response.json())
                 .then(data => {
                     var gpsUrlElement = document.getElementById('gps-url');
-                    if (data.data.GPS === 0) {  // 判斷是否有GPS權限
-                        gpsUrlElement.innerHTML = '沒有權限';
-                        document.getElementById('map').style.display = 'none';
-                    } else if (data.url === 'no_data') {
-                        gpsUrlElement.innerHTML = '沒有資料';
-                        document.getElementById('map').style.display = 'none';
+                    var mapElement = document.getElementById('map');
+                    var footprintsBtn = document.getElementById('viewFootprintsBtn');
+
+                    if (data.GPS === 0) {
+                        if (data.M === true) {
+                            gpsUrlElement.innerHTML = "目前無權限<br>如要查看分析請至長者本人裝置設定中開啟權限";
+                        } else {
+                            gpsUrlElement.innerHTML = "目前無權限<br><a href=/set/access_index>點此設定</a>";
+                        }
+                        mapElement.style.display = 'none';
+                        footprintsBtn.style.display = 'none'; // 隱藏查看長輩足跡按鈕
                     } else {
-                        gpsUrlElement.innerHTML = `<a href="${data.url}" target="_blank" rel="noopener noreferrer">點擊查看地圖</a>`;
-                        showMap(data.url);
+                        if (data.url === 'no_data') {
+                            showTaiwanMap(); // 顯示台灣全景
+                        } else {
+                            gpsUrlElement.innerHTML = `<a href="${data.url}" target="_blank" rel="noopener noreferrer">點擊查看地圖</a>`;
+                            showMap(data.url); // 顯示地圖
+                        }
+                        footprintsBtn.style.display = 'block'; // 顯示查看長輩足跡按鈕
                     }
                 }).catch(error => {
                     console.error('Error:', error);
                 });
         }
-
 
         function showMap(url) {
             var coords = parseUrl(url);
@@ -159,15 +148,24 @@
                     zoom: 15,
                     center: coords
                 });
-                var marker = new google.maps.Marker({
+                new google.maps.Marker({
                     position: coords,
                     map: map
                 });
-                document.getElementById('map').style.display = 'block';
+                document.getElementById('map').style.display = 'block'; // 顯示地圖
             } else {
                 console.error('無法解析坐標', coords);
-                document.getElementById('map').style.display = 'none';
+                showTaiwanMap(); // 無法解析坐標時顯示台灣全景
             }
+        }
+
+        function showTaiwanMap() {
+            var taiwanCenter = { lat: 23.6978, lng: 120.9605 }; // 台灣地理中心點
+            var map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 7,  // 調整縮放級別以顯示整個台灣
+                center: taiwanCenter
+            });
+            document.getElementById('map').style.display = 'block'; // 顯示地圖
         }
 
         function parseUrl(url) {

@@ -60,77 +60,37 @@ def check():
     conn = db.get_connection()
     cursor = conn.cursor()
 
-    GPS = 0
-    show_full_no_access = False
-    MainUsers = []
-
-    if MemID:
-        cursor.execute(
-            """
-            SELECT m.MemID, m.MemName, IFNULL(a.GPS, 0) as GPS
-            FROM `113-ntub113506`.Family f
-            JOIN `113-ntub113506`.Member m ON f.MainUserID = m.MemID
-            LEFT JOIN `113-ntub113506`.Access a ON f.FamilyID = a.FamilyID
-            WHERE f.MainUserID = %s
-            UNION
-            SELECT m.MemID, m.MemName, IFNULL(a.GPS, 0) as GPS
-            FROM `113-ntub113506`.FamilyLink fl
-            JOIN `113-ntub113506`.Family f ON fl.FamilyID = f.FamilyID
-            JOIN `113-ntub113506`.Member m ON f.MainUserID = m.MemID
-            LEFT JOIN `113-ntub113506`.Access a ON f.FamilyID = a.FamilyID
-            WHERE fl.SubUserID = %s
-            """,
-            (MemID, MemID),
-        )
-        MainUsers = cursor.fetchall()
-
-        if not MainUsers:
-            cursor.execute(
-                """
-                SELECT m.MemID, m.MemName, IFNULL(a.GPS, 0) 
-                FROM `113-ntub113506`.Member m
-                LEFT JOIN `113-ntub113506`.Family f ON f.MainUserID = m.MemID
-                LEFT JOIN `113-ntub113506`.Access a ON f.FamilyID = a.FamilyID
-                WHERE m.MemID = %s
-                """,
-                (MemID,),
-            )
-            MainUsers = cursor.fetchall()
-            show_full_no_access = False
-
-        for user in MainUsers:
-            if user[0] == MainUser:
-                GPS = user[2]
-                break
-
-        if GPS == 0:
-            show_full_no_access = True
-            data = {
-                "GPS": 0,
-                "show_full_no_access": show_full_no_access,
-            }
-            return jsonify({'url': 'no_data', 'data': data, 'MainUsers': MainUsers, 'Whose': MainUser})
+    M = True
+    GPS = True
 
     cursor.execute('SELECT FamilyID FROM `113-ntub113506`.Family WHERE MainUserID = %s', (MainUser,))
     famID = cursor.fetchone()
 
     if famID:
-        cursor.execute('SELECT Location FROM `113-ntub113506`.Location WHERE FamilyID = %s ORDER BY LocatNo DESC LIMIT 1', (famID[0],))
-        latest_location = cursor.fetchone()
-    else:
-        latest_location = None
+        cursor.execute('SELECT GPS FROM `113-ntub113506`.Access WHERE FamilyID = %s', (famID[0],))
+        G = cursor.fetchone()[0]
 
-    cursor.close()
-    conn.close()
+        if G == 0 and MainUser != MemID:
+            GPS = 0
+            M = True
+            cursor.close()
+            conn.close()
+            return jsonify({'GPS': GPS, 'M': M})
 
-    base_url = "https://www.google.com/maps/search/?api=1&query="
-    url = base_url + latest_location[0] if latest_location else "no_data"
-    data = {
-        "GPS": GPS,
-        "show_full_no_access": show_full_no_access,
-    }
+        elif G == 0:
+            GPS = 0
+            M = False
+            cursor.close()
+            conn.close()
+            return jsonify({'GPS': GPS, 'M': M})
 
-    return jsonify({'url': url, 'data': data, 'MainUsers': MainUsers, 'Whose': MainUser})
+        else:
+            cursor.execute('SELECT Location FROM `113-ntub113506`.Location WHERE FamilyID = %s ORDER BY LocatNo DESC LIMIT 1', (famID[0],))
+            latest_location = cursor.fetchone()
+
+            base_url = "https://www.google.com/maps/search/?api=1&query="
+            url = base_url + latest_location[0] if latest_location else "no_data"
+            return jsonify({'url': url})
 
 #查看長輩足跡
 @gps_bp.route('/foot', methods=['POST'])
