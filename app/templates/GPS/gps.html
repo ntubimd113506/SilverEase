@@ -21,7 +21,6 @@
             width: 100%;
             margin-top: 20px;
             display: none;
-            /* 預設隱藏地圖，根據需要顯示 */
         }
     </style>
 </head>
@@ -126,15 +125,16 @@
                             gpsUrlElement.innerHTML = "目前無權限<br><a href=/set/access_index>點此設定</a>";
                         }
                         mapElement.style.display = 'none';
-                        footprintsBtn.style.display = 'none'; // 隱藏查看長輩足跡按鈕
+                        footprintsBtn.style.display = 'none'; 
                     } else {
                         if (data.url === 'no_data') {
-                            showTaiwanMap(); // 顯示台灣全景
+                            gpsUrlElement.innerHTML = "";
+                            showTaiwanMap(); 
                         } else {
                             gpsUrlElement.innerHTML = `<a href="${data.url}" target="_blank" rel="noopener noreferrer">點擊查看地圖</a>`;
-                            showMap(data.url); // 顯示地圖
+                            showMap(data.url);
                         }
-                        footprintsBtn.style.display = 'block'; // 顯示查看長輩足跡按鈕
+                        footprintsBtn.style.display = 'block';
                     }
                 }).catch(error => {
                     console.error('Error:', error);
@@ -152,20 +152,20 @@
                     position: coords,
                     map: map
                 });
-                document.getElementById('map').style.display = 'block'; // 顯示地圖
+                document.getElementById('map').style.display = 'block';
             } else {
                 console.error('無法解析坐標', coords);
-                showTaiwanMap(); // 無法解析坐標時顯示台灣全景
+                showTaiwanMap(); 
             }
         }
 
         function showTaiwanMap() {
-            var taiwanCenter = { lat: 23.6978, lng: 120.9605 }; // 台灣地理中心點
+            var taiwanCenter = { lat: 23.6978, lng: 120.9605 };
             var map = new google.maps.Map(document.getElementById('map'), {
-                zoom: 7,  // 調整縮放級別以顯示整個台灣
+                zoom: 7, 
                 center: taiwanCenter
             });
-            document.getElementById('map').style.display = 'block'; // 顯示地圖
+            document.getElementById('map').style.display = 'block';
         }
 
         function parseUrl(url) {
