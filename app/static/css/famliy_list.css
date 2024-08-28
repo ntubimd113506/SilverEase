@@ -110,56 +110,21 @@ div.h4{
     display: flex;
     justify-content: center;  
     margin: auto;
+    font-size: 20px;
+    letter-spacing: 1px;
+    margin-top: 20px;
 }
 
 img {
     width: 200px;
     height: 200px;
-    border-radius: 50%; /* 確保圖片為圓形 */
-    border: 5px solid #ffffff; /* 設定白色邊框，寬度為10px */
-    box-sizing: border-box; /* 包括邊框在內的總寬度和高度 */
+    border-radius: 50%;
+    border: 5px solid #ffffff;
+    box-sizing: border-box;
 }
 
 a{
     color: #809f68;
-}
-
-input.input-field, 
-input[type="datetime-local"],
-select {
-    width: 340px;
-    height: 40px;
-    border-radius: 6px;
-    font-size: 19px;
-    color: #111111;
-    padding: 0 8px;
-    box-sizing: border-box;
-    border: 1px solid #747474;
-    background-color: white;
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-}
- 
-input[type="datetime-local"] {
-    padding: 0 40px 0 8px;
-    text-align: left;
-    box-sizing: border-box;
-    width: 340px;
-}
-
-.input-icon {
-    position: relative;
-}
-
-.fa-calendar-days {
-    position: absolute;
-    right: 10px;
-    top: 50%; 
-    transform: translateY(-50%); 
-    color: #809f68;
-    font-size: 19px;
-    pointer-events: none;
 }
 
 .align-left {
@@ -195,81 +160,6 @@ input[type="datetime-local"] {
     background-color: #9fb889;
 }
 
-input[type="submit" i] {
-    position: relative;
-    top: -70px;
-    align-items: center;
-    background-color: #809f68;
-    width: 100%;
-    height: 40px;
-    border-style: none;
-    border-radius: 20px;
-    color: #ffffff;
-    font-size: 19px;
-    font-weight: bolder;
-    letter-spacing: 5px;
-    margin: 0%;
-    cursor: pointer;    
-    transition: background-color 0.1s;
-}
-
-input[type="submit" i]:active {
-    background-color: #9fb889;
-}
-
-.delete-btn {
-    position: relative;
-    top: 90px; 
-    display: flex;
-    justify-content: center; 
-    align-items: center; 
-    background-color: #ffffff;
-    border: 4px solid #809f68;
-    width: 340px;
-    height: 42px;
-    border-radius: 20px;
-    font-weight: bolder;
-    letter-spacing: 5px;
-    text-align: center;
-    margin: 0;
-    margin-bottom: 50px;
-    cursor: pointer;
-    transition: background-color 0.1s;
-    text-decoration: none;
-    color: #000000;
-    font-size: 19px;
-    box-sizing: border-box; 
-}
-
-
-.delete-btn:active {
-    background-color: #eaeaea; 
-    border: 4px solid #9fb889;
-    color: #3a3a3a;
-}
-
-input[type="submit" i].delete_confirm {
-    position: relative;
-    top: -13px;
-    align-items: center;
-    background-color: #809f68;
-    width: 340px;
-    height: 40px;
-    border-style: none;
-    border-radius: 20px;
-    color: #ffffff;
-    font-size: 19px;
-    font-weight: bolder;
-    letter-spacing: 5px;
-    margin: 0%;
-    cursor: pointer;    
-    transition: background-color 0.1s;
-}
-
-input[type="submit" i].delete_confirm:active {
-    background-color: #9fb889; 
-}
-
 select option[disabled] {
     color: #878787;
 }
@@ -296,23 +186,6 @@ select:invalid {
     display: none;
 }
 
-input[type="datetime-local"]::-webkit-datetime-edit { 
-    color: transparent; 
-}
-
-input[type="datetime-local"]:focus::-webkit-datetime-edit,
-input[type="datetime-local"]:valid::-webkit-datetime-edit { 
-    color: #111111; 
-}
-
-input[type="datetime-local"]::placeholder {
-    color: #5a5a5a;
-    font-weight: 100;
-}
-
-input[type="datetime-local"]:valid::placeholder {
-    color: transparent;
-}
 /* ------------------- */
 /* Media Queries       */
 /* ------------------- */
@@ -334,12 +207,6 @@ input[type="datetime-local"]:valid::placeholder {
 }
 
 @media screen and (min-width: 414px) {
-
-    .delete-btn {
-        top: 90px; 
-
-    }
-
     .title-container {
         width: 90%; 
     }
@@ -369,23 +236,6 @@ input[type="datetime-local"]:valid::placeholder {
         background-color: #9fb889;
     } 
 
-    input[type="submit" i]:hover,
-    input[type="submit" i]:active {
-        background-color: #9fb889;
-    }
-
-    .delete-btn:hover,
-    .delete-btn:active {
-        border: 4px solid #9fb889;
-        color: #3a3a3a;
-        background-color: #f5f5f5;
-    }
-
-    input[type="submit" i].delete_confirm:hover,
-    input[type="submit" i].delete_confirm:active {
-        background-color: #9fb889;
-    } 
-
     .title-container {
         width: 55%; 
     }
@@ -401,21 +251,6 @@ input[type="datetime-local"]:valid::placeholder {
     select {
         margin-bottom: 32px;
     }
-
-    input[type="datetime-local"]::-webkit-calendar-picker-indicator {
-        position: absolute;
-        right: 10px; 
-        margin-left: 0; 
-        z-index: 2; 
-        opacity: 0; 
-        width: 20px;
-        height: 20px;
-        cursor: pointer;
-    }
-
-    .delete-btn {
-        top: 95px;
-    } 
 }
 
 @media (min-width: 992px) {
@@ -441,15 +276,6 @@ input[type="datetime-local"]:valid::placeholder {
 }
 
 @media (min-width: 1400px) {
-    #menu-bar {
-        padding-top: 20px;
-        padding-left: 20px;
-    }
-    
-    ul li {
-        line-height: 65px;
-    }
-    
     .title-container {
         width: 38%; 
     }
