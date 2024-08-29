@@ -112,7 +112,7 @@ div.content h4 {
     letter-spacing: 3px;
     position: relative;
     z-index: 2;
-    margin: 20px -10px;
+    margin: 20px 0;
 }
 
 a {
@@ -230,7 +230,7 @@ input[type="submit" i] {
     font-size: 20px;
     font-weight: bolder;
     letter-spacing: 5px;
-    margin: 30px 0px;
+    margin: 20px 0px;
     cursor: pointer;
     transition: background-color 0.1s;
 }

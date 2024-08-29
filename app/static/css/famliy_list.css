@@ -110,7 +110,8 @@ div.h4{
     display: flex;
     justify-content: center;  
     margin: auto;
-    font-size: 20px;
+    font-size: 22px;
+    font-weight: 600;
     letter-spacing: 1px;
     margin-top: 20px;
 }
