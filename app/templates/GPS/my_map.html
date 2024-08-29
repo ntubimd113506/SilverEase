@@ -155,22 +155,18 @@
             var topLocationsList = document.getElementById('top-locations-list');
             var topLocationsSection = document.querySelector('.top-locations');
 
-            // 清空現有的選項
             topLocationsList.innerHTML = '';
 
             if (topLocations.length === 0) {
-                // 如果沒有資料，隱藏整個「最常去的地點」區塊
                 topLocationsSection.style.display = 'none';
                 return;
             }
 
-            // 如果有資料，顯示「最常去的地點」區塊
             topLocationsSection.style.display = 'block';
 
             var geocoder = new google.maps.Geocoder();
-            var displayedAddresses = new Set(); // 用來存儲已顯示過的地址
+            var displayedAddresses = new Set(); 
 
-            // 添加不可選的提示選項
             var defaultOption = document.createElement('option');
             defaultOption.textContent = '請選擇地點';
             defaultOption.value = '';
@@ -208,14 +204,15 @@
                 }
             });
 
-            // 當選擇改變時跳轉到選定的地址
             topLocationsList.addEventListener('change', function () {
                 var selectedValue = topLocationsList.value;
                 if (selectedValue) {
                     window.open(selectedValue, '_blank');
                 }
+                topLocationsList.selectedIndex = 0;
             });
         }
+
 
         function goBack() {
             window.location.href = '/gps/';
