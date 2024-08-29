@@ -25,8 +25,10 @@ bool cam_flag = false;
 
 String latitude = "";
 String longitude = "";
+String getTime = "";
 unsigned long lastGetTime = 0;
 unsigned long lastSendTime = 0;
+unsigned long sendDataTime = 0;
 bool gpsLocat = false;
 
 uint64_t macAddress = ESP.getEfuseMac();
@@ -34,6 +36,34 @@ uint64_t macAddressTrunc = macAddress << 40;
 uint32_t chipID = macAddressTrunc >> 40;
 const String DevID = String("ESP") + String(chipID, HEX);
 const String TOPIC = String("ESP32/") + String(DevID.c_str());
+
+void updateGPS()
+{
+  if (gps.location.isValid())
+  {
+    gpsLocat = true;
+    latitude = String(gps.location.lat(), 6);
+    longitude = String(gps.location.lng(), 6);
+    if (gps.date.isValid() && gps.time.isValid())
+    {
+      getTime = String(gps.date.year()) + "," + String(gps.date.month()) + "," + String(gps.date.day()) + "," + String(gps.time.hour()) + "," + String(gps.time.minute()) + "," + String(gps.time.second());
+    }
+  }
+}
+
+void sendGPSData()
+{
+  updateGPS();
+  if (gpsLocat)
+  {
+    String locat = '{"lat":"' + latitude + '","lon":"' + longitude + '","semdTime":"' + getTime + '"}';
+    mqtt.publish(String(TOPIC + "/gps").c_str(), locat.c_str());
+  }
+  else
+  {
+    mqtt.publish(String(TOPIC + "/noGPS").c_str(), "");
+  }
+}
 
 void callback(char *topic, byte *payload, unsigned int length)
 {
@@ -106,6 +136,12 @@ void callback(char *topic, byte *payload, unsigned int length)
       count++;
     }
   }
+
+  if (action == "newGPS")
+  {
+    updateGPS();
+    sendGPSData();
+  }
 };
 
 void reconnect()
@@ -170,9 +206,6 @@ bool initCamera()
       .fb_count = 1                   // 影像緩衝記憶區數量
   };
 
-  // ledcSetup(LEDC_CHANNEL_0, 5000, LEDC_TIMER_0);
-  // ledcAttachPin(FLASH, LEDC_CHANNEL_0);
-
   // 初始化攝像頭
   esp_err_t err = esp_camera_init(&camera_config);
   if (err != ESP_OK)
@@ -215,13 +248,12 @@ void mainTask(void *parameter)
   {
     if (WiFi.status() == WL_CONNECTED)
     {
-      // Serial.print("FLAG: ");
       bool flag = digitalRead(BTN) && !btn_flag;
-      // Serial.println(flag);
       if (flag)
       {
         btn_flag = true;
         digitalWrite(BUZZ, HIGH);
+        sendGPSData();
         SendImageMQTT();
         digitalWrite(BUZZ, LOW);
         vTaskDelay(5000 / portTICK_PERIOD_MS);
@@ -236,13 +268,6 @@ void mainTask(void *parameter)
     }
     vTaskDelay(500 / portTICK_PERIOD_MS);
   }
-}
-
-void sendGPSData(String lat, String lon)
-{
-  String locat = lat + "," + lon;
-  mqtt.publish(String(TOPIC + "/gps").c_str(), locat.c_str());
-  Serial.println("GPS data sent: " + locat);
 }
 
 void setup()
@@ -282,26 +307,22 @@ void loop()
 
   if (Serial.available() > 0)
   {
-    Serial.println("Serial available");
     gps.encode(Serial.read());
-    if (gps.location.isValid())
-    {
-      gpsLocat = true;
-      latitude = String(gps.location.lat(), 6);
-      longitude = String(gps.location.lng(), 6);
-      Serial.println("lat: " + latitude + " lon: " + longitude);
-    }
+    updateGPS();
 
-    if (gps.date.isValid() && gps.time.isValid())
+    if (currentTime - lastGetTime >= 1000)
     {
-      Serial.println("Now is" + String(gps.date.year()) + "." + String(gps.date.month()) + "." + String(gps.date.day()) + " " + String(gps.time.hour()) + ":" + String(gps.time.minute()) + ":" + String(gps.time.second()));
+      lastGetTime = currentTime;
+      Serial.println("Serial available");
+      Serial.println("lat: " + latitude + " lon: " + longitude);
+      Serial.println("Now is" + getTime);
     }
   }
 
-  if (currentTime - lastSendTime >= 60000 && gpsLocat)
+  if (currentTime - lastSendTime >= 60000)
   { // 60000 毫秒 = 1分鐘/
     lastSendTime = currentTime;
     Serial.println("1min");
-    sendGPSData(latitude, longitude);
+    sendGPSData();
   }
 }

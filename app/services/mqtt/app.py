@@ -27,6 +27,7 @@ def handle_mqtt_message(client, userdata, message):
         msg = message.payload.decode()
         try:
             data = json.loads(msg)
+            # print(data)
         except:
             pass
         print(f"Received message on topic {message.topic}: {msg}")
@@ -96,58 +97,75 @@ def handle_mqtt_message(client, userdata, message):
 
 #-----------------------------------------------------------
     if action == 'gps':
-        try:
-            data = message.payload.decode()
-            Map1 = str(data)
-        
-            # 找到 'query=' 字串的位置並提取其後的座標部分
-            Map = Map1.split("query=")[-1]
-
-            print(f"Received GPS coordinates: {Map}")
-            upgrade_gps(Map)
-
-        except Exception as e:
-            print("Error:", str(e))
-
-    if message.topic == '/upGPS':
-        try:
-            data = message.payload.decode()
-            Map1 = str(data)
-            
-            # 找到 'query=' 字串的位置並提取其後的座標部分
-            Map = Map1.split("query=")[-1]
-
-            print(f"Received GPS coordinates: {Map}")
-            upgrade_gps(Map)
-
-        except Exception as e:
-            print("Error:", str(e))
-
-    
-    if message.topic == '/SOSgps':
-        try:
-            data = message.payload.decode()
-            Map1 = str(data)
-        
-            # 找到 'query=' 字串的位置並提取其後的座標部分
-            Map = Map1.split("query=")[-1]
-
-            print(f"Received GPS coordinates: {Map}")
-            upgrade_gps(Map)
-
-        except Exception as e:
-            print("Error:", str(e))
+        Map=data["lat"]+","+data["lon"]
+        timeData=data["sendTime"].split(",")
+        getTime=datetime(int(timeData[0]),int(timeData[1]),int(timeData[2]),int(timeData[3]),int(timeData[4]),int(timeData[5]))
+        getTime=getTime+timedelta(hours=8)
+        print(f"Received GPS coordinates: {Map}")
+        print(f"Received GPS time: {getTime}")
+        upgrade_gps(DevID,Map,getTime)
 
 def sent_dev_offline(DevID):
     conn = db.get_connection()
     cur = conn.cursor()
     cur.execute("SELECT FamilyID FROM Family WHERE DevID=%s", DevID)
     FamilyID = cur.fetchone()[0]
-    user = get_FamilyUser(FamilyID)
+    users = get_FamilyUser(FamilyID)
 
-    msg=FlexSendMessage()
+    msg=FlexSendMessage(
+        alt_text="裝置離線通知",
+        contents={
+  "type": "bubble",
+  "hero": {
+    "type": "image",
+    "url": "https://developers-resource.landpress.line.me/fx/img/01_1_cafe.png",
+    "size": "full",
+    "aspectRatio": "20:13",
+    "aspectMode": "cover",
+    "action": {
+      "type": "uri",
+      "uri": "https://line.me/"
+    }
+  },
+  "body": {
+    "type": "box",
+    "layout": "vertical",
+    "contents": [
+      {
+        "type": "text",
+        "text": "裝置離線通知",
+        "weight": "bold",
+        "size": "xl"
+      },
+      {
+        "type": "text",
+        "text": "偵測到您的裝置已離線\n請確認您的裝置網路或電力是否異常",
+        "wrap": True
+      }
+    ]
+  },
+  "footer": {
+    "type": "box",
+    "layout": "vertical",
+    "contents": [
+      {
+        "type": "button",
+        "action": {
+          "type": "uri",
+          "label": "點我了解更多",
+          "uri": "http://linecorp.com/"
+        }
+      }
+    ]
+  }
+}
+    )
         
-    UserIDs = [row for row in user["SubUser"]]
+    UserIDs=[user for user in users["SubUser"]]
+    UserIDs.append(users["MainUser"])
+
+    for user in UserIDs:
+        line.line_bot_api.push_message(user,msg)
 
 
 def save_gps(Map):
@@ -167,15 +185,12 @@ def save_gps(Map):
         cursor.close()
         conn.close()
 
-def upgrade_gps(Map):
+def upgrade_gps(DevID,Map,getTime):
     conn = db.get_connection()
     cursor = conn.cursor()
-    # cursor1 = conn.cursor()
     try:
-        now = datetime.now()
-        # cursor1.execute('SELECT FamilyID FROM Family WHERE DevID = %s',(DevID))
-        # FamID=cursor1.fetchone()[0]
-        cursor.execute('INSERT INTO `113-ntub113506`.Location (FamilyID,Location,LocationTime) VALUES (%s,%s,%s)', (54,Map,now,))
+        FamilyID=check_device(DevID)
+        cursor.execute('INSERT INTO `113-ntub113506`.Location (FamilyID,Location,LocationTime) VALUES (%s,%s,%s)', (FamilyID,Map,getTime,))
         conn.commit()
     except Exception as e:
         print(f"Error inserting data: {e}")

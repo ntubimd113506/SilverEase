@@ -13,7 +13,7 @@ gps_bp = Blueprint('gps_bp', __name__)
 @login_required
 def gps():
     MemID = session.get("MemID")
-    mqtt.publish("/nowGPS", "Request GPS Data")
+    mqtt.publish("/newGPS","")
     conn = db.get_connection()
     cursor = conn.cursor()
 
