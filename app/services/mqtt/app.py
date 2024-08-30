@@ -328,7 +328,10 @@ def check_device(DevID):
 def sent_mess(DevID, img):
     filename = f"{DevID}_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.jpg"
     if not img == "":
-        filepath = os.path.join("app", "static", "imgs", "upload", filename)
+        filepath=os.path.abspath(__file__)
+        for i in range(3):
+            filepath=os.path.dirname(filepath)
+        filepath = os.path.join(filepath,"static","imgs","upload",filename)
         with open(filepath, "wb") as f:
             f.write(img)
 

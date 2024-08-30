@@ -128,11 +128,11 @@ def lost_report():
 @app.route("/img/<img>")
 def display_image(img):
     try:
-        with Image.open(os.path.join("app", "static", "imgs", "upload", img)) as file:
+        with Image.open(os.path.join("static", "imgs", "upload", img)) as file:
             file.load()
         return redirect(url_for("static", filename=f"imgs/upload/{img}"))
     except:
-        return redirect(url_for("static", filename="/imgs/help.png"))
+        return redirect(url_for("static", filename="imgs/notfound.png"))
 
 
 if __name__ == "__main__":
