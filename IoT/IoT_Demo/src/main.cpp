@@ -3,6 +3,7 @@
 #include <WiFiClientSecure.h>
 #include <PubSubClient.h>
 #include "Guineapig.WiFiConfig.h"
+#include <ArduinoJson.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 #include "esp_camera.h"
@@ -26,6 +27,7 @@ bool cam_flag = false;
 String latitude = "";
 String longitude = "";
 String getTime = "";
+String devTime = "";
 unsigned long lastGetTime = 0;
 unsigned long lastSendTime = 0;
 unsigned long sendDataTime = 0;
@@ -39,15 +41,16 @@ const String TOPIC = String("ESP32/") + String(DevID.c_str());
 
 void updateGPS()
 {
+  if (gps.date.isValid() && gps.time.isValid())
+  {
+    devTime = String(gps.date.year()) + "," + String(gps.date.month()) + "," + String(gps.date.day()) + "," + String(gps.time.hour()) + "," + String(gps.time.minute()) + "," + String(gps.time.second());
+  }
   if (gps.location.isValid())
   {
     gpsLocat = true;
     latitude = String(gps.location.lat(), 6);
     longitude = String(gps.location.lng(), 6);
-    if (gps.date.isValid() && gps.time.isValid())
-    {
-      getTime = String(gps.date.year()) + "," + String(gps.date.month()) + "," + String(gps.date.day()) + "," + String(gps.time.hour()) + "," + String(gps.time.minute()) + "," + String(gps.time.second());
-    }
+    getTime = devTime;
   }
 }
 
@@ -56,8 +59,15 @@ void sendGPSData()
   updateGPS();
   if (gpsLocat)
   {
-    String locat = '{"lat":"' + latitude + '","lon":"' + longitude + '","semdTime":"' + getTime + '"}';
-    mqtt.publish(String(TOPIC + "/gps").c_str(), locat.c_str());
+    JsonDocument doc;
+    doc["lat"] = latitude;
+    doc["lon"] = longitude;
+    doc["sendTime"] = getTime;
+
+    String jsonData;
+    serializeJson(doc, jsonData);
+
+    mqtt.publish(String(TOPIC + "/gps").c_str(), jsonData.c_str());
   }
   else
   {
@@ -315,7 +325,7 @@ void loop()
       lastGetTime = currentTime;
       Serial.println("Serial available");
       Serial.println("lat: " + latitude + " lon: " + longitude);
-      Serial.println("Now is" + getTime);
+      Serial.println("Now is" + devTime);
     }
   }
 

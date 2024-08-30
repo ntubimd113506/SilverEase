@@ -286,8 +286,11 @@ def sos_gps(Map):
     )
 
     # 推送訊息給所有 SubUserID
-    for user in Sub:
-        line.line_bot_api.push_message(user[0], resMsg)
+    try:
+        for user in Sub:
+            line.line_bot_api.push_message(user[0], resMsg)
+    except:
+        pass
 
 
 
@@ -347,7 +350,8 @@ def sent_mess(DevID, img):
     SOSNo=cur.fetchone()[0]
     #Map
     cur.execute("SELECT Location FROM Location WHERE LocatNo=%s",(LocatNo))
-    Map=cur.fetchone()[0]
+    gps=cur.fetchone()[0]
+    Map=f"https://www.google.com/maps/search/?api=1&query={gps}"
 
 
 
