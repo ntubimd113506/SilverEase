@@ -2,71 +2,55 @@
 <html lang="zh-TW">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+
     <title>我的地圖</title>
-    <script
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA4cVXQgyJq-DSWAA_CfAagMIA6xnW8PhU&libraries=geometry"></script>
-    <style>
-        #map {
-            height: 500px;
-            width: 100%;
-        }
 
-        .time-filters {
-            margin-bottom: 20px;
-        }
-
-        .time-filters button {
-            margin-right: 10px;
-            padding: 5px 10px;
-            cursor: pointer;
-        }
-
-        .back-button {
-            margin: 20px;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            z-index: 1000;
-            position: relative;
-        }
-
-        .top-locations {
-            margin-top: 20px;
-        }
-
-        .top-locations h2 {
-            margin-bottom: 10px;
-        }
-
-        .top-locations ul {
-            list-style-type: none;
-            padding: 0;
-        }
-
-        .top-locations li {
-            padding: 5px 0;
-        }
-    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Satisfy&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link href="/static/css/map.css" rel="stylesheet" />
+    <script src="/static/js/touch-buttons.js" defer></script>
+    <script src="/static/js/img.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA4cVXQgyJq-DSWAA_CfAagMIA6xnW8PhU&libraries=geometry"></script>
 </head>
 
 <body>
-    <button class="back-button" onclick="goBack()">回前頁</button>
-    <h1>{{name}}的足跡</h1>
-    <div class="time-filters">
-        <button onclick="filterLocations('1')">今日</button>
-        <button onclick="filterLocations('7')">當周</button>
-        <button onclick="filterLocations('30')">當月</button>
-        <button onclick="filterLocations('all')">全部</button>
-    </div>
-    <div class="top-locations">
-        <h2>最常去的地點</h2>
-        <select id="top-locations-list"></select>
-    </div>
+    <div class="container">
+        <div class="header">
+            <h1>SilverEase</h1>
+        </div>
 
-    <div id="map"></div>
+        <i id="menu-bar" class="fa-solid fa-house"></i>
 
+        <div class="navbar">
+            <ul id="navigation" class="nav">
+                <li><button class="back-button" onclick="goBack()">返回前頁</button></li>
+            </ul>
+        </div>
+
+        <div class="content">
+            <div class="title-container">
+                <h1>{{name}}的足跡</h1>
+            </div>
+            <div class="form-container">
+                <div class="time-filters">
+                    <button onclick="filterLocations('1')">今 日</button>
+                    <button onclick="filterLocations('7')">當 周</button>
+                    <button onclick="filterLocations('30')">當 月</button>
+                    <button onclick="filterLocations('all')">全 部</button>
+                </div>
+                <div class="top-locations">
+                    <h3>最常去的地點</h3>
+                    <select id="top-locations-list"></select>
+                </div>
+            </div>
+            <div id="map"></div>
+        </div>
+    </div>
     <script>
         var MainUserID = "{{ MainUserID }}";
 

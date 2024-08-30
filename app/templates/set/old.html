@@ -31,10 +31,10 @@
                 <img src="/static/imgs/main.png" class="b">
                 <h1>群組代碼</h1>
 
-                <div class="photo">
-                    <div id="qrcode"></div>
-                    <img src="/static/imgs/logo.png" class="logo">
-                </div>
+                <div id="qrcode" class="photo">
+                    <img src="imgs/logo.png" class="logo">
+                    </div>
+                    
                 <div class="form-container">
                     <h4>代號:</h4>
 
@@ -69,6 +69,24 @@
         text: 'https://liff.line.me/2004699458-OR9pkZjP/set/join_family/{{code_id}}'
     });
 
+    html2canvas($('#qrcode').get(0)).then(function (canvas) {
+            const ctx = canvas.getContext('2d');
+            const logo = new Image();
+
+            logo.src = 'imgs/logo.png';
+            logo.onload = function () {
+                const logoSize = canvas.width / 4;
+                const logoX = (canvas.width - logoSize) / 2;
+                const logoY = (canvas.height - logoSize) / 2;
+
+                ctx.drawImage(logo, logoX, logoY, logoSize, logoSize);
+
+                $('#qrcode').html('');
+                $('#qrcode').append(canvas);
+                $('#canvas').remove();
+            };
+        });
+    
     liff.init({ liffId: '{{liffid}}' })
 
     function shareCode() {
