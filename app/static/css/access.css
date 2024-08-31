@@ -1,8 +1,5 @@
 @charset "utf-8";
 
-/* ------------------- */
-/* html, body          */
-/* ------------------- */
 html, body{
     touch-action: manipulation;
     font-family: 'Noto Sans TC', sans-serif;
@@ -18,9 +15,6 @@ html, body{
     padding-bottom: constant(safe-area-inset-bottom);
 }
 
-/* ------------------- */
-/* container           */
-/* ------------------- */
 div.container{
     touch-action: manipulation;
     -ms-content-zooming: none;
@@ -34,9 +28,6 @@ div.container{
     min-height: calc(100vh - constant(safe-area-inset-bottom));
 }
 
-/* ------------------- */
-/* header              */
-/* ------------------- */
 div.header{
     display: flex;
     justify-content: center;  
@@ -53,10 +44,6 @@ div.header h1{
     letter-spacing: 3px;
     margin: 0%;
 }
-
-/* ------------------- */
-/* content             */
-/* ------------------- */
 
 div.content{
     background-color: #F2F0EE;
@@ -101,7 +88,7 @@ div.content h6{
 }
 
 .policy ul {
-    list-style-position: outside; /* 確保符號在項目外部 */
+    list-style-position: outside;
   }
   
 .submit-button-disabled {
@@ -159,9 +146,6 @@ input[type="submit" i].delete_confirm:active {
     background-color: #9fb889; 
 }
 
-/* ------------------- */
-/* Media Queries       */
-/* ------------------- */
 @media screen and (max-width: 374px) {
     .title-container {
         width: 90%; 

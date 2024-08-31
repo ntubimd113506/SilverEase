@@ -1,9 +1,5 @@
 @charset "utf-8";
 
-/* ------------------- */
-/* html, body          */
-/* ------------------- */
-
 html,
 body {
     font-family: 'Noto Sans TC', sans-serif;
@@ -13,22 +9,14 @@ body {
     padding-bottom: constant(safe-area-inset-bottom);
 }
 
-/* ------------------- */
-/* container           */
-/* ------------------- */
 div.container {
     text-align: justify;
     line-height: 26px;
     background-color: #F2F0EE;
 }
 
-
-/* ------------------- */
-/* header              */
-/* ------------------- */
 div.header {
     display: flex;
-    /* 水平置中 */
     justify-content: center;
     padding: 10px;
     height: 40px;
@@ -44,9 +32,6 @@ div.header h1 {
     margin: 0%;
 }
 
-/* ------------------- */
-/* content             */
-/* ------------------- */
 div.content {
     background-color: #F2F0EE;
     display: flex;

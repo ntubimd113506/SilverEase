@@ -1,8 +1,5 @@
 @charset "utf-8";
 
-/* ------------------- */
-/* html, body          */
-/* ------------------- */
 html,
 body {
     touch-action: manipulation;
@@ -19,9 +16,6 @@ body {
     padding-bottom: constant(safe-area-inset-bottom);
 }
 
-/* ------------------- */
-/* container           */
-/* ------------------- */
 div.container {
     touch-action: manipulation;
     -ms-content-zooming: none;
@@ -35,12 +29,8 @@ div.container {
     min-height: calc(100vh - constant(safe-area-inset-bottom));
 }
 
-/* ------------------- */
-/* header              */
-/* ------------------- */
 div.header {
     display: flex;
-    /* 水平置中 */
     justify-content: center;
     padding: 10px;
     height: 40px;
@@ -56,17 +46,12 @@ div.header h1 {
     margin: 0%;
 }
 
-/* ------------------- */
-/* content             */
-/* ------------------- */
 div.cardrow {
     display: flex;
-    /* 水平置中 */
     justify-content: center;
     margin: auto;
 }
 
-/* 所有輸入欄位 */
 .form-container {
     width: 340px;
     margin: 20px auto;
@@ -89,14 +74,11 @@ textarea.message {
     width: 340px;
     height: 65px;
     min-width: 340px;
-    /* 最小寬度 */
     resize: both;
-    /* 允許水平和垂直縮放 */
 }
 
 button.i {
     position: relative;
-    /* top: -70px; */
     align-items: center;
     background-color: #809f68;
     width: 300px;
@@ -117,11 +99,6 @@ button.i:active {
     background-color: #9fb889;
 }
 
-
-/* ------------------- */
-/* Media Queries       */
-/* ------------------- */
-/* 中等大小的手機屏幕 */
 @media screen and (min-width: 375px) and (max-width: 413px) {
     body h1 {
         font-weight: 600;

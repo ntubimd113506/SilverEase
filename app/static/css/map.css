@@ -1,5 +1,9 @@
 @charset "utf-8";
 
+html {
+    overflow-x: hidden;
+}
+
 html,
 body {
     touch-action: manipulation;
@@ -47,7 +51,7 @@ div.header h1 {
 }
 
 #map {
-    height: 500px;
+    height: 450px;
     width: 100%;
 }
 
@@ -162,7 +166,7 @@ ul li {
 
 div.content {
     background-color: #F2F0EE;
-    padding: 0px 23px;
+    padding: 0px 10px;
 }
 
 .title-container {

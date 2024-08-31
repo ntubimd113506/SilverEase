@@ -1,52 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head></head>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+
+    <title>後續追蹤</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Satisfy&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link href="/static/css/sos.css" rel="stylesheet" />
+    <script src="/static/js/touch-buttons.js" defer></script>
+    <script src="/static/js/img.js"></script>
+</head>
 
 <body>
-    <form action="/sos/sos_report" method="post">
-        <div>求救事件後續追蹤</div>
-        {% if report[0]!=None %}
-        <div>您的家人已完成填寫，歡迎修正或補充說明</div>
-        {%endif%}
-        <div>
-            發生時間： {{Time}}
+    <div class="container">
+        <div class="header">
+            <h1>SilverEase</h1>
         </div>
-        <div>
-            求救事件類型
-            <select name="Type" id="" onchange=typechange()>
-                {%for type in Type%}
-                {% if report[0]== type[0] %}
-                <option value="{{type[0]}}" selected>{{type[1]}}</option>
-                {%else%}
-                <option value="{{type[0]}}">{{type[1]}}</option>
-                {%endif%}
-                {%endfor%}
-            </select>
-        </div>
-        {% if report[1]!= None %}
-        <div id="Place">
-            {%else%}
-            <div id="Place" hidden>
-                {%endif%}
-                室內位置
-                <select name="Place">
-                    {%for place in Place%}
-                    {% if report[1]== place[0] %}
-                    <option value="{{place[0]}}" selected>{{place[1]}}</option>
-                    {%else%}
-                    <option value="{{place[0]}}">{{place[1]}}</option>
-                    {%endif%}
-                    {%endfor%}
-                </select>
-            </div>
-            <div>
-                求救事件描述
-                <textarea name="Description" id="">{{report[2]}}</textarea>
-            </div>
 
-            <input type="submit" value="送出">
-    </form>
+        <div class="content">
+            <form action="/sos/sos_report" method="post">
+                <div class="title-container">
+                    <h1 class="content-header">求救事件後續追蹤</h1>
+                </div>
+
+                <div class="form-container">
+                    {% if report[0]!=None %}
+                    <div>
+                        <h4>您的家人已完成填寫，歡迎修正或補充說明</h4>
+                    </div>
+                    {%endif%}
+                    <div>
+                        <h4>發生時間： {{Time}}</h4>
+                    </div>
+                    <div>
+                        <h4>求救事件類型</h4>
+                        <select name="Type" id="" onchange=typechange()>
+                            {%for type in Type%}
+                            {% if report[0]== type[0] %}
+                            <option value="{{type[0]}}" selected>{{type[1]}}</option>
+                            {%else%}
+                            <option value="{{type[0]}}">{{type[1]}}</option>
+                            {%endif%}
+                            {%endfor%}
+                        </select>
+                    </div>
+                    {% if report[1]!= None %}
+                    <div id="Place">
+                        {%else%}
+                        <div id="Place" hidden>
+                            {%endif%}
+                            室內位置
+                            <select name="Place">
+                                {%for place in Place%}
+                                {% if report[1]== place[0] %}
+                                <option value="{{place[0]}}" selected>{{place[1]}}</option>
+                                {%else%}
+                                <option value="{{place[0]}}">{{place[1]}}</option>
+                                {%endif%}
+                                {%endfor%}
+                            </select>
+                        </div>
+                        <div>
+                            <h4>求救事件描述</h4>
+                            <textarea class="message" name="Description" id="">{{report[2]}}</textarea>
+                        </div>
+
+                        <input type="submit" value="送出">
+                    </div>
+
+            </form>
+        </div>
+
+
+    </div>
+
 </body>
 
 <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>

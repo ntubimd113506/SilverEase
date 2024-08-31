@@ -1,8 +1,5 @@
 @charset "utf-8";
 
-/* ------------------- */
-/* html, body          */
-/* ------------------- */
 html {
     overflow-y: hidden;
 }
@@ -16,10 +13,6 @@ body {
     padding-bottom: constant(safe-area-inset-bottom);
 }
 
-
-/* ------------------- */
-/* container           */
-/* ------------------- */
 div.container {
     margin-left: auto;
     margin-right: auto;
@@ -28,13 +21,8 @@ div.container {
     background-color: #F2F0EE;
 }
 
-
-/* ------------------- */
-/* header              */
-/* ------------------- */
 div.header {
     display: flex;
-    /* 水平置中 */
     justify-content: center;
     padding: 10px;
     height: 40px;
@@ -50,20 +38,12 @@ div.header h1 {
     margin: 0%;
 }
 
-/* ------------------- */
-/* content-wrapper     */
-/* ------------------- */
 div.content-wrapper {
     display: flex;
     justify-content: center;
-    /* 水平置中 */
     height: 100%;
-    /* 設置容器高度為視窗高度 */
 }
 
-/* ------------------- */
-/* content             */
-/* ------------------- */
 div.content {
     background-color: #F2F0EE;
     padding: 20px 30px;
@@ -75,7 +55,6 @@ div.clear {
 
 div.cardrow {
     display: flex;
-    /* 水平置中 */
     justify-content: center;
     margin: auto;
 }

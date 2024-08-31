@@ -124,9 +124,9 @@
 
                     if (data.GPS === 0) {
                         if (data.M === true) {
-                            gpsUrlElement.innerHTML = "目前無權限<br>如要查看分析請至長者本人裝置設定中開啟權限";
+                            gpsUrlElement.innerHTML = "<div class='no-access-content'>&emsp;&emsp;&emsp;&emsp;<i class='fa-solid fa-triangle-exclamation'></i><span>目前無權限</span></div><p>如要查看分析請至長者本人裝置設定中開啟權限</p>";
                         } else {
-                            gpsUrlElement.innerHTML = "目前無權限<br><a href=/set/access_index>點此設定</a>";
+                            gpsUrlElement.innerHTML = "<div class='no-access-content'><i class='fa-solid fa-triangle-exclamation'></i><span>目前無權限</span></div>&emsp;&emsp;<a href=/set/access_index style='color: #0000EE;'>點此設定</a>";
                         }
                         mapElement.style.display = 'none';
                         footprintsBtn.style.display = 'none'; 

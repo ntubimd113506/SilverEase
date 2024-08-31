@@ -1,8 +1,5 @@
 @charset "utf-8";
 
-/* ------------------- */
-/* html, body          */
-/* ------------------- */
 html {
     overflow-y: hidden;
 }
@@ -18,10 +15,6 @@ body {
     padding-bottom: constant(safe-area-inset-bottom);
 }
 
-
-/* ------------------- */
-/* container           */
-/* ------------------- */
 div.container {
     width: 100%;
     margin-left: auto;
@@ -31,10 +24,6 @@ div.container {
     overflow: hidden;
 }
 
-
-/* ------------------- */
-/* header              */
-/* ------------------- */
 div.header {
     display: flex;
     justify-content: center;
@@ -54,9 +43,6 @@ div.header h1 {
     margin: 0%;
 }
 
-/* ------------------- */
-/* content-wrapper     */
-/* ------------------- */
 div.content-wrapper {
     display: flex;
     justify-content: center;
@@ -64,9 +50,6 @@ div.content-wrapper {
     width: 100%;
 }
 
-/* ------------------- */
-/* content             */
-/* ------------------- */
 div.content {
     position: relative;
     padding-top: 20px;
@@ -163,7 +146,6 @@ img.logo {
     z-index: 5;
 }
 
-/* 實際內容 */
 .input-with-dot {
     outline: none;
     width: 300px;
@@ -178,9 +160,7 @@ img.logo {
     font-family: monospace;
     background-color: #fff;
     color: transparent;
-    /* 隱藏文字 */
     caret-color: rgba(255, 255, 255, 0);
-    /* 隱藏光標 */
 }
 
 .input-wrapper {
@@ -204,19 +184,16 @@ img.logo {
     font-family: monospace;
 }
 
-/* 顯示用戶輸入的數字 */
 .digits {
     color: #2e2e2e;
 }
 
 .dots {
     color: #A8A8A8;
-    /* 顯示灰色的 `•` 符號 */
 }
 
 .input-with-dot::placeholder {
     color: #A8A8A8;
-    /* 佔位符顏色 */
 }
 
 input[type="submit" i] {
@@ -285,9 +262,6 @@ img.btn {
     z-index: 2;
 }
 
-/* ------------------- */
-/* Media Queries       */
-/* ------------------- */
 @media screen and (max-width: 374px) {
     .title-container {
         width: 90%;

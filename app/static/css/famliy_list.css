@@ -1,8 +1,5 @@
 @charset "utf-8";
 
-/* ------------------- */
-/* html, body          */
-/* ------------------- */
 html{
     overflow-x: hidden;
 }
@@ -22,9 +19,6 @@ html, body{
     padding-bottom: constant(safe-area-inset-bottom);
 }
 
-/* ------------------- */
-/* container           */
-/* ------------------- */
 div.container{
     touch-action: manipulation;
     -ms-content-zooming: none;
@@ -38,12 +32,8 @@ div.container{
     min-height: calc(100vh - constant(safe-area-inset-bottom));
 }
 
-/* ------------------- */
-/* header              */
-/* ------------------- */
 div.header{
     display: flex;
-    /* 水平置中 */
     justify-content: center;  
     padding: 10px;
     height: 40px;
@@ -58,10 +48,6 @@ div.header h1{
     letter-spacing: 3px;
     margin: 0%;
 }
-
-/* ------------------- */
-/* content             */
-/* ------------------- */
 
 div.content{
     background-color: #F2F0EE;
@@ -187,9 +173,6 @@ select:invalid {
     display: none;
 }
 
-/* ------------------- */
-/* Media Queries       */
-/* ------------------- */
 @media screen and (max-width: 374px) {
     .title-container {
         width: 90%; 
