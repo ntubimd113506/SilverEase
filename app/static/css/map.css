@@ -58,22 +58,19 @@ div.header h1 {
 .time-filters {
     display: flex;
     justify-content: center;
-    margin: auto;
     margin-bottom: 20px;
-    width: fit-content;
 }
 
 .time-filters button {
-    padding: 0 10px;
-    width: auto;
+    width: 70px;
     cursor: pointer;
     position: relative;
     top: 30px;
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #ffffff;
-    border: 4px solid #809f68;
+    background-color: #5D7B48;
+    border: none;
     height: 42px;
     border-radius: 10px;
     font-weight: bolder;
@@ -82,7 +79,7 @@ div.header h1 {
     margin-bottom: 50px;
     transition: background-color 0.1s;
     text-decoration: none;
-    color: #000000;
+    color: #ffffff;
     font-size: 18px;
     box-sizing: border-box;
     letter-spacing: 0;
@@ -99,7 +96,7 @@ div.header h1 {
 .time-filters button:nth-child(2),
 .time-filters button:nth-child(3)
 {
-    margin-right: 38px;
+    margin-right: 35px;
 }
 
 .back-button {
@@ -279,7 +276,7 @@ select option[disabled] {
     }
 
     .time-filters button{
-        font-size: 12px;
+        font-size: 14px;
     }
 
     .time-filters button:nth-child(1),
@@ -340,7 +337,7 @@ select option[disabled] {
 
 @media (min-width: 576px) {
     .time-filters button{
-        font-size: 18px;
+        font-size: 16px;
     }
 
     .time-filters button:nth-child(1),
@@ -393,16 +390,11 @@ select option[disabled] {
         background-color: #9fb889;
     }
 
-    .delete-btn:hover,
-    .delete-btn:active {
-        border: 4px solid #9fb889;
-        color: #3a3a3a;
-        background-color: #f5f5f5;
-    }
-
-    input[type="submit" i].delete_confirm:hover,
-    input[type="submit" i].delete_confirm:active {
-        background-color: #9fb889;
+    .time-filters button:nth-child(1),
+    .time-filters button:nth-child(2),
+    .time-filters button:nth-child(3)
+    {
+        margin-right: 25px;
     }
 
     .title-container {
