@@ -45,8 +45,8 @@
                             <span class="value">
                                 <div class="input-wrapper">
                                     <input class="input-with-dot" type="text" id="input-with-dot" name="CodeID"
-                                        maxlength="6" required oninput="updateDotsAndColor()">
-                                    <div class="display-text" id="display-text"></div>
+                                        maxlength="6" required oninput="updateDots()">
+                                        <div class="display-text" id="display-text"></div>
                                 </div>
                                 <input type="hidden" id="MemID" name="MemID">
                             </span>
@@ -61,8 +61,15 @@
         </div>
     </div>
     <script>
-        function updateDotsAndColor() {
-            const input = document.getElementById('input-with-dot');
+        const input = document.getElementById('input-with-dot');
+        const placeholderDots = document.getElementById('placeholder-dots');
+        input.value="{{code}}"
+        
+        if ("{{code}}" != "") {
+            updateDots();
+        }
+
+        function updateDots() {
             const displayText = document.getElementById('display-text');
             const value = input.value;
             const maxLength = input.maxLength;
@@ -70,7 +77,7 @@
             const dots = '•'.repeat(maxLength - value.length);
             displayText.innerHTML = `<span class="digits">${digits}</span><span class="dots">${dots}</span>`;
         }
-        updateDotsAndColor();
+        updateDots();
     </script>
 </body>
 

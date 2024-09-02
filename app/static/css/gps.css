@@ -1,7 +1,7 @@
 @charset "utf-8";
 
 html{
-    overflow-y: hidden;
+    overflow-x: hidden;
 }
 
 html,
@@ -44,18 +44,22 @@ div.header h1{
     margin: 0%;
 }
 
-div.content-wrapper {
-    display: flex;
-    justify-content: center;
-    height: calc(100vh - 60px);
-    width: 100%;
-}
-
 div.content{
     position: relative; 
     padding-top: 20px;
     justify-content: center;
     margin: auto;
+}
+
+div.map-content{
+    background-color: #F2F0EE;
+    padding: 0px 10px;
+}
+
+#map {
+    height: 450px;
+    width: 100%;
+    margin-bottom: 50px;
 }
 
 .title-container {
@@ -155,7 +159,7 @@ button.i{
     font-size: 16px;
     font-weight: bolder;
     letter-spacing:5px;
-    margin: 30px 0px;
+    margin: 20px 0px;
     cursor: pointer;    
     transition: background-color 0.1s;
 }
@@ -217,59 +221,63 @@ input.output{
     font-weight: bold;
 }
 
-@media only screen and (max-width: 360px) {
-    body h1{
+@media screen and (max-width: 374px) {
+    .title-container {
+        width: 90%;
+    }
+
+    .form-container {
+        width: 90%;
+    }
+
+    .time-filters button{
+        font-size: 14px;
+    }
+
+    .time-filters button:nth-child(1),
+    .time-filters button:nth-child(2),
+    .time-filters button:nth-child(3)
+    {
+        margin-right: 10px;
+    }
+
+}
+
+@media screen and (min-width: 375px) and (max-width: 413px) {
+    body h1 {
         font-weight: 600;
-        }
+    }
 
-        img.b {
-            width: 420px;
-            height: 420px;
-        }
+    .time-filters button{
+        font-size: 14px;
+    }
+
+    .time-filters button:nth-child(1),
+    .time-filters button:nth-child(2),
+    .time-filters button:nth-child(3)
+    {
+        margin-right: 20px;
+    }
+
 }
 
-@media only screen and (max-width: 480px) {
-    body h1{
-        font-weight: 800;
+@media screen and (min-width: 414px) {
+    .title-container {
+        width: 90%;
     }
 
-    img.b {
-        width: 440px;
-        height: 440px;
-    }
-}
-
-@media only screen and (max-width: 768px) {
-    div.content{
-        width: 380px;
-    }
-
-    div.content h1 {
-        font-size: 36px;
-    }
-
-    img.b {
-        width: 460px;
-        height: 460px;
-    }
-
-    div.button {
-        width: 100px;
-        font-size: 18px;
-    }
-
-    #myButton {
-        width: 100%;
-        font-size: 18px;
-    }
-
-    input[type="submit" i]:hover,
-    input[type="submit" i]:active {
-        background-color: #9fb889;
+    .form-container {
+        width: 88%;
     }
 }
 
-@media only screen and (max-width: 768px) {
+@media (min-width: 768px) {
+    html,
+    body {
+        padding-bottom: calc(30px + env(safe-area-inset-bottom));
+
+    }
+
     div.header {
         height: 50px;
     }
@@ -277,4 +285,63 @@ input.output{
     div.header h1 {
         padding: 12px;
     }
+
+    .btn:hover,
+    .btn:active {
+        background-color: #9fb889;
+    }
+
+    input[type="submit" i]:hover,
+    input[type="submit" i]:active {
+        background-color: #9fb889;
+    }
+
+    .title-container {
+        margin: auto;
+    }
+
+    .form-container {
+        width: 55%;
+    }
+
+    .value {
+        margin-bottom: 30px;
+    }
+
+    select {
+        margin-bottom: 32px;
+    }
+}
+
+@media (min-width: 992px) {
+    .title-container {
+        margin: auto;
+    }
+
+    .form-container {
+        width: 47%;
+    }
+}
+
+
+
+@media (min-width: 1200px) {
+    .title-container {
+        width: 42%;
+    }
+
+    .form-container {
+        width: 42%;
+    }
+}
+
+@media (min-width: 1400px) {
+    .title-container {
+        width: 38%;
+    }
+
+    .form-container {
+        width: 38%;
+    }
+
 }
