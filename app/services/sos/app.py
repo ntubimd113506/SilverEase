@@ -4,6 +4,20 @@ from utils import db
 
 sos_bp = Blueprint("sos_bp", __name__)
 
+@sos_bp.route("/gps/<FamilyID>")
+def sos(FamilyID):
+    conn = db.get_connection()
+    cur = conn.cursor()
+    data=False
+    cur.execute('SELECT Location,LocationTime FROM `113-ntub113506`.Location WHERE FamilyID = %s ORDER BY LocatNo DESC LIMIT 1', (FamilyID))
+    res=cur.fetchone()
+    if res:
+        data={}
+        locat = res[0]
+        data["last_time"] = res[1].strftime("%Y.%m.%d %H:%M")
+        data["url"] = f"https://www.google.com/maps/search/?api=1&query={locat}"
+
+    return render_template("/sos/gpsRes.html", data=data, liffid=db.LIFF_ID)
 
 @sos_bp.route("/sos_report/<SOSNo>")
 def sos_report(SOSNo):
