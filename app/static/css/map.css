@@ -62,7 +62,9 @@ div.header h1 {
 }
 
 .time-filters button {
-    width: 70px;
+    display: inline-block;
+    white-space: nowrap;
+    width: 75px;
     cursor: pointer;
     position: relative;
     top: 30px;
@@ -96,7 +98,7 @@ div.header h1 {
 .time-filters button:nth-child(2),
 .time-filters button:nth-child(3)
 {
-    margin-right: 35px;
+    margin-right: 30px;
 }
 
 .back-button {
@@ -288,7 +290,7 @@ select option[disabled] {
 
 }
 
-@media screen and (min-width: 375px) and (max-width: 413px) {
+@media screen and (min-width: 375px) and (max-width: 410px) {
     body h1 {
         font-weight: 600;
     }
@@ -301,13 +303,12 @@ select option[disabled] {
     .time-filters button:nth-child(2),
     .time-filters button:nth-child(3)
     {
-        margin-right: 20px;
+        margin-right: 10px;
     }
 
 }
 
-@media screen and (min-width: 414px) {
-
+@media screen and (min-width: 411px) {
     .delete-btn {
         top: 90px;
 
