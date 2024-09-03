@@ -9,6 +9,8 @@
 #include "esp_camera.h"
 #include "my-ca.h"
 #include <TinyGPS++.h>
+#include "soc/soc.h"
+#include "soc/rtc_cntl_reg.h"
 
 #define SERVER "silverease.ntub.edu.tw"
 #define MQTT_PORT 8883
@@ -68,10 +70,6 @@ void sendGPSData()
     serializeJson(doc, jsonData);
 
     mqtt.publish(String(TOPIC + "/gps").c_str(), jsonData.c_str());
-  }
-  else
-  {
-    mqtt.publish(String(TOPIC + "/noGPS").c_str(), "");
   }
 }
 
@@ -149,7 +147,6 @@ void callback(char *topic, byte *payload, unsigned int length)
 
   if (action == "newGPS")
   {
-    updateGPS();
     sendGPSData();
   }
 };
@@ -229,6 +226,11 @@ bool initCamera()
 
 void SendImageMQTT()
 {
+  sendGPSData();
+  if (!gpsLocat)
+  {
+    mqtt.publish(String(TOPIC + "/noSOSLocat").c_str(),getTime.c_str());
+  }
   camera_fb_t *fb = esp_camera_fb_get();
   size_t fbLen = fb->len;
   int ps = 512;
@@ -263,7 +265,6 @@ void mainTask(void *parameter)
       {
         btn_flag = true;
         digitalWrite(BUZZ, HIGH);
-        sendGPSData();
         SendImageMQTT();
         digitalWrite(BUZZ, LOW);
         vTaskDelay(5000 / portTICK_PERIOD_MS);
@@ -282,7 +283,8 @@ void mainTask(void *parameter)
 
 void setup()
 {
-  Serial.begin(9600);
+  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //disable brownout detector
+  Serial.begin(9600);  
   Serial.println("ESP32CAM Setup…");
   pinMode(BTN, INPUT);
   pinMode(BUZZ, OUTPUT);
