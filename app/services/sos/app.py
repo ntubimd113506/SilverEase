@@ -9,7 +9,7 @@ def sos(FamilyID):
     conn = db.get_connection()
     cur = conn.cursor()
     data=False
-    cur.execute('SELECT Location,LocationTime FROM `113-ntub113506`.Location WHERE FamilyID = %s ORDER BY LocatNo DESC LIMIT 1', (FamilyID))
+    cur.execute('SELECT Location,LocationTime FROM `113-ntub113506`.Location WHERE FamilyID = %s AND Location != "noData"  ORDER BY LocatNo DESC LIMIT 1', (FamilyID))
     res=cur.fetchone()
     if res:
         data={}

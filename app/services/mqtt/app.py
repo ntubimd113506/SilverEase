@@ -45,6 +45,7 @@ def handle_mqtt_message(client, userdata, message):
             mqtt.publish(f"ESP32/{DevID}/noLink")
 
     if action == "offline":
+        return
         sent_dev_offline(DevID)
 
     if action == "link":
@@ -108,10 +109,13 @@ def handle_mqtt_message(client, userdata, message):
         upgrade_gps(DevID, Map, getTime)
 
     if action=="noSOSLocat":
-        getTime=msg.split(",")
-        getTime = datetime(int(timeData[0]), int(timeData[1]), int(
-            timeData[2]), int(timeData[3]), int(timeData[4]), int(timeData[5]))
-        getTime = getTime+timedelta(hours=8)
+        try:
+            getTime=msg.split(",")
+            getTime = datetime(int(timeData[0]), int(timeData[1]), int(
+                timeData[2]), int(timeData[3]), int(timeData[4]), int(timeData[5]))
+            getTime = getTime+timedelta(hours=8)
+        except:
+            getTime=datetime.now()
         upgrade_gps(DevID, "noData", getTime)
 
 
@@ -264,8 +268,9 @@ def sent_mess(DevID, img):
     conn = db.get_connection()
     cur = conn.cursor()
     cur.execute("SELECT LocatNo,Location FROM Location WHERE FamilyID=%s AND LocationTime BETWEEN DATE_SUB(now(),Interval 5 minute) AND now() order by LocatNo desc limit 1", (FamilyID))
-    LocatNo = cur.fetchone()[0]
-    gps = cur.fetchone()[1]
+    res = cur.fetchone()
+    LocatNo=res[0]
+    gps = res[1]
     cur.execute("INSERT INTO SOS (LocatNo) Values(%s)", (LocatNo))
     cur.execute("SELECT SOSNo FROM SOS WHERE LocatNo=%s", LocatNo)
     SOSNo = cur.fetchone()[0]
@@ -273,10 +278,11 @@ def sent_mess(DevID, img):
     conn.close()
     
     if gps == "noData":
-        Map = f"https://liff.line.me/{db.LIFF_ID}/sos/{FamilyID}"
-    Map = f"https://www.google.com/maps/search/?api=1&query={gps}"
+        Map = f"https://liff.line.me/{db.LIFF_ID}/sos/gps/{FamilyID}"
+    else:
+        Map = f"https://www.google.com/maps/search/?api=1&query={gps}"
 
-    thumbnail_image_url = f"https://liff.line.me/{db.LIFF_ID}/img/{filename}"
+    thumbnail_image_url = f"https://silverease.ntub.edu.tw/img/{filename}"
     resMsg = FlexSendMessage(
         alt_text="緊急通知",
         contents={
@@ -336,4 +342,4 @@ def sent_mess(DevID, img):
         for userID in UserIDs:
             line.line_bot_api.push_message(userID, resMsg)
     except:
-        pass
+        mqtt.publish("linePushFaild","")

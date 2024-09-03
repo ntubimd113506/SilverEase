@@ -85,7 +85,7 @@ def check():
             return jsonify({'GPS': GPS, 'M': M})
 
         else:
-            cursor.execute('SELECT Location FROM `113-ntub113506`.Location WHERE FamilyID = %s ORDER BY LocatNo DESC LIMIT 1', (famID[0],))
+            cursor.execute('SELECT Location FROM `113-ntub113506`.Location WHERE FamilyID = %s AND Location != "noData" ORDER BY LocatNo DESC LIMIT 1', (famID[0],))
             latest_location = cursor.fetchone()
 
             base_url = "https://www.google.com/maps/search/?api=1&query="

@@ -20,7 +20,6 @@ set_bp = Blueprint("set_bp", __name__)
 @set_bp.route("/")
 @login_required
 def setting():
-    # session["MemID"] = db.CHICHI
     MemID = session.get("MemID")
     conn = db.get_connection()
     cursor = conn.cursor()
@@ -31,6 +30,7 @@ def setting():
 
 
 @set_bp.route("/get_code_id")
+@login_required
 def get_code_id():
     FamilyID = session.get("FamilyID")
     if FamilyID is None:
@@ -42,6 +42,7 @@ def get_code_id():
 
 @set_bp.route("/join_family")
 @set_bp.route("/join_family/<code>")
+@login_required
 def join_family(code=""):
     return render_template("/set/young.html", code=code)
 
@@ -96,6 +97,7 @@ def CodeID():
 
 
 @set_bp.route("/family_list")
+@login_required
 def family_list():
     conn = db.get_connection()
     cursor = conn.cursor()
@@ -145,6 +147,7 @@ def delete_family():
 
 
 @set_bp.route("/family_leave", methods=["Delete"])
+@login_required
 def leave_family():
     FamilyID = request.json["FamilyID"]
     conn = db.get_connection()
@@ -174,7 +177,7 @@ def device_index(DevID):
 
 
 @set_bp.route("/device/setting")
-# @login_required
+@login_required
 def device_setting():
     DevID = session["DevID"]
     return render_template("/set/device_setting.html", DevID=DevID, liffid=db.LIFF_ID)
@@ -189,6 +192,7 @@ def add_device():
 
 
 @set_bp.route("/access_index")
+@login_required
 def access_check():
     res = ""
     if session.get("FamilyID"):
@@ -324,40 +328,40 @@ def identity():
         return render_template("/set/young.html", MemID=MemID)
 
 
-@set_bp.route("/young")
-def young():
-    return render_template("/set/young.html")
+# @set_bp.route("/young")
+# def young():
+#     return render_template("/set/young.html")
 
 
-@set_bp.route("/checkid", methods=["POST"])  # 確認使用者資料
-def checkid():
-    try:
-        conn = db.get_connection()
-        cursor = conn.cursor()
+# @set_bp.route("/checkid", methods=["POST"])  # 確認使用者資料
+# def checkid():
+#     try:
+#         conn = db.get_connection()
+#         cursor = conn.cursor()
 
-        # 獲取使用者的MemID
-        data = json.loads(request.get_data(as_text=True))
-        MemID = data["MemID"]
+#         # 獲取使用者的MemID
+#         data = json.loads(request.get_data(as_text=True))
+#         MemID = data["MemID"]
 
-        # ==================  ==================
+#         # ==================  ==================
 
-        """https://ithelp.ithome.com.tw/m/articles/10300064"""
+#         """https://ithelp.ithome.com.tw/m/articles/10300064"""
 
-        # ==================  ==================
-        cursor.execute("SELECT MainUserID FROM Family WHERE MainUserID = %s", (MemID))
-        member_data = cursor.fetchone()
-        cursor.execute("SELECT SubUserID FROM FamilyLink WHERE SubUserID = %s", (MemID))
-        family_link_data = cursor.fetchone()
+#         # ==================  ==================
+#         cursor.execute("SELECT MainUserID FROM Family WHERE MainUserID = %s", (MemID))
+#         member_data = cursor.fetchone()
+#         cursor.execute("SELECT SubUserID FROM FamilyLink WHERE SubUserID = %s", (MemID))
+#         family_link_data = cursor.fetchone()
 
-        conn.close()
-        # 檢查是否是長輩
-        if member_data != None:
-            return json.dumps({"result": 1, "option": "old"})
-        # 檢查是否是子女
-        if family_link_data != None:
-            return json.dumps({"result": 1, "option": "young"})
-        else:
-            return json.dumps({"result": 0}, ensure_ascii=False)
+#         conn.close()
+#         # 檢查是否是長輩
+#         if member_data != None:
+#             return json.dumps({"result": 1, "option": "old"})
+#         # 檢查是否是子女
+#         if family_link_data != None:
+#             return json.dumps({"result": 1, "option": "young"})
+#         else:
+#             return json.dumps({"result": 0}, ensure_ascii=False)
 
-    except Exception as e:
-        return json.dumps({"error": "TryError"}, ensure_ascii=False)
+#     except Exception as e:
+#         return json.dumps({"error": "TryError"}, ensure_ascii=False)
