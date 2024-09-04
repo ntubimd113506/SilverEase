@@ -13,7 +13,6 @@ gps_bp = Blueprint('gps_bp', __name__)
 @login_required
 def gps():
     MemID = session.get("MemID")
-    mqtt.publish("/newGPS","")
     conn = db.get_connection()
     cursor = conn.cursor()
 
@@ -63,8 +62,12 @@ def check():
     M = True
     GPS = True
 
-    cursor.execute('SELECT FamilyID FROM `113-ntub113506`.Family WHERE MainUserID = %s', (MainUser,))
-    famID = cursor.fetchone()
+    cursor.execute('SELECT FamilyID,DevID FROM `113-ntub113506`.Family WHERE MainUserID = %s', (MainUser,))
+    res=cursor.fetchone()
+    famID = res[0]
+    DevID = res[1]
+
+    mqtt.publish(f"ESP32/{DevID}/newGPS", "")
 
     if famID:
         cursor.execute('SELECT GPS FROM `113-ntub113506`.Access WHERE FamilyID = %s', (famID[0],))
