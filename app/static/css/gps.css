@@ -25,21 +25,19 @@ div.container{
     overflow: hidden;
 }
 
-div.header{
+div.header {
     display: flex;
-    justify-content: center;  
-    align-items: center;
+    justify-content: center;
     padding: 10px;
     height: 40px;
-    width: auto;
     background-color: #9FB889;
 }
 
-div.header h1{
+div.header h1 {
     font-size: 30px;
     width: 200px;
     padding: 5px;
-    text-align:center;
+    text-align: center;
     letter-spacing: 3px;
     margin: 0%;
 }

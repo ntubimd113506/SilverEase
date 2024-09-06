@@ -27,10 +27,8 @@ div.container {
 div.header {
     display: flex;
     justify-content: center;
-    align-items: center;
     padding: 10px;
     height: 40px;
-    width: auto;
     background-color: #9FB889;
 }
 

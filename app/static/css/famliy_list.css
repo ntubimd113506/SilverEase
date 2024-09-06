@@ -79,6 +79,10 @@ div.cardrow{
     margin-bottom: 35px;
 }
 
+.box{
+    margin-bottom: 40px;
+}
+
 div.content h1{
     font-size: 30px;
     letter-spacing:8px;
@@ -115,12 +119,12 @@ a{
 }
 
 .align-left {
-    display: block;
-    width: 340px;
+    display: flex;
+    justify-content: center;  
+    margin: auto;
     font-size: 18px;
-    text-align: left;
-    transform: translateX(3%);
-    margin: 10px auto 0; 
+    letter-spacing: 1px;
+    margin: 10px auto 20px; 
     color: #809f68;
 }
 
