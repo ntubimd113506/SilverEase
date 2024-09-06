@@ -75,11 +75,6 @@ void sendGPSData()
 
 void callback(char *topic, byte *payload, unsigned int length)
 {
-  String message = "";
-  for (int i = 0; i < length; i++)
-  {
-    message += (char)payload[i];
-  }
   String action = topic + TOPIC.length() + 1;
   if (action == "isLink")
   {
@@ -89,6 +84,11 @@ void callback(char *topic, byte *payload, unsigned int length)
 
   if (action == "setLink")
   {
+    String message = "";
+    for (int i = 0; i < length; i++)
+    {
+      message += (char)payload[i];
+    }
     int cnt = 0;
     int res = 10;
     while (res > 0 and cnt < 3)
@@ -153,7 +153,14 @@ void callback(char *topic, byte *payload, unsigned int length)
 
 void reconnect()
 {
-  while (!mqtt.connected())
+  while (!WiFi.isConnected())
+  {
+    Serial.println("重新連接WiFi");
+    WiFiConfig.connectWiFi();
+    vTaskDelay(5000 / portTICK_PERIOD_MS);
+  }
+  int cnt = 0;
+  while (!mqtt.connected() && cnt < 10)
   {
     Serial.print("MQTT 連接...");
     if (mqtt.connect(DevID.c_str(), String(TOPIC + "/offline").c_str(), 0, 0, "offline"))
@@ -166,6 +173,7 @@ void reconnect()
       Serial.print("失敗, rc=");
       Serial.print(mqtt.state());
       Serial.println(" 1秒後重試");
+      cnt++;
       vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
   }
@@ -229,9 +237,14 @@ void SendImageMQTT()
   sendGPSData();
   if (!gpsLocat)
   {
-    mqtt.publish(String(TOPIC + "/noSOSLocat").c_str(),getTime.c_str());
+    mqtt.publish(String(TOPIC + "/noSOSLocat").c_str(), devTime.c_str());
   }
   camera_fb_t *fb = esp_camera_fb_get();
+  if (!fb)
+  {
+    mqtt.publish(String(TOPIC + "/help").c_str(), "noImage");
+    return;
+  }
   size_t fbLen = fb->len;
   int ps = 512;
   // 開始傳遞影像檔
@@ -283,8 +296,8 @@ void mainTask(void *parameter)
 
 void setup()
 {
-  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //disable brownout detector
-  Serial.begin(9600);  
+  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); // disable brownout detector
+  Serial.begin(9600);
   Serial.println("ESP32CAM Setup…");
   pinMode(BTN, INPUT);
   pinMode(BUZZ, OUTPUT);
@@ -305,7 +318,6 @@ void setup()
   );
   while (!dev_link)
   {
-    Serial.println("check");
     mqtt.publish(String(TOPIC + "/checkLink").c_str(), "");
     vTaskDelay(5000 / portTICK_PERIOD_MS);
   }
@@ -322,12 +334,17 @@ void loop()
     gps.encode(Serial.read());
     updateGPS();
 
-    if (currentTime - lastGetTime >= 1000)
+    if (currentTime - lastGetTime >= 5000)
     {
       lastGetTime = currentTime;
-      Serial.println("Serial available");
-      Serial.println("lat: " + latitude + " lon: " + longitude);
-      Serial.println("Now is" + devTime);
+      JsonDocument doc;
+      doc["lat"] = latitude;
+      doc["lon"] = longitude;
+      doc["devTime"] = devTime;
+      doc["getTime"] = getTime;
+      String jsonData;
+      serializeJson(doc, jsonData);
+      mqtt.publish(String("MsgBy/" + DevID).c_str(), jsonData.c_str());
     }
   }
 
