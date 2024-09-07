@@ -73,6 +73,32 @@ void sendGPSData()
   }
 }
 
+void sos_morsecode()
+{
+  for (int i = 0; i < 3; i++)
+  {
+    digitalWrite(BUZZ, HIGH);
+    vTaskDelay(250 / portTICK_PERIOD_MS);
+    digitalWrite(BUZZ, LOW);
+    vTaskDelay(250 / portTICK_PERIOD_MS);
+  }
+  for (int i = 0; i < 3; i++)
+  {
+    digitalWrite(BUZZ, HIGH);
+    vTaskDelay(500 / portTICK_PERIOD_MS);
+    digitalWrite(BUZZ, LOW);
+    vTaskDelay(250 / portTICK_PERIOD_MS);
+  }
+  for (int i = 0; i < 3; i++)
+  {
+    digitalWrite(BUZZ, HIGH);
+    vTaskDelay(250 / portTICK_PERIOD_MS);
+    digitalWrite(BUZZ, LOW);
+    vTaskDelay(250 / portTICK_PERIOD_MS);
+  }
+  vTaskDelay(1000 / portTICK_PERIOD_MS);
+}
+
 void callback(char *topic, byte *payload, unsigned int length)
 {
   String action = topic + TOPIC.length() + 1;
@@ -120,28 +146,19 @@ void callback(char *topic, byte *payload, unsigned int length)
     }
   }
 
-  if (action == "help")
+  if (action == "SOSOver")
   {
     for (int cnt = 0; cnt < 2; cnt++)
     {
-      digitalWrite(BUZZ, HIGH);
-      vTaskDelay(250 / portTICK_PERIOD_MS);
-      digitalWrite(BUZZ, LOW);
-      vTaskDelay(250 / portTICK_PERIOD_MS);
+      sos_morsecode();
     }
   }
 
   if (action == "gotHelp")
   {
-    int count = 0;
-    while (count < 3)
+    for (int cnt = 0; cnt < 3; cnt++)
     {
-      Serial.println("我叫你叫");
-      digitalWrite(BUZZ, HIGH);
-      vTaskDelay(1000 / portTICK_PERIOD_MS);
-      digitalWrite(BUZZ, LOW);
-      vTaskDelay(1000 / portTICK_PERIOD_MS);
-      count++;
+      sos_morsecode();
     }
   }
 
@@ -265,6 +282,7 @@ void SendImageMQTT()
   }
   boolean isPublished = mqtt.endPublish();
   esp_camera_fb_return(fb); // 清除緩衝區
+  mqtt.publish(String(TOPIC + "/SOSOver").c_str(), "");
 }
 
 void mainTask(void *parameter)
@@ -278,8 +296,9 @@ void mainTask(void *parameter)
       {
         btn_flag = true;
         digitalWrite(BUZZ, HIGH);
-        SendImageMQTT();
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
         digitalWrite(BUZZ, LOW);
+        SendImageMQTT();
         vTaskDelay(5000 / portTICK_PERIOD_MS);
         btn_flag = false;
       }
@@ -345,6 +364,7 @@ void loop()
       String jsonData;
       serializeJson(doc, jsonData);
       mqtt.publish(String("MsgBy/" + DevID).c_str(), jsonData.c_str());
+      Serial.println(jsonData);
     }
   }
 
