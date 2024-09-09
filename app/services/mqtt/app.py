@@ -250,7 +250,7 @@ def check_device(DevID):
 
 def sent_mess(DevID, img):
     filename = f"{DevID}_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.jpg"
-    if not img == "":
+    if not img == "noImage":
         filepath = os.path.abspath(__file__)
         for i in range(3):
             filepath = os.path.dirname(filepath)
