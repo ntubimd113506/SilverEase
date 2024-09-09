@@ -70,9 +70,9 @@ def check():
     mqtt.publish(f"ESP32/{DevID}/newGPS", "")
 
     if famID:
-        cursor.execute('SELECT GPS FROM `113-ntub113506`.Access WHERE FamilyID = %s', (famID[0],))
+        cursor.execute('SELECT GPS FROM `113-ntub113506`.Access WHERE FamilyID = %s', (famID,))
         G = cursor.fetchone()[0]
-
+    # return jsonify({"MSG":G})
         if G == 0 and MainUser != MemID:
             GPS = 0
             M = True
@@ -88,7 +88,7 @@ def check():
             return jsonify({'GPS': GPS, 'M': M})
 
         else:
-            cursor.execute('SELECT Location FROM `113-ntub113506`.Location WHERE FamilyID = %s AND Location != "noData" ORDER BY LocatNo DESC LIMIT 1', (famID[0],))
+            cursor.execute('SELECT Location FROM `113-ntub113506`.Location WHERE FamilyID = %s AND Location != "noData" ORDER BY LocatNo DESC LIMIT 1', (famID,))
             latest_location = cursor.fetchone()
 
             base_url = "https://www.google.com/maps/search/?api=1&query="
