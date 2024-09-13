@@ -17,7 +17,8 @@
         </div>
 
         <div class="title-container">
-            <h1 class="content-header">
+            <h1 class="content-header">{{ data.analyze }}</h1>
+            <p>請選擇要查看的長輩
                 {% if not is_all %}
                 <select id="MainUserID" name="MainUserID" class="MainUserID" onchange="updateMainUserID()">
                     <option value="" disabled selected>請選擇</option>
@@ -30,9 +31,7 @@
                     {% endfor %}
                 </select>
                 {% endif %}
-
-                {{ data.analyze }}
-            </h1>
+            </p>
         </div>
     </div>
 
