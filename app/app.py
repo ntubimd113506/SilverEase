@@ -5,7 +5,6 @@ from flask_login import login_required
 from linebot.models import FlexSendMessage
 from utils import db
 from services import (
-    cam_bp,
     event_bp,
     hos_bp,
     analyze_bp,
@@ -31,7 +30,6 @@ app.register_blueprint(hos_bp, url_prefix="/hos")
 app.register_blueprint(event_bp, url_prefix="/event")
 app.register_blueprint(analyze_bp, url_prefix="/analyze")
 app.register_blueprint(health_bp, url_prefix="/health")
-app.register_blueprint(cam_bp, url_prefix="/cam")
 app.register_blueprint(set_bp, url_prefix="/set")
 app.register_blueprint(linebot_bp, url_prefix="/")
 app.register_blueprint(user_bp, url_prefix="/user")
@@ -50,6 +48,8 @@ def index():
 
 @app.route("/lostAndFound")
 def lostAndFound():
+    DevID = session.get("DevID")
+    mqtt.publish(f"ESP32/{DevID}/newGPS", "")
     return render_template("lostAndFound.html")
 
 
@@ -58,12 +58,17 @@ def lost_report():
     DevID = session.get("DevID")
     conn = db.get_connection()
     cur = conn.cursor()
+    cur.execute("select FamilyID,MainUserID from Family where DevID=%s",(DevID))
+    res=cur.fetchone()
+    FamilyID=res[0]
+    MainUserID=res[1]
     cur.execute(
-        "select SubUserID from FamilyLink Where FamilyID = (select FamilyID from Family where DevID=%s)",
-        (DevID),
-    )
+        "select SubUserID from FamilyLink Where FamilyID = %s", FamilyID)
+        
     SubUserID = cur.fetchall()
     message = request.json["message"]
+    userPro=line_bot_api.get_profile(MainUserID).as_json_dict()
+    userName=userPro["displayName"]
     msg = FlexSendMessage(
         alt_text="遺失/走失通報",
         contents={
@@ -82,7 +87,7 @@ def lost_report():
                 "contents": [
                     {
                         "type": "text",
-                        "text": "已有人通報遺失/走失",
+                        "text": f"已有人通報{userName}\n裝置遺失/長者走失",
                         "weight": "bold",
                         "size": "xl",
                     },
@@ -105,7 +110,7 @@ def lost_report():
                         "action": {
                             "type": "uri",
                             "label": "查看最後位置",
-                            "uri": f"https://liff.line.me/{db.LIFF_ID}/gps",
+                            "uri": f"https://liff.line.me/{db.LIFF_ID}/sos/gps/{FamilyID}",
                         },
                     },
                     {

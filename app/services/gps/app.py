@@ -2,8 +2,6 @@ from flask import request, render_template, Blueprint, session, jsonify
 from flask_login import login_required
 from utils import db
 from services import mqtt
-import re
-import folium
 
 
 gps_bp = Blueprint('gps_bp', __name__)

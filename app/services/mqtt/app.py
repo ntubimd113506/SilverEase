@@ -14,13 +14,14 @@ mqtt = Mqtt()
 
 @mqtt.on_connect()
 def handle_connect(client, userdata, flags, rc):
-    mqtt.subscribe("myTopic")
     mqtt.subscribe("ESP32/#")
-    mqtt.subscribe("/SOSgps")
 
 
 @mqtt.on_message()
 def handle_mqtt_message(client, userdata, message):
+    if message.topic=="ESP32/check":
+        mqtt.publish("online","")
+        return
     topic = str(message.topic).split("/")
     DevID = topic[1]
     action = topic[2]
@@ -36,6 +37,7 @@ def handle_mqtt_message(client, userdata, message):
         msg = message.payload
 
     if action == "help":
+        # return
         sent_mess(DevID, msg)
 
     if action == "checkLink":
@@ -110,12 +112,15 @@ def handle_mqtt_message(client, userdata, message):
 
     if action=="noSOSLocat":
         try:
-            getTime=msg.split(",")
+            timeData=msg.split(",")
             getTime = datetime(int(timeData[0]), int(timeData[1]), int(
                 timeData[2]), int(timeData[3]), int(timeData[4]), int(timeData[5]))
             getTime = getTime+timedelta(hours=8)
+            # if timeData[0]=="2000":
+            #     getTime=datetime.now()            
         except:
             getTime=datetime.now()
+
         upgrade_gps(DevID, "noData", getTime)
 
 
@@ -180,25 +185,6 @@ def sent_dev_offline(DevID):
 
     for user in UserIDs:
         line.line_bot_api.push_message(user, msg)
-
-
-def save_gps(Map):
-    conn = db.get_connection()
-    cursor = conn.cursor()
-    # cursor1 = conn.cursor()
-    try:
-        now = datetime.now()
-        # cursor1.execute('SELECT FamilyID FROM Family WHERE DevID = %s',(DevID))
-        # FamID=cursor1.fetchone()[0]
-        cursor.execute(
-            'INSERT INTO `113-ntub113506`.Location (FamilyID,Location,LocationTime) VALUES (%s,%s,%s)', (54, Map, now,))
-        conn.commit()
-    except Exception as e:
-        print(f"Error inserting data: {e}")
-        conn.rollback()
-    finally:
-        cursor.close()
-        conn.close()
 
 
 def upgrade_gps(DevID, Map, getTime):

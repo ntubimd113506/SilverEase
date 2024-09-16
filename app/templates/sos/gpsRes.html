@@ -13,19 +13,20 @@
 <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <script>
-    data={{data|tojson}};
-   
+    data = {{ data | tojson }};
+
     liff.init({ liffId: '{{liffid}}' });
     liff.ready.then(() => {
-        if (data){
-            swal("最後定位", "即時定位未能傳送，點我查詢最後定位\n(收到時間:{{data['last_time']}})", "info").then((value) => {
+        if (data) {
+            swal("最後定位", "點我查詢最後定位\n(收到時間:{{data['last_time']}})", "info").then((value) => {
                 liff.openWindow({
                     url: data["url"],
                     external: true
                 });
+                liff.closeWindow();
             });
         }
-        else{
+        else {
             swal("無定位資料", "該用戶未上傳任何定位", "error").then((value) => {
                 liff.closeWindow();
             });

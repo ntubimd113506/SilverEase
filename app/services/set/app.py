@@ -170,7 +170,8 @@ def scanner():
 @set_bp.route("/device/<DevID>")
 def device_index(DevID):
     session["DevID"] = DevID
-    if devToFam(DevID):
+    userID=devToUser(DevID)
+    if userID:
         return redirect("/lostAndFound")
     else:
         return redirect("/set/device/setting")
@@ -238,10 +239,10 @@ def access_submit():
     return redirect(url)
 
 
-def devToFam(DevID):
+def devToUser(DevID):
     conn = db.get_connection()
     cur = conn.cursor()
-    cur.execute("SELECT FamilyID FROM Family WHERE DevID=%s", (DevID,))
+    cur.execute("SELECT MainUserID FROM Family WHERE DevID=%s", (DevID,))
     res = cur.fetchone()
     if res:
         return res[0]
@@ -326,42 +327,3 @@ def identity():
 
         conn.close()
         return render_template("/set/young.html", MemID=MemID)
-
-
-# @set_bp.route("/young")
-# def young():
-#     return render_template("/set/young.html")
-
-
-# @set_bp.route("/checkid", methods=["POST"])  # 確認使用者資料
-# def checkid():
-#     try:
-#         conn = db.get_connection()
-#         cursor = conn.cursor()
-
-#         # 獲取使用者的MemID
-#         data = json.loads(request.get_data(as_text=True))
-#         MemID = data["MemID"]
-
-#         # ==================  ==================
-
-#         """https://ithelp.ithome.com.tw/m/articles/10300064"""
-
-#         # ==================  ==================
-#         cursor.execute("SELECT MainUserID FROM Family WHERE MainUserID = %s", (MemID))
-#         member_data = cursor.fetchone()
-#         cursor.execute("SELECT SubUserID FROM FamilyLink WHERE SubUserID = %s", (MemID))
-#         family_link_data = cursor.fetchone()
-
-#         conn.close()
-#         # 檢查是否是長輩
-#         if member_data != None:
-#             return json.dumps({"result": 1, "option": "old"})
-#         # 檢查是否是子女
-#         if family_link_data != None:
-#             return json.dumps({"result": 1, "option": "young"})
-#         else:
-#             return json.dumps({"result": 0}, ensure_ascii=False)
-
-#     except Exception as e:
-#         return json.dumps({"error": "TryError"}, ensure_ascii=False)
