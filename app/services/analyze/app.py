@@ -22,6 +22,8 @@ def render_analyze_template(title, analyze, is_all=True):
     conn = db.get_connection()
     cursor = conn.cursor()
 
+    mem_weekly_count = 0
+
     if MemID:
         cursor.execute(
             """
@@ -64,6 +66,23 @@ def render_analyze_template(title, analyze, is_all=True):
         if MainUser == MemID and not DataAnalyze:
             show_full_no_access = True
 
+        cursor.execute(
+            """
+            SELECT f.FamilyID, COUNT(s.SOSNo) AS SOS_Count
+            FROM `113-ntub113506`.Member m
+            LEFT JOIN `113-ntub113506`.Family f ON m.MemID = f.MainUserID
+            LEFT JOIN `113-ntub113506`.Location l ON f.FamilyID = l.FamilyID
+            LEFT JOIN `113-ntub113506`.SOS s ON l.LocatNo = s.LocatNo
+            WHERE WEEK(l.LocationTime, 1) = WEEK(CURRENT_DATE, 1)
+            AND m.MemID = %s
+            GROUP BY f.FamilyID;
+        """,
+            (MainUser,),
+        )
+        result = cursor.fetchone()
+        if result is not None:
+            mem_weekly_count = result[1]
+
     data = {
         "Title": title,
         "analyze": analyze,
@@ -78,7 +97,9 @@ def render_analyze_template(title, analyze, is_all=True):
         "DataAnalyze": DataAnalyze,
         "First": First,
         "show_full_no_access": show_full_no_access,
+        "mem_weekly_count": mem_weekly_count,
     }
+
     return render_template(
         "/analyze/analyze.html",
         data=data,

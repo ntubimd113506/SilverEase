@@ -18,8 +18,9 @@
 
         <div class="title-container">
             <h1 class="content-header">{{ data.analyze }}</h1>
-            <p>請選擇要查看的長輩
+            <p>
                 {% if not is_all %}
+                請選擇要查看的長輩
                 <select id="MainUserID" name="MainUserID" class="MainUserID" onchange="updateMainUserID()">
                     <option value="" disabled selected>請選擇</option>
                     {% for user in MainUsers %}
@@ -30,6 +31,11 @@
                     {% endif %}
                     {% endfor %}
                 </select>
+                {% if data.DataAnalyze %}
+                {% if data.mem_weekly_count >= 3 %}
+                    <img src="/static/imgs/sos.png" alt="A Image">
+                {% endif %}
+                {% endif %}
                 {% endif %}
             </p>
         </div>
