@@ -289,6 +289,12 @@ div.button-group {
     background-color: #9fb889;
 }
 
+.sos-image {
+    max-width: 100%; 
+    height: auto; 
+    width: 700px; 
+}
+
 @media screen and (min-width: 375px) and (max-width: 413px) {
     .nav-button {
         width: 89%;
