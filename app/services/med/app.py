@@ -99,6 +99,7 @@ def med_create():
         Alert = int(request.form.get("Alert", 0))
         CreateTime = datetime.now()
         file = request.files.get("Pic")
+        infoCheck=request.form.get("infoCheck")
         age = request.form.get("age")
         gender = request.form.get("gender")
 
@@ -117,13 +118,14 @@ def med_create():
         )
         FamilyID = cursor.fetchone()[0]
 
-        if gender:
-            cursor.execute(
-                "UPDATE Family SET Gender = %s WHERE FamilyID = %s", (gender, FamilyID))
+        if infoCheck:
+            if gender:
+                cursor.execute(
+                    "UPDATE Family SET Gender = %s WHERE FamilyID = %s", (gender, FamilyID))
 
-        if age:
-            cursor.execute(
-                "UPDATE Family SET Age = %s WHERE FamilyID = %s", (age, FamilyID))
+            if age:
+                cursor.execute(
+                    "UPDATE Family SET Age = %s WHERE FamilyID = %s", (age, FamilyID))
 
         TitleValue = OtherTitle if Title == "其他" else Title
 
