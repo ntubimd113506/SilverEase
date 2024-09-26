@@ -1,4 +1,6 @@
-import json, random, os
+import json
+import random
+import os
 from flask import request, render_template, Blueprint, session, jsonify
 from flask_login import login_required
 from datetime import datetime, timedelta
@@ -97,6 +99,8 @@ def med_create():
         Alert = int(request.form.get("Alert", 0))
         CreateTime = datetime.now()
         file = request.files.get("Pic")
+        age = request.form.get("age")
+        gender = request.form.get("gender")
 
         EndDate = EndDate if EndDate else None
 
@@ -112,6 +116,14 @@ def med_create():
             (MainUserID,),
         )
         FamilyID = cursor.fetchone()[0]
+
+        if gender:
+            cursor.execute(
+                "UPDATE Family SET Gender = %s WHERE FamilyID = %s", (gender, FamilyID))
+
+        if age:
+            cursor.execute(
+                "UPDATE Family SET Age = %s WHERE FamilyID = %s", (age, FamilyID))
 
         TitleValue = OtherTitle if Title == "其他" else Title
 
@@ -155,7 +167,8 @@ def med_create():
             second_time_combined = datetime.strptime(
                 f"{send_time.strftime('%Y-%m-%d')}T{SecondTime}", "%Y-%m-%dT%H:%M"
             )
-            second_reminder_time = second_time_combined - timedelta(minutes=Alert)
+            second_reminder_time = second_time_combined - \
+                timedelta(minutes=Alert)
             scheduler.add_job(
                 id=f"{MemoID}_SecondTime",
                 func=send_line_message,
@@ -168,7 +181,8 @@ def med_create():
             third_time_combined = datetime.strptime(
                 f"{send_time.strftime('%Y-%m-%d')}T{ThirdTime}", "%Y-%m-%dT%H:%M"
             )
-            third_reminder_time = third_time_combined - timedelta(minutes=Alert)
+            third_reminder_time = third_time_combined - \
+                timedelta(minutes=Alert)
             scheduler.add_job(
                 id=f"{MemoID}_ThirdTime",
                 func=send_line_message,
@@ -638,7 +652,8 @@ def med_update():
 
         if file:
             for ext in ALLOWED_EXTENSIONS:
-                existing_file_path = os.path.join(UPLOAD_FOLDER, f"{MemoID}.{ext}")
+                existing_file_path = os.path.join(
+                    UPLOAD_FOLDER, f"{MemoID}.{ext}")
                 if os.path.exists(existing_file_path):
                     os.remove(existing_file_path)
                     break
@@ -695,7 +710,8 @@ def med_update():
             second_time_combined = datetime.strptime(
                 f"{send_time.strftime('%Y-%m-%d')}T{SecondTime}", "%Y-%m-%dT%H:%M"
             )
-            second_reminder_time = second_time_combined - timedelta(minutes=Alert)
+            second_reminder_time = second_time_combined - \
+                timedelta(minutes=Alert)
             if scheduler.get_job(f"{MemoID}_SecondTime"):
                 scheduler.modify_job(
                     f"{MemoID}_SecondTime",
@@ -716,7 +732,8 @@ def med_update():
             third_time_combined = datetime.strptime(
                 f"{send_time.strftime('%Y-%m-%d')}T{ThirdTime}", "%Y-%m-%dT%H:%M"
             )
-            third_reminder_time = third_time_combined - timedelta(minutes=Alert)
+            third_reminder_time = third_time_combined - \
+                timedelta(minutes=Alert)
             if scheduler.get_job(f"{MemoID}_ThirdTime"):
                 scheduler.modify_job(
                     f"{MemoID}_ThirdTime",

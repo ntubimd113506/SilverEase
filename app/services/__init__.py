@@ -11,3 +11,4 @@ from .health.app import health_bp
 from .user.app import user_bp, login_manager
 from .gps.app import gps_bp
 from .sos.app import sos_bp
+from .ollama.app import ollama_bp

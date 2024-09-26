@@ -19,6 +19,7 @@ from services import (
     gps_bp,
     line_bot_api,
     sos_bp,
+    ollama_bp
 )
 from config import Config
 
@@ -35,6 +36,7 @@ app.register_blueprint(linebot_bp, url_prefix="/")
 app.register_blueprint(user_bp, url_prefix="/user")
 app.register_blueprint(gps_bp, url_prefix="/gps")
 app.register_blueprint(sos_bp, url_prefix="/sos")
+app.register_blueprint(ollama_bp, url_prefix="/ollama")
 
 scheduler.init_app(app)
 mqtt.init_app(app)
