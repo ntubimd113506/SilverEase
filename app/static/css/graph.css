@@ -313,6 +313,10 @@ div.button-group {
     padding: 10px; 
 }
 
+#imgAnalyze {
+    font-size: 18px;
+}
+
 #ageDiv {
     height: 38px;               
     display: flex;              
@@ -322,7 +326,8 @@ div.button-group {
 }
 
 #age {
-    height: 100%;               
+    height: 40px;
+    width: 100px;              
     flex-grow: 1;               
     margin-right: 10px;        
     font-size: 18px; 
@@ -330,8 +335,6 @@ div.button-group {
     border-radius: 6px;
     border: 1px solid rgb(113, 113, 113);    
 }
-
-
 
 @media screen and (max-width: 374px) {
     .title-container {
