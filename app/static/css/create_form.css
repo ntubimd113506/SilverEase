@@ -413,6 +413,57 @@ select option[disabled] {
     color: gray;
 }
 
+.addd {
+    width: 88% !important;
+    margin: 0 auto !important;
+}
+
+#info {
+    width: 100% !important;
+    margin: 0 auto !important;
+}
+
+#input-container {
+    display: flex !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    gap: 10px !important;
+    margin-top: 10px !important;
+}
+
+#gender {
+    width: 80px !important;
+    height: 40px !important; 
+    font-size: 18px !important;
+    padding: 5px !important;
+    border-radius: 6px !important;
+    border: 1px solid rgb(113, 113, 113) !important;
+}
+
+#ageDiv {
+    display: flex !important;
+    align-items: center !important; 
+    font-size: 18px !important;
+    margin-top: -24px !important;
+}
+
+#age {
+    height: 40px !important;
+    width: 50px !important;
+    padding: 0 8px !important;
+    border-radius: 6px !important;
+    border: 1px solid rgb(113, 113, 113) !important;
+    margin-bottom: 0 !important;
+}
+
+#otherTitleInput {
+    font-size: 18px !important;
+}
+
+#OtherTitle {
+    font-size: 18px !important;
+}
+
 @media screen and (max-width: 374px) {
     .title-container {
         width: 90%;
@@ -421,11 +472,28 @@ select option[disabled] {
     .form-container {
         width: 90%;
     }
+
+    #info {
+        width: 84%;
+    }
+}
+
+@media screen and (max-width: 374px) {
+    .addd, #info {
+        width: 100%;
+    }
+    .title-container, .form-container {
+        width: 90%;
+    }
 }
 
 @media screen and (min-width: 375px) and (max-width: 413px) {
     body h1 {
         font-weight: 600;
+    }
+
+    #info {
+        width: 83%;
     }
 }
 
@@ -444,6 +512,9 @@ select option[disabled] {
         width: 90%;
     }
 
+    #info {
+        width: 83%;
+    }
 }
 
 
@@ -533,6 +604,10 @@ select option[disabled] {
     .delete-btn {
         top: 95px;
     }
+
+    #info {
+        width: 57%;
+    }
 }
 
 @media (min-width: 992px) {
@@ -551,6 +626,10 @@ select option[disabled] {
     }
 
     .form-container {
+        width: 47%;
+    }
+
+    #info {
         width: 47%;
     }
 }
@@ -583,6 +662,14 @@ select option[disabled] {
 
     .form-container {
         width: 38%;
+    }
+
+    #info {
+        width: 38%;
+    }
+
+    #ageDiv {
+        margin-top: -30px;
     }
 
 }
