@@ -295,50 +295,55 @@ div.button-group {
     width: 700px; 
 }
 
-.add {
-    width: 88%;
-    margin: 0 auto;
+.addd {
+    width: 88% !important;
+    margin: 0 auto !important;
 }
+
 #info {
-    width: 100%;
-    margin: 0 auto;
+    width: 100% !important;
+    margin: 0 auto !important;
 }
 
 #input-container {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center; /* 保證它們在垂直方向上居中對齊 */
-    gap: 10px;
-    margin-top: 10px;
+    display: flex !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    gap: 10px !important;
+    margin-top: 10px !important;
 }
 
 #gender {
-    width: 80px;
-    height: 40px; /* 確保與年齡輸入框的高度一致 */
-    font-size: 18px;
-    padding: 5px;
-    border-radius: 6px;
-    border: 1px solid rgb(113, 113, 113);
+    width: 80px !important;
+    height: 40px !important; 
+    font-size: 18px !important;
+    padding: 5px !important;
+    border-radius: 6px !important;
+    border: 1px solid rgb(113, 113, 113) !important;
 }
 
 #ageDiv {
-    display: flex;
-    align-items: center; /* 讓「歲」和輸入框垂直居中對齊 */
-    font-size: 18px;
-    margin-top: -24px;
+    display: flex !important;
+    align-items: center !important; 
+    font-size: 18px !important;
+    margin-top: -24px !important;
 }
 
 #age {
-    height: 40px; /* 設置與下拉選單相同的高度 */
-    width: 50px;
-    padding: 0 8px;
-    border-radius: 6px;
-    border: 1px solid rgb(113, 113, 113);
-    margin-bottom: 0; /* 確保沒有多餘的底部空間 */
+    height: 40px !important;
+    width: 50px !important;
+    padding: 0 8px !important;
+    border-radius: 6px !important;
+    border: 1px solid rgb(113, 113, 113) !important;
+    margin-bottom: 0 !important;
 }
 
 #otherTitleInput {
-    font-size: 18px;
+    font-size: 18px !important;
+}
+
+#OtherTitle {
+    font-size: 18px !important;
 }
 
 @media screen and (max-width: 374px) {
@@ -352,6 +357,15 @@ div.button-group {
 
     #info {
         width: 84%;
+    }
+}
+
+@media screen and (max-width: 374px) {
+    .addd, #info {
+        width: 100%;
+    }
+    .title-container, .form-container {
+        width: 90%;
     }
 }
 
@@ -534,6 +548,10 @@ div.button-group {
 
     #info {
         width: 38%;
+    }
+
+    #ageDiv {
+        margin-top: -30px;
     }
 
 }
