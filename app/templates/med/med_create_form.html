@@ -132,7 +132,7 @@
                         <button class="btn" type="submit">新 增</button>
                     </div>
             </div>
-            <div id="info" hidden>
+            <div id="info" hidden  class="add">
                 <input type="checkbox" name="infoCheck" id="infoCheck" >同意以下資料作為統計及分析用途
                 <select name="gender" id="gender" hidden>
                     <option value=""></option>
@@ -287,7 +287,7 @@
                                     body: new FormData(form)
                                 }).then(response => response.json()).then(data => {
                                     console.log(data);
-                                    imgAnalyze.innerHTML = "請注意：文字辨識及AI分析結果可能會有誤，請以藥單提供的資料為主";
+                                    imgAnalyze.innerHTML = '<span style="color:#E8933D;">請注意：文字辨識及AI分析結果可能會有誤，請以藥單提供的資料為主</span>';
                                     titleSelect.value = '其他';
                                     titleSelect.classList.add('has-value')
                                     otherTitleInput.style.display = 'block';
