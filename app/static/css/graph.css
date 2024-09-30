@@ -295,45 +295,50 @@ div.button-group {
     width: 700px; 
 }
 
-
-.add{
+.add {
     width: 88%;
     margin: 0 auto;
 }
-
 #info {
-    width: 38%;
+    width: 100%;
     margin: 0 auto;
-
 }
 
-#otherTitleInput {
-    font-size: 18px; 
-    line-height: 1.5; 
-    padding: 10px; 
+#input-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center; /* 保證它們在垂直方向上居中對齊 */
+    gap: 10px;
+    margin-top: 10px;
 }
 
-#imgAnalyze {
+#gender {
+    width: 80px;
+    height: 40px; /* 確保與年齡輸入框的高度一致 */
     font-size: 18px;
+    padding: 5px;
+    border-radius: 6px;
+    border: 1px solid rgb(113, 113, 113);
 }
 
 #ageDiv {
-    height: 38px;               
-    display: flex;              
-    align-items: center;        
-    width: 200px;               
-    font-size: 18px;            
+    display: flex;
+    align-items: center; /* 讓「歲」和輸入框垂直居中對齊 */
+    font-size: 18px;
+    margin-top: -24px;
 }
 
 #age {
-    height: 40px;
-    width: 100px;              
-    flex-grow: 1;               
-    margin-right: 10px;        
-    font-size: 18px; 
+    height: 40px; /* 設置與下拉選單相同的高度 */
+    width: 50px;
     padding: 0 8px;
     border-radius: 6px;
-    border: 1px solid rgb(113, 113, 113);    
+    border: 1px solid rgb(113, 113, 113);
+    margin-bottom: 0; /* 確保沒有多餘的底部空間 */
+}
+
+#otherTitleInput {
+    font-size: 18px;
 }
 
 @media screen and (max-width: 374px) {
@@ -346,7 +351,7 @@ div.button-group {
     }
 
     #info {
-        width: 90%;
+        width: 84%;
     }
 }
 
@@ -356,7 +361,7 @@ div.button-group {
     }
 
     #info {
-        width: 89%;
+        width: 83%;
     }
 }
 
@@ -376,7 +381,7 @@ div.button-group {
     }
 
     #info {
-        width: 89%;
+        width: 83%;
     }
 }
 
@@ -496,6 +501,8 @@ div.button-group {
         width: 47%;
     }
 }
+
+
 
 @media (min-width: 1200px) {
     .title-container {
