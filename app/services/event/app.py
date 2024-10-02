@@ -20,6 +20,7 @@ def event():
 @login_required
 def event_create_form():
     MemID = session.get("MemID")
+    params=request.args
 
     conn = db.get_connection()
     cursor = conn.cursor()
@@ -57,7 +58,7 @@ def event_create_form():
     conn.commit()
     conn.close()
 
-    return render_template("/event/event_create_form.html", MainUsers=MainUsers)
+    return render_template("/event/event_create_form.html", MainUsers=MainUsers,params=params)
 
 
 # 新增
