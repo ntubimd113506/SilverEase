@@ -33,7 +33,7 @@ def accessCheck():
         return jsonify({"analyze": False,"gender":gender,"age":age})
 
 @ollama_bp.route("/analyzeImage",methods=["POST"])
-def test():
+def analyzeImage():
     file = request.files.get("Pic")
     res=requests.request("POST",f"{host}/medOcr",files={"Pic":file})
     res=json.loads(res.text)
