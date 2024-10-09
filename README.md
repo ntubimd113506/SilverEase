@@ -11,4 +11,8 @@ pip install line-bot-sdk
 pip install pillow
 pip install filetype
 pip install wfastcgi
+pip install opencv-python
+pip install paddlepaddle
+pip install paddleocr
+pip install ollama
 ```
