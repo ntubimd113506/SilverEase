@@ -14,5 +14,5 @@ function initiLiff(myLiffId) {
 }
 
 $(document).ready(function () {
-    initializeLiff('{{ liffid }}');  //接收傳遞的 liffid 參數
+    initializeLiff('{{ liffid }}');
 });

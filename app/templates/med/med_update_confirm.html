@@ -112,7 +112,8 @@
                             {% endfor %}
                             <input type="file" name="Pic" accept="image/*" id="fileInput" onchange="fileSelected()">
 
-                            <button type="button" id="removeSelectionBtn-1" onclick="removeImage('{{ data.MemoID }}')">移除圖片</button>
+                            <button type="button" id="removeSelectionBtn-1"
+                                onclick="removeImage('{{ data.MemoID }}')">移除圖片</button>
                             <button type="button" id="removeSelectionBtn" style="display:none;"
                                 onclick="removeSelection()">移除所選圖片</button>
                         </div>
@@ -303,9 +304,9 @@
             handlePlaceholder(document.getElementById('SecondTime'), document.getElementById('secondTimePlaceholder'));
             handlePlaceholder(document.getElementById('ThirdTime'), document.getElementById('thirdTimePlaceholder'));
             handlePlaceholder(document.querySelector('input[name="EndDate"]'), document.getElementById('EndDatePlaceholder'));
-        
 
-            document.addEventListener('DOMContentLoaded', function() {
+
+            document.addEventListener('DOMContentLoaded', function () {
                 const fileInput = document.getElementById('fileInput');
                 const customFileLabel = document.getElementById('customFileLabel');
                 const removeSelectionBtn = document.getElementById('removeSelectionBtn');
@@ -317,7 +318,7 @@
                     if (fileInput.files.length > 0) {
                         const fileName = fileInput.files[0].name;
                         console.log('File selected:', fileName);
-                        customFileLabel.textContent = fileName; 
+                        customFileLabel.textContent = fileName;
                         removeSelectionBtn.style.display = 'inline-block';
                     } else {
                         console.log('No file selected');
@@ -338,9 +339,27 @@
 
                 customFileLabel.textContent = '選擇圖片';
                 removeSelectionBtn.style.display = 'none';
-});
-        
-        
+            });
+
+
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var selects = document.querySelectorAll('select');
+            
+            selects.forEach(function(select) {
+                if (select.value && select.value !== "") {
+                    select.classList.add('has-value');
+                }
+
+                select.addEventListener('change', function() {
+                    if (this.value && this.value !== "") {
+                        this.classList.add('has-value');
+                    } else {
+                        this.classList.remove('has-value');
+                    }
+                });
+            });
         });
     </script>
 

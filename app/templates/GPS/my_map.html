@@ -1,79 +1,209 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-TW">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Map</title>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA4cVXQgyJq-DSWAA_CfAagMIA6xnW8PhU"></script>
-    <style>
-        #map {
-            height: 500px;
-            width: 100%;
-        }
-        .time-filters {
-            margin-bottom: 20px;
-        }
-        .time-filters button {
-            margin-right: 10px;
-            padding: 5px 10px;
-            cursor: pointer;
-        }
-    </style>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+
+    <title>我的地圖</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Satisfy&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link href="/static/css/map.css" rel="stylesheet" />
+    <script src="/static/js/touch-buttons.js" defer></script>
+    <script src="/static/js/img.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA4cVXQgyJq-DSWAA_CfAagMIA6xnW8PhU&libraries=geometry"></script>
 </head>
+
 <body>
-    <h1>足跡</h1>
-    <div class="time-filters">
-        <button onclick="filterLocations('all')">全部</button>
-        <button onclick="filterLocations('30')">30天</button>
-        <button onclick="filterLocations('15')">15天</button>
-        <button onclick="filterLocations('7')">7天</button>
-        <button onclick="filterLocations('1')">今日</button>
+    <div class="container">
+        <div class="header">
+            <h1>SilverEase</h1>
+        </div>
+
+        <i id="menu-bar" class="fa-solid fa-house"></i>
+
+        <div class="navbar">
+            <ul id="navigation" class="nav">
+                <li><button class="back-button" onclick="goBack()">返回前頁</button></li>
+            </ul>
+        </div>
+
+        <div class="content">
+            <div class="title-container">
+                <h1>{{name}}的足跡</h1>
+            </div>
+            <div class="form-container">
+                <div class="time-filters">
+                    <button onclick="filterLocations('1')">今 日</button>
+                    <button onclick="filterLocations('7')">當 週</button>
+                    <button onclick="filterLocations('30')">當 月</button>
+                    <button onclick="filterLocations('all')">全 部</button>
+                </div>
+                <div class="top-locations">
+                    <h3>最常去的地點</h3>
+                    <select id="top-locations-list"></select>
+                </div>
+            </div>
+            <div id="map"></div>
+        </div>
     </div>
+    <script>
+        var MainUserID = "{{ MainUserID }}";
 
-    <div id="map"></div>    
-<script>
-    var MainUserID = "{{ MainUserID }}"; // 從後端獲取的 MainUserID
+        // 默認顯示
+        function initMap(locations) {
+            var map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 7,
+                center: { lat: 23.6978, lng: 120.9605 }
+            });
 
-    function initMap(locations) {
-        var map = new google.maps.Map(document.getElementById('map'), {
-            zoom: 10,
-            center: {lat: 0, lng: 0}
-        });
+            var bounds = new google.maps.LatLngBounds();
+            var distinctMarkers = [];
+            var pathCoords = [];
 
-        var bounds = new google.maps.LatLngBounds();
+            locations.forEach(function (location) {
+                var coords = location.match(/query=([-.\d]+),([-.\d]+)/);
+                if (coords) {
+                    var latLng = new google.maps.LatLng(parseFloat(coords[1]), parseFloat(coords[2]));
 
-        locations.forEach(function(location) {
-            var coords = location.match(/query=([-.\d]+),([-.\d]+)/);
-            if (coords) {
-            var latLng = new google.maps.LatLng(parseFloat(coords[1]), parseFloat(coords[2]));
-                var marker = new google.maps.Marker({
-                    position: latLng,
+                    var isDuplicate = distinctMarkers.some(function (existingMarker) {
+                        return google.maps.geometry.spherical.computeDistanceBetween(latLng, existingMarker) < 500;
+                    });
+
+                    if (!isDuplicate) {
+                        distinctMarkers.push(latLng);
+                        pathCoords.push(latLng);
+
+                        var marker = new google.maps.Marker({
+                            position: latLng,
+                            map: map
+                        });
+
+                        bounds.extend(latLng);
+                    }
+                }
+            });
+
+            // 繪製路線
+            if (pathCoords.length > 1) {
+                var whiteOutline = new google.maps.Polyline({
+                    path: pathCoords,
+                    geodesic: true,
+                    strokeColor: '#162AD0',
+                    strokeOpacity: 1.0,
+                    strokeWeight: 8,
                     map: map
                 });
-                bounds.extend(latLng);
+
+                var polyline = new google.maps.Polyline({
+                    path: pathCoords,
+                    geodesic: true,
+                    strokeColor: '#2750F1',
+                    strokeOpacity: 1.0,
+                    strokeWeight: 6,
+                    map: map
+                });
+
             }
-        });
 
-        if (!bounds.isEmpty()) {
-            map.fitBounds(bounds);
+            if (distinctMarkers.length === 1) {
+                map.setZoom(14);
+                map.setCenter(distinctMarkers[0]);
+            } else if (!bounds.isEmpty()) {
+                map.fitBounds(bounds);
+            } else {
+                map.setCenter({ lat: 23.6978, lng: 120.9605 });//台灣全景
+                map.setZoom(7);
+            }
         }
-    }
 
-    function filterLocations(timePeriod) {
-        // 發送 GET 請求到後端的 /road 路由，附帶 MainUserID 和時間範圍
-        fetch(`/gps/road?MainUserID=${MainUserID}&time=${timePeriod}`)
-            .then(response => response.json())
-            .then(data => {
-                // 使用返回的數據初始化地圖
-                initMap(data.urls);
-            })
-            .catch(error => {
-                console.error('Error:', error);
+        // 路由/road
+        function filterLocations(timePeriod) {
+            fetch(`/gps/road?MainUserID=${MainUserID}&time=${timePeriod}`)
+                .then(response => response.json())
+                .then(data => {
+                    initMap(data.urls);
+                    updateTopLocations(data.top_list);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+
+        //顯示清單
+        function updateTopLocations(topLocations) {
+            var topLocationsList = document.getElementById('top-locations-list');
+            var topLocationsSection = document.querySelector('.top-locations');
+
+            topLocationsList.innerHTML = '';
+
+            if (topLocations.length === 0) {
+                topLocationsSection.style.display = 'none';
+                return;
+            }
+
+            topLocationsSection.style.display = 'block';
+
+            var geocoder = new google.maps.Geocoder();
+            var displayedAddresses = new Set(); 
+
+            var defaultOption = document.createElement('option');
+            defaultOption.textContent = '請選擇地點';
+            defaultOption.value = '';
+            defaultOption.disabled = true;
+            defaultOption.selected = true;
+            topLocationsList.appendChild(defaultOption);
+
+            topLocations.forEach(function (location) {
+                var coords = location.Location.match(/([-.\d]+),([-.\d]+)/); // 提取經緯度
+                if (coords) {
+                    var latLng = { lat: parseFloat(coords[1]), lng: parseFloat(coords[2]) };
+
+                    geocoder.geocode({ 'location': latLng }, function (results, status) {
+                        if (status === 'OK' && results[0]) {
+                            var address = results[0].formatted_address;
+
+                            // 檢查地址是否已經顯示過
+                            if (!displayedAddresses.has(address)) {
+                                displayedAddresses.add(address);  // 添加到已顯示的地址集合中
+
+                                var option = document.createElement('option');
+                                option.value = `https://www.google.com/maps/search/?api=1&query=${latLng.lat},${latLng.lng}`;
+                                option.textContent = address; // 使用Geocoding API返回的地址
+
+                                topLocationsList.appendChild(option);
+                            } else {
+                                console.log(`Skipping duplicate address: ${address}`);
+                            }
+                        } else {
+                            console.error('Geocode was not successful for the following reason: ' + status);
+                        }
+                    });
+                } else {
+                    console.error('Invalid coordinates: ' + location.Location);
+                }
             });
-    }
 
-    // 預設顯示全部足跡
-    filterLocations('all');
-</script>
+            topLocationsList.addEventListener('change', function () {
+                var selectedValue = topLocationsList.value;
+                if (selectedValue) {
+                    window.open(selectedValue, '_blank');
+                }
+                topLocationsList.selectedIndex = 0;
+            });
+        }
+
+
+        function goBack() {
+            window.location.href = '/gps/';
+        }
+
+        filterLocations('1'); // 預設顯示
+    </script>
 </body>
+
 </html>

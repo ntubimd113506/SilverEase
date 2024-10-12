@@ -1,26 +1,22 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>選擇長輩</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Satisfy&display=swap" rel="stylesheet">
-        
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
     <link href="/static/css/gps.css" rel="stylesheet" />
     <script src="/static/js/touch-buttons.js" defer></script>
     <script src="/static/js/img.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA4cVXQgyJq-DSWAA_CfAagMIA6xnW8PhU"></script>
-    <style>
-        #map {
-            height: 400px;
-            width: 100%;
-            margin-top: 20px;
-        }
-    </style>
 </head>
+
 <body>
     <div class="container">
 
@@ -33,7 +29,9 @@
                 <form id="form">
                     <div class="form-group">
                         <div class="title-container">
-                            <label for="MainUserID"><h4>主要用戶</h4></label>
+                            <label for="MainUserID">
+                                <h4>主要用戶</h4>
+                            </label>
                             <select id="MainUserID" name="MainUserID">
                                 {% for user in MainUsers %}
                                 <option value="{{ user[0] }}">{{ user[1] }}</option>
@@ -42,14 +40,19 @@
                         </div>
                     </div>
                 </form>
-                <!-- 新增查看長輩足跡的按鈕 -->
-                <button class="i" id="viewFootprintsBtn">查看長輩足跡</button>
+                <div class="cardrow">
+                    <button class="i" id="viewFootprintsBtn">查看長輩足跡</button>
+                </div>
+
             </div>
         </div>
+        <div class="no-access">
+                <div id="gps-url" class="gps-url" style="margin-top: 20px;"></div>
+        </div>
+        <div class="map-content">
+            <div id="map"></div>
+        </div>
 
-        <div id="gps-url" style="margin-top: 20px;"></div>
-        <div id="map"></div>
-    
     </div>
 
     <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
@@ -64,50 +67,76 @@
 
         initializeLiff('{{ liffid }}');
 
-        // 當按下查看長輩足跡按鈕時觸發事件
-        document.getElementById('viewFootprintsBtn').addEventListener('click', function() {
+        //查看長輩足跡按鈕
+        document.addEventListener('DOMContentLoaded', function () {
+            triggerChange();
+        });
+
+        document.getElementById('viewFootprintsBtn').addEventListener('click', function () {
             var formData = new FormData(document.getElementById('form'));
             fetch('/gps/foot', {
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.text())
-            .then(html => {
-                document.open();
-                document.write(html);
-                document.close();
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
+                .then(response => response.text())
+                .then(html => {
+                    document.open();
+                    document.write(html);
+                    document.close();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
         });
 
-        // 自動觸發選單變更事件
         function triggerChange() {
             var selectElement = document.getElementById('MainUserID');
+            if (selectElement.options.length > 0) {
+                selectElement.selectedIndex = 0;
+                fetchGPSData();
+            }
             if (selectElement.options.length === 1) {
-                fetchGPSData(); // 只有一個選項時自動載入地圖
+                fetchGPSData();
             }
         }
 
+        document.getElementById('MainUserID').addEventListener('change', function () {
+            fetchGPSData();
+        });
+
+        //處理 /gps/check 路由並顯示 GPS 位置
         function fetchGPSData() {
             var formData = new FormData(document.getElementById('form'));
             fetch('/gps/check', {
                 method: 'POST',
                 body: formData
             }).then(response => response.json())
-            .then(data => {
-                var gpsUrlElement = document.getElementById('gps-url');
-                if (data.url === 'no_data') {
-                    gpsUrlElement.innerHTML = '沒有資料';
-                    document.getElementById('map').style.display = 'none';
-                } else {
-                    gpsUrlElement.innerHTML = `<a href="${data.url}" target="_blank" rel="noopener noreferrer">點擊查看地圖</a>`;
-                    showMap(data.url);
-                }
-            }).catch(error => {
-                console.error('Error:', error);
-            });
+                .then(data => {
+                    var gpsUrlElement = document.getElementById('gps-url');
+                    var mapElement = document.getElementById('map');
+                    var footprintsBtn = document.getElementById('viewFootprintsBtn');
+
+                    if (data.GPS === 0) {
+                        if (data.M === true) {
+                            gpsUrlElement.innerHTML = "<div class='no-access-content1'>&emsp;&emsp;&emsp;&emsp;<i class='fa-solid fa-triangle-exclamation'></i><span>目前無權限</span></div><p>如要查看分析請至長者本人裝置設定中開啟權限</p>";
+                        } else {
+                            gpsUrlElement.innerHTML = "<div class='no-access-content'><i class='fa-solid fa-triangle-exclamation'></i><span>目前無權限</span></div>&emsp;&emsp;<a href=/set/access_index style='color: #0000EE;'>點此設定</a>";
+                        }
+                        mapElement.style.display = 'none';
+                        footprintsBtn.style.display = 'none'; 
+                    } else {
+                        if (data.url === 'no_data') {
+                            gpsUrlElement.innerHTML = "";
+                            showTaiwanMap(); 
+                        } else {
+                            gpsUrlElement.innerHTML = `<a href="${data.url}" target="_blank" rel="noopener noreferrer">點擊查看地圖</a>`;
+                            showMap(data.url);
+                        }
+                        footprintsBtn.style.display = 'block';
+                    }
+                }).catch(error => {
+                    console.error('Error:', error);
+                });
         }
 
         function showMap(url) {
@@ -117,15 +146,24 @@
                     zoom: 15,
                     center: coords
                 });
-                var marker = new google.maps.Marker({
+                new google.maps.Marker({
                     position: coords,
                     map: map
                 });
                 document.getElementById('map').style.display = 'block';
             } else {
                 console.error('無法解析坐標', coords);
-                document.getElementById('map').style.display = 'none';
+                showTaiwanMap(); 
             }
+        }
+
+        function showTaiwanMap() {
+            var taiwanCenter = { lat: 23.6978, lng: 120.9605 };
+            var map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 7, 
+                center: taiwanCenter
+            });
+            document.getElementById('map').style.display = 'block';
         }
 
         function parseUrl(url) {
@@ -138,13 +176,11 @@
             return {};
         }
 
-        // 註冊事件
         document.getElementById('MainUserID').addEventListener('change', fetchGPSData);
 
-        // 自動觸發一次
         triggerChange();
 
     </script>
 </body>
-</html>
 
+</html>

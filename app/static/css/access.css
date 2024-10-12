@@ -1,8 +1,5 @@
 @charset "utf-8";
 
-/* ------------------- */
-/* html, body          */
-/* ------------------- */
 html, body{
     touch-action: manipulation;
     font-family: 'Noto Sans TC', sans-serif;
@@ -18,9 +15,6 @@ html, body{
     padding-bottom: constant(safe-area-inset-bottom);
 }
 
-/* ------------------- */
-/* container           */
-/* ------------------- */
 div.container{
     touch-action: manipulation;
     -ms-content-zooming: none;
@@ -34,12 +28,8 @@ div.container{
     min-height: calc(100vh - constant(safe-area-inset-bottom));
 }
 
-/* ------------------- */
-/* header              */
-/* ------------------- */
 div.header{
     display: flex;
-    /* 水平置中 */
     justify-content: center;  
     padding: 10px;
     height: 40px;
@@ -55,10 +45,6 @@ div.header h1{
     margin: 0%;
 }
 
-/* ------------------- */
-/* content             */
-/* ------------------- */
-
 div.content{
     background-color: #F2F0EE;
     padding: 0px 23px;
@@ -66,12 +52,10 @@ div.content{
 
 div.cardrow{
     display: flex;
-    /* 水平置中 */
     justify-content: center;  
     margin: auto;
 }
 
-/* 所有輸入欄位 */
 .form-container {
     width: 400px;
     margin: 20px auto;
@@ -82,13 +66,17 @@ div.content h1{
     letter-spacing:8px;
 }
 
+div.content h6{
+    font-size: 30px;
+    letter-spacing:8px;
+}
+
 .check{
     margin-left: 2%;
 }
 
 .policy {
     display: flex;
-    /* 水平置中 */
     justify-content: center;  
     margin: auto;
     background-color: #ffffff8f;
@@ -96,15 +84,28 @@ div.content h1{
     height: 300px;
     border: 1px solid #ccc;
     overflow-y: scroll;
-    /* 垂直滾動 */
     padding: 10px;
 }
 
+.policy ul {
+    list-style-position: outside;
+  }
+  
+.submit-button-disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.submit-button-enabled {
+    background-color: #809f68;
+    cursor: pointer;
+}
+
+
 input[type="submit" i] {
     position: relative;
-    /* top: -70px; */
     align-items: center;
-    background-color: #809f68;
+    background-color: #969695;
     width: 340px;
     height: 40px;
     border-style: none;
@@ -118,11 +119,11 @@ input[type="submit" i] {
     transition: background-color 0.1s;
 }
 
+
 input[type="submit" i]:active {
     background-color: #9fb889;
 }
 
-/* .delete_confirm 的設定 */
 input[type="submit" i].delete_confirm {
     position: relative;
     top: -13px;
@@ -145,28 +146,46 @@ input[type="submit" i].delete_confirm:active {
     background-color: #9fb889; 
 }
 
-/* ------------------- */
-/* Media Queries       */
-/* ------------------- */
-/* 針對較小的手機屏幕（如 iPhone 12 mini） */
 @media screen and (max-width: 374px) {
     .title-container {
         width: 90%; 
     }
 
-    /* 所有輸入欄位 */
-    /* .form-container {
+    .form-container {
         width: 90%;
-    } */
+    }
+
+    .policy {
+        width: 90%;
+        height: 260px;
+    }
 }
 
-/* 中等大小的手機屏幕 */
 @media screen and (min-width: 375px) and (max-width: 413px) {
     body h1{
         font-weight: 600;
         }
+
+    .form-container {
+        width: 90%;
+    }
+
+    .policy {
+        width: 90%;
+        height: 260px;
+    }
 }
 
+@media (max-width: 768px){
+    .form-container {
+        width: 90%;
+    }
+
+    .policy {
+        width: 90%;
+        height: 260px;
+    }
+}
 
 @media (min-width: 768px) {
     html, body{
@@ -182,15 +201,6 @@ input[type="submit" i].delete_confirm:active {
         padding: 12px;
     }
     
-    ul li {
-        line-height: 50px;
-        width: 85px; 
-    }
-
-    div.navbar a {
-        font-size: 18px;
-    }
-
     .btn:hover,
     .btn:active {
         background-color: #9fb889;
@@ -235,21 +245,18 @@ input[type="submit" i].delete_confirm:active {
     .delete-btn {
         top: 95px;
     } 
+
+    .form-container {
+        width: 90%;
+    }
+    
+    .policy {
+        width: 90%;
+        height: 260px;
+    }
 }
 
-
-
-
 @media (min-width: 1400px) {
-    #menu-bar {
-        padding-top: 20px;
-        padding-left: 20px;
-    }
-    
-    ul li {
-        line-height: 65px;
-    }
-    
     .title-container {
         width: 38%; 
     }

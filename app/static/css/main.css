@@ -1,9 +1,6 @@
 @charset "utf-8";
 
-/* ------------------- */
-/* html, body          */
-/* ------------------- */
-html{
+html {
     overflow-y: hidden;
 }
 
@@ -14,14 +11,12 @@ body {
     padding: 0%;
     margin: 0%;
     height: 100%;
-    width: 100%; 
+    width: 100%;
     padding-bottom: constant(safe-area-inset-bottom);
 }
-/* ------------------- */
-/* container           */
-/* ------------------- */
+
 div.container {
-    width: 100%; 
+    width: 100%;
     margin-left: auto;
     margin-right: auto;
     text-align: justify;
@@ -29,12 +24,8 @@ div.container {
     overflow: hidden;
 }
 
-/* ------------------- */
-/* header              */
-/* ------------------- */
 div.header {
     display: flex;
-    /* 水平置中 */
     justify-content: center;
     padding: 10px;
     height: 40px;
@@ -51,38 +42,31 @@ div.header h1 {
     margin: 0%;
 }
 
-/* ------------------- */
-/* content-wrapper     */
-/* ------------------- */
 div.content-wrapper {
     display: flex;
-    justify-content: center;  /* 水平置中 */
-    height: calc(100vh - 60px);  /* 減去 header 高度 */
-    width: 100%;             /* 設置容器高度為視窗高度 */
+    justify-content: center;
+    height: calc(100vh - 60px);
+    width: 100%;
 }
 
-/* ------------------- */
-/* content             */
-/* ------------------- */
 div.content {
-    position: relative; 
+    position: relative;
     padding: 0px 23px;
 }
 
 div.cardrow {
     display: flex;
-    /* 水平置中 */
     justify-content: center;
     margin: auto;
     z-index: 2;
 }
 
-div.row{
+div.row {
     height: 80px;
     margin: 30px;
 }
 
-div.form{
+div.form {
     position: relative;
     margin-top: 160px;
     z-index: 2;
@@ -156,7 +140,7 @@ div button:first-child {
     font-weight: bold;
     font-size: 20px;
     letter-spacing: 5px;
-    cursor: pointer;    
+    cursor: pointer;
     transition: background-color 0.1s;
 }
 
@@ -170,23 +154,25 @@ button h4 {
     letter-spacing: 5px;
     margin: 0%;
 }
+
 @media only screen and (max-width: 360px) {
-    body h1{
+    body h1 {
         font-weight: 600;
-        }
+    }
 }
 
 @media only screen and (max-width: 480px) {
-    body h1{
+    body h1 {
         font-weight: 800;
     }
 }
 
 @media only screen and (max-width: 768px) {
-    div.content{
+    div.content {
         width: 400px;
         height: 100%;
     }
+
     div.content h1 {
         font-size: 36px;
     }
@@ -216,7 +202,7 @@ button h4 {
     div.header {
         height: 50px;
     }
-    
+
     div.header h1 {
         padding: 12px;
     }

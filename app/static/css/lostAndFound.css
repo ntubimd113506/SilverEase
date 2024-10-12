@@ -1,9 +1,7 @@
 @charset "utf-8";
 
-/* ------------------- */
-/* html, body          */
-/* ------------------- */
-html, body{
+html,
+body {
     touch-action: manipulation;
     font-family: 'Noto Sans TC', sans-serif;
     background-color: #F2F0EE;
@@ -18,10 +16,7 @@ html, body{
     padding-bottom: constant(safe-area-inset-bottom);
 }
 
-/* ------------------- */
-/* container           */
-/* ------------------- */
-div.container{
+div.container {
     touch-action: manipulation;
     -ms-content-zooming: none;
     margin-left: auto;
@@ -34,66 +29,56 @@ div.container{
     min-height: calc(100vh - constant(safe-area-inset-bottom));
 }
 
-/* ------------------- */
-/* header              */
-/* ------------------- */
-div.header{
+div.header {
     display: flex;
-    /* 水平置中 */
-    justify-content: center;  
+    justify-content: center;
     padding: 10px;
     height: 40px;
     background-color: #9FB889;
 }
 
-div.header h1{
+div.header h1 {
     font-size: 30px;
     width: 200px;
     padding: 5px;
-    text-align:center;
+    text-align: center;
     letter-spacing: 3px;
     margin: 0%;
 }
 
-/* ------------------- */
-/* content             */
-/* ------------------- */
-div.cardrow{
+div.cardrow {
     display: flex;
-    /* 水平置中 */
-    justify-content: center;  
+    justify-content: center;
     margin: auto;
 }
 
-/* 所有輸入欄位 */
 .form-container {
     width: 340px;
     margin: 20px auto;
 }
 
-div.content h1{
+div.content h1 {
     font-size: 30px;
-    letter-spacing:8px;
+    letter-spacing: 8px;
 }
 
-div.form-container h4{
+div.form-container h4 {
     margin-bottom: 40px;
 }
 
-.check{
+.check {
     margin-left: 2%;
 }
 
 textarea.message {
     width: 340px;
     height: 65px;
-    min-width: 340px; /* 最小寬度 */
-    resize: both; /* 允許水平和垂直縮放 */
+    min-width: 340px;
+    resize: both;
 }
 
-button.i{
+button.i {
     position: relative;
-    /* top: -70px; */
     align-items: center;
     background-color: #809f68;
     width: 300px;
@@ -105,7 +90,7 @@ button.i{
     font-weight: bolder;
     letter-spacing: 5px;
     margin: 30px 0%;
-    cursor: pointer;    
+    cursor: pointer;
     transition: background-color 0.1s;
 }
 
@@ -114,57 +99,53 @@ button.i:active {
     background-color: #9fb889;
 }
 
-
-/* ------------------- */
-/* Media Queries       */
-/* ------------------- */
-/* 中等大小的手機屏幕 */
 @media screen and (min-width: 375px) and (max-width: 413px) {
-    body h1{
+    body h1 {
         font-weight: 600;
-        }
+    }
 }
 
 
 @media (min-width: 768px) {
-    html, body{
+
+    html,
+    body {
         padding-bottom: calc(30px + env(safe-area-inset-bottom));
-    
+
     }
 
     div.header {
         height: 50px;
     }
-    
+
     div.header h1 {
         padding: 12px;
     }
 
-    
+
     button.i:hover,
     button.i:active {
         background-color: #9fb889;
-    } 
+    }
 
 
     .value {
-        margin-bottom: 30px; 
+        margin-bottom: 30px;
     }
-    
+
     select {
         margin-bottom: 32px;
     }
 
-   
+
     button.i::-webkit-calendar-picker-indicator {
         position: absolute;
-        right: 10px; 
-        margin-left: 0; 
-        z-index: 2; 
-        opacity: 0; 
+        right: 10px;
+        margin-left: 0;
+        z-index: 2;
+        opacity: 0;
         width: 20px;
         height: 20px;
         cursor: pointer;
     }
 }
-

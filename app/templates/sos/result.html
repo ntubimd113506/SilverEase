@@ -2,13 +2,27 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <title>系統回復</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Satisfy&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link href="/static/css/sos.css" rel="stylesheet" />
+    <script src="/static/js/touch-buttons.js" defer></script>
+    <script src="/static/js/img.js"></script>
 </head>
 
 <body>
-    <div id="result">
+    <div class="header">
+        <h1>SilverEase</h1>
+    </div>
+    
+    <div class="cardrow">
+        <div id="result"></div>
     </div>
 </body>
 <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
@@ -21,12 +35,12 @@
         resultDiv = document.getElementById('result');
 
         if (result == 1) {
-            resultDiv.innerHTML = '感謝您的填寫，改善大家的生活環境';
+            resultDiv.innerHTML = '<img src="/static/imgs/S_update.png" class="b"></i><br>感謝您的填寫，改善大家的生活環境';
             setTimeout(() => {
                 liff.closeWindow();
             }, 3000);
         } else {
-            resultDiv.innerHTML = '伺服器異常，請再試一次';
+            resultDiv.innerHTML = '<img src="/static/imgs/update.png" class="b"></i><br>伺服器異常，請再試一次';
             setTimeout(() => {
                 liff.openWindow({
                     url: 'https://liff.line.me/{{liffid}}/sos/sos_report/{{SOSNo}}'

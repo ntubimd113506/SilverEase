@@ -11,42 +11,44 @@ from ..line import app as line
 
 mqtt = Mqtt()
 
+
 @mqtt.on_connect()
 def handle_connect(client, userdata, flags, rc):
-    mqtt.subscribe("myTopic")
     mqtt.subscribe("ESP32/#")
-    mqtt.subscribe("/SOSgps")
 
 
 @mqtt.on_message()
 def handle_mqtt_message(client, userdata, message):
+    if message.topic=="ESP32/check":
+        mqtt.publish("online","")
+        return
     topic = str(message.topic).split("/")
     DevID = topic[1]
     action = topic[2]
-    msg = message.payload.decode()
-
     try:
-        data = json.loads(msg)
-    except:
-        pass
-
-    print(f"Received message on topic {message.topic}: {message.payload.decode()}")
-
-    if action == "help":
+        msg = message.payload.decode()
         try:
             data = json.loads(msg)
-            img = data["image"]
-            # gps=data["gps"]
-            sent_mess(DevID, img)
+            # print(data)
+        except:
+            pass
+        print(f"Received message on topic {message.topic}: {msg}")
+    except:
+        msg = message.payload
 
-        except json.JSONDecodeError:
-            print("Invalid JSON")
+    if action == "help":
+        # return
+        sent_mess(DevID, msg)
 
     if action == "checkLink":
         if check_device(DevID):
             mqtt.publish(f"ESP32/{DevID}/isLink")
         else:
             mqtt.publish(f"ESP32/{DevID}/noLink")
+
+    if action == "offline":
+        return
+        sent_dev_offline(DevID)
 
     if action == "link":
         FamilyID = decode_FamilyCode(msg)
@@ -97,117 +99,52 @@ def handle_mqtt_message(client, userdata, message):
             print(user)
             line.line_bot_api.push_message(user, reMsg)
 
-#-----------------------------------------------------------
-    if message.topic == 'ESP32/gps':
-            try:
-                data = message.payload.decode()
-                Map1 = str(data)
-                Map = Map1.replace(" ","")
-                print(f"Received GPS data - GoogleMap:{Map}")
-                save_gps(Map)
+# -----------------------------------------------------------
+    if action == 'gps':
+        Map = data["lat"]+","+data["lon"]
+        timeData = data["sendTime"].split(",")
+        getTime = datetime(int(timeData[0]), int(timeData[1]), int(
+            timeData[2]), int(timeData[3]), int(timeData[4]), int(timeData[5]))
+        getTime = getTime+timedelta(hours=8)
+        print(f"Received GPS coordinates: {Map}")
+        print(f"Received GPS time: {getTime}")
+        upgrade_gps(DevID, Map, getTime)
 
-            except :
-                print("OK！")
+    if action=="noSOSLocat":
+        try:
+            timeData=msg.split(",")
+            getTime = datetime(int(timeData[0]), int(timeData[1]), int(
+                timeData[2]), int(timeData[3]), int(timeData[4]), int(timeData[5]))
+            getTime = getTime+timedelta(hours=8)
+            # if timeData[0]=="2000":
+            #     getTime=datetime.now()            
+        except:
+            getTime=datetime.now()
 
-    if message.topic == '/upGPS':
-            try:
-                data = message.payload.decode()
-                Map1 = str(data)
-                Map = Map1.replace(" ","")
-                print(f"Received GPS data - GoogleMap:{Map}")
-                upgrade_gps(Map)
-
-            except :
-                print("OK！")
-    
-    if message.topic == '/SOSgps':
-            try:
-                data = message.payload.decode()
-                Map1 = str(data)
-                Map = Map1.replace(" ","")
-                print(f"Received GPS data - GoogleMap:{Map}")
-                sos_gps(Map)
-
-            except :
-                print("OK！")
+        upgrade_gps(DevID, "noData", getTime)
 
 
-def save_gps(Map):
+def sent_dev_offline(DevID):
     conn = db.get_connection()
-    cursor = conn.cursor()
-    # cursor1 = conn.cursor()
-    try:
-        now = datetime.now()
-        # cursor1.execute('SELECT FamilyID FROM Family WHERE DevID = %s',(DevID))
-        # FamID=cursor1.fetchone()[0]
-        cursor.execute('INSERT INTO `113-ntub113506`.Location (FamilyID,Location,LocationTime) VALUES (%s,%s,%s)', (54,Map,now,))
-        conn.commit()
-    except Exception as e:
-        print(f"Error inserting data: {e}")
-        conn.rollback()
-    finally:
-        cursor.close()
-        conn.close()
+    cur = conn.cursor()
+    cur.execute("SELECT FamilyID FROM Family WHERE DevID=%s", DevID)
+    FamilyID = cur.fetchone()[0]
+    users = get_FamilyUser(FamilyID)
 
-def upgrade_gps(Map):
-    conn = db.get_connection()
-    cursor = conn.cursor()
-    # cursor1 = conn.cursor()
-    try:
-        now = datetime.now()
-        # cursor1.execute('SELECT FamilyID FROM Family WHERE DevID = %s',(DevID))
-        # FamID=cursor1.fetchone()[0]
-        cursor.execute('INSERT INTO `113-ntub113506`.Location (FamilyID,Location,LocationTime) VALUES (%s,%s,%s)', (54,Map,now,))
-        conn.commit()
-    except Exception as e:
-        print(f"Error inserting data: {e}")
-        conn.rollback()
-    finally:
-        cursor.close()
-        conn.close()
-    
-def sos_gps(Map):
-    try:
-        conn = db.get_connection()
-        cursor = conn.cursor()
-        FamID = 54
-        now = datetime.now()
-
-        # 插入地理位置資料
-        cursor.execute('INSERT INTO `113-ntub113506`.Location (FamilyID, Location, LocationTime) VALUES (%s, %s, %s)', (FamID, Map, now))
-        conn.commit()
-
-        # 獲取最新的 LocatNo
-        cursor.execute("SELECT LocatNo FROM Location WHERE FamilyID=%s ORDER BY LocatNo DESC LIMIT 1", (FamID,))
-        LocatNo = cursor.fetchone()[0]
-
-        # 插入 SOS 記錄
-        cursor.execute('INSERT INTO `113-ntub113506`.SOS (LocatNo) VALUES (%s)',(LocatNo,))
-        conn.commit()
-
-        # 獲取所有的 SubUserID
-        cursor.execute('SELECT SubUserID FROM `113-ntub113506`.FamilyLink WHERE FamilyID = %s', (FamID,))
-        Sub = cursor.fetchall()
-
-    except Exception as e:
-        print(f"An error occurred: {e}")
-    finally:
-        cursor.close()
-        conn.close()
-
-    # 緊急通知訊息
-    thumbnail_image_url = "https://silverease.ntub.edu.tw/static//imgs/help.png"
-    resMsg = FlexSendMessage(
-        alt_text="緊急通知",
+    msg = FlexSendMessage(
+        alt_text="裝置離線通知",
         contents={
             "type": "bubble",
             "hero": {
                 "type": "image",
-                "url": thumbnail_image_url,
+                "url": "https://developers-resource.landpress.line.me/fx/img/01_1_cafe.png",
                 "size": "full",
-                "aspectRatio": "20:15",
+                "aspectRatio": "20:13",
                 "aspectMode": "cover",
-                "action": {"type": "uri", "uri": thumbnail_image_url},
+                "action": {
+                    "type": "uri",
+                    "uri": "https://line.me/"
+                }
             },
             "body": {
                 "type": "box",
@@ -215,47 +152,55 @@ def sos_gps(Map):
                 "contents": [
                     {
                         "type": "text",
-                        "text": "緊急通知",
+                        "text": "裝置離線通知",
                         "weight": "bold",
-                        "size": "xl",
-                        "align": "center",
+                        "size": "xl"
+                    },
+                    {
+                        "type": "text",
+                        "text": "偵測到您的裝置已離線\n請確認您的裝置網路或電力是否異常",
+                        "wrap": True
                     }
-                ],
+                ]
             },
             "footer": {
                 "type": "box",
                 "layout": "vertical",
-                "spacing": "sm",
                 "contents": [
-                    {
-                        "type": "button",
-                        "style": "link",
-                        "height": "sm",
-                        "action": {
-                            "type": "postback",
-                            "label": "收到",
-                            "data": json.dumps({"action": "help"}),
-                            "text": "你按ㄌ",
-                        },
-                    },
                     {
                         "type": "button",
                         "action": {
                             "type": "uri",
-                            "label": "定位資訊",
-                            "uri": Map,
-                        },
-                    },
-                ],
-                "flex": 0,
-            },
-        },
+                            "label": "點我了解更多",
+                            "uri": "http://linecorp.com/"
+                        }
+                    }
+                ]
+            }
+        }
     )
 
-    # 推送訊息給所有 SubUserID
-    for user in Sub:
-        line.line_bot_api.push_message(user[0], resMsg)
+    UserIDs = [user for user in users["SubUser"]]
+    UserIDs.append(users["MainUser"])
 
+    for user in UserIDs:
+        line.line_bot_api.push_message(user, msg)
+
+
+def upgrade_gps(DevID, Map, getTime):
+    conn = db.get_connection()
+    cursor = conn.cursor()
+    try:
+        FamilyID = check_device(DevID)
+        cursor.execute(
+            'INSERT INTO `113-ntub113506`.Location (FamilyID,Location,LocationTime) VALUES (%s,%s,%s)', (FamilyID, Map, getTime,))
+        conn.commit()
+    except Exception as e:
+        print(f"Error inserting data: {e}")
+        conn.rollback()
+    finally:
+        cursor.close()
+        conn.close()
 
 
 def get_FamilyUser(FamilyID):
@@ -291,33 +236,37 @@ def check_device(DevID):
 
 def sent_mess(DevID, img):
     filename = f"{DevID}_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.jpg"
-    if not img == "":
-        imgdata = base64.b64decode(img)
-        filepath = os.path.join("app", "static", "imgs", "upload", filename)
+    if not img == "noImage":
+        filepath = os.path.abspath(__file__)
+        for i in range(3):
+            filepath = os.path.dirname(filepath)
+        filepath = os.path.join(filepath, "static", "imgs", "upload", filename)
         with open(filepath, "wb") as f:
-            f.write(imgdata)
+            f.write(img)
 
-    FamilyID=check_device(DevID)
+    FamilyID = check_device(DevID)
     users = get_FamilyUser(FamilyID)
 
     # 從資料庫檢索到的使用者資訊是一個列表，需要提取出每個使用者的 ID
     UserIDs = [row for row in users["SubUser"]]
     print(UserIDs)
-    
-    conn=db.get_connection()
-    cur=conn.cursor()
-    cur.execute('INSERT INTO `113-ntub113506`.Location (FamilyID) VALUES (%s)', (FamilyID))
-    cur.execute("SELECT LocatNo FROM Location WHERE FamilyID=%s order by LocatNo desc limit 1",(FamilyID))
-    LocatNo=cur.fetchone()[0]
-    cur.execute("INSERT INTO SOS (LocatNo) Values(%s)",(LocatNo))
-    cur.execute("SELECT SOSNo FROM SOS WHERE LocatNo=%s",LocatNo)
+
+    conn = db.get_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT LocatNo,Location FROM Location WHERE FamilyID=%s AND LocationTime BETWEEN DATE_SUB(now(),Interval 5 minute) AND now() order by LocatNo desc limit 1", (FamilyID))
+    res = cur.fetchone()
+    LocatNo=res[0]
+    gps = res[1]
+    cur.execute("INSERT INTO SOS (LocatNo) Values(%s)", (LocatNo))
+    cur.execute("SELECT SOSNo FROM SOS WHERE LocatNo=%s", LocatNo)
+    SOSNo = cur.fetchone()[0]
     conn.commit()
-    SOSNo=cur.fetchone()[0]
-    #Map
-    cur.execute("SELECT Location FROM Location WHERE LocatNo=%s",(LocatNo))
-    Map=cur.fetchone()[0]
-
-
+    conn.close()
+    
+    if gps == "noData":
+        Map = f"https://liff.line.me/{db.LIFF_ID}/sos/gps/{FamilyID}"
+    else:
+        Map = f"https://www.google.com/maps/search/?api=1&query={gps}"
 
     thumbnail_image_url = f"https://silverease.ntub.edu.tw/img/{filename}"
     resMsg = FlexSendMessage(
@@ -358,7 +307,7 @@ def sent_mess(DevID, img):
                             "type": "postback",
                             "label": "收到",
                             "data": json.dumps({"action": "help", "DevID": DevID, "SOSNo": SOSNo}),
-                            "text":"你按ㄌ"
+                            "text": "你按ㄌ"
                         },
                     },
                     {
@@ -375,9 +324,8 @@ def sent_mess(DevID, img):
         },
     )
 
-    for userID in UserIDs:
-        line.line_bot_api.push_message(userID, resMsg)
-
-    return True
-
-
+    try:
+        for userID in UserIDs:
+            line.line_bot_api.push_message(userID, resMsg)
+    except:
+        mqtt.publish("linePushFaild","")

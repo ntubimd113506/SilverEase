@@ -1,4 +1,6 @@
-import json, random, os
+import json
+import random
+import os
 from flask import request, render_template, Blueprint, session, jsonify
 from flask_login import login_required
 from datetime import datetime, timedelta
@@ -97,6 +99,9 @@ def med_create():
         Alert = int(request.form.get("Alert", 0))
         CreateTime = datetime.now()
         file = request.files.get("Pic")
+        infoCheck = request.form.get("infoCheck")
+        age = request.form.get("age")
+        gender = request.form.get("gender")
 
         EndDate = EndDate if EndDate else None
 
@@ -112,6 +117,18 @@ def med_create():
             (MainUserID,),
         )
         FamilyID = cursor.fetchone()[0]
+
+        if infoCheck:
+            if gender:
+                cursor.execute(
+                    "UPDATE Family SET Gender = %s WHERE FamilyID = %s",
+                    (gender, FamilyID),
+                )
+
+            if age:
+                cursor.execute(
+                    "UPDATE Family SET Age = %s WHERE FamilyID = %s", (age, FamilyID)
+                )
 
         TitleValue = OtherTitle if Title == "其他" else Title
 
@@ -139,44 +156,82 @@ def med_create():
         conn.commit()
         conn.close()
 
-        job_id = f"{MemoID}_MemoTime"
         send_time = datetime.strptime(MemoTime, "%Y-%m-%dT%H:%M")
+        end_date = datetime.strptime(EndDate, "%Y-%m-%dT%H:%M") if EndDate else None
         reminder_time = send_time - timedelta(minutes=Alert)
+        now = datetime.now()
 
-        scheduler.add_job(
-            id=job_id,
-            func=send_line_message,
-            trigger="date",
-            run_date=reminder_time,
-            args=[MemoID],
-        )
+        if send_time > now:
+            scheduler.add_job(
+                id=f"{MemoID}_MemoTime",
+                func=send_line_message,
+                trigger="date",
+                run_date=reminder_time,
+                args=[MemoID],
+            )
+        else:
+            if end_date is None or (reminder_time + timedelta(days=1)) <= end_date:
+                new_send_time = send_time + timedelta(days=1)
+                new_reminder_time = new_send_time - timedelta(minutes=Alert)
+                scheduler.add_job(
+                    id=f"{MemoID}_MemoTime",
+                    func=send_line_message,
+                    trigger="date",
+                    run_date=new_reminder_time,
+                    args=[MemoID],
+                )
 
         if SecondTime:
             second_time_combined = datetime.strptime(
                 f"{send_time.strftime('%Y-%m-%d')}T{SecondTime}", "%Y-%m-%dT%H:%M"
             )
             second_reminder_time = second_time_combined - timedelta(minutes=Alert)
-            scheduler.add_job(
-                id=f"{MemoID}_SecondTime",
-                func=send_line_message,
-                trigger="date",
-                run_date=second_reminder_time,
-                args=[MemoID, 0, False, "SecondTime"],
-            )
+
+            if second_reminder_time > now:
+                scheduler.add_job(
+                    id=f"{MemoID}_SecondTime",
+                    func=send_line_message,
+                    trigger="date",
+                    run_date=second_reminder_time,
+                    args=[MemoID, 0, False, "SecondTime"],
+                )
+            else:
+                if end_date is None or (second_reminder_time + timedelta(days=1)) <= end_date:
+                    new_second_time_combined = second_time_combined + timedelta(days=1)
+                    new_second_reminder_time = new_second_time_combined - timedelta(minutes=Alert)
+                    scheduler.add_job(
+                        id=f"{MemoID}_SecondTime",
+                        func=send_line_message,
+                        trigger="date",
+                        run_date=new_second_reminder_time,
+                        args=[MemoID, 0, False, "SecondTime"],
+                    )
 
         if ThirdTime:
             third_time_combined = datetime.strptime(
                 f"{send_time.strftime('%Y-%m-%d')}T{ThirdTime}", "%Y-%m-%dT%H:%M"
             )
             third_reminder_time = third_time_combined - timedelta(minutes=Alert)
-            scheduler.add_job(
-                id=f"{MemoID}_ThirdTime",
-                func=send_line_message,
-                trigger="date",
-                run_date=third_reminder_time,
-                args=[MemoID, 0, False, "ThirdTime"],
-            )
 
+            if third_reminder_time > now:
+                scheduler.add_job(
+                    id=f"{MemoID}_ThirdTime",
+                    func=send_line_message,
+                    trigger="date",
+                    run_date=third_reminder_time,
+                    args=[MemoID, 0, False, "ThirdTime"],
+                )
+            else:
+                if end_date is None or (third_reminder_time + timedelta(days=1)) <= end_date:
+                    new_third_time_combined = third_time_combined + timedelta(days=1)
+                    new_third_reminder_time = new_third_time_combined - timedelta(minutes=Alert)
+                    scheduler.add_job(
+                        id=f"{MemoID}_ThirdTime",
+                        func=send_line_message,
+                        trigger="date",
+                        run_date=new_third_reminder_time,
+                        args=[MemoID, 0, False, "ThirdTime"],
+                    )
         return render_template(
             "/schedule/result.html",
             schedule="med",
@@ -673,65 +728,129 @@ def med_update():
         conn.close()
 
         send_time = datetime.strptime(MemoTime, "%Y-%m-%dT%H:%M")
+        end_date = datetime.strptime(EndDate, "%Y-%m-%dT%H:%M") if EndDate else None
         reminder_time = send_time - timedelta(minutes=Alert)
+        now = datetime.now()
 
-        if scheduler.get_job(f"{MemoID}_MemoTime"):
-            scheduler.modify_job(
-                f"{MemoID}_MemoTime",
-                trigger="date",
-                run_date=reminder_time,
-                args=[MemoID],
-            )
+        if send_time > now:
+            if scheduler.get_job(f"{MemoID}_MemoTime"):
+                scheduler.modify_job(
+                    f"{MemoID}_MemoTime",
+                    trigger="date",
+                    run_date=reminder_time,
+                    args=[MemoID],
+                )
+            else:
+                scheduler.add_job(
+                    id=f"{MemoID}_MemoTime",
+                    func=send_line_message,
+                    trigger="date",
+                    run_date=reminder_time,
+                    args=[MemoID],
+                )
         else:
-            scheduler.add_job(
-                id=f"{MemoID}_MemoTime",
-                func=send_line_message,
-                trigger="date",
-                run_date=reminder_time,
-                args=[MemoID],
-            )
+            if end_date is None or (reminder_time + timedelta(days=1)) <= end_date:
+                new_send_time = send_time + timedelta(days=1)
+                new_reminder_time = new_send_time - timedelta(minutes=Alert)
+                if scheduler.get_job(f"{MemoID}_MemoTime"):
+                    scheduler.modify_job(
+                        f"{MemoID}_MemoTime",
+                        trigger="date",
+                        run_date=new_reminder_time,
+                        args=[MemoID],
+                    )
+                else:
+                    scheduler.add_job(
+                        id=f"{MemoID}_MemoTime",
+                        func=send_line_message,
+                        trigger="date",
+                        run_date=new_reminder_time,
+                        args=[MemoID],
+                    )
 
         if SecondTime:
             second_time_combined = datetime.strptime(
                 f"{send_time.strftime('%Y-%m-%d')}T{SecondTime}", "%Y-%m-%dT%H:%M"
             )
             second_reminder_time = second_time_combined - timedelta(minutes=Alert)
-            if scheduler.get_job(f"{MemoID}_SecondTime"):
-                scheduler.modify_job(
-                    f"{MemoID}_SecondTime",
-                    trigger="date",
-                    run_date=second_reminder_time,
-                    args=[MemoID, 0, False, "SecondTime"],
-                )
+
+            if second_reminder_time > now:
+                if scheduler.get_job(f"{MemoID}_SecondTime"):
+                    scheduler.modify_job(
+                        f"{MemoID}_SecondTime",
+                        trigger="date",
+                        run_date=second_reminder_time,
+                        args=[MemoID, 0, False, "SecondTime"],
+                    )
+                else:
+                    scheduler.add_job(
+                        id=f"{MemoID}_SecondTime",
+                        func=send_line_message,
+                        trigger="date",
+                        run_date=second_reminder_time,
+                        args=[MemoID, 0, False, "SecondTime"],
+                    )
             else:
-                scheduler.add_job(
-                    id=f"{MemoID}_SecondTime",
-                    func=send_line_message,
-                    trigger="date",
-                    run_date=second_reminder_time,
-                    args=[MemoID, 0, False, "SecondTime"],
-                )
+                if end_date is None or (second_reminder_time + timedelta(days=1)) <= end_date:
+                    new_second_time_combined = second_time_combined + timedelta(days=1)
+                    new_second_reminder_time = new_second_time_combined - timedelta(minutes=Alert)
+                    if scheduler.get_job(f"{MemoID}_SecondTime"):
+                        scheduler.modify_job(
+                            f"{MemoID}_SecondTime",
+                            trigger="date",
+                            run_date=new_second_reminder_time,
+                            args=[MemoID, 0, False, "SecondTime"],
+                        )
+                    else:
+                        scheduler.add_job(
+                            id=f"{MemoID}_SecondTime",
+                            func=send_line_message,
+                            trigger="date",
+                            run_date=new_second_reminder_time,
+                            args=[MemoID, 0, False, "SecondTime"],
+                        )
 
         if ThirdTime:
             third_time_combined = datetime.strptime(
                 f"{send_time.strftime('%Y-%m-%d')}T{ThirdTime}", "%Y-%m-%dT%H:%M"
             )
             third_reminder_time = third_time_combined - timedelta(minutes=Alert)
-            if scheduler.get_job(f"{MemoID}_ThirdTime"):
-                scheduler.modify_job(
-                    f"{MemoID}_ThirdTime",
-                    trigger="date",
-                    run_date=third_reminder_time,
-                    args=[MemoID, 0, False, "ThirdTime"],
-                )
+
+            if third_reminder_time > now:
+                if scheduler.get_job(f"{MemoID}_ThirdTime"):
+                    scheduler.modify_job(
+                        f"{MemoID}_ThirdTime",
+                        trigger="date",
+                        run_date=third_reminder_time,
+                        args=[MemoID, 0, False, "ThirdTime"],
+                    )
+                else:
+                    scheduler.add_job(
+                        id=f"{MemoID}_ThirdTime",
+                        func=send_line_message,
+                        trigger="date",
+                        run_date=third_reminder_time,
+                        args=[MemoID, 0, False, "ThirdTime"],
+                    )
             else:
-                scheduler.add_job(
-                    id=f"{MemoID}_ThirdTime",
-                    func=send_line_message,
-                    trigger="date",
-                    run_date=third_reminder_time,
-                    args=[MemoID, 0, False, "ThirdTime"],
-                )
+                if end_date is None or (third_reminder_time + timedelta(days=1)) <= end_date:
+                    new_third_time_combined = third_time_combined + timedelta(days=1)
+                    new_third_reminder_time = new_third_time_combined - timedelta(minutes=Alert)
+                    if scheduler.get_job(f"{MemoID}_ThirdTime"):
+                        scheduler.modify_job(
+                            f"{MemoID}_ThirdTime",
+                            trigger="date",
+                            run_date=new_third_reminder_time,
+                            args=[MemoID, 0, False, "ThirdTime"],
+                        )
+                    else:
+                        scheduler.add_job(
+                            id=f"{MemoID}_ThirdTime",
+                            func=send_line_message,
+                            trigger="date",
+                            run_date=new_third_reminder_time,
+                            args=[MemoID, 0, False, "ThirdTime"],
+                        )
 
         return render_template(
             "/schedule/result.html",

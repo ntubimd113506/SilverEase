@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Document</title>
-    
-    <!-- 連結css檔 --> 
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>家庭清單</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Satisfy&display=swap" rel="stylesheet">
-        
     <link href="/static/css/famliy_list.css" rel="stylesheet" />
     <script src="/static/js/touch-buttons.js" defer></script>
     <script src="/static/js/img.js"></script>
@@ -28,35 +27,40 @@
         <div class="form-container">
             {% if MainFamily %}
         <div class="main_box">
-            <div>
-                您的家庭
-            </div>
+            <div class="h4">您的家庭</div>
             <div class="cardrow">
                 <img src="{{MainFamily['Picture']}}" alt="">
             </div>
             <div class="name">{{MainFamily["Name"]}}</div>
-            <button class="btn" onclick=deleteFamily()>刪除家庭</button>
-            <a href="/set/access_index">查看同意政策</a>
+            <div class="cardrow">
+                <button class="btn" onclick=deleteFamily()>刪除家庭</button>
+            </div>
+            
+            <a href="/set/access_index" class="align-left">查看同意政策</a>
         </div>
         {% endif %}
         {% if SubFamilys %}
-        您所加入的家庭
+        <div class="h4">您所加入的家庭</div>
+        
         <div class="sub_box">
             {% for family in SubFamilys %}
-            <div id="sub{{family['FamilyID']}}">
+            <div id="sub{{family['FamilyID']}}" class="box">
                 <div class="cardrow">
                     <img src="{{family['Picture']}}" alt="">
                 </div>
                 
                 <div class="name">{{family["Name"]}}</div>
-                <button class="btn" onclick=leaveFamily() value="{{family['FamilyID']}}">退出家庭</button>
+                <div class="cardrow">
+                    <button class="btn" onclick=leaveFamily() value="{{family['FamilyID']}}">退出家庭</button>
+                </div>
+                
             </div>
             {% endfor %}
         </div>
         {% endif %}
         {% if not MainFamily and not SubFamilys%}
-        暫無任何家庭資料
-        <a href="/set/join_family">加入家庭</a>
+        <div class="h4">暫無任何家庭資料</div>
+        <a href="/set/join_family" class="align-left">加入家庭</a>
         {% endif %}
         </div>
         
@@ -88,7 +92,7 @@
                                 icon: "success",
                             }).then(() => {
                                 location.reload();
-                            });                            
+                            });
                         } else {
                             swal("刪除失敗", {
                                 icon: "error",
@@ -101,7 +105,7 @@
             });
     }
 
-    function leaveFamily(){
+    function leaveFamily() {
         swal({
             title: "確認退出家庭?",
             text: "退出後將無法再查看該家庭資料",
@@ -128,7 +132,7 @@
                                 icon: "success",
                             }).then(() => {
                                 location.reload();
-                            });                            
+                            });
                         } else {
                             swal("退出失敗", {
                                 icon: "error",
@@ -139,7 +143,7 @@
                     swal("取消成功!");
                 }
             });
-        familyID=event.target.value;
+        familyID = event.target.value;
         console.log(familyID);
     }
 </script>

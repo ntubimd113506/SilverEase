@@ -31,8 +31,10 @@
                 <img src="/static/imgs/main.png" class="b">
                 <h1>群組代碼</h1>
 
-                <div id="qrcode"></div>
-
+                <div id="qrcode" class="photo">
+                    <img src="/static/imgs/logo.png" class="logo">
+                    </div>
+                    
                 <div class="form-container">
                     <h4>代號:</h4>
 
@@ -40,7 +42,7 @@
                         <span class="value">
                             <input class="output" type="text" id='number' value="{{code_id}}" readonly>
                             <button class="btn" type="button" onclick="copy()">
-                                <img class="btn" src="/static/imgs/copy.png" alt="copy" id="share"
+                                <img class="btn" src="/static/imgs/share.png" alt="copy" id="share"
                                     onclick="shareCode()"></button>
                         </span>
                         <br />
@@ -60,6 +62,8 @@
 </body>
 <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
 <script>
+    liff.init({ liffId: '{{liffid}}' })
+
     $('#qrcode').qrcode({
         width: 120,
         height: 120,
@@ -67,7 +71,23 @@
         text: 'https://liff.line.me/2004699458-OR9pkZjP/set/join_family/{{code_id}}'
     });
 
-    liff.init({ liffId: '{{liffid}}' })
+    html2canvas($('#qrcode').get(0)).then(function (canvas) {
+            const ctx = canvas.getContext('2d');
+            const logo = new Image();
+
+            logo.src = 'imgs/logo.png';
+            logo.onload = function () {
+                const logoSize = canvas.width / 4;
+                const logoX = (canvas.width - logoSize) / 2;
+                const logoY = (canvas.height - logoSize) / 2;
+
+                ctx.drawImage(logo, logoX, logoY, logoSize, logoSize);
+
+                $('#qrcode').html('');
+                $('#qrcode').append(canvas);
+                $('#canvas').remove();
+            };
+        });
 
     function shareCode() {
         liff.shareTargetPicker(
@@ -103,8 +123,6 @@
             }
         )
     }
-
-
 </script>
 
 </html>

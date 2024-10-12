@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Document</title>
-    
-    <!-- 連結css檔 --> 
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>通報遺失/走失</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Satisfy&display=swap" rel="stylesheet">
-        
-    <link href="/static/css/l&f.css" rel="stylesheet" />
+    <link href="/static/css/lostAndFound.css" rel="stylesheet" />
     <script src="/static/js/touch-buttons.js" defer></script>
     <script src="/static/js/img.js"></script>
-    <!--..........-->
-    
+
 </head>
+
 <body>
-    <div class="container">  
+    <div class="container">
         <div class="header">
             <h1>SilverEase</h1>
         </div>
@@ -31,7 +31,6 @@
             <div class="cardrow">
                 <button class="i" onclick=lostReport()>通報遺失/走失</button>
             </div>
-            <img src="/static/imgs/thanks.png" alt="感謝圖" srcset="" id="thanksImg" hidden>
         </div>
     </div>
 
@@ -46,7 +45,7 @@
             },
             body: JSON.stringify({
                 message: document.getElementById('message').value
-            })  
+            })
         }).then(res => res.json())
             .then(data => {
                 if (data['status'] == 'success') {
@@ -58,4 +57,5 @@
             })
     }
 </script>
+
 </html>

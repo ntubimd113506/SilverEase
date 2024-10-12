@@ -85,15 +85,15 @@
                 <div class="Title">標題：{{ item.Title }}</div>
                 <div class="Memotime">日期時間：{{ item.MemoTime }}</div>
                 {% if item.SecondTime %}
-                    <div class="SecondTime">第二次用藥時間：{{ item.SecondTime }}</div>
+                <div class="SecondTime">第二次用藥時間：{{ item.SecondTime }}</div>
                 {% endif %}
 
                 {% if item.ThirdTime %}
-                    <div class="ThirdTime">第三次用藥時間：{{ item.ThirdTime }}</div>
+                <div class="ThirdTime">第三次用藥時間：{{ item.ThirdTime }}</div>
                 {% endif %}
 
                 {% if item.EndDate %}
-                    <div class="EndDate">結束日期時間：{{ item.EndDate }}</div>
+                <div class="EndDate">結束日期時間：{{ item.EndDate }}</div>
                 {% endif %}
                 <div class="Alert">幾分鐘前提醒：{{ item.Alert }}分鐘</div>
                 <div class="Pic" id="pic-{{ item.MemoID }}">圖片：

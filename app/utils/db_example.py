@@ -2,23 +2,23 @@
 import pymysql
 from random import random
 
-DB_HOST='HOST_IP'  
-DB_NAME='HOST_DB_NAME'
-DB_USER='USER_NAME'
-DB_PASSWORD='USER_PASSWORD' 
+DB_HOST = "HOST_IP"
+DB_NAME = "HOST_DB_NAME"
+DB_USER = "USER_NAME"
+DB_PASSWORD = "USER_PASSWORD"
 SECRET_KEY = "Secret Key"
-LINE_TOKEN='Channel Access Token'
-LINE_HANDLER="Channel Secret"
+LINE_TOKEN = "Channel Access Token"
+LINE_HANDLER = "Channel Secret"
 LIFF_ID = "LIFF ID (Tall)"
-LIFF_ID_FULL="LIFF ID (FULL)"
+LIFF_ID_FULL = "LIFF ID (FULL)"
+
 
 def get_connection():
-    connection=pymysql.connect(
-    host=DB_HOST,  
-    user=DB_USER, 
-    passwd=DB_PASSWORD, 
-    database=DB_NAME)
+    connection = pymysql.connect(
+        host=DB_HOST, user=DB_USER, passwd=DB_PASSWORD, database=DB_NAME
+    )
     return connection
+
 
 def get_codeID(familyID):
     conn = get_connection()
@@ -54,34 +54,38 @@ def get_memo_info(MemoID):
     conn = get_connection()
     cur = conn.cursor()
     cur.execute("SELECT * FROM Memo WHERE MemoID=%s", MemoID)
-    res=cur.fetchone()
-    data = {cur.description[i][0]:res[i] for i in range(len(res))}
-    
-    subMemo=data["MemoType"]
+    res = cur.fetchone()
+    data = {cur.description[i][0]: res[i] for i in range(len(res))}
 
-    if subMemo=="1":
+    subMemo = data["MemoType"]
+
+    if subMemo == "1":
         cur.execute("SELECT * FROM Med WHERE MemoID=%s", MemoID)
-    elif subMemo=="2":
+    elif subMemo == "2":
         cur.execute("SELECT * FROM Hos WHERE MemoID=%s", MemoID)
-    elif subMemo=="3":
+    elif subMemo == "3":
         cur.execute("SELECT * FROM EventMemo WHERE MemoID=%s", MemoID)
-    
-    res=cur.fetchone()
+
+    res = cur.fetchone()
     for i in range(len(res)):
-        data[cur.description[i][0]]=res[i]
+        data[cur.description[i][0]] = res[i]
 
-    cur.execute("SELECT MainUserID FROM Family WHERE FamilyID=%s",data["FamilyID"])
-    res=cur.fetchone()
-    data["MainUser"]=res[0]
+    cur.execute("SELECT MainUserID FROM Family WHERE FamilyID=%s", data["FamilyID"])
+    res = cur.fetchone()
+    data["MainUser"] = res[0]
 
-    cur.execute("SELECT MemName FROM Member m LEFT JOIN Family f on m.MemID = f.MainUserID WHERE FamilyID=%s",data["FamilyID"])
-    res=cur.fetchone()
-    data["MainUserName"]=res[0]
-    
-    cur.execute("SELECT SubUserID FROM FamilyLink WHERE FamilyID=%s",data["FamilyID"])
-    data["SubUser"]=[k[0] for k in cur.fetchall()]
+    cur.execute(
+        "SELECT MemName FROM Member m LEFT JOIN Family f on m.MemID = f.MainUserID WHERE FamilyID=%s",
+        data["FamilyID"],
+    )
+    res = cur.fetchone()
+    data["MainUserName"] = res[0]
+
+    cur.execute("SELECT SubUserID FROM FamilyLink WHERE FamilyID=%s", data["FamilyID"])
+    data["SubUser"] = [k[0] for k in cur.fetchall()]
 
     return data
+
 
 def get_family_id(MemID):
     with get_connection() as conn:
