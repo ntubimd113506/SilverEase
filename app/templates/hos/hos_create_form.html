@@ -39,20 +39,24 @@
                         <div class="name">選擇長者</div>
                         <select id="MainUserID" name="MainUserID">
                             {% for user in MainUsers %}
+                            {% if params.UserID == user[0] %}
+                            <option value="{{ user[0] }}" selected>{{ user[1] }}</option>
+                            {% else %}
                             <option value="{{ user[0] }}">{{ user[1] }}</option>
+                            {% endif %}
                             {% endfor %}
                         </select>
                         <br>
 
                         <div class="name">名稱</div>
                         <div class="value">
-                            <input type="text" name="Title" class="input-field" placeholder="請輸入名稱" required>
+                            <input type="text" name="Title" class="input-field" placeholder="請輸入名稱" required value="{{params.Title}}">
                         </div>
 
                         <div class="name">日期時間</div>
                         <div class="value">
                             <div class="input-icon">
-                                <input type="datetime-local" name="MemoTime" id="MemoTime" class="input-field" required>
+                                <input type="datetime-local" name="MemoTime" id="MemoTime" class="input-field" required value="{{params.Date}}">
                                 <label for="MemoTime" id="placeholder" class="placeholder">選擇欲提醒的日期</label>
                                 <i class="fa-solid fa-calendar-days calendar-icon"></i>
                             </div>
@@ -71,7 +75,7 @@
                             <input type="text" name="OtherLocation" id="OtherLocation" class="input-field"
                                 placeholder="請輸入其他醫院/診所地點" style="display:none;">
                             {% else %}
-                            <input type="text" name="Location" class="input-field" placeholder="請輸入醫院/診所地點">
+                            <input type="text" name="Location" class="input-field" placeholder="請輸入醫院/診所地點" value="{{params.Place}}">
                             {% endif %}
                         </div>
 
@@ -112,13 +116,13 @@
                             <input type="text" name="OtherDoctor" id="OtherDoctor" class="input-field"
                                 placeholder="請輸入其他看診醫生" style="display:none;">
                             {% else %}
-                            <input type="text" name="Doctor" class="input-field" placeholder="請輸入看診醫生">
+                            <input type="text" name="Doctor" class="input-field" placeholder="請輸入看診醫生" value="{{params.Doctor}}">
                             {% endif %}
                         </div>
 
                         <div class="name">號碼</div>
                         <div class="value">
-                            <input type="text" name="Num" class="input-field" placeholder="請輸入掛號號碼">
+                            <input type="text" name="Num" class="input-field" placeholder="請輸入掛號號碼" value="{{params.Num}}">
                         </div>
 
                         <div class="name">多久重複</div>
@@ -173,6 +177,14 @@
             var clinicSelect = document.getElementById('ClinicSelect');
             var otherClinicInput = document.getElementById('OtherClinic');
 
+            clinicSelect.value="{{params.Clinic}}";
+            if (clinicSelect.value==""){
+                clinicSelect.value="其他";
+                otherClinicInput.value="{{params.Clinic}}";
+                otherClinicInput.style.display = 'block';
+                otherClinicInput.required = true;
+            }
+
             clinicSelect.addEventListener('change', function () {
                 if (this.value === '其他') {
                     otherClinicInput.style.display = 'block';
@@ -185,7 +197,14 @@
 
             var locationSelect = document.getElementById('LocationSelect');
             var otherLocationInput = document.getElementById('OtherLocation');
-
+            
+            locationSelect.value="{{params.Place}}";
+            if (locationSelect.value==""){
+                locationSelect.value="其他";
+                otherLocationInput.value="{{params.Place}}";
+                otherLocationInput.style.display = 'block';
+                otherLocationInput.required = true;
+            }
             locationSelect.addEventListener('change', function () {
                 if (this.value === '其他') {
                     otherLocationInput.style.display = 'block';
@@ -198,7 +217,14 @@
 
             var doctorSelect = document.getElementById('DoctorSelect');
             var otherDoctorInput = document.getElementById('OtherDoctor');
-
+            
+            doctorSelect.value="{{params.Doctor}}";
+            if (doctorSelect.value==""){
+                doctorSelect.value="其他";
+                otherDoctorInput.value="{{params.Doctor}}";
+                otherDoctorInput.style.display = 'block';
+                otherDoctorInput.required = true;
+            }
             doctorSelect.addEventListener('change', function () {
                 if (this.value === '其他') {
                     otherDoctorInput.style.display = 'block';
