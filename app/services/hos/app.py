@@ -20,6 +20,7 @@ def hos():
 @login_required
 def hos_create_form():
     MemID = session.get("MemID")
+    params=request.args
 
     conn = db.get_connection()
     cursor = conn.cursor()
@@ -98,6 +99,7 @@ def hos_create_form():
         MainUsers=MainUsers,
         Locations=Locations,
         Doctors=Doctors,
+        params=params
     )
 
 
