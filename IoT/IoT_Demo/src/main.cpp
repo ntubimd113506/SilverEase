@@ -256,7 +256,10 @@ void SendImageMQTT()
   {
     mqtt.publish(String(TOPIC + "/noSOSLocat").c_str(), devTime.c_str());
   }
-  camera_fb_t *fb = esp_camera_fb_get();
+  camera_fb_t *fb = NULL;
+  fb = esp_camera_fb_get();
+  esp_camera_fb_return(fb);
+  fb = esp_camera_fb_get();
   if (!fb)
   {
     mqtt.publish(String(TOPIC + "/help").c_str(), "noImage");
