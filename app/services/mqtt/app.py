@@ -306,8 +306,8 @@ def sent_mess(DevID, img):
                         "action": {
                             "type": "postback",
                             "label": "收到",
-                            "data": json.dumps({"action": "help", "DevID": DevID, "SOSNo": SOSNo}),
-                            "text": "你按ㄌ"
+                            "data": json.dumps({"action": "help", "DevID": DevID, "SOSNo": "123"}),
+                            "text": "已通知長者"
                         },
                     },
                     {

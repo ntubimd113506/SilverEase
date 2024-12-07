@@ -297,7 +297,6 @@ def send_line_message(MemoID, cnt=0, got=False, time_type="MemoTime"):
             ),
         )
         
-        """
         txtbody=TextSendMessage(f"📌記得服用:{Title}")
         imgbody=TemplateSendMessage(
             alt_text="用藥通知",
@@ -306,11 +305,10 @@ def send_line_message(MemoID, cnt=0, got=False, time_type="MemoTime"):
                 image_aspect_ratio="rectangle",
                 image_size="contain",
                 image_background_color="#FFFFFF",
-                title="用藥通知"
+                title="用藥通知",
                 actions=[PostbackAction(label="收到", data=msg, text="收到")],
             ),
         )
-        """
 
         body1 = TextSendMessage(
             text=f"{MainUserName}長者尚未收到此用藥通知\n請儘速與長者聯繫\n\n💊標題: {Title}\n",
@@ -320,11 +318,12 @@ def send_line_message(MemoID, cnt=0, got=False, time_type="MemoTime"):
         cursor = conn.cursor()
 
         if cnt <= 3 and not got:
-            line_bot_api.push_message(MainUserID, body)
-            """
-            line_bot_api.push_message(MainUserID, txtbody)
-            line_bot_api.push_message(MainUserID, imgbody)
-            """
+            if (Title.length() <= 55):
+                line_bot_api.push_message(MainUserID, body)
+            else:
+                line_bot_api.push_message(MainUserID, txtbody)
+                line_bot_api.push_message(MainUserID, imgbody)
+            
         else:
             if not got:
                 for sub_id in SubUserIDs:

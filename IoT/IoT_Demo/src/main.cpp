@@ -332,7 +332,9 @@ void setup()
   pinMode(BTN, INPUT);
   pinMode(BUZZ, OUTPUT);
   cam_flag = initCamera();
-  // client.setCACert(root_ca);
+  /** tls 連線
+   * client.setCACert(root_ca);
+   */
   mqtt.setServer(SERVER, MQTT_PORT);
   mqtt.setCallback(callback);
   WiFiConfig.connectWiFi();

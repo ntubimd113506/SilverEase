@@ -80,10 +80,10 @@ def handle_postback(event):
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    print(event)
     res = requests.post(f"{host}/LineMsgHandle",
                         json=json.loads(f"{event}"))
     result = res.json()
+    print(result)
     if result["Type"] != False:
         memoType = result.pop("Type")
         params = urlencode(result)
@@ -95,10 +95,13 @@ def handle_message(event):
             alt_txt = "新增看診"
             body_txt = "祝您身體健康早日康復!"
 
+        if memoType == "sql":
+            msg = sql_handle(result)
+            line_bot_api.reply_message(
+                event.reply_token, messages=FlexSendMessage(alt_text="您的未來行程", contents=msg))
+            return
+
         print(params)
-        print(memoType)
-        print(alt_txt)
-        print(body_txt)
 
         line_bot_api.reply_message(
             event.reply_token, messages=FlexSendMessage(
@@ -155,6 +158,17 @@ def handle_message(event):
                 },
             )
         )
+
+
+# @handler.add(MessageEvent, message=ImageMessage)
+# def handle_image(event):
+#     message_content = line_bot_api.get_message_content(event.message.id)
+#     with open(f"app/static/{event.message.id}.jpg", "wb") as f:
+#         for chunk in message_content.iter_content():
+#             f.write(chunk)
+
+#     line_bot_api.reply_message(
+#         event.reply_token, TextSendMessage(text="已收到圖片，請稍後"))
 
 
 def report_SOS(DevID, SOSNo):
@@ -231,3 +245,217 @@ def check_device(DevID):
     cur = conn.cursor()
     res = cur.execute("SELECT FamilyID FROM Family WHERE DevID=%s", DevID)
     return cur.fetchone()[0] if res else 0
+
+
+def sql_handle(result):
+    conn = db.get_connection()
+    cur = conn.cursor()
+
+    MemoType = {"hos": (2,), "event": (3,), "all": (2,3)}
+
+    cur.execute("""
+        SELECT
+            *
+        FROM
+            `113-ntub113506`.Memo
+        WHERE
+            MemoTime BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL %s DAY)
+                AND MemoType IN %s
+                AND FamilyID IN (SELECT
+                    FamilyID
+                FROM
+                    (SELECT
+                        FamilyID, MainUserID AS UserID
+                    FROM
+                        Family UNION ALL SELECT
+                        FamilyID, SubUserID AS UserID
+                    FROM
+                        FamilyLink) f
+                WHERE
+                    UserID IN (%s))
+        """, (result["duration"], MemoType[result["SubType"]], result["UserID"]))
+
+    memo_datas = []
+    for res in cur.fetchall():
+        memo_datas.append({cur.description[i][0]: res[i] for i in range(len(res))})
+
+    # return memo_datas
+    box_cnt = 0
+
+    responMsg = {
+        "type": "carousel",
+        "contents": []
+    }
+
+    for memo in memo_datas:
+        if box_cnt > 12:
+            break
+        elif memo["MemoType"] == '2':
+            cur.execute("SELECT * FROM Hos WHERE MemoID=%s", memo["MemoID"])
+            res = cur.fetchone()
+            sub_memo = {cur.description[i][0]: res[i] for i in range(len(res))}
+
+            responMsg["contents"].append({
+                "type": "bubble",
+                "hero": {
+                    "type": "image",
+                    "size": "3xl",
+                    "aspectRatio": "5:5",
+                    "aspectMode": "cover",
+                    "url": "https://silverease.ntub.edu.tw/static/imgs/treatment.png",
+                    "margin": "none"
+                },
+                "body": {
+                    "type": "box",
+                    "layout": "vertical",
+                    "spacing": "sm",
+                    "contents": [
+                        {
+                            "type": "text",
+                            "text": "您未來的回診資料",
+                            "wrap": True,
+                            "weight": "bold",
+                            "size": "xl"
+                        },
+                        {
+                            "type": "text",
+                            "text": f"📌標題: {memo['Title']}"
+                        },
+                        {
+                            "type": "text",
+                            "text": f"🕰️時間: {memo['MemoTime']}"
+                        },
+                        {
+                            "type": "text",
+                            "text": f"📍地點: {sub_memo['Location']}"
+                        },
+                        {
+                            "type": "text",
+                            "text": f"🏥科別: {sub_memo['Clinic']}"
+                        },
+                        {
+                            "type": "text",
+                            "text": f"👨‍⚕️醫師: {sub_memo['Doctor']}"
+                        },
+                        {
+                            "type": "text",
+                            "text": f"🔢看診號碼: {sub_memo['Num']}"
+                        }
+                    ]
+                },
+                "footer": {
+                    "type": "box",
+                    "layout": "vertical",
+                    "spacing": "sm",
+                    "contents": [
+                        {
+                            "type": "button",
+                            "style": "primary",
+                            "action": {
+                                "type": "uri",
+                                "label": "點我編輯或刪除",
+                                "uri": f"https://liff.line.me/{db.LIFF_ID}/hos/update/confirm?MemoID={memo['MemoID']}"
+                            }
+                        }
+                    ]
+                }
+            })
+        elif memo["MemoType"] == '3':
+            cur.execute("SELECT * FROM EventMemo WHERE MemoID=%s",
+                        memo["MemoID"])
+            res = cur.fetchone()
+            sub_memo = {cur.description[i][0]: res[i] for i in range(len(res))}
+            responMsg["contents"].append({
+                "type": "bubble",
+                "hero": {
+                    "type": "image",
+                    "size": "3xl",
+                    "aspectRatio": "5:5",
+                    "aspectMode": "cover",
+                    "url": "https://silverease.ntub.edu.tw/static/imgs/planner.png",
+                    "margin": "none"
+                },
+                "body": {
+                    "type": "box",
+                    "layout": "vertical",
+                    "spacing": "sm",
+                    "contents": [
+                        {
+                            "type": "text",
+                            "text": "您未來的紀念日資料",
+                            "wrap": True,
+                            "weight": "bold",
+                            "size": "xl"
+                        },
+                        {
+                            "type": "text",
+                            "text": f"📌標題: {memo['Title']}"
+                        },
+                        {
+                            "type": "text",
+                            "text": f"🕰️時間: {memo['MemoTime']}"
+                        },
+                        {
+                            "type": "text",
+                            "text": f"📍地點: {sub_memo['Location']}"
+                        }
+                    ]
+                },
+                "footer": {
+                    "type": "box",
+                    "layout": "vertical",
+                    "spacing": "sm",
+                    "contents": [
+                        {
+                            "type": "button",
+                            "style": "primary",
+                            "action": {
+                                "type": "uri",
+                                "label": "點我編輯或刪除",
+                                "uri": f"https://liff.line.me/{db.LIFF_ID}/event/update/confirm?MemoID={memo['MemoID']}"
+                            }
+                        }
+                    ]
+                }
+            })
+        box_cnt += 1
+    
+    responMsg["contents"].append({
+        "type": "bubble",
+        "body": {
+            "type": "box",
+            "layout": "vertical",
+            "spacing": "sm",
+            "contents": [
+                {
+                    "type": "button",
+                    "flex": 1,
+                    "gravity": "center",
+                    "action": {
+                        "type": "uri",
+                        "label": "看更多回診規劃",
+                        "uri": f"https://liff.line.me/{db.LIFF_ID}/hos/list"
+                    },
+                    "style": "link",
+                    "margin": "none"
+                },
+                {
+                    "type": "text",
+                    "text": "______________________",
+                    "align": "center"
+                },
+                {
+                    "type": "button",
+                    "flex": 1,
+                    "gravity": "center",
+                    "action": {
+                        "type": "uri",
+                        "label": "看更多紀念日規劃",
+                        "uri": f"https://liff.line.me/{db.LIFF_ID}/event/list"
+                    },
+                    "style": "link"
+                }
+            ]
+        }
+    })
+    return responMsg
