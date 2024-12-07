@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <WiFi.h>
-#include <WiFiClientSecure.h>
+#include <WiFiClient.h>
+// #include <WiFiClientSecure.h>
 #include <PubSubClient.h>
 #include "Guineapig.WiFiConfig.h"
 #include <ArduinoJson.h>
@@ -18,7 +19,8 @@
 #define BTN 12
 #define BUZZ 13
 
-WiFiClientSecure client;
+WiFiClient client;
+// WiFiClientSecure client;
 PubSubClient mqtt(client);
 TinyGPSPlus gps;
 
@@ -152,6 +154,7 @@ void callback(char *topic, byte *payload, unsigned int length)
     {
       sos_morsecode();
     }
+    btn_flag = false;
   }
 
   if (action == "gotHelp")
@@ -290,6 +293,7 @@ void SendImageMQTT()
 
 void mainTask(void *parameter)
 {
+  int btn_cnt = 0;
   while (1)
   {
     if (WiFi.status() == WL_CONNECTED)
@@ -297,13 +301,17 @@ void mainTask(void *parameter)
       bool flag = digitalRead(BTN) && !btn_flag;
       if (flag)
       {
-        btn_flag = true;
-        digitalWrite(BUZZ, HIGH);
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
-        digitalWrite(BUZZ, LOW);
-        SendImageMQTT();
-        vTaskDelay(5000 / portTICK_PERIOD_MS);
-        btn_flag = false;
+        btn_cnt++;
+        if (btn_cnt >= 3)
+        {
+          btn_flag = true;
+          digitalWrite(BUZZ, HIGH);
+          vTaskDelay(1000 / portTICK_PERIOD_MS);
+          digitalWrite(BUZZ, LOW);
+          SendImageMQTT();
+          vTaskDelay(5000 / portTICK_PERIOD_MS);
+          btn_cnt = 0;
+        }
       }
     }
     else
@@ -324,7 +332,7 @@ void setup()
   pinMode(BTN, INPUT);
   pinMode(BUZZ, OUTPUT);
   cam_flag = initCamera();
-  client.setCACert(root_ca);
+  // client.setCACert(root_ca);
   mqtt.setServer(SERVER, MQTT_PORT);
   mqtt.setCallback(callback);
   WiFiConfig.connectWiFi();
