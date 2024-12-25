@@ -297,6 +297,7 @@ def send_line_message(MemoID, cnt=0, got=False, time_type="MemoTime"):
             ),
         )
         
+
         txtbody=TextSendMessage(f"📌記得服用:{Title}")
         imgbody=TemplateSendMessage(
             alt_text="用藥通知",

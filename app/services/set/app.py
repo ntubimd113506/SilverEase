@@ -119,15 +119,19 @@ def family_list():
 
     if MainFamily:
         session["MainFamilyID"] = MainFamily["FamilyID"]
-        MainInfo = line_bot_api.get_profile(MainFamily["MainUserID"]).as_json_dict()
-        MainFamily["Name"] = MainInfo["displayName"]
-        MainFamily["Picture"] = MainInfo["pictureUrl"]
-
+        try:
+            MainInfo = line_bot_api.get_profile(MainFamily["MainUserID"]).as_json_dict()
+            MainFamily["Name"] = MainInfo["displayName"]
+            MainFamily["Picture"] = MainInfo["pictureUrl"]
+        except:
+            pass
     for SubFamily in SubFamilys:
-        SubInfo = line_bot_api.get_profile(SubFamily["MainUserID"]).as_json_dict()
-        SubFamily["Name"] = SubInfo["displayName"]
-        SubFamily["Picture"] = SubInfo["pictureUrl"]
-
+        try:
+            SubInfo = line_bot_api.get_profile(SubFamily["MainUserID"]).as_json_dict()
+            SubFamily["Name"] = SubInfo["displayName"]
+            SubFamily["Picture"] = SubInfo["pictureUrl"]
+        except:
+            pass
     return render_template(
         "/set/family_list.html", MainFamily=MainFamily, SubFamilys=SubFamilys
     )
