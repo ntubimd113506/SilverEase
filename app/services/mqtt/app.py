@@ -47,7 +47,6 @@ def handle_mqtt_message(client, userdata, message):
             mqtt.publish(f"ESP32/{DevID}/noLink")
 
     if action == "offline":
-        return
         sent_dev_offline(DevID)
 
     if action == "link":
@@ -250,25 +249,28 @@ def sent_mess(DevID, img):
     # 從資料庫檢索到的使用者資訊是一個列表，需要提取出每個使用者的 ID
     UserIDs = [row for row in users["SubUser"]]
     print(UserIDs)
-
+    """
     conn = db.get_connection()
     cur = conn.cursor()
     cur.execute("SELECT LocatNo,Location FROM Location WHERE FamilyID=%s AND LocationTime BETWEEN DATE_SUB(now(),Interval 5 minute) AND now() order by LocatNo desc limit 1", (FamilyID))
     res = cur.fetchone()
     LocatNo=res[0]
     gps = res[1]
-    cur.execute("INSERT INTO SOS (LocatNo) Values(%s)", (LocatNo))
+    try:
+        cur.execute("INSERT INTO SOS (LocatNo) Values(%s)", (LocatNo))
+    except:
+        pass
     cur.execute("SELECT SOSNo FROM SOS WHERE LocatNo=%s", LocatNo)
     SOSNo = cur.fetchone()[0]
     conn.commit()
     conn.close()
-    
-    if gps == "noData":
+    """
+    if "gps" == "noData":
         Map = f"https://liff.line.me/{db.LIFF_ID}/sos/gps/{FamilyID}"
     else:
-        Map = f"https://www.google.com/maps/search/?api=1&query={gps}"
+        Map = f"https://www.google.com/maps/search/?api=1&query=22.997437839235964,120.21225550737789"
 
-    thumbnail_image_url = f"https://silverease.ntub.edu.tw/img/{filename}"
+    thumbnail_image_url = f"https://silverease.ntub.edu.tw/img/SilverEase.png"
     resMsg = FlexSendMessage(
         alt_text="緊急通知",
         contents={
